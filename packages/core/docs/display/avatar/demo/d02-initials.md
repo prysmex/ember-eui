@@ -5,38 +5,36 @@ order: 2
 # Initials
 
 <EuiText>
-  <p>
 
-The initials displayed in the avatar try to be smart based on the name argument. If the name contains spaces, it will display the first character of each word, <strong>always maxing out at 2 characters.</strong> You can customize this by passing a combination of <EuiCode>initialsLength</EuiCode> and/or <EuiCode>@initials</EuiCode> arguments. However, the avatar will still always max out at 2 characters.
+The initials displayed in the avatar try to be smart based on the name argument. If the name contains spaces, it will display the first character of each word, **always maxing out at 2 characters**. You can customize this by passing a combination of `@initialsLength` and/or `@initials` arguments. However, the avatar will still always max out at 2 characters.
 
-  </p>
 </EuiText>
 
-```hbs template
-<EuiTitle @size='xs'>
-  Single vs multi-word
-</EuiTitle>
+```gjs component
+import { EuiAvatar, EuiFlexGroup, EuiSpacer, EuiTitle } from '@ember-eui/core/components';
+
+<template>
+<EuiTitle @size="xs"><h3>Single vs multi-word</h3></EuiTitle>
 <EuiSpacer />
-<div>
-  <EuiAvatar @size='m' @name='Single' />
-  <EuiAvatar @size='m' @name='Two Words' />
-  <EuiAvatar @size='m' @name='More Than Two Words' />
-  <EuiAvatar @size='m' @name='lowercase words' />
-</div>
+<EuiFlexGroup @responsive={{false}} @gutterSize="xs">
+  <EuiAvatar @name="Single" />
+  <EuiAvatar @name="Two Words" />
+  <EuiAvatar @name="More Than Two Words" />
+  <EuiAvatar @name="lower case" @casing="lowercase" />
+</EuiFlexGroup>
 <EuiSpacer />
-<EuiTitle @size='xs'>
-  Custom
-</EuiTitle>
+<EuiTitle @size="xs"><h3>Custom</h3></EuiTitle>
 <EuiSpacer />
-<div>
-  <EuiAvatar @size='m' @name='Kibana' @initialsLength={{2}} />
-  <EuiAvatar @size='m' @name='Leonardo Dude' @initialsLength={{1}} />
-  <EuiAvatar @size='m' @name='Not provided' @initials='?' />
+<EuiFlexGroup @responsive={{false}} @gutterSize="xs">
+  <EuiAvatar @name="Kibana" @initialsLength={{2}} @casing="capitalize" />
+  <EuiAvatar @name="Leonardo Dude" @initialsLength={{1}} />
+  <EuiAvatar @name="Not provided" @initials="?" />
   <EuiAvatar
-    @size='m'
-    @name='Engineering Space'
-    @initials='En'
+    @name="Engineering User"
+    @initials="En"
+    @casing="none"
     @initialsLength={{2}}
   />
-</div>
+</EuiFlexGroup>
+</template>
 ```

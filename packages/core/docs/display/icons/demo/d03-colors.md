@@ -9,7 +9,7 @@ order: 3
 Without `@color` an icon inherits the text color (`currentColor`). `@color`
 takes one of EUI's color names (`primary`, `success`, `accent`, `warning`,
 `danger`, `text`, `subdued`, `ghost`, `default`, `inherit`) or any CSS color
-such as `"#DA8B45"` or `"rgb(0 119 204)"`.
+such as `"#DA8B45"`. The `ghost` color is meant for dark backgrounds, so it is shown on one.
 
 Multi-color icons (logos and apps) keep their colors unless you pass a color:
 `ghost` and `text` turn them into a single color, e.g. for dark backgrounds.
@@ -17,50 +17,23 @@ For your own svgs to take a color, remove their `fill` attributes.
 
 </EuiText>
 
-```hbs template
-<EuiFlexGroup @gutterSize="l" @wrap={{true}}>
-  {{#each this.colors as |color|}}
-    <EuiFlexItem @grow={{false}}>
-      <EuiFlexGroup @direction="column" @alignItems="center" @gutterSize="s" @responsive={{false}}>
-        <EuiFlexItem @grow={{false}}>
-          <EuiIcon @type="brush" @size="l" @color={{color}} />
-        </EuiFlexItem>
-        <EuiFlexItem @grow={{false}}>
-          <EuiText @size="xs">{{color}}</EuiText>
-        </EuiFlexItem>
-      </EuiFlexGroup>
-    </EuiFlexItem>
-  {{/each}}
-</EuiFlexGroup>
-
-<EuiSpacer />
-
-<EuiPanel @color="subdued" @paddingSize="m">
-  <EuiFlexGroup @gutterSize="l" @alignItems="center" @responsive={{false}}>
-    <EuiFlexItem @grow={{false}}>
-      <EuiIcon @type="logoKibana" @size="xl" />
-    </EuiFlexItem>
-    <EuiFlexItem @grow={{false}}>
-      <EuiIcon @type="logoKibana" @size="xl" @color="text" />
-    </EuiFlexItem>
-    <EuiFlexItem @grow={{false}} style="background: #25282f; padding: 8px; border-radius: 4px;">
-      <EuiIcon @type="logoKibana" @size="xl" @color="ghost" />
-    </EuiFlexItem>
-    <EuiFlexItem>
-      <EuiText @size="s">
-        <p>A multi-color logo as is, with <code>@color="text"</code> and with <code>@color="ghost"</code>.</p>
-      </EuiText>
-    </EuiFlexItem>
-  </EuiFlexGroup>
-</EuiPanel>
-```
-
-```js component
+```gjs component
+import { htmlSafe } from '@ember/template';
 import Component from '@glimmer/component';
+import { EuiFlexGroup, EuiFlexItem, EuiIcon, EuiPanel, EuiSpacer, EuiText } from '@ember-eui/core/components';
+import { eq } from 'ember-truth-helpers';
+
+const ghostStyle = (color) =>
+  color === 'ghost'
+    ? htmlSafe('background: #25282f; padding: 4px; border-radius: 4px;')
+    : undefined;
+
+const darkTile = htmlSafe('background: #25282f; padding: 8px; border-radius: 4px;');
 
 export default class IconColorsDemo extends Component {
   colors = [
     'default',
+    'inherit',
     'primary',
     'success',
     'accent',
@@ -68,8 +41,48 @@ export default class IconColorsDemo extends Component {
     'danger',
     'text',
     'subdued',
+    'ghost',
     '#DA8B45',
-    'rgb(0 119 204)',
+    '#DDDDDD',
   ];
+
+  <template>
+    <EuiFlexGroup @gutterSize="l" @wrap={{true}}>
+      {{#each this.colors as |color|}}
+        <EuiFlexItem @grow={{false}}>
+          <EuiFlexGroup @direction="column" @alignItems="center" @gutterSize="s" @responsive={{false}}>
+            <EuiFlexItem @grow={{false}} style={{ghostStyle color}}>
+              <EuiIcon @type="brush" @size="l" @color={{color}} />
+            </EuiFlexItem>
+            <EuiFlexItem @grow={{false}}>
+              <EuiText @size="xs">{{color}}</EuiText>
+            </EuiFlexItem>
+          </EuiFlexGroup>
+        </EuiFlexItem>
+      {{/each}}
+    </EuiFlexGroup>
+
+    <EuiSpacer />
+
+    <EuiPanel @color="subdued" @paddingSize="m">
+      <EuiFlexGroup @gutterSize="l" @alignItems="center" @responsive={{false}}>
+        <EuiFlexItem @grow={{false}}>
+          <EuiIcon @type="logoKibana" @size="xl" />
+        </EuiFlexItem>
+        <EuiFlexItem @grow={{false}}>
+          <EuiIcon @type="logoKibana" @size="xl" @color="text" />
+        </EuiFlexItem>
+        <EuiFlexItem @grow={{false}} style={{darkTile}}>
+          <EuiIcon @type="logoKibana" @size="xl" @color="ghost" />
+        </EuiFlexItem>
+        <EuiFlexItem>
+          <EuiText @size="s">
+            <p>A multi-color logo as is, with <code>@color="text"</code> and with <code>@color="ghost"</code>.</p>
+          </EuiText>
+        </EuiFlexItem>
+      </EuiFlexGroup>
+    </EuiPanel>
+  </template>
 }
 ```
+

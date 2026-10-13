@@ -6,12 +6,14 @@ order: 1
 
 <EuiText>
 
-Sizes from `l` down to `xxxs`, each with the tag that fits a typical
-page outline.
+`EuiTitle` styles the page, section, and content headings we use in Kibana. Unlike `EuiText` it is margin neutral and more suitable for general layout design. Sizes run from `l` down to `xxxs`, each shown with the tag that fits a typical page outline.
 
 </EuiText>
 
-```hbs template
+```gjs component
+import { EuiCode, EuiHorizontalRule, EuiSpacer, EuiTitle } from '@ember-eui/core/components';
+
+<template>
 <div>
   <EuiTitle @size='l' @tagName="h1">This is a large title, only one should exist per page</EuiTitle>
   <EuiCode @language='js'>size=&quot;l&quot;</EuiCode>
@@ -39,8 +41,7 @@ page outline.
 
   <EuiHorizontalRule />
 
-  <EuiTitle @size='l'>
-    <span>Titles are markup agnostic, they only confer style</span>
-  </EuiTitle>
+  <EuiTitle @size='l' @tagName='span'>Titles are markup agnostic, they only confer style</EuiTitle>
 </div>
+</template>
 ```

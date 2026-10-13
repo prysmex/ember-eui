@@ -20,8 +20,11 @@ use it directly to build your own overlays.
 {{/if}}
 ```
 
-`@onClick` is called for clicks on the mask itself (not its content);
-`@headerZindexLocation="below"` keeps the page header above the mask.
+`@onClick` is called for clicks on the mask itself (not its content).
+
+### Masks with header
+
+Managing z-index levels of multiple portal-positioned components and their different contexts is complicated from within the library. **EuiOverlayMask** gives you control over whether it should appear below or above an `EuiHeader` by providing the `@headerZindexLocation` argument. By default this is set to `"above"` for common cases like with `EuiModal` where the header should be obscured. However, a component like `EuiFlyout` which utilizes the overlay mask but should keep the header visible should use `"below"`.
 
 </EuiText>
 

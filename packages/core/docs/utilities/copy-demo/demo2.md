@@ -1,5 +1,5 @@
 ---
-	order: 2
+order: 2
 ---
 
 # Copy to clipboard function
@@ -10,49 +10,20 @@
   </p>
 </EuiText>
 
-```hbs template
-<EuiComment>
-  <:username>
-    Gusteau
-  </:username>
-  <:event>
-    added a comment
-  </:event>
-  <:timestamp>
-    on tuesday
-  </:timestamp>
-  <:actions>
-    <EuiToolTip @content={{this.tooltipText}}>
-      <:anchor>
-        <EuiButtonIcon
-          {{did-insert (set this 'buttonRef')}}
-          aria-label='Copy text to clipboard'
-          @color='text'
-          @iconType='copy'
-          @onClick={{this.onClick}}
-          {{on 'click' this.onClick}}
-          {{on 'blur' (set this 'isTextCopied' false)}}
-        />
-      </:anchor>
-    </EuiToolTip>
-  </:actions>
-  <:body>
-    <EuiText @size='s'>
-      <p>{{this.text}}</p>
-    </EuiText>
-  </:body>
-</EuiComment>
-```
-
-```javascript component
+```gjs component
 import GlimmerComponent from '@glimmer/component';
 import { tracked } from '@glimmer/tracking';
 import { action } from '@ember/object';
 import { copyToClipboard } from '@ember-eui/core/utils/copy-to-clipboard';
+import didInsert from '@ember/render-modifiers/modifiers/did-insert';
+import { EuiButtonIcon, EuiComment, EuiCommentList, EuiText, EuiToolTip } from '@ember-eui/core/components';
+import { on } from '@ember/modifier';
+import { set } from 'ember-set-helper';
 
 export default class OutsideClickDetectorComponentDemo1 extends GlimmerComponent {
   @tracked isTextCopied = false;
   buttonRef = null;
+  date = new Date().toLocaleDateString(undefined, { dateStyle: 'long' });
 
   text =
     'You must be imaginative, strong-hearted. You must try things that may not work, and you must not let anyone define your limits because of where you come from. Your only limit is your soul. What I say is true—anyone can cook… but only the fearless can be great.';
@@ -66,5 +37,41 @@ export default class OutsideClickDetectorComponentDemo1 extends GlimmerComponent
     copyToClipboard(this.text);
     this.isTextCopied = true;
   };
+
+  <template>
+    <EuiCommentList aria-label='Copy to clipboard example'>
+    <EuiComment>
+      <:username>
+        Gusteau
+      </:username>
+      <:event>
+        added a comment
+      </:event>
+      <:timestamp>
+        on {{this.date}}
+      </:timestamp>
+      <:actions>
+        <EuiToolTip @content={{this.tooltipText}}>
+          <:anchor>
+            <EuiButtonIcon
+              {{didInsert (set this 'buttonRef')}}
+              aria-label='Copy text to clipboard'
+              @color='text'
+              @iconType='copy'
+              {{on 'click' this.onClick}}
+              {{on 'blur' (set this 'isTextCopied' false)}}
+            />
+          </:anchor>
+        </EuiToolTip>
+      </:actions>
+      <:body>
+        <EuiText @size='s'>
+          <p>{{this.text}}</p>
+        </EuiText>
+      </:body>
+    </EuiComment>
+    </EuiCommentList>
+  </template>
 }
 ```
+

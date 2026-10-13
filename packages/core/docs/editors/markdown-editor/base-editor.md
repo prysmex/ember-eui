@@ -8,9 +8,7 @@ title: Base editor
 
 <EuiText>
 
-`EuiMarkdownEditor` is a markdown textarea with a formatting toolbar, a
-preview tab and interactive task lists; `EuiMarkdownFormat` renders
-markdown with EUI's styles (use it to show saved markdown).
+**EuiMarkdownEditor** provides a markdown authoring experience for the user. The component consists of a toolbar, text area, and a drag-and-drop zone to accept files (if configured to do so). There are two modes: a textarea that keeps track of cursor position, and a rendered preview mode that is powered by `EuiMarkdownFormat`. State is maintained between the two and it is possible to pass changes from the preview area to the textarea and vice versa.
 
 ```hbs
 <EuiMarkdownEditor
@@ -27,9 +25,20 @@ markdown with EUI's styles (use it to show saved markdown).
 GitHub-style markdown plus emoji (`:tada:`), task lists (`- [ ] todo`,
 clickable in the preview) and tooltips (`!{tooltip[text](tooltip)}`).
 
+The Ember EUI docs for the editor, `EuiMarkdownFormat` and the plugins
+live on this page: the examples follow upstream's Editor, Format and
+Plugins pages, followed by Ember EUI extras.
+
 ### Plugins
 
-The editor and the renderer share a pipeline you can extend:
+**EuiMarkdownEditor** and **EuiMarkdownFormat** use the same plugin
+architecture to transform string based syntax into components. Unified JS
+and Remark provide the markdown components, separated into a **parsing**
+and a **processing** layer, and you provide **UI** to the editor to handle
+interactions. In addition to running the full pipeline, the editor uses
+just the parsing configuration to determine the input's validity, provide
+messages back to the application and allow the toolbar buttons to interact
+with existing markdown tags.
 
 | Kind | Arg | Does |
 | --- | --- | --- |
@@ -37,6 +46,9 @@ The editor and the renderer share a pipeline you can extend:
 | Parsing plugins | `@parsingPluginList` | [remark](https://github.com/remarkjs/remark) plugins that understand new syntax. |
 | Processing plugins | `@processingPluginList` | Plugins that turn the parsed tree into the rendered output, e.g. adding attributes. |
 
+The defaults are remark-parse, code block pre-processing, emoji, line
+breaks, task list checkboxes and tooltips for parsing; remark-rehype and
+the component renderer for processing; and the tooltip button for the UI.
 Start from the defaults and add yours:
 
 ```js
@@ -50,6 +62,8 @@ const processingPlugins = [...getDefaultEuiMarkdownProcessingPlugins(), [myProce
 ```
 
 Pass the same lists to `EuiMarkdownFormat` where you render the result.
+`getDefaultEuiMarkdownPlugins({ exclude: ['tooltip'] })` returns all three
+lists at once with a default plugin unregistered.
 
 </EuiText>
 

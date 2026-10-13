@@ -8,9 +8,15 @@ title: Mutation observer
 
 <EuiText>
 
-The `mutation-observer` modifier calls a function when an element's
-content or attributes change (a
-[MutationObserver](https://developer.mozilla.org/docs/Web/API/MutationObserver)).
+**EuiMutationObserver** is a wrapper around the
+[Mutation Observer API](https://developer.mozilla.org/docs/Web/API/MutationObserver)
+which allows watching for DOM changes to elements and their children. It
+takes the same configuration object as the browser API to describe what to
+watch for, and fires the callback when that mutation happens.
+
+In Ember EUI it is the `mutation-observer` modifier (instead of upstream's
+render prop component and its `ref` callback): put it on the element you
+wish to observe.
 
 ```hbs
 <div {{mutation-observer onMutation=this.contentChanged observerOptions=(hash childList=true subtree=true)}}>

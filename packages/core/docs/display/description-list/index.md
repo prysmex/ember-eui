@@ -8,20 +8,9 @@ title: Description list
 
 <EuiText>
 
-`EuiDescriptionList` shows pairs of terms and descriptions (a `<dl>`),
-e.g. the properties of an item. Pass the pairs as `@listItems`, or write
-them with `EuiDescriptionListTitle` / `EuiDescriptionListDescription`.
+**EuiDescriptionList** is a component for listing pairs of information together, e.g. the properties of an item. Pass the pairs as `@listItems`, or write them with **EuiDescriptionListTitle** and **EuiDescriptionListDescription**.
 
-```hbs
-<EuiDescriptionList @listItems={{array
-  (hash title="Status" description="Active")
-  (hash title="Owner" description="Jane Cooper")
-}} />
-```
-
-`@type` lays the pairs out in rows (default), `column`s,
-`responsiveColumn`s or `inline`; `@textStyle="reverse"` emphasizes the
-descriptions instead of the titles.
+`@type` lays the pairs out in rows (default), `column`s, `responsiveColumn`s or `inline`; `@textStyle="reverse"` emphasizes the descriptions instead of the titles.
 
 </EuiText>
 

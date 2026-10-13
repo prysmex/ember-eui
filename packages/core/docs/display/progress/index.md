@@ -8,9 +8,12 @@ title: Progress
 
 <EuiText>
 
-`EuiProgress` shows progress as a bar. Without `@max` it is an
+Use `EuiProgress` to show progress as a bar. Without `@max` it is an
 indeterminate animation (something is loading); with `@max` and `@value`
 it shows how much is done, optionally with a label and the value.
+
+Loading indicators should favor actual progress over infinite spinners
+(see [Loading](/docs/display/loading-indicators)).
 
 ```hbs
 <EuiProgress @size="xs" @color="accent" />

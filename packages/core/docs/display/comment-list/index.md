@@ -8,27 +8,14 @@ title: Comment List
 
 <EuiText>
 
-`EuiCommentList` shows a timeline of `EuiComment`s, like the activity of
-an issue: comments with a body, and one-line updates ("closed the
-issue").
-
-```hbs
-<EuiCommentList>
-  <EuiComment>
-    <:timelineIcon><EuiAvatar @name="Jane Cooper" /></:timelineIcon>
-    <:username>jane</:username>
-    <:event>added a comment</:event>
-    <:timestamp>2 hours ago</:timestamp>
-    <:body><EuiText><p>Looks good to me!</p></EuiText></:body>
-  </EuiComment>
-  <EuiComment @type="update" @timelineIcon="lock">
-    <:username>raj</:username>
-    <:event>locked the conversation</:event>
-  </EuiComment>
-</EuiCommentList>
-```
+The **EuiCommentList** is a timeline component built on top of **EuiTimeline**. It allows you to display comments or logged actions that either a user or a system has performed.
 
 </EuiText>
+<EuiSpacer />
+<EuiCallOut @color="primary" @iconType="accessibility" @size="s" @title="Accessibility recommendation">
+  <p>Provide a descriptive <code>aria-label</code> or the ID of an external label to the <code>aria-labelledby</code> attribute of the <strong>EuiCommentList</strong>. A <code>@timelineAvatarAriaLabel</code> should be provided for every <strong>EuiComment</strong> with or without a <code>@timelineIcon</code> icon type.</p>
+</EuiCallOut>
+<EuiSpacer />
 
 <EuiHorizontalRule />
 

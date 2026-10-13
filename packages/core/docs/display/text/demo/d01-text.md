@@ -6,12 +6,14 @@ order: 1
 
 <EuiText>
 
-Everything inside `EuiText` (headings, paragraphs, lists, code, quotes,
-tables) gets EUI's typography and spacing. `@size` scales it all.
+`EuiText` is a generic catchall wrapper that applies EUI's standard typography styling and spacing to naked HTML. Because of its forced styles, it **only accepts raw XHTML**. Set `@grow={{false}}` to cap the line length for readability.
 
 </EuiText>
 
-```hbs template
+```gjs component
+import { EuiHorizontalRule, EuiText } from '@ember-eui/core/components';
+
+<template>
 <div>
   <EuiText @grow={{false}}>
     <h1>This is Heading One</h1>
@@ -76,8 +78,7 @@ tables) gets EUI's typography and spacing. `@size` scales it all.
 
     <p>
       And from the fox&rsquo;s perspective, life was full of hoops to jump
-      <em>through</em>, low-hanging fruit to jump
-      <em>for</em>, and dead car batteries to jump-<em>start</em>.
+      <em>through</em>, low-hanging fruit to jump <em>for</em>, and dead car batteries to jump-<em>start</em>.
     </p>
 
     <h3>This is Heading Three</h3>
@@ -89,10 +90,36 @@ tables) gets EUI's typography and spacing. `@size` scales it all.
 
     <h4>This is Heading Four</h4>
 
-    <p>
-      So it thought the dog was making a poor life choice by focusing so much on
-      mindfulness. What if its car broke down?
-    </p>
+    <ol>
+      <li>C
+        <ol>
+          <li>Procedural</li>
+          <li>Structured</li>
+          <li>Low-level</li>
+        </ol>
+      </li>
+      <li>Java
+        <ol>
+          <li>Object-oriented</li>
+          <li>Class-based</li>
+          <li>Compiled</li>
+        </ol>
+      </li>
+      <li>Python
+        <ol>
+          <li>Interpreted</li>
+          <li>High-level</li>
+          <li>Scripting</li>
+          <li>Object-oriented
+            <ol>
+              <li>Dynamic typing</li>
+              <li>Garbage collection</li>
+            </ol>
+          </li>
+          <li>Functional</li>
+        </ol>
+      </li>
+    </ol>
 
     <h5>This is Heading Five</h5>
 
@@ -105,6 +132,38 @@ tables) gets EUI's typography and spacing. `@size` scales it all.
 
     <h6>This is Heading Six</h6>
 
+    <ul>
+      <li>Programming Languages
+        <ul>
+          <li>Backend
+            <ul>
+              <li>Java</li>
+              <li>Python</li>
+              <li>PHP</li>
+            </ul>
+          </li>
+          <li>Frontend
+            <ul>
+              <li>JavaScript
+                <ul>
+                  <li>React.js</li>
+                  <li>Angular.js</li>
+                  <li>Vue.js</li>
+                </ul>
+              </li>
+              <li>CSS
+                <ul>
+                  <li>SASS</li>
+                  <li>Less</li>
+                  <li>Stylus</li>
+                </ul>
+              </li>
+            </ul>
+          </li>
+        </ul>
+      </li>
+    </ul>
+
     <EuiHorizontalRule />
 
     <dl>
@@ -112,7 +171,7 @@ tables) gets EUI's typography and spacing. `@size` scales it all.
       <dd>The opening music alone evokes such strong memories.</dd>
       <dt>TIE Fighter</dt>
       <dd>
-        The sequel to XWING, join the dark side and fly for the Emporer.
+        The sequel to XWING, join the dark side and fly for the Emperor.
       </dd>
       <dt>Quake 2</dt>
       <dd>The game that made me drop out of college.</dd>
@@ -128,6 +187,15 @@ tables) gets EUI's typography and spacing. `@size` scales it all.
       <dt>Release date</dt>
       <dd>2002</dd>
     </dl>
+
+    <p>
+      Press <kbd>Ctrl</kbd> + <kbd>C</kbd> to copy text (Windows).
+    </p>
+
+    <p>
+      Press <kbd>Cmd</kbd> + <kbd>C</kbd> to copy text (Mac OS).
+    </p>
   </EuiText>
 </div>
+</template>
 ```

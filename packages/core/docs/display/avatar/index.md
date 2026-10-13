@@ -7,12 +7,14 @@ title: Avatar
 <EuiHorizontalRule />
 <EuiText>
 
-  <p>
+The **EuiAvatar** component typically creates a user icon. It will accept `@name` (required) and `@imageUrl` arguments and will configure the display and accessibility as needed. By default, the background colors come from the set of colors used for visualizations. Otherwise you can pass a hex value to the `@color` argument.
 
-The <strong>EuiAvatar</strong> component typically creates a user icon. It will accept <EuiCode>@name</EuiCode> (required) and <EuiCode>image</EuiCode> arguments and will configure the display and accessibility as needed. By default, the background colors come from the set of colors used for visualizations. Otherwise you can pass a hex value to the <EuiCode>@color</EuiCode> argument.
-
-  </p>
 </EuiText>
+<EuiSpacer />
+<EuiCallOut @color="primary" @iconType="accessibility" @title="Accessibility note" @size="s">
+  <p>The <code>@name</code> argument provides a meaningful label for both assistive technology (<code>aria-label</code>) and sighted users (tooltip content). The avatar itself is not interactive and is not a keyboard focus stop.</p>
+</EuiCallOut>
+<EuiSpacer />
 
 <!-- api:start -->
 <EuiSpacer @size="xl" />

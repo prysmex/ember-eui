@@ -15,24 +15,11 @@ order: 8
   </p>
 </EuiText>
 
-```hbs template
-<div style='height:300px'>
-  <EuiCodeBlock
-    @language='json'
-    @isCopyable={{true}}
-    @overflowHeight='100%'
-    @lineNumbers={{true}}
-    @isVirtualized={{true}}
-  >
-    {{this.htmlCode}}
-  </EuiCodeBlock>
-</div>
-```
-
-```javascript component
+```gjs component
 import Component from '@glimmer/component';
 import { tracked } from '@glimmer/tracking';
 import { action } from '@ember/object';
+import { EuiCodeBlock } from '@ember-eui/core/components';
 
 export default class EuiMarkdownEditor1 extends Component {
   @tracked htmlCode = `{
@@ -849,5 +836,20 @@ export default class EuiMarkdownEditor1 extends Component {
   "loaded": 1,
   "isRestored": false
 }`;
+
+  <template>
+    <div style='height:300px'>
+      <EuiCodeBlock
+        @language='json'
+        @isCopyable={{true}}
+        @overflowHeight='100%'
+        @lineNumbers={{true}}
+        @isVirtualized={{true}}
+      >
+        {{this.htmlCode}}
+      </EuiCodeBlock>
+    </div>
+  </template>
 }
 ```
+

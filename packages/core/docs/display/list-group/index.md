@@ -8,25 +8,19 @@ title: List Group
 
 <EuiText>
 
-`EuiListGroup` renders a list of `EuiListGroupItem`s: navigation links,
-a list of actions, or plain rows, each with an optional icon and an extra
-action on the right.
+The **EuiListGroup** component is used to present **EuiListGroupItems** in a neatly formatted list. Use the `@bordered` argument for a bordered presentation.
 
 ```hbs
-<EuiListGroup @flush={{true}}>
+<EuiListGroup>
   <EuiListGroupItem @label="Overview" @href="/overview" @iconType="home" @isActive={{true}} />
   <EuiListGroupItem @label="Settings" @href="/settings" @iconType="gear" />
   <EuiListGroupItem @label="Log out" @iconType="exit" @onClick={{this.logOut}} />
 </EuiListGroup>
 ```
 
-An item with `@href` renders a link, with `@onClick` a button, otherwise
-plain text. `@isActive` highlights the current one.
+An item with `@href` renders a link, with `@onClick` a button, otherwise plain text. `@isActive` highlights the current one.
 
-`EuiPinnableListGroup` adds a pin button to each item, for navigations
-where users keep favorite pages at the top. It takes the items as an
-array (`@listItems`) with a `pinned` flag you keep up to date from
-`@onPinClick`.
+`EuiPinnableListGroup` adds a pin button to each item, for navigations where users keep favorite pages at the top. It takes the items as an array (`@listItems`) with a `pinned` flag you keep up to date from `@onPinClick`.
 
 </EuiText>
 

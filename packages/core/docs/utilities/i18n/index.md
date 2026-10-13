@@ -8,6 +8,14 @@ title: i18n
 
 <EuiText>
 
+Translations for EUI components can be provided globally in an application through the `euiI18n` service. All available tokens (also called ids) are listed in upstream EUI's [i18ntokens.json](https://github.com/elastic/eui/blob/main/packages/eui/i18ntokens.json).
+
+While developing an EUI component, any text that is included by default must be translatable, and `EuiI18n` is the proper way to do this.
+
+<EuiCallOut @title="These utilities are mostly internal" @color="warning" @size="s">
+  <p>The purpose of these utilities is to allow internationalizing EUI components. This is not a full-fledged solution for internationalizing your app.</p>
+</EuiCallOut>
+
 EUI components ship English texts ("No results found", "Loading
 options...", "Close this dialog", …). Translate them by adding your
 strings to the `euiI18n` service, e.g. in the application route; nested

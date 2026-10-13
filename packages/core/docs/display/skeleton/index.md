@@ -8,27 +8,24 @@ title: Skeleton
 
 <EuiText>
 
-Skeletons are placeholders shaped like the content that is loading. They
-shimmer while loading (a static color when the user prefers reduced motion)
-and are replaced by their block once `@isLoading` is `false`.
+The **EuiSkeleton** components are placeholder components for content which has yet to load. They provide meaningful previews, avoid layout content shifts, and add accessible announcements to screen readers when content is done loading.
 
-- **`EuiSkeletonText`** stands in for paragraphs, **`EuiSkeletonTitle`** for
-  an `EuiTitle`, **`EuiSkeletonCircle`** for avatars and icons, and
-  **`EuiSkeletonRectangle`** for anything else (images, charts, buttons).
-- **`EuiSkeletonLoading`** swaps any loading content for loaded content; the
-  other skeletons are built on it.
+</EuiText>
 
-```hbs
-<EuiSkeletonText @lines={{3}} @isLoading={{this.isLoading}} @contentAriaLabel="Notes">
-  <EuiText><p>{{this.notes}}</p></EuiText>
-</EuiSkeletonText>
-```
+<EuiSpacer />
 
-While loading, the content is wrapped in an `aria-busy` region and the
-skeleton is a `progressbar` labelled "Loading {contentAriaLabel}". When it
-loads, screen readers hear "Loaded {contentAriaLabel}" (turn it off with
-`@announceLoadedStatus={{false}}`; announce the loading state too with
-`@announceLoadingStatus={{true}}`).
+<EuiCallOut @title="Accessibility recommendation" @color="success" @iconType="accessibility">
+  <p>The <code>@contentAriaLabel</code> argument should be used to help describe the type of content that is loading to screen reader users. If you do not provide a descriptive label and have multiple loading skeletons on the page, screen reader users may hear a multitude of “Loaded” messages in a row, with no meaningful indication of what actually loaded.</p>
+</EuiCallOut>
+
+<EuiSpacer />
+
+<EuiText>
+
+- **`EuiSkeletonText`** stands in for paragraphs, **`EuiSkeletonTitle`** for an `EuiTitle`, **`EuiSkeletonCircle`** for avatars and icons, and **`EuiSkeletonRectangle`** for anything else (images, charts, buttons).
+- **`EuiSkeletonLoading`** swaps any loading content for loaded content; the other skeletons are built on it.
+
+While loading, the content is wrapped in an `aria-busy` region and the skeleton is a `progressbar` labelled "Loading {contentAriaLabel}". When it loads, screen readers hear "Loaded {contentAriaLabel}".
 
 </EuiText>
 

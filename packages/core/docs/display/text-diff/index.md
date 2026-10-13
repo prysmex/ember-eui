@@ -20,7 +20,9 @@ comparing a document's versions.
 By default it compares whole words, which reads best for prose;
 `@granularity="characters"` shows changes inside words (typos, ids).
 It finds the smallest set of changes, so it suits paragraphs rather than
-very long documents.
+very long documents. The component renders the changes inline (the
+equivalent of upstream's `useEuiTextDiff` hook); its block yields the
+changes for custom rendering.
 
 </EuiText>
 

@@ -14,37 +14,39 @@ use `xl` for those. Non-`original` sizes assume a square `viewBox`.
 
 </EuiText>
 
-```hbs template
-<EuiFlexGroup @gutterSize="xl" @alignItems="flexEnd" @wrap={{true}}>
-  {{#each this.sizes as |size|}}
-    <EuiFlexItem @grow={{false}}>
-      <EuiFlexGroup @direction="column" @alignItems="center" @gutterSize="s">
-        <EuiFlexItem @grow={{false}}>
-          <EuiIcon @type="logoElasticsearch" @size={{size.name}} />
-        </EuiFlexItem>
-        <EuiFlexItem @grow={{false}}>
-          <EuiCode>@size="{{size.name}}"</EuiCode>
-        </EuiFlexItem>
-        <EuiFlexItem @grow={{false}}>
-          <EuiText @size="xs" @color="subdued">{{size.pixels}}</EuiText>
-        </EuiFlexItem>
-      </EuiFlexGroup>
-    </EuiFlexItem>
-  {{/each}}
-</EuiFlexGroup>
-```
-
-```js component
+```gjs component
 import Component from '@glimmer/component';
+import { EuiCode, EuiFlexGroup, EuiFlexItem, EuiIcon, EuiText } from '@ember-eui/core/components';
 
 export default class IconSizesDemo extends Component {
   sizes = [
-    { name: 's', pixels: '12px' },
-    { name: 'm', pixels: '16px' },
-    { name: 'l', pixels: '24px' },
-    { name: 'xl', pixels: '32px' },
-    { name: 'xxl', pixels: '40px' },
-    { name: 'original', pixels: 'svg size' },
+    { name: 's', pixels: '12px · small' },
+    { name: 'm', pixels: '16px · medium (default)' },
+    { name: 'l', pixels: '24px · large' },
+    { name: 'xl', pixels: '32px · x-large' },
+    { name: 'xxl', pixels: '40px · xx-large' },
+    { name: 'original', pixels: 'svg size · original' },
   ];
+
+  <template>
+    <EuiFlexGroup @gutterSize="xl" @alignItems="flexEnd" @wrap={{true}}>
+      {{#each this.sizes as |size|}}
+        <EuiFlexItem @grow={{false}}>
+          <EuiFlexGroup @direction="column" @alignItems="center" @gutterSize="s">
+            <EuiFlexItem @grow={{false}}>
+              <EuiIcon @type="logoElasticsearch" @size={{size.name}} />
+            </EuiFlexItem>
+            <EuiFlexItem @grow={{false}}>
+              <EuiCode>@size="{{size.name}}"</EuiCode>
+            </EuiFlexItem>
+            <EuiFlexItem @grow={{false}}>
+              <EuiText @size="xs" @color="subdued">{{size.pixels}}</EuiText>
+            </EuiFlexItem>
+          </EuiFlexGroup>
+        </EuiFlexItem>
+      {{/each}}
+    </EuiFlexGroup>
+  </template>
 }
 ```
+

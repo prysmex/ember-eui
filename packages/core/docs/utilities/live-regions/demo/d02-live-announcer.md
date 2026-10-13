@@ -12,19 +12,12 @@ announced again. The visible text is separate.
 
 </EuiText>
 
-```hbs template
-<EuiButton @size="s" {{on "click" this.save}}>Save</EuiButton>
-{{#if this.savedCount}}
-  <EuiLiveAnnouncer>Changes saved ({{this.savedCount}})</EuiLiveAnnouncer>
-  <EuiSpacer @size="s" />
-  <EuiText @size="s" @color="subdued"><p>Saved {{this.savedCount}} times.</p></EuiText>
-{{/if}}
-```
-
-```js component
+```gjs component
 import Component from '@glimmer/component';
 import { tracked } from '@glimmer/tracking';
 import { action } from '@ember/object';
+import { EuiButton, EuiLiveAnnouncer, EuiSpacer, EuiText } from '@ember-eui/core/components';
+import { on } from '@ember/modifier';
 
 export default class LiveAnnouncerDemo extends Component {
   @tracked savedCount = 0;
@@ -32,5 +25,15 @@ export default class LiveAnnouncerDemo extends Component {
   @action save() {
     this.savedCount++;
   }
+
+  <template>
+    <EuiButton @size="s" {{on "click" this.save}}>Save</EuiButton>
+    {{#if this.savedCount}}
+      <EuiLiveAnnouncer>Changes saved ({{this.savedCount}})</EuiLiveAnnouncer>
+      <EuiSpacer @size="s" />
+      <EuiText @size="s" @color="subdued"><p>Saved {{this.savedCount}} times.</p></EuiText>
+    {{/if}}
+  </template>
 }
 ```
+

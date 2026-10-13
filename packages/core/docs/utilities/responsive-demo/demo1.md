@@ -16,7 +16,12 @@
 	</EuiCodeBlock>
 </EuiText>
 
-```hbs template
+```gjs component
+import GlimmerComponent from '@glimmer/component';
+import { EuiCode, EuiHideFor, EuiShowFor, EuiSpacer, EuiText } from '@ember-eui/core/components';
+import { array } from '@ember/helper';
+
+<template>
 <EuiText>
   <EuiHideFor @sizes='none'>
     <p>
@@ -99,10 +104,6 @@
     </p>
   </EuiShowFor>
 </EuiText>
+</template>
 ```
 
-```javascript component
-import GlimmerComponent from '@glimmer/component';
-
-export default class extends GlimmerComponent {}
-```

@@ -22,7 +22,10 @@ adding click handlers to `EuiIcon`.
 
 </EuiText>
 
-```hbs template
+```gjs component
+import { EuiButtonIcon, EuiFlexGroup, EuiFlexItem, EuiIcon, EuiText } from '@ember-eui/core/components';
+
+<template>
 <EuiFlexGroup @direction="column" @gutterSize="m">
   <EuiFlexItem>
     <EuiText @size="s">
@@ -54,4 +57,5 @@ adding click handlers to `EuiIcon`.
     </div>
   </EuiFlexItem>
 </EuiFlexGroup>
+</template>
 ```

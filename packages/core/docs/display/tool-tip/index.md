@@ -25,6 +25,21 @@ anchor must be focusable (a button or link) so keyboard users see it too.
 `EuiIconTip` is a ready-made "?" icon with a tooltip, e.g. next to a
 label.
 
+
+<EuiCallOut @title="EuiToolTip vs browser tooltip" @iconType="info">
+  Always prefer <EuiCode>EuiToolTip</EuiCode> over the HTML <EuiCode>title</EuiCode> attribute. Native browser tooltips are unstyled, inaccessible on touch devices and have inconsistent screen reader support across browsers and platforms.
+</EuiCallOut>
+
+## Accessibility requirements
+
+### Tooltip anchor
+
+Tooltips **must** be anchored to focusable elements. If you're using a non-interactive tag (like `span` or `EuiText`), add `tabindex="0"` or preferably use an interactive one (like `EuiButton`) for built-in accessibility.
+
+### Tooltip content
+
+Put only plain text in tooltips. Tooltip content is not reachable by keyboard, so any interactive content (links, buttons, inputs) inside a tooltip is inaccessible, violating WCAG 2.1.1 Keyboard and WCAG 1.4.13 Content on Hover or Focus. Use `EuiPopover` for any content requiring interaction.
+
 </EuiText>
 
 <EuiHorizontalRule />

@@ -8,29 +8,37 @@ title: Banner
 
 <EuiText>
 
-Use a banner for a prominent announcement inside a page, such as a new
-feature or a promotion. It combines an illustration (the `<:media>` block),
-a `@title`, optional `@text` and content, up to two actions and an optional
-dismiss button. The layout follows the banner's own width through container
-queries: narrow banners stack, wide ones put the actions at the end.
+**EuiBanner** is a full-width announcement component used to surface promotional or informational messages. It combines an illustration (the `<:media>` block), a `@title`, optional `@text` and content, up to two actions and an optional dismiss button. The layout follows the banner's own width through container queries: narrow banners stack, wide ones put the actions at the end.
 
-```hbs
-<EuiBanner
-  @title="Try the new dashboards"
-  @text="Build visualizations faster with the new editor."
-  @actionProps={{hash
-    primary=(hash children="Try it" onClick=this.tryIt)
-    secondary=(hash children="Learn more" href="/docs")
-  }}
-  @onDismiss={{this.dismiss}}
->
-  <:media><img src="/dashboards.svg" alt="" /></:media>
-</EuiBanner>
-```
+`@announceOnMount` reads the banner out to screen readers when it appears; use it only when the banner is feedback to a user action.
 
-For status messages (success, warning, errors) use an `EuiCallOut` instead.
-`@announceOnMount` reads the banner out to screen readers when it appears;
-use it only when the banner is feedback to a user action.
+</EuiText>
+<EuiSpacer />
+<EuiCallOut @size="s" @title="EuiBanner vs EuiCallOut">
+  <ul>
+    <li>Use <strong>EuiBanner</strong> for broad, product-level announcements such as new features, promotions, or onboarding nudges.</li>
+    <li>Use <strong>EuiCallOut</strong> for inline, contextual feedback that is directly related to the content on the page, such as warnings, errors, or confirmation messages.</li>
+  </ul>
+</EuiCallOut>
+<EuiSpacer />
+
+<EuiText>
+
+## Guidelines
+
+**Placement and priority**
+
+- Show no more than one banner on a page at a time. If multiple announcements compete, decide which has the highest priority and show only that one.
+- Use **EuiBanner** for product-level announcements such as new features, promotions, or onboarding nudges, not for error messages or validation feedback.
+
+**Actions**
+
+- A banner supports at most two action buttons: one primary and one secondary. A secondary action is only rendered when a primary action is also present.
+- The primary button can be rendered as non-filled (default) or filled (`fill`) style. Use the filled style sparingly, as an opt-in emphasis.
+
+**Media**
+
+- Every banner requires a `<:media>` block. The banner stretches the media to fill the slot, so a custom image that is too small will appear blurry.
 
 </EuiText>
 

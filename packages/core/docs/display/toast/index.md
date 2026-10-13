@@ -39,6 +39,22 @@ A toast takes a `title`, an optional `body` (markdown with
 stays. Hovering the list pauses the timers. Keep toasts for information
 that can be missed; for errors the user must act on, use a callout.
 
+
+Toasts should be used for ephemeral, live actions (think **save complete**
+or **something just finished right now**). They should not be used for
+historical actions (**your report built 30 minutes ago**), so a user should
+never be greeted with toasts when starting a session.
+
+## Guidelines
+
+- Use a toast for a timely, brief message about the current action.
+- Most often, it is a single line of text. A toast stays on screen for a few seconds, and users should be able to read it in 6 to 7 seconds; avoid long paragraphs and titles.
+- A toast should have at most two actions, usually just one with a one-word label. For more actions, or an action important enough to interrupt the user, use a modal.
+- Each `color` shows a matching icon. Use `iconType` only to override it with something more specific to the context.
+- Display one toast at a time; do not stack them.
+- Keep messages short. For create, add, delete, remove and save, include the object type, the object name if available, and the past tense of the action, e.g. "User 'Casey Smith' was added". Do not include "successfully", it is implied, and for several objects include the count, not the names.
+- When the content needs more room, use the toast for a summary and an action button that leads to the full message.
+
 </EuiText>
 
 <EuiHorizontalRule />

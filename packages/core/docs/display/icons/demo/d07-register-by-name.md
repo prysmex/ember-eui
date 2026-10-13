@@ -44,7 +44,10 @@ This site registers `app/icons/*.svg` with `prefix: 'site-'`:
 
 </EuiText>
 
-```hbs template
+```gjs component
+import { EuiButton, EuiFlexGroup, EuiFlexItem, EuiIcon } from '@ember-eui/core/components';
+
+<template>
 <EuiFlexGroup @gutterSize="l" @alignItems="center" @wrap={{true}}>
   <EuiFlexItem @grow={{false}}>
     <EuiIcon @type="site-rocket" @size="l" />
@@ -59,4 +62,5 @@ This site registers `app/icons/*.svg` with `prefix: 'site-'`:
     <EuiButton @iconType="site-rocket" @size="s">Launch</EuiButton>
   </EuiFlexItem>
 </EuiFlexGroup>
+</template>
 ```

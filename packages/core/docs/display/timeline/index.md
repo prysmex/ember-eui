@@ -30,6 +30,23 @@ the component renders it in a subdued `EuiAvatar`; provide
 
 </EuiText>
 
+<EuiSpacer />
+
+<EuiText>
+
+This component allows you to create any type of timeline, but for more specific use cases you should consider:
+
+*   `EuiSteps`: a timeline that allows you to present instructional content that must be conducted in a particular order and might contain progress indications.
+*   `EuiCommentList`: a timeline that allows you to display comments or logging actions that either a user or a system has performed.
+
+</EuiText>
+
+<EuiSpacer />
+
+<EuiCallOut @title="Accessibility requirement" @iconType="accessibility">
+  For accessibility, it is required to wrap your <strong>EuiTimelineItem</strong>s with an <strong>EuiTimeline</strong>. It is highly recommended to provide a descriptive <EuiCode>aria-label</EuiCode>, or a text node ID of an external label to the <EuiCode>aria-labelledby</EuiCode> attribute of the <strong>EuiTimeline</strong>.
+</EuiCallOut>
+
 <EuiHorizontalRule />
 
 <!-- api:start -->

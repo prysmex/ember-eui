@@ -10,23 +10,9 @@ url: docs/display/loading-indicators
 
 <EuiText>
 
-Loading indicators, from smallest to largest:
+Use loading indicators sparingly and opt for showing actual [progress](/docs/display/progress) over infinite spinners. It is ok to use multiple loaders on a page if each section is progressively loaded. However, if the entire page is loaded at once, use a single, larger loading indicator.
 
-- **`EuiLoadingSpinner`** for a part of the page or an action in progress
-  (buttons and fields have their own `@isLoading`).
-- **`EuiLoadingContent`** shows animated placeholder lines where text will
-  appear.
-- **`EuiLoadingChart`** in place of a chart or visualization that is
-  loading.
-- **`EuiLoadingLogo`** and **`EuiLoadingElastic`** for loading a whole app
-  or page.
-
-```hbs
-<EuiLoadingSpinner @size="l" />
-<EuiLoadingContent @lines={{3}} />
-```
-
-For progress with a known end, see `EuiProgress`.
+`EuiLoadingContent` (animated placeholder lines) is an Ember EUI extension, shown after the upstream examples.
 
 </EuiText>
 

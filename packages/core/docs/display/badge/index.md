@@ -7,9 +7,34 @@ title: Badge
 <EuiHorizontalRule />
 <EuiText>
 
-  <p>
-<strong>EuiBadges</strong> are used to focus on important bits of information. Although they will automatically space themselves if you use them in a repetitive fashion it is good form to wrap them using a <strong>EuiBadgeGroup</strong> so that they will wrap when width is constrained (as seen below).
-  </p>
+**EuiBadge** highlights key pieces of information. While badges will space themselves automatically when used repeatedly, it's best practice to wrap them in an **EuiBadgeGroup**. This ensures they wrap properly when space is limited (as shown below).
+
+</EuiText>
+
+<EuiHorizontalRule />
+
+<EuiText>
+
+## Guidelines
+
+### Choosing pre-GA badges
+
+Using badges in the interface allows to indicate upcoming features and product innovations available for testing and to set user expectations about the maturity, (non-)support, and stability of a feature.
+
+When a feature becomes available for users before being officially Generally Available (GA), it is marked using a badge. A badge can have a default and a short form (with a simple icon). With both forms, a tooltip text explains what this means for the feature to help users get the correct expectations.
+
+Features don't necessarily go through each stage defined in this document. For example, it can start with Beta, or it can start with Technical preview and be announced as GA next.
+
+Such badges rely on the **EuiBetaBadge** component.
+
+| Stage | Technical preview | Beta | GA |
+| ---- | ---- | ---- | ---- |
+| Description | Experimental features that may not be kept or that may change fundamentally. | Features nearing GA that are not expected to fundamentally change for GA. | Features that are officially supported for production usage. |
+| Default label | `TECHNICAL PREVIEW` | `BETA` | N/A |
+| Short label (for navigation and contextual menus) | `flask` icon | `beta` icon | N/A |
+| Tooltip | `This functionality is experimental and not supported. It may change or be removed at any time.` | `This functionality is still under development and not ready for production usage.` | N/A |
+| User expectations and perception | Unstable. For testing an innovation. Bugs and breaking changes are perceived as normal. | Fairly stable. For evaluating or testing an awaited feature. The feature is **almost** ready. There might be some bugs and UX/API refinements. | Production-ready. The feature is ready for production workloads. |
+
 </EuiText>
 
 <!-- api:start -->

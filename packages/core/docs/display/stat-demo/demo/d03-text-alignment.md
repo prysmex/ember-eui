@@ -5,35 +5,27 @@ order: 3
 # Text alignment
 
 <EuiText>
-<p>
-<strong>EuiStat</strong> also offers alignment options. By default, text will be left aligned.
-</p>
+
+**EuiStat** also offers alignment options. By default, text will be left aligned.
+
 </EuiText>
 
-```hbs template
+```gjs component
+import { EuiFlexGroup, EuiFlexItem, EuiStat } from '@ember-eui/core/components';
+
+<template>
 <div>
   <EuiFlexGroup>
     <EuiFlexItem>
-      <EuiStat
-        @title='$ 1,000.00'
-        @description='Left align'
-        @textAlign='left'
-      />
+      <EuiStat @title="$ 1,000.00" @description="Left align" @textAlign="left" />
     </EuiFlexItem>
     <EuiFlexItem>
-      <EuiStat
-        @title='99.9999'
-        @description='Center align'
-        @textAlign='center'
-      />
+      <EuiStat @title="99.9999" @description="Center align" @textAlign="center" />
     </EuiFlexItem>
     <EuiFlexItem>
-      <EuiStat
-        @title='1,000.00 €'
-        @description='Right align'
-        @textAlign='right'
-      />
+      <EuiStat @title="1,000.00 €" @description="Right align" @textAlign="right" />
     </EuiFlexItem>
   </EuiFlexGroup>
 </div>
+</template>
 ```

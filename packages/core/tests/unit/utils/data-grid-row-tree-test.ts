@@ -262,4 +262,35 @@ module('Unit | utils | data-grid row-tree', function () {
     const custom = buildRowTree({ rows: [{ id: 'x', more: 1 }], hasChildren: (row: { more?: number }) => !!row.more });
     assert.true(flattenRowTree(custom.roots, none)[0]!.hasChildren);
   });
+
+  test('performance: rebuilding the visible list (logged, not asserted)', function (assert) {
+    for (const total of [10_000, 50_000]) {
+      // 3 levels: total/111 roots x 10 children x 10 grandchildren
+      const roots = Math.round(total / 111);
+      const rows = Array.from({ length: roots }, (_, r) => ({
+        id: `r${r}`,
+        children: Array.from({ length: 10 }, (_, c) => ({
+          id: `r${r}c${c}`,
+          children: Array.from({ length: 10 }, (_, g) => ({ id: `r${r}c${c}g${g}` }))
+        }))
+      }));
+      const time = (fn: () => unknown) => {
+        const start = performance.now();
+        fn();
+        return performance.now() - start;
+      };
+      let tree = buildRowTree({ rows });
+      const build = time(() => (tree = buildRowTree({ rows })));
+      const ids = new Set(collectExpandableIds(tree.roots).row);
+      const flatten = time(() => flattenRowTree(tree.roots, (node) => ids.has(node.id)));
+      const sort = time(() => sortRowTree(tree.roots, (a, b) => b.rowIndex - a.rowIndex));
+      const grouped = time(() => groupRowTree(buildFlatRows(tree.rows.length), ['k'], (i) => i % 100));
+      const count = flattenRowTree(tree.roots, (node) => ids.has(node.id)).length;
+       
+      console.log(
+        `row-tree ${count} rows: build ${build.toFixed(1)}ms, flatten (toggle) ${flatten.toFixed(1)}ms, sort ${sort.toFixed(1)}ms, group 100 groups ${grouped.toFixed(1)}ms`
+      );
+      assert.true(count > total * 0.9, `${count} rows`);
+    }
+  });
 });

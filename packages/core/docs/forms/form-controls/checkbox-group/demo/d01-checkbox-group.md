@@ -6,22 +6,37 @@ order: 1
 
 <EuiText>
 
-`@onChange` receives the id of the checkbox that was clicked; flip it in
-`@idToSelectedMap`. Replace the map (don't mutate it) so the group updates.
+Use an `EuiCheckboxGroup` when you want to generate a group of checkboxes by passing an array of `@options` with an `id` and `label` for each object. Use the `@idToSelectedMap` to indicate the IDs of the selected items. For more details on which selection component to use, see the selection overview.
+
+When the individual labels for each checkbox do not provide a sufficient description, pass a `@legend` to the group.
+
+Use the `@compressed` argument to tighten up the spacing between checkbox rows.
+
+The switches above the group are docs-only helpers that toggle `@compressed` and `@disabled`.
 
 </EuiText>
 
 ```hbs template
+<EuiFlexGroup @wrap={{true}} @gutterSize="m" @responsive={{false}}>
+  {{#each this.toggles as |toggle|}}
+    <EuiFlexItem @grow={{false}}>
+      <EuiSwitch
+        @label={{toggle.label}}
+        @compressed={{true}}
+        @checked={{get this.flags toggle.key}}
+        @onChange={{fn this.toggle toggle.key}}
+      />
+    </EuiFlexItem>
+  {{/each}}
+</EuiFlexGroup>
+<EuiSpacer @size="m" />
 <EuiCheckboxGroup
-  @legend="Toppings"
-  @options={{this.toppings}}
-  @idToSelectedMap={{this.selected}}
-  @onChange={{this.toggle}}
+  @options={{this.checkboxes}}
+  @idToSelectedMap={{this.checkboxIdToSelectedMap}}
+  @compressed={{this.flags.compressed}}
+  @disabled={{this.flags.disabled}}
+  @onChange={{this.onChange}}
 />
-<EuiSpacer />
-<EuiText @size="s" @color="subdued">
-  <p>Selected: {{this.summary}}</p>
-</EuiText>
 ```
 
 ```js component
@@ -30,24 +45,41 @@ import { tracked } from '@glimmer/tracking';
 import { action } from '@ember/object';
 
 export default class CheckboxGroupDemo extends Component {
-  toppings = [
-    { id: 'cheese', label: 'Extra cheese' },
-    { id: 'olives', label: 'Olives' },
-    { id: 'mushrooms', label: 'Mushrooms' },
-    { id: 'pineapple', label: 'Pineapple', disabled: true },
+  toggles = [
+    { key: 'compressed', label: 'compressed' },
+    { key: 'disabled', label: 'disabled' },
   ];
 
-  @tracked selected = { cheese: true };
+  checkboxes = [
+    {
+      id: 'checkboxGroupItem-first',
+      label: 'Option one',
+    },
+    {
+      id: 'checkboxGroupItem-second',
+      label: 'Option two is checked by default',
+    },
+    {
+      id: 'checkboxGroupItem-third',
+      label: 'Option three is disabled',
+      disabled: true,
+    },
+  ];
 
-  get summary() {
-    const names = this.toppings.filter((t) => this.selected[t.id]).map((t) => t.label);
+  @tracked flags = {};
+  @tracked checkboxIdToSelectedMap = { 'checkboxGroupItem-second': true };
 
-    return names.length ? names.join(', ') : 'nothing';
+  @action
+  toggle(key, event) {
+    this.flags = { ...this.flags, [key]: event.target.checked };
   }
 
   @action
-  toggle(id) {
-    this.selected = { ...this.selected, [id]: !this.selected[id] };
+  onChange(optionId) {
+    this.checkboxIdToSelectedMap = {
+      ...this.checkboxIdToSelectedMap,
+      [optionId]: !this.checkboxIdToSelectedMap[optionId],
+    };
   }
 }
 ```

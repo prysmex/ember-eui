@@ -2,27 +2,44 @@
 order: 1
 ---
 
-# Radios
+# Radio
 
 <EuiText>
 
-Give every radio of a group the same `@name`, check the selected one with
-`@checked`, and update your value on `change`.
+Radios are ideal for allowing users to select options among a small list of options, or to switch settings on/off with an `EuiSwitch`. For longer lists of options, consider using a dropdown selection component.
+
+`EuiRadio` renders a basic HTML `<input type="radio">` element. Use radio buttons to allow users to choose one option out of a list. They are ideal for a list of more than 2 options, and usually no more than 6 options.
+
+When creating a list, each input should have the same `@name` to ensure a group is established. This way when you select a radio button in that group, the other options are automatically deselected.
+
+Make sure to pass a `@label` to ensure a larger clickable area and ensure that screen readers will read out the label when the user is focused on the input.
 
 </EuiText>
 
 ```hbs template
-{{#each this.plans as |plan|}}
-  <EuiRadio
-    @name="plan"
-    @label={{plan.label}}
-    @checked={{eq this.plan plan.id}}
-    {{on "change" (fn this.choose plan.id)}}
-  />
-{{/each}}
-<EuiRadio @name="plan" @label="Enterprise (contact sales)" @disabled={{true}} />
-<EuiSpacer />
-<EuiText @size="s" @color="subdued"><p>Plan: {{this.plan}}</p></EuiText>
+<EuiRadio
+  @label="I am a radio"
+  @checked={{this.checked}}
+  {{on "change" this.onChange}}
+/>
+
+<EuiSpacer @size="m" />
+
+<EuiRadio
+  @label="I am a disabled radio"
+  @checked={{this.checked}}
+  @disabled={{true}}
+  {{on "change" this.onChange}}
+/>
+
+<EuiSpacer @size="m" />
+
+<EuiRadio
+  @label="I am a compressed radio"
+  @checked={{this.checked}}
+  @compressed={{true}}
+  {{on "change" this.onChange}}
+/>
 ```
 
 ```js component
@@ -31,16 +48,11 @@ import { tracked } from '@glimmer/tracking';
 import { action } from '@ember/object';
 
 export default class RadioDemo extends Component {
-  plans = [
-    { id: 'monthly', label: 'Monthly' },
-    { id: 'yearly', label: 'Yearly (2 months free)' },
-  ];
-
-  @tracked plan = 'monthly';
+  @tracked checked = false;
 
   @action
-  choose(id) {
-    this.plan = id;
+  onChange(event) {
+    this.checked = event.target.checked;
   }
 }
 ```

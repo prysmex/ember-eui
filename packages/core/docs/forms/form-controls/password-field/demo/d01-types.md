@@ -2,29 +2,43 @@
 order: 1
 ---
 
-# Show or hide the password
+# Password field
 
 <EuiText>
 
-`@type="dual"` (the default) adds a button that shows the password;
-`"password"` always hides it; `"text"` always shows it.
+Use an `EuiFieldPassword` to allow users to enter a password. With `@type="password"` it renders a basic HTML `<input type="password">` where the content is obfuscated: when users type in the field the characters are presented as asterisks.
+
+The switches above the field are docs-only helpers that toggle its display arguments.
 
 </EuiText>
 
 ```hbs template
-<EuiFormRow @label="Password (dual, the default)">
-  <EuiFieldPassword
-    @value={{this.password}}
-    autocomplete="new-password"
-    {{on "input" this.updatePassword}}
-  />
-</EuiFormRow>
-<EuiFormRow @label="Always hidden">
-  <EuiFieldPassword @type="password" @value={{this.password}} />
-</EuiFormRow>
-<EuiFormRow @label="Always shown">
-  <EuiFieldPassword @type="text" @value={{this.password}} />
-</EuiFormRow>
+<EuiFlexGroup @wrap={{true}} @gutterSize="m" @responsive={{false}}>
+  {{#each this.toggles as |toggle|}}
+    <EuiFlexItem @grow={{false}}>
+      <EuiSwitch
+        @label={{toggle.label}}
+        @compressed={{true}}
+        @checked={{get this.flags toggle.key}}
+        @onChange={{fn this.toggle toggle.key}}
+      />
+    </EuiFlexItem>
+  {{/each}}
+</EuiFlexGroup>
+<EuiSpacer @size="m" />
+<EuiFieldPassword
+  @type="password"
+  @value={{this.value}}
+  placeholder="Placeholder text"
+  @fullWidth={{this.flags.fullWidth}}
+  @compressed={{this.flags.compressed}}
+  @isInvalid={{this.flags.isInvalid}}
+  @isLoading={{this.flags.isLoading}}
+  @readOnly={{this.flags.readOnly}}
+  @disabled={{this.flags.disabled}}
+  aria-label="Obfuscated password"
+  {{on "input" this.onChange}}
+/>
 ```
 
 ```js component
@@ -32,12 +46,27 @@ import Component from '@glimmer/component';
 import { tracked } from '@glimmer/tracking';
 import { action } from '@ember/object';
 
-export default class PasswordTypesDemo extends Component {
-  @tracked password = 'correct horse battery staple';
+export default class PasswordFieldDemo extends Component {
+  toggles = [
+    { key: 'fullWidth', label: 'fullWidth' },
+    { key: 'compressed', label: 'compressed' },
+    { key: 'isInvalid', label: 'isInvalid' },
+    { key: 'isLoading', label: 'isLoading' },
+    { key: 'readOnly', label: 'readOnly' },
+    { key: 'disabled', label: 'disabled' },
+  ];
+
+  @tracked flags = {};
+  @tracked value = '';
 
   @action
-  updatePassword(event) {
-    this.password = event.target.value;
+  toggle(key, event) {
+    this.flags = { ...this.flags, [key]: event.target.checked };
+  }
+
+  @action
+  onChange(event) {
+    this.value = event.target.value;
   }
 }
 ```

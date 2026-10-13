@@ -219,7 +219,8 @@ the "Changed defaults and behaviors" tables of
 
 - Filtered runs while iterating: 375/375 (page template, date, delimited,
   forms, utilities, selectable, tabs, small differences).
-- Full core suite: see the bottom of this file.
+- Full core suite: **1806/1806**.
+- Companions (temporary worktree-local `node_modules` pointing `@ember-eui/core` at this worktree, restored): validated-form **25/25**, changeset-form **24/24**.
 - `node --test scripts/eui-upstream-parity.test.mjs`: 357/357, the new
   factory included.
 - `generate-eui-styles --check`: clean.

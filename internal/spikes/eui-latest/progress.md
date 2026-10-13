@@ -113,6 +113,15 @@ docs site uses the composable page template. Main: core 1658/1658, parity
 super-date-picker, breadcrumbs, flyout-manager, theming. Remaining gaps:
 docs-audit-gaps.md.
 
+Update 6 (2026-10-13): merged gaps-display, gaps-forms, tables-gaps,
+gaps-nav (handoffs of the same names). Fixed: combo box options unclickable
+after an async @search (EPS attached handlers to the first list element
+only); combo list z-index (anchor + 2000, upstream) and tooltips never below
+their anchor; focus traps registry (-private/focus-trap-registry.ts) so
+portalled popovers/combo lists join the trap they open from (focus-trap
+6.9.4 declared in core). Generated styles name modules by package path.
+NOTICE.md + MIT LICENSE files. See docs-audit-gaps.md for what remains.
+
 Follow-ups: data grid renderers lack row depth/expanded state; EuiTableHeaderCell `@append`; EuiButtonEmpty `hasAriaDisabled`; the skeleton's private
 screen-reader-live copy could reuse EuiScreenReaderLive; button docs page loads
 slowly (~20s under load); open decision on focusing the form error callout;

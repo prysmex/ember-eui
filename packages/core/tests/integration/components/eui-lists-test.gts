@@ -328,10 +328,11 @@ module('Integration | Component | Borealis lists, key pad and side nav', functio
     const state = new State();
     await render(
       <template>
-        <EuiListGroup @maxWidth="120px" @wrapText={{state.wrap}}>
+        <EuiListGroup @maxWidth="120px">
           <EuiListGroupItem
             @label="A long label that will not fit in the list width"
             @href="#x"
+            @wrapText={{state.wrap}}
             @color={{state.color}}
             @isActive={{state.active}}
             data-test="item"

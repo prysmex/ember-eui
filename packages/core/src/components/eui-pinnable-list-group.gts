@@ -119,6 +119,11 @@ export default class EuiPinnableListGroup extends Component<EuiPinnableListGroup
     return { pinned: [base, styles.pinned], unpinned: base };
   }
 
+  /** Upstream passes items as `listItems`, so the list's `wrapText` reaches them. */
+  itemWrapText = (item: EuiPinnableListGroupItem): boolean | undefined => {
+    return item.wrapText ?? this.args.wrapText;
+  };
+
   /**
    * Upstream adds the pin action unless the item is not pinnable or brings
    * its own `extraAction`.
@@ -160,7 +165,7 @@ export default class EuiPinnableListGroup extends Component<EuiPinnableListGroup
           @iconType={{item.iconType}}
           @isActive={{item.isActive}}
           @isDisabled={{item.isDisabled}}
-          @wrapText={{item.wrapText}}
+          @wrapText={{this.itemWrapText item}}
           @extraAction={{this.extraAction item}}
         />
       {{/each}}

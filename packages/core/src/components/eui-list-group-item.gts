@@ -2,6 +2,9 @@ import Component from '@glimmer/component';
 import { cached } from '@glimmer/tracking';
 import { get } from '@ember/helper';
 import { on } from '@ember/modifier';
+import { guidFor } from '@ember/object/internals';
+
+import { modifier } from 'ember-modifier';
 
 import optional from '@nullvoxpopuli/ember-composable-helpers/helpers/optional';
 
@@ -20,6 +23,7 @@ import {
 } from '../utils/eui/styles.generated.ts';
 import EuiButtonIcon from './eui-button-icon.gts';
 import EuiIcon from './eui-icon.gts';
+import EuiInnerText from './eui-inner-text.gts';
 import { getSecureRelForTarget, isValidHref } from './eui-link.gts';
 
 import type { EuiButtonIconSignature } from './eui-button-icon';
@@ -88,8 +92,8 @@ export interface EuiListGroupItemSignature {
     /** Disables the item. A disabled link renders a disabled `<button>`. */
     isDisabled?: boolean;
     /**
-     * Wraps long text instead of truncating it. Defaults to the list's
-     * `@wrapText`, else `false`.
+     * Wraps long text instead of truncating it. Defaults to `false`. (The
+     * list's `@wrapText` reaches only its `@listItems`, as upstream.)
      */
     wrapText?: boolean;
     /**
@@ -103,7 +107,10 @@ export interface EuiListGroupItemSignature {
      * Defaults to the list's `@showToolTips`, else `false`.
      */
     showToolTip?: boolean;
-    /** Text of the tooltip shown by `@showToolTip`. Defaults to `@label`. */
+    /**
+     * Text of the tooltip shown by `@showToolTip`. Defaults to the label:
+     * the block's content when there is a block, else `@label`.
+     */
     toolTipText?: string;
     /**
      * Customizes the tooltip shown by `@showToolTip`: the args of
@@ -120,10 +127,40 @@ export interface EuiListGroupItemSignature {
     color?: EuiListGroupItemColor | (string & {});
   };
   Blocks: {
-    /** Custom content instead of `@label`. */
+    /**
+     * Custom content instead of `@label` (upstream's `label` node). It is
+     * also the tooltip's content without `@toolTipText`, and its text is the
+     * `title` of a truncated label.
+     */
     default: [];
   };
 }
+
+/**
+ * Upstream `EuiListItemLayout` sets the tooltip id on a plain `<li>` (the
+ * tooltip is inside it): `classNames(tooltipId, aria-describedby)`. Only the
+ * id added here is removed again.
+ */
+const describedByToolTip = modifier(
+  (element: HTMLElement, [id]: [string | undefined]) => {
+    if (!id) return;
+    const current = (element.getAttribute('aria-describedby') ?? '')
+      .split(/\s+/)
+      .filter(Boolean);
+    if (current.includes(id)) return;
+    element.setAttribute('aria-describedby', [id, ...current].join(' '));
+    return () => {
+      const remaining = (element.getAttribute('aria-describedby') ?? '')
+        .split(/\s+/)
+        .filter((token) => token && token !== id);
+      if (remaining.length) {
+        element.setAttribute('aria-describedby', remaining.join(' '));
+      } else {
+        element.removeAttribute('aria-describedby');
+      }
+    };
+  }
+);
 
 function isPlainObject(
   value: unknown
@@ -144,9 +181,18 @@ interface ContentSignature {
     newTab: boolean;
     externalIconCss: EuiCss;
     srOnlyClass: string;
+    /** Tracks the label's text (`EuiInnerText`) for its `title`. */
+    textRef?: (element: HTMLElement) => void;
   };
   Blocks: { default: []; after: [] };
 }
+
+/** Hands the label's element to `EuiInnerText` when there is a ref. */
+const textRef = modifier(
+  (element: HTMLElement, [ref]: [((element: HTMLElement) => void) | undefined]) => {
+    ref?.(element);
+  }
+);
 
 const Content: TemplateOnlyComponent<ContentSignature> = <template>
   <span class={{@contentClass}}>
@@ -159,7 +205,7 @@ const Content: TemplateOnlyComponent<ContentSignature> = <template>
         />
       </span>
     {{/if}}
-    <span class={{@textClass}} title={{@title}}>
+    <span class={{@textClass}} title={{@title}} {{textRef @textRef}}>
       {{yield}}
       {{#if @showExternal}}
         <EuiIcon
@@ -225,8 +271,9 @@ export default class EuiListGroupItem extends Component<EuiListGroupItemSignatur
     return this.args.color ?? listGroupContext(this)?.color ?? 'text';
   }
 
+  /** Upstream: only the item's own `wrapText` (the list passes it to `listItems`). */
   get wrapText(): boolean {
-    return Boolean(this.args.wrapText ?? listGroupContext(this)?.wrapText);
+    return Boolean(this.args.wrapText);
   }
 
   get isDisabled(): boolean {
@@ -284,10 +331,45 @@ export default class EuiListGroupItem extends Component<EuiListGroupItemSignatur
     );
   }
 
-  get title(): string | undefined {
-    // upstream: no native title when wrapping or when a tooltip shows it
-    return this.wrapText || this.showToolTip ? undefined : this.args.label;
+  /** Upstream `shouldRenderTitle`: no native title when wrapping or when a tooltip shows it. */
+  get shouldRenderTitle(): boolean {
+    return !this.wrapText && !this.showToolTip;
   }
+
+  /**
+   * Upstream `title`: the label when it is a string, else its inner text.
+   * A block is the Ember label node.
+   */
+  title = (innerText: string, hasBlock: boolean): string | undefined => {
+    if (!this.shouldRenderTitle) return undefined;
+    return hasBlock ? innerText : this.args.label;
+  };
+
+  /** `EuiInnerText`'s ref, only while a block label needs a title. */
+  textRef = (
+    ref: (element: HTMLElement) => void,
+    hasBlock: boolean
+  ): ((element: HTMLElement) => void) | undefined => {
+    return hasBlock && this.shouldRenderTitle ? ref : undefined;
+  };
+
+  /** Id of the tooltip, for the plain `<li>`'s `aria-describedby`. */
+  get toolTipId(): string {
+    return this.args.toolTipProps?.id ?? `${guidFor(this)}-tooltip`;
+  }
+
+  /**
+   * Whether the tooltip shows the block (upstream `content: toolTipText ??
+   * label` with a node label): no `@toolTipText` and no `content` in
+   * `@toolTipProps`.
+   */
+  blockToolTip = (hasBlock: boolean): boolean => {
+    return (
+      hasBlock &&
+      this.args.toolTipText === undefined &&
+      this.args.toolTipProps?.content === undefined
+    );
+  };
 
   /** Upstream `_tooltipProps`: label as content, shown to the right. */
   @cached
@@ -296,7 +378,8 @@ export default class EuiListGroupItem extends Component<EuiListGroupItemSignatur
     return {
       content: this.args.toolTipText ?? this.args.label,
       position: 'right',
-      ...this.args.toolTipProps
+      ...this.args.toolTipProps,
+      id: this.toolTipId
     };
   }
 
@@ -485,61 +568,69 @@ export default class EuiListGroupItem extends Component<EuiListGroupItemSignatur
   }
 
   <template>
+    {{#let (has-block) as |hasBlock|}}
+    <EuiInnerText as |setTextRef innerText|>
     {{#if this.isInteractive}}
       <li class={{this.wrapperClass}}>
         <EuiMaybeToolTip
           @props={{this.toolTipProps}}
           @anchorClass={{this.toolTipAnchorClass}}
           @anchorCss={{this.toolTipAnchorCss}}
+          @blockContent={{this.blockToolTip hasBlock}}
         >
-        {{#if this.isLink}}
-          <a
-            class={{this.elementClass}}
-            href={{@href}}
-            target={{@target}}
-            rel={{this.rel}}
-            aria-current={{this.ariaCurrent}}
-            {{on "click" (optional @onClick)}}
-            ...attributes
-          >
-            <Content
-              @contentClass={{this.contentClass}}
-              @prependClass={{this.prependClass}}
-              @textClass={{this.textClass}}
-              @iconType={{@iconType}}
-              @title={{this.title}}
-              @showExternal={{this.showExternal}}
-              @newTab={{this.newTab}}
-              @externalIconCss={{this.externalIconCss}}
-              @srOnlyClass={{this.srOnlyClass}}
-            >
-              {{#if (has-block)}}{{yield}}{{else}}{{@label}}{{/if}}
-            </Content>
-          </a>
-        {{else}}
-          <button
-            class={{this.elementClass}}
-            type="button"
-            disabled={{this.isDisabled}}
-            aria-current={{this.ariaCurrent}}
-            {{on "click" (optional @onClick)}}
-            ...attributes
-          >
-            <Content
-              @contentClass={{this.contentClass}}
-              @prependClass={{this.prependClass}}
-              @textClass={{this.textClass}}
-              @iconType={{@iconType}}
-              @title={{this.title}}
-              @showExternal={{false}}
-              @newTab={{false}}
-              @externalIconCss={{this.externalIconCss}}
-              @srOnlyClass={{this.srOnlyClass}}
-            >
-              {{#if (has-block)}}{{yield}}{{else}}{{@label}}{{/if}}
-            </Content>
-          </button>
-        {{/if}}
+          <:default>
+            {{#if this.isLink}}
+              <a
+                class={{this.elementClass}}
+                href={{@href}}
+                target={{@target}}
+                rel={{this.rel}}
+                aria-current={{this.ariaCurrent}}
+                {{on "click" (optional @onClick)}}
+                ...attributes
+              >
+                <Content
+                  @contentClass={{this.contentClass}}
+                  @prependClass={{this.prependClass}}
+                  @textClass={{this.textClass}}
+                  @iconType={{@iconType}}
+                  @title={{this.title innerText hasBlock}}
+                  @textRef={{this.textRef setTextRef hasBlock}}
+                  @showExternal={{this.showExternal}}
+                  @newTab={{this.newTab}}
+                  @externalIconCss={{this.externalIconCss}}
+                  @srOnlyClass={{this.srOnlyClass}}
+                >
+                  {{#if hasBlock}}{{yield}}{{else}}{{@label}}{{/if}}
+                </Content>
+              </a>
+            {{else}}
+              <button
+                class={{this.elementClass}}
+                type="button"
+                disabled={{this.isDisabled}}
+                aria-current={{this.ariaCurrent}}
+                {{on "click" (optional @onClick)}}
+                ...attributes
+              >
+                <Content
+                  @contentClass={{this.contentClass}}
+                  @prependClass={{this.prependClass}}
+                  @textClass={{this.textClass}}
+                  @iconType={{@iconType}}
+                  @title={{this.title innerText hasBlock}}
+                  @textRef={{this.textRef setTextRef hasBlock}}
+                  @showExternal={{false}}
+                  @newTab={{false}}
+                  @externalIconCss={{this.externalIconCss}}
+                  @srOnlyClass={{this.srOnlyClass}}
+                >
+                  {{#if hasBlock}}{{yield}}{{else}}{{@label}}{{/if}}
+                </Content>
+              </button>
+            {{/if}}
+          </:default>
+          <:content>{{yield}}</:content>
         </EuiMaybeToolTip>
         {{#if this.hasExtraAction}}
           <ExtraAction
@@ -557,40 +648,48 @@ export default class EuiListGroupItem extends Component<EuiListGroupItemSignatur
         aria-current={{this.ariaCurrent}}
         aria-disabled={{if this.isDisabled "true"}}
         ...attributes
+        {{describedByToolTip (if this.toolTipProps this.toolTipId)}}
       >
         <EuiMaybeToolTip
           @props={{this.toolTipProps}}
           @anchorClass={{this.toolTipAnchorClass}}
           @anchorCss={{this.toolTipAnchorCss}}
-        >
-        <Content
-          @contentClass={{this.contentClass}}
-          @prependClass={{this.prependClass}}
-          @textClass={{this.textClass}}
-          @iconType={{@iconType}}
-          @title={{this.title}}
-          @showExternal={{false}}
-          @newTab={{false}}
-          @externalIconCss={{this.externalIconCss}}
-          @srOnlyClass={{this.srOnlyClass}}
+          @blockContent={{this.blockToolTip hasBlock}}
         >
           <:default>
-            {{#if (has-block)}}{{yield}}{{else}}{{@label}}{{/if}}
+            <Content
+              @contentClass={{this.contentClass}}
+              @prependClass={{this.prependClass}}
+              @textClass={{this.textClass}}
+              @iconType={{@iconType}}
+              @title={{this.title innerText hasBlock}}
+              @textRef={{this.textRef setTextRef hasBlock}}
+              @showExternal={{false}}
+              @newTab={{false}}
+              @externalIconCss={{this.externalIconCss}}
+              @srOnlyClass={{this.srOnlyClass}}
+            >
+              <:default>
+                {{#if hasBlock}}{{yield}}{{else}}{{@label}}{{/if}}
+              </:default>
+              <:after>
+                {{#if this.hasExtraAction}}
+                  <ExtraAction
+                    @component={{this.extraActionComponent}}
+                    @props={{this.extraActionProps}}
+                    @css={{this.extraActionCss}}
+                    @color={{this.extraActionColor}}
+                    @disabled={{this.extraActionDisabled}}
+                  />
+                {{/if}}
+              </:after>
+            </Content>
           </:default>
-          <:after>
-            {{#if this.hasExtraAction}}
-              <ExtraAction
-                @component={{this.extraActionComponent}}
-                @props={{this.extraActionProps}}
-                @css={{this.extraActionCss}}
-                @color={{this.extraActionColor}}
-                @disabled={{this.extraActionDisabled}}
-              />
-            {{/if}}
-          </:after>
-        </Content>
+          <:content>{{yield}}</:content>
         </EuiMaybeToolTip>
       </li>
     {{/if}}
+    </EuiInnerText>
+    {{/let}}
   </template>
 }

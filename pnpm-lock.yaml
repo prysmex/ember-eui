@@ -1656,6 +1656,9 @@ importers:
       '@docfy/ember-vite':
         specifier: ^0.14.2
         version: 0.14.2(@embroider/vite@1.7.13(@embroider/core@4.6.7(@glint/template@1.9.0)(supports-color@10.2.2))(@glint/template@1.9.0)(supports-color@10.2.2)(vite@8.3.1(esbuild@0.28.2)(jiti@2.7.0)(terser@5.39.0)(yaml@2.9.1)))(rollup@4.63.5)(supports-color@10.2.2)(unified@11.0.5)(vite@8.3.1(esbuild@0.28.2)(jiti@2.7.0)(terser@5.39.0)(yaml@2.9.1))
+      '@elastic/eui-illustrations':
+        specifier: 1.1.0
+        version: 1.1.0
       '@ember-eui/changeset-form':
         specifier: workspace:*
         version: link:../packages/changeset-form
@@ -1760,7 +1763,7 @@ importers:
         version: 5.0.0(@babel/core@7.29.7(supports-color@10.2.2))(@ember/string@4.0.1)(@glint/template@1.9.0)(ember-source@7.3.0(@glimmer/component@2.1.1(supports-color@10.2.2))(supports-color@10.2.2))(supports-color@10.2.2)
       ember-cli:
         specifier: ~7.3.0
-        version: 7.3.0(@babel/core@7.29.7(supports-color@10.2.2))(@types/node@20.10.6)(debug@4.4.3(supports-color@10.2.2))(ejs@3.1.10)(handlebars@4.7.8)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(supports-color@10.2.2)(underscore@1.13.6)
+        version: 7.3.0(@babel/core@7.29.7(supports-color@10.2.2))(debug@4.4.3(supports-color@10.2.2))(ejs@3.1.10)(handlebars@4.7.8)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(supports-color@10.2.2)(underscore@1.13.6)
       ember-cli-babel:
         specifier: ^8.3.2
         version: 8.3.2(@babel/core@7.29.7(supports-color@10.2.2))(supports-color@10.2.2)
@@ -3172,6 +3175,9 @@ packages:
 
   '@elastic/esql-definitions@4.30.0':
     resolution: {integrity: sha512-3v9WoslzXDb8UwzrtAs1dNNmNLeB22BWkL/5Yi5dSkLanx8AogkJZxuf2ueubszSDn+8Q9feiZQRNaBo325rLQ==}
+
+  '@elastic/eui-illustrations@1.1.0':
+    resolution: {integrity: sha512-xqOf5dcFmB0WylGy7w2aTJfHMIOjGxW1xops2WkxsfWEpqSFz4r0y4QCpGW+zEhRBVemWcB/lr3S+GoFqm+AFQ==}
 
   '@elastic/eui-theme-borealis@8.1.0':
     resolution: {integrity: sha512-S0WDpEJo4KeZVgTBTIbFKorkZcukmiFRL+5B8Ys6+wcUDXyuPzqUvJYCGpAqbawNMhVA0eWjGoh06YXOnSfjkQ==}
@@ -13794,6 +13800,8 @@ snapshots:
 
   '@elastic/esql-definitions@4.30.0': {}
 
+  '@elastic/eui-illustrations@1.1.0': {}
+
   '@elastic/eui-theme-borealis@8.1.0(@emotion/react@11.14.0(@types/react@18.3.31)(react@18.3.1)(supports-color@10.2.2))(react-dom@18.3.1(react@18.3.1))(react@18.3.1)':
     dependencies:
       '@elastic/eui-theme-common': 10.1.0(@emotion/react@11.14.0(@types/react@18.3.31)(react@18.3.1)(supports-color@10.2.2))(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
@@ -13919,6 +13927,7 @@ snapshots:
       ember-source: 7.3.0(@glimmer/component@2.1.1(supports-color@10.2.2))(supports-color@10.2.2)
       ember-style-modifier: 4.6.0(@babel/core@7.29.7(supports-color@10.2.2))(supports-color@10.2.2)
       ember-truth-helpers: 5.0.0(supports-color@10.2.2)
+      focus-trap: 6.9.4
       lodash-es: 4.17.21
       mdast-util-to-hast: 10.2.0
       moment: 2.30.1
@@ -14031,7 +14040,7 @@ snapshots:
   '@ember/optional-features@3.0.0(supports-color@10.2.2)':
     dependencies:
       ember-cli-version-checker: 5.1.2(supports-color@10.2.2)
-      inquirer: 13.4.3(@types/node@20.10.6)
+      inquirer: 13.4.3
       silent-error: 1.1.1(supports-color@10.2.2)
       tinyglobby: 0.2.17
     transitivePeerDependencies:
@@ -14299,7 +14308,7 @@ snapshots:
       send: 1.2.1(supports-color@10.2.2)
       source-map-url: 0.4.1
       terser: 5.39.0
-      vite: 7.3.6(@types/node@20.10.6)(jiti@2.7.0)(lightningcss@1.33.0)(terser@5.39.0)(yaml@2.9.1)
+      vite: 7.3.6(jiti@2.7.0)(lightningcss@1.33.0)(terser@5.39.0)(yaml@2.9.1)
     transitivePeerDependencies:
       - '@glint/template'
       - bufferutil
@@ -14831,6 +14840,13 @@ snapshots:
 
   '@inquirer/ansi@2.0.8': {}
 
+  '@inquirer/checkbox@5.2.5':
+    dependencies:
+      '@inquirer/ansi': 2.0.8
+      '@inquirer/core': 12.0.3
+      '@inquirer/figures': 2.0.9
+      '@inquirer/type': 4.1.1
+
   '@inquirer/checkbox@5.2.5(@types/node@20.10.6)':
     dependencies:
       '@inquirer/ansi': 2.0.8
@@ -14840,12 +14856,27 @@ snapshots:
     optionalDependencies:
       '@types/node': 20.10.6
 
+  '@inquirer/confirm@6.3.2':
+    dependencies:
+      '@inquirer/core': 12.0.3
+      '@inquirer/type': 4.1.1
+
   '@inquirer/confirm@6.3.2(@types/node@20.10.6)':
     dependencies:
       '@inquirer/core': 12.0.3(@types/node@20.10.6)
       '@inquirer/type': 4.1.1(@types/node@20.10.6)
     optionalDependencies:
       '@types/node': 20.10.6
+
+  '@inquirer/core@11.2.1':
+    dependencies:
+      '@inquirer/ansi': 2.0.8
+      '@inquirer/figures': 2.0.9
+      '@inquirer/type': 4.1.1
+      cli-width: 4.1.0
+      fast-wrap-ansi: 0.2.2
+      mute-stream: 3.0.0
+      signal-exit: 4.1.0
 
   '@inquirer/core@11.2.1(@types/node@20.10.6)':
     dependencies:
@@ -14859,6 +14890,16 @@ snapshots:
     optionalDependencies:
       '@types/node': 20.10.6
 
+  '@inquirer/core@12.0.3':
+    dependencies:
+      '@inquirer/ansi': 2.0.8
+      '@inquirer/figures': 2.0.9
+      '@inquirer/type': 4.1.1
+      cli-width: 4.1.0
+      fast-wrap-ansi: 0.2.2
+      mute-stream: 3.0.0
+      signal-exit: 4.1.0
+
   '@inquirer/core@12.0.3(@types/node@20.10.6)':
     dependencies:
       '@inquirer/ansi': 2.0.8
@@ -14871,6 +14912,12 @@ snapshots:
     optionalDependencies:
       '@types/node': 20.10.6
 
+  '@inquirer/editor@5.3.3':
+    dependencies:
+      '@inquirer/core': 12.0.3
+      '@inquirer/external-editor': 3.0.5
+      '@inquirer/type': 4.1.1
+
   '@inquirer/editor@5.3.3(@types/node@20.10.6)':
     dependencies:
       '@inquirer/core': 12.0.3(@types/node@20.10.6)
@@ -14879,12 +14926,22 @@ snapshots:
     optionalDependencies:
       '@types/node': 20.10.6
 
+  '@inquirer/expand@5.1.5':
+    dependencies:
+      '@inquirer/core': 12.0.3
+      '@inquirer/type': 4.1.1
+
   '@inquirer/expand@5.1.5(@types/node@20.10.6)':
     dependencies:
       '@inquirer/core': 12.0.3(@types/node@20.10.6)
       '@inquirer/type': 4.1.1(@types/node@20.10.6)
     optionalDependencies:
       '@types/node': 20.10.6
+
+  '@inquirer/external-editor@3.0.5':
+    dependencies:
+      chardet: 2.2.0
+      iconv-lite: 0.7.3
 
   '@inquirer/external-editor@3.0.5(@types/node@20.10.6)':
     dependencies:
@@ -14895,12 +14952,22 @@ snapshots:
 
   '@inquirer/figures@2.0.9': {}
 
+  '@inquirer/input@5.1.6':
+    dependencies:
+      '@inquirer/core': 12.0.3
+      '@inquirer/type': 4.1.1
+
   '@inquirer/input@5.1.6(@types/node@20.10.6)':
     dependencies:
       '@inquirer/core': 12.0.3(@types/node@20.10.6)
       '@inquirer/type': 4.1.1(@types/node@20.10.6)
     optionalDependencies:
       '@types/node': 20.10.6
+
+  '@inquirer/number@4.2.3':
+    dependencies:
+      '@inquirer/core': 12.0.3
+      '@inquirer/type': 4.1.1
 
   '@inquirer/number@4.2.3(@types/node@20.10.6)':
     dependencies:
@@ -14909,6 +14976,12 @@ snapshots:
     optionalDependencies:
       '@types/node': 20.10.6
 
+  '@inquirer/password@5.2.2':
+    dependencies:
+      '@inquirer/ansi': 2.0.8
+      '@inquirer/core': 12.0.3
+      '@inquirer/type': 4.1.1
+
   '@inquirer/password@5.2.2(@types/node@20.10.6)':
     dependencies:
       '@inquirer/ansi': 2.0.8
@@ -14916,6 +14989,19 @@ snapshots:
       '@inquirer/type': 4.1.1(@types/node@20.10.6)
     optionalDependencies:
       '@types/node': 20.10.6
+
+  '@inquirer/prompts@8.7.2':
+    dependencies:
+      '@inquirer/checkbox': 5.2.5
+      '@inquirer/confirm': 6.3.2
+      '@inquirer/editor': 5.3.3
+      '@inquirer/expand': 5.1.5
+      '@inquirer/input': 5.1.6
+      '@inquirer/number': 4.2.3
+      '@inquirer/password': 5.2.2
+      '@inquirer/rawlist': 5.3.5
+      '@inquirer/search': 4.3.3
+      '@inquirer/select': 5.2.5
 
   '@inquirer/prompts@8.7.2(@types/node@20.10.6)':
     dependencies:
@@ -14932,12 +15018,23 @@ snapshots:
     optionalDependencies:
       '@types/node': 20.10.6
 
+  '@inquirer/rawlist@5.3.5':
+    dependencies:
+      '@inquirer/core': 12.0.3
+      '@inquirer/type': 4.1.1
+
   '@inquirer/rawlist@5.3.5(@types/node@20.10.6)':
     dependencies:
       '@inquirer/core': 12.0.3(@types/node@20.10.6)
       '@inquirer/type': 4.1.1(@types/node@20.10.6)
     optionalDependencies:
       '@types/node': 20.10.6
+
+  '@inquirer/search@4.3.3':
+    dependencies:
+      '@inquirer/core': 12.0.3
+      '@inquirer/figures': 2.0.9
+      '@inquirer/type': 4.1.1
 
   '@inquirer/search@4.3.3(@types/node@20.10.6)':
     dependencies:
@@ -14947,6 +15044,13 @@ snapshots:
     optionalDependencies:
       '@types/node': 20.10.6
 
+  '@inquirer/select@5.2.5':
+    dependencies:
+      '@inquirer/ansi': 2.0.8
+      '@inquirer/core': 12.0.3
+      '@inquirer/figures': 2.0.9
+      '@inquirer/type': 4.1.1
+
   '@inquirer/select@5.2.5(@types/node@20.10.6)':
     dependencies:
       '@inquirer/ansi': 2.0.8
@@ -14955,6 +15059,8 @@ snapshots:
       '@inquirer/type': 4.1.1(@types/node@20.10.6)
     optionalDependencies:
       '@types/node': 20.10.6
+
+  '@inquirer/type@4.1.1': {}
 
   '@inquirer/type@4.1.1(@types/node@20.10.6)':
     optionalDependencies:
@@ -18167,6 +18273,146 @@ snapshots:
       - walrus
       - whiskers
 
+  ember-cli@7.3.0(@babel/core@7.29.7(supports-color@10.2.2))(debug@4.4.3(supports-color@10.2.2))(ejs@3.1.10)(handlebars@4.7.8)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(supports-color@10.2.2)(underscore@1.13.6):
+    dependencies:
+      '@ember-tooling/blueprint-blueprint': 0.3.0
+      '@ember-tooling/blueprint-model': 0.7.1(supports-color@10.2.2)
+      '@ember-tooling/classic-build-addon-blueprint': 7.3.0(supports-color@10.2.2)
+      '@ember-tooling/classic-build-app-blueprint': 7.3.0(supports-color@10.2.2)
+      '@ember/app-blueprint': 7.3.1
+      '@pnpm/find-workspace-dir': 1000.1.5
+      babel-remove-types: 2.0.0(supports-color@10.2.2)
+      broccoli: 4.0.0(supports-color@10.2.2)
+      broccoli-concat: 4.2.7(supports-color@10.2.2)
+      broccoli-config-loader: 1.0.1(supports-color@10.2.2)
+      broccoli-config-replace: 1.1.3(supports-color@10.2.2)
+      broccoli-debug: 0.6.5(supports-color@10.2.2)
+      broccoli-funnel: 3.0.8(supports-color@10.2.2)
+      broccoli-funnel-reducer: 1.0.0
+      broccoli-merge-trees: 4.2.0(supports-color@10.2.2)
+      broccoli-middleware: 2.1.2
+      broccoli-slow-trees: 3.1.0
+      broccoli-source: 3.0.1
+      broccoli-stew: 3.0.0(supports-color@10.2.2)
+      calculate-cache-key-for-tree: 2.0.0
+      capture-exit: 2.0.0
+      chalk: 5.6.2
+      ci-info: 4.4.0
+      clean-base-url: 1.0.0
+      compression: 1.8.2(supports-color@10.2.2)
+      configstore: 8.0.0
+      console-ui: 3.1.2
+      content-tag: 4.2.0
+      core-object: 3.1.5
+      dag-map: 2.0.2
+      diff: 8.0.4
+      ember-cli-is-package-missing: 1.0.0
+      ember-cli-normalize-entity-name: 1.0.0(supports-color@10.2.2)
+      ember-cli-preprocess-registry: 5.0.1(supports-color@10.2.2)
+      ember-cli-string-utils: 1.1.0
+      ensure-posix-path: 1.1.1
+      execa: 9.6.1
+      exit: 0.1.2
+      express: 5.2.1(supports-color@10.2.2)
+      filesize: 11.0.24
+      find-up: 8.0.0
+      find-yarn-workspace-root: 2.0.0
+      fs-extra: 11.4.1
+      fs-tree-diff: 2.0.1(supports-color@10.2.2)
+      get-caller-file: 2.0.5
+      git-repo-info: 2.1.1
+      glob: 13.0.6
+      heimdalljs: 0.2.6
+      heimdalljs-fs-monitor: 1.1.2(supports-color@10.2.2)
+      heimdalljs-graph: 1.0.0
+      heimdalljs-logger: 0.1.10(supports-color@10.2.2)
+      http-proxy: 1.18.1(debug@4.4.3(supports-color@10.2.2))
+      inflection: 3.0.2
+      inquirer: 13.4.3
+      is-git-url: 1.0.0
+      is-language-code: 5.2.2
+      lodash: 4.18.1
+      markdown-it: 14.3.2
+      markdown-it-terminal: 0.4.0(markdown-it@14.3.2)
+      minimatch: 10.2.6
+      morgan: 1.12.1(supports-color@10.2.2)
+      nopt: 3.0.6
+      npm-package-arg: 13.0.2
+      os-locale: 6.0.2
+      p-defer: 4.0.1
+      portfinder: 1.0.38(supports-color@10.2.2)
+      promise-map-series: 0.3.0
+      promise.hash.helper: 1.0.8
+      quick-temp: 0.1.9
+      resolve: 1.22.12
+      resolve-package-path: 4.0.3
+      safe-stable-stringify: 2.5.0
+      sane: 5.0.1
+      semver: 7.8.5
+      semver-deprecate: 1.1.0
+      silent-error: 1.1.1(supports-color@10.2.2)
+      sort-package-json: 3.7.1
+      symlink-or-copy: 1.3.1
+      testem: 3.21.0(@babel/core@7.29.7(supports-color@10.2.2))(ejs@3.1.10)(handlebars@4.7.8)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(supports-color@10.2.2)(underscore@1.13.6)
+      tiny-lr: 2.0.0(supports-color@10.2.2)
+      tree-sync: 2.1.0(supports-color@10.2.2)
+      walk-sync: 4.0.2
+      watch-detector: 1.0.3(supports-color@10.2.2)
+      workerpool: 10.0.3
+      yam: 1.0.0
+    transitivePeerDependencies:
+      - '@babel/core'
+      - '@types/node'
+      - arc-templates
+      - atpl
+      - bracket-template
+      - bufferutil
+      - coffee-script
+      - debug
+      - dot
+      - dust
+      - dustjs-helpers
+      - dustjs-linkedin
+      - eco
+      - ect
+      - ejs
+      - haml-coffee
+      - hamlet
+      - hamljs
+      - handlebars
+      - hogan.js
+      - htmling
+      - jazz
+      - jqtpl
+      - just
+      - liquid-node
+      - liquor
+      - mote
+      - nunjucks
+      - plates
+      - pug
+      - qejs
+      - ractive
+      - react
+      - react-dom
+      - slm
+      - supports-color
+      - swig
+      - swig-templates
+      - teacup
+      - templayed
+      - then-pug
+      - tinyliquid
+      - toffee
+      - twig
+      - twing
+      - underscore
+      - utf-8-validate
+      - vash
+      - velocityjs
+      - walrus
+      - whiskers
+
   ember-compatibility-helpers@1.2.7(@babel/core@7.29.7(supports-color@10.2.2))(supports-color@10.2.2):
     dependencies:
       babel-plugin-debug-macros: 0.2.0(@babel/core@7.29.7(supports-color@10.2.2))
@@ -20036,6 +20282,16 @@ snapshots:
   ini@1.3.8: {}
 
   inline-style-parser@0.1.1: {}
+
+  inquirer@13.4.3:
+    dependencies:
+      '@inquirer/ansi': 2.0.8
+      '@inquirer/core': 11.2.1
+      '@inquirer/prompts': 8.7.2
+      '@inquirer/type': 4.1.1
+      mute-stream: 3.0.0
+      run-async: 4.0.6
+      rxjs: 7.8.2
 
   inquirer@13.4.3(@types/node@20.10.6):
     dependencies:
@@ -24002,6 +24258,21 @@ snapshots:
       tinyglobby: 0.2.17
     optionalDependencies:
       '@types/node': 20.10.6
+      fsevents: 2.3.3
+      jiti: 2.7.0
+      lightningcss: 1.33.0
+      terser: 5.39.0
+      yaml: 2.9.1
+
+  vite@7.3.6(jiti@2.7.0)(lightningcss@1.33.0)(terser@5.39.0)(yaml@2.9.1):
+    dependencies:
+      esbuild: 0.28.2
+      fdir: 6.5.0(picomatch@4.0.7)
+      picomatch: 4.0.7
+      postcss: 8.5.28
+      rollup: 4.63.5
+      tinyglobby: 0.2.17
+    optionalDependencies:
       fsevents: 2.3.3
       jiti: 2.7.0
       lightningcss: 1.33.0

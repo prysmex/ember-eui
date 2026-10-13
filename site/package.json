@@ -36,6 +36,7 @@
     "@docfy/core": "^0.14.2",
     "@docfy/ember": "^0.14.2",
     "@docfy/ember-vite": "^0.14.2",
+    "@elastic/eui-illustrations": "1.1.0",
     "@ember-eui/changeset-form": "workspace:*",
     "@ember-eui/core": "workspace:*",
     "@ember-eui/flatpickr": "workspace:*",

@@ -11,23 +11,9 @@ work as on the other fields.
 
 </EuiText>
 
-```hbs template
-<EuiFormRow @label="Invalid" @isInvalid={{true}} @error="Choose a size.">
-  <EuiSelect @options={{this.sizes}} @hasNoInitialSelection={{true}} @isInvalid={{true}} />
-</EuiFormRow>
-<EuiFormRow @label="Loading">
-  <EuiSelect @options={{this.sizes}} @isLoading={{true}} />
-</EuiFormRow>
-<EuiFormRow @label="Compressed" @display="rowCompressed">
-  <EuiSelect @options={{this.sizes}} @compressed={{true}} />
-</EuiFormRow>
-<EuiFormRow @label="Disabled">
-  <EuiSelect @options={{this.sizes}} @disabled={{true}} />
-</EuiFormRow>
-```
-
-```js component
+```gjs component
 import Component from '@glimmer/component';
+import { EuiFormRow, EuiSelect } from '@ember-eui/core/components';
 
 export default class SelectStatesDemo extends Component {
   sizes = [
@@ -35,5 +21,20 @@ export default class SelectStatesDemo extends Component {
     { value: 'm', text: 'Medium' },
     { value: 'l', text: 'Large' },
   ];
+
+  <template>
+    <EuiFormRow @label="Invalid" @isInvalid={{true}} @error="Choose a size.">
+      <EuiSelect @options={{this.sizes}} @hasNoInitialSelection={{true}} @isInvalid={{true}} />
+    </EuiFormRow>
+    <EuiFormRow @label="Loading">
+      <EuiSelect @options={{this.sizes}} @isLoading={{true}} />
+    </EuiFormRow>
+    <EuiFormRow @label="Compressed" @display="rowCompressed">
+      <EuiSelect @options={{this.sizes}} @compressed={{true}} />
+    </EuiFormRow>
+    <EuiFormRow @label="Disabled">
+      <EuiSelect @options={{this.sizes}} @disabled={{true}} />
+    </EuiFormRow>
+  </template>
 }
 ```

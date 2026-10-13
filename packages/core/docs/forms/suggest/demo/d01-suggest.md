@@ -11,27 +11,12 @@ in the field and marks the query as unsaved; "Save" saves it.
 
 </EuiText>
 
-```hbs template
-<EuiSuggest
-  @suggestions={{this.suggestions}}
-  @onInputChange={{this.filter}}
-  @onItemClick={{this.choose}}
-  @status={{this.status}}
-  @placeholder="Search logs"
-  aria-label="Query"
->
-  <:append>
-    <EuiButtonEmpty @size="xs" {{on "click" this.save}}>Save</EuiButtonEmpty>
-  </:append>
-</EuiSuggest>
-<EuiSpacer />
-<EuiText @size="s"><p>Last chosen: {{this.chosen}}</p></EuiText>
-```
-
-```js component
+```gjs component
 import Component from '@glimmer/component';
 import { tracked } from '@glimmer/tracking';
 import { action } from '@ember/object';
+import { EuiSuggest, EuiButtonEmpty, EuiSpacer, EuiText } from '@ember-eui/core/components';
+import { on } from '@ember/modifier';
 
 const ALL = [
   { type: { iconType: 'kqlField', color: 'tint4' }, label: 'status', description: 'HTTP status code' },
@@ -63,5 +48,22 @@ export default class SuggestDemo extends Component {
   save() {
     this.status = 'saved';
   }
+
+  <template>
+    <EuiSuggest
+      @suggestions={{this.suggestions}}
+      @onInputChange={{this.filter}}
+      @onItemClick={{this.choose}}
+      @status={{this.status}}
+      @placeholder="Search logs"
+      aria-label="Query"
+    >
+      <:append>
+        <EuiButtonEmpty @size="xs" {{on "click" this.save}}>Save</EuiButtonEmpty>
+      </:append>
+    </EuiSuggest>
+    <EuiSpacer />
+    <EuiText @size="s"><p>Last chosen: {{this.chosen}}</p></EuiText>
+  </template>
 }
 ```

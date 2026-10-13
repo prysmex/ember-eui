@@ -11,32 +11,11 @@ first one has no `@min` / `@max`, so its track follows the stops.
 
 </EuiText>
 
-```hbs template
-<EuiFormRow @label="Fixed">
-  <EuiColorStops
-    @label="Fixed colors"
-    @colorStops={{this.stops}}
-    @onChange={{this.setStops}}
-    @stopType="fixed"
-  />
-</EuiFormRow>
-<EuiFormRow @label="Stepped">
-  <EuiColorStops
-    @label="Stepped colors"
-    @colorStops={{this.stops}}
-    @onChange={{this.setStops}}
-    @stopType="stepped"
-    @stepNumber={{5}}
-    @min={{0}}
-    @max={{100}}
-  />
-</EuiFormRow>
-```
-
-```js component
+```gjs component
 import Component from '@glimmer/component';
 import { tracked } from '@glimmer/tracking';
 import { action } from '@ember/object';
+import { EuiFormRow, EuiColorStops } from '@ember-eui/core/components';
 
 export default class ColorStopTypes extends Component {
   @tracked stops = [
@@ -49,5 +28,27 @@ export default class ColorStopTypes extends Component {
   setStops(stops) {
     this.stops = stops;
   }
+
+  <template>
+    <EuiFormRow @label="Fixed">
+      <EuiColorStops
+        @label="Fixed colors"
+        @colorStops={{this.stops}}
+        @onChange={{this.setStops}}
+        @stopType="fixed"
+      />
+    </EuiFormRow>
+    <EuiFormRow @label="Stepped">
+      <EuiColorStops
+        @label="Stepped colors"
+        @colorStops={{this.stops}}
+        @onChange={{this.setStops}}
+        @stopType="stepped"
+        @stepNumber={{5}}
+        @min={{0}}
+        @max={{100}}
+      />
+    </EuiFormRow>
+  </template>
 }
 ```

@@ -6,33 +6,60 @@ order: 1
 
 <EuiText>
 
-Keep the checked state and update it on `change`. Clicking the label
-toggles the checkbox too.
+Checkboxes are ideal for allowing users to select options among a small list of options, or to switch settings on/off with an `EuiSwitch`. For longer lists of options, consider using a dropdown selection component.
+
+`EuiCheckbox` renders a basic HTML `<input type="checkbox">` element. Use checkboxes to allow users to select multiple options from a list.
+
+Use the `@checked` argument to handle the checked and unchecked state. You can also use the `@indeterminate` argument to set an indeterminate state. This state is commonly used in hierarchical checkboxes to indicate that only some of the checkbox's descendants are checked.
+
+Make sure to pass a `@label` to ensure a larger clickable area and ensure that screen readers will read out the label when the user is focused on the input.
 
 </EuiText>
 
-```hbs template
-<EuiCheckbox
-  @label="Send me product updates"
-  @checked={{this.updates}}
-  {{on "change" this.toggleUpdates}}
-/>
-<EuiCheckbox @label="Disabled" @disabled={{true}} />
-<EuiCheckbox @label="Disabled and checked" @disabled={{true}} @checked={{true}} />
-<EuiCheckbox @label="Compressed" @compressed={{true}} @checked={{true}} />
-```
-
-```js component
+```gjs component
 import Component from '@glimmer/component';
 import { tracked } from '@glimmer/tracking';
 import { action } from '@ember/object';
+import { EuiCheckbox, EuiSpacer } from '@ember-eui/core/components';
+import { on } from '@ember/modifier';
 
 export default class CheckboxDemo extends Component {
-  @tracked updates = true;
+  @tracked checked = false;
+  @tracked indeterminate = true;
 
   @action
-  toggleUpdates(event) {
-    this.updates = event.target.checked;
+  onChange(event) {
+    this.checked = event.target.checked;
   }
+
+  @action
+  onChangeIndeterminate() {
+    this.indeterminate = !this.indeterminate;
+  }
+
+  <template>
+    <EuiCheckbox
+      @label="I am a checkbox"
+      @checked={{this.checked}}
+      {{on "change" this.onChange}}
+    />
+
+    <EuiSpacer @size="m" />
+
+    <EuiCheckbox
+      @label="I am an indeterminate checkbox"
+      @indeterminate={{this.indeterminate}}
+      {{on "change" this.onChangeIndeterminate}}
+    />
+
+    <EuiSpacer @size="m" />
+
+    <EuiCheckbox
+      @label="I am a disabled checkbox"
+      @checked={{this.checked}}
+      @disabled={{true}}
+      {{on "change" this.onChange}}
+    />
+  </template>
 }
 ```

@@ -2,44 +2,73 @@
 order: 1
 ---
 
-# Number field
+# Basic number field
 
 <EuiText>
 
-`@min`, `@max` and `@step` constrain the value. Convert the event's value
-to a number yourself; an empty field gives `''`.
+Use an `EuiFieldNumber` to allow users to enter numbers. It renders a basic HTML `<input type="number">` element. Convert the event's value to a number yourself; an empty field gives `''`.
+
+The switches above the field are docs-only helpers that toggle its display arguments.
 
 </EuiText>
 
-```hbs template
-<EuiFormRow @label="Seats" @helpText="Between 1 and 20.">
-  <EuiFieldNumber
-    @value={{this.seats}}
-    @min={{1}}
-    @max={{20}}
-    {{on "input" this.updateSeats}}
-  />
-</EuiFormRow>
-<EuiText @size="s" @color="subdued">
-  <p>Total: {{this.total}} €</p>
-</EuiText>
-```
-
-```js component
+```gjs component
 import Component from '@glimmer/component';
 import { tracked } from '@glimmer/tracking';
 import { action } from '@ember/object';
+import { EuiFlexGroup, EuiFlexItem, EuiSwitch, EuiSpacer, EuiFieldNumber } from '@ember-eui/core/components';
+import { get, fn } from '@ember/helper';
+import { on } from '@ember/modifier';
 
 export default class NumberFieldDemo extends Component {
-  @tracked seats = 3;
+  toggles = [
+    { key: 'fullWidth', label: 'fullWidth' },
+    { key: 'compressed', label: 'compressed' },
+    { key: 'isInvalid', label: 'isInvalid' },
+    { key: 'isLoading', label: 'isLoading' },
+    { key: 'readOnly', label: 'readOnly' },
+    { key: 'disabled', label: 'disabled' },
+  ];
 
-  get total() {
-    return (Number(this.seats) || 0) * 12;
+  @tracked flags = {};
+  @tracked value = '';
+
+  @action
+  toggle(key, event) {
+    this.flags = { ...this.flags, [key]: event.target.checked };
   }
 
   @action
-  updateSeats(event) {
-    this.seats = event.target.value;
+  onChange(event) {
+    this.value = event.target.value;
   }
+
+  <template>
+    <EuiFlexGroup @wrap={{true}} @gutterSize="m" @responsive={{false}}>
+      {{#each this.toggles as |toggle|}}
+        <EuiFlexItem @grow={{false}}>
+          <EuiSwitch
+            @label={{toggle.label}}
+            @compressed={{true}}
+            @checked={{get this.flags toggle.key}}
+            @onChange={{fn this.toggle toggle.key}}
+          />
+        </EuiFlexItem>
+      {{/each}}
+    </EuiFlexGroup>
+    <EuiSpacer @size="m" />
+    <EuiFieldNumber
+      @value={{this.value}}
+      placeholder="Placeholder text"
+      @fullWidth={{this.flags.fullWidth}}
+      @compressed={{this.flags.compressed}}
+      @isInvalid={{this.flags.isInvalid}}
+      @isLoading={{this.flags.isLoading}}
+      @readOnly={{this.flags.readOnly}}
+      @disabled={{this.flags.disabled}}
+      aria-label="Use aria labels when no actual label is in use"
+      {{on "input" this.onChange}}
+    />
+  </template>
 }
 ```

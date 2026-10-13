@@ -2,159 +2,68 @@
 order: 1
 ---
 
-# Icons, loading and clear button
+# Form control layout
 
 <EuiText>
 
-Wrap a control in `EuiFormControlLayout` to get EUI's icon, spinner and
-clear button. Here the controls are EUI fields with `@controlOnly={{true}}`:
-they render just their styled `<input>`, which makes room for the icons.
+`EuiFormControlLayout` is generally used internally to consistently style form controls, but it's published in case you want to create your own form control which matches those of EUI. This is a **building block only**. The examples below demonstrate its various states and utilize the `@controlOnly` and `@type` arguments of `EuiFieldText` as the wrapped control.
 
 </EuiText>
 
-```hbs template
-<EuiFormControlLayout @icon='search'>
-  <EuiFieldText
-    @controlOnly={{true}}
-    aria-label='Use aria labels when no actual label is in use'
-  />
-</EuiFormControlLayout>
-<EuiSpacer @size='m' />
-<EuiFormControlLayout @isLoading={{true}}>
-  <EuiFieldText
-    @controlOnly={{true}}
-    aria-label='Use aria labels when no actual label is in use'
-  />
-</EuiFormControlLayout>
-<EuiSpacer @size='m' />
-<EuiFormControlLayout @clear={{(optional)}}>
-  <EuiFieldText
-    @controlOnly={{true}}
-    aria-label='Use aria labels when no actual label is in use'
-  />
-</EuiFormControlLayout>
-<EuiSpacer @size='m' />
-<EuiFormControlLayout @isLoading={{true}} @clear={{(optional)}}>
-  <EuiFieldText
-    @controlOnly={{true}}
-    aria-label='Use aria labels when no actual label is in use'
-  />
-</EuiFormControlLayout>
-<EuiSpacer @size='m' />
-<EuiFormControlLayout @isLoading={{true}} @icon='search'>
-  <EuiFieldText
-    @controlOnly={{true}}
-    aria-label='Use aria labels when no actual label is in use'
-  />
-</EuiFormControlLayout>
-<EuiSpacer @size='m' />
-<EuiFormControlLayout @isLoading={{true}} @icon='arrowDown' @iconSide='right'>
-  <EuiFieldText
-    @controlOnly={{true}}
-    aria-label='Use aria labels when no actual label is in use'
-  />
-</EuiFormControlLayout>
-<EuiSpacer @size='m' />
-<EuiFormControlLayout @clear={{(optional)}} @icon='search'>
-  <EuiFieldText
-    @controlOnly={{true}}
-    aria-label='Use aria labels when no actual label is in use'
-  />
-</EuiFormControlLayout>
-<EuiSpacer @size='m' />
-<EuiFormControlLayout @clear={{(optional)}} @icon='arrowDown' @iconSide='right'>
-  <EuiFieldText
-    @controlOnly={{true}}
-    aria-label='Use aria labels when no actual label is in use'
-  />
-</EuiFormControlLayout>
-<EuiSpacer @size='m' />
-<EuiFormControlLayout @isLoading={{true}} @clear={{(optional)}} @icon='search'>
-  <EuiFieldText
-    @controlOnly={{true}}
-    aria-label='Use aria labels when no actual label is in use'
-  />
-</EuiFormControlLayout>
-<EuiSpacer @size='m' />
-<EuiFormControlLayout
-  @isLoading={{true}}
-  @clear={{(optional)}}
-  @icon='arrowDown'
-  @iconSide='right'
->
-  <EuiFieldText
-    @controlOnly={{true}}
-    aria-label='Use aria labels when no actual label is in use'
-  />
-</EuiFormControlLayout>
-<EuiSpacer @size='m' />
-<EuiFormControlLayout @isLoading={{true}} @clear={{(optional)}} @icon='search'>
-  <EuiFieldText
-    @controlOnly={{true}}
-    aria-label='Use aria labels when no actual label is in use'
-  />
-</EuiFormControlLayout>
-<EuiSpacer @size='m' />
-<EuiFormControlLayout>
-  <:prepend as |classes|>
-    <EuiFormLabel for='textField19' class={{classes}}>
-      Label
-    </EuiFormLabel>
-  </:prepend>
-  <:field>
-    <EuiFieldText
-      @controlOnly={{true}}
-      @id='textField19'
-    />
-  </:field>
-</EuiFormControlLayout>
-<EuiSpacer @size='m' />
-<EuiFormControlLayout @readOnly={{true}}>
-  <:prepend as |classes|>
-    <EuiFormLabel for='textField19a' class={{classes}}>
-      Read only
-    </EuiFormLabel>
-  </:prepend>
-  <:field>
-    <EuiFieldText
-      @controlOnly={{true}}
-      @id='textField19a'
-    />
-  </:field>
-</EuiFormControlLayout>
-<EuiSpacer @size='m' />
-<EuiFormControlLayout>
-  <:prepend as |classes|>
-    <EuiText @size='xs' class={{classes}}>
-      <strong>
-        %
-      </strong>
-    </EuiText>
-  </:prepend>
-  <:field>
-    <EuiFieldNumber
-      @controlOnly={{true}}
-      aria-label='Use aria labels when no actual label is in use'
-    />
-  </:field>
-</EuiFormControlLayout>
-<EuiSpacer @size='m' />
-<EuiFormControlLayout @isLoading={{true}} @clear={{(optional)}}>
-  <:prepend as |classes|>
-    <EuiButtonEmpty
-      @size='xs'
-      @iconType='arrowDown'
-      @iconSide='right'
-      class={{classes}}
-    >
-      Button
-    </EuiButtonEmpty>
-  </:prepend>
-  <:field>
-    <EuiFieldText
-      @controlOnly={{true}}
-      aria-label='Use aria labels when no actual label is in use'
-    />
-  </:field>
-</EuiFormControlLayout>
+```gjs component
+import {
+  EuiFieldNumber,
+  EuiFieldText,
+  EuiFormAppend,
+  EuiFormControlLayout,
+  EuiFormPrepend,
+} from '@ember-eui/core/components';
+
+const noop = () => {};
+
+<template>
+  <div style="display: inline-flex; flex-wrap: wrap; gap: 24px">
+    <EuiFormControlLayout @icon="magnify">
+      <EuiFieldText @controlOnly={{true}} @type="search" aria-label="Use aria labels when no actual label is in use" />
+    </EuiFormControlLayout>
+    <EuiFormControlLayout @isLoading={{true}}>
+      <EuiFieldText @controlOnly={{true}} aria-label="Use aria labels when no actual label is in use" />
+    </EuiFormControlLayout>
+    <EuiFormControlLayout @clear={{noop}}>
+      <EuiFieldText @controlOnly={{true}} aria-label="Use aria labels when no actual label is in use" />
+    </EuiFormControlLayout>
+    <EuiFormControlLayout @isInvalid={{true}}>
+      <EuiFieldText @controlOnly={{true}} @isInvalid={{true}} aria-label="Use aria labels when no actual label is in use" />
+    </EuiFormControlLayout>
+    <EuiFormControlLayout @clear={{noop}} @icon="magnify">
+      <EuiFieldText @controlOnly={{true}} @type="search" aria-label="Use aria labels when no actual label is in use" />
+    </EuiFormControlLayout>
+    <EuiFormControlLayout @isLoading={{true}} @isDropdown={{true}}>
+      <EuiFieldText @controlOnly={{true}} aria-label="Use aria labels when no actual label is in use" />
+    </EuiFormControlLayout>
+    <EuiFormControlLayout @clear={{noop}} @isDropdown={{true}} @icon="stopFill" @iconColor="success">
+      <EuiFieldText @controlOnly={{true}} aria-label="Use aria labels when no actual label is in use" />
+    </EuiFormControlLayout>
+    <EuiFormControlLayout @isLoading={{true}} @clear={{noop}} @icon="bolt" @iconSide="right" @isDropdown={{true}}>
+      <EuiFieldText @controlOnly={{true}} aria-label="Use aria labels when no actual label is in use" />
+    </EuiFormControlLayout>
+    <EuiFormControlLayout>
+      <:prepend><EuiFormPrepend @inputId="labelInput" @label="Label" /></:prepend>
+      <:field><EuiFieldText @controlOnly={{true}} @id="labelInput" aria-label="Use aria labels when no actual label is in use" /></:field>
+    </EuiFormControlLayout>
+    <EuiFormControlLayout @readOnly={{true}}>
+      <:prepend><EuiFormPrepend @inputId="readOnlyInput" @label="Read only" /></:prepend>
+      <:field><EuiFieldText @controlOnly={{true}} @id="readOnlyInput" @readOnly={{true}} aria-label="Use aria labels when no actual label is in use" /></:field>
+      <:append><EuiFormAppend @element="button" @label="Button" /></:append>
+    </EuiFormControlLayout>
+    <EuiFormControlLayout>
+      <:field><EuiFieldNumber @controlOnly={{true}} aria-label="Use aria labels when no actual label is in use" /></:field>
+      <:append><EuiFormAppend @label="%" /></:append>
+    </EuiFormControlLayout>
+    <EuiFormControlLayout @isLoading={{true}} @clear={{noop}}>
+      <:prepend><EuiFormPrepend @element="button" @iconRight="chevronSingleDown" @label="Button" /></:prepend>
+      <:field><EuiFieldText @controlOnly={{true}} aria-label="Use aria labels when no actual label is in use" /></:field>
+    </EuiFormControlLayout>
+  </div>
+</template>
 ```

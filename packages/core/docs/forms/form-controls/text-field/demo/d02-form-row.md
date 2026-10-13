@@ -12,25 +12,12 @@ field (to style it).
 
 </EuiText>
 
-```hbs template
-<EuiFormRow
-  @label="Website"
-  @helpText="Starts with https://"
-  @isInvalid={{this.isInvalid}}
-  @error="Enter a URL starting with https://"
->
-  <EuiFieldText
-    @value={{this.url}}
-    @isInvalid={{this.isInvalid}}
-    {{on "input" this.updateUrl}}
-  />
-</EuiFormRow>
-```
-
-```js component
+```gjs component
 import Component from '@glimmer/component';
 import { tracked } from '@glimmer/tracking';
 import { action } from '@ember/object';
+import { EuiFormRow, EuiFieldText } from '@ember-eui/core/components';
+import { on } from '@ember/modifier';
 
 export default class TextFieldRowDemo extends Component {
   @tracked url = 'http://example.com';
@@ -43,5 +30,20 @@ export default class TextFieldRowDemo extends Component {
   updateUrl(event) {
     this.url = event.target.value;
   }
+
+  <template>
+    <EuiFormRow
+      @label="Website"
+      @helpText="Starts with https://"
+      @isInvalid={{this.isInvalid}}
+      @error="Enter a URL starting with https://"
+    >
+      <EuiFieldText
+        @value={{this.url}}
+        @isInvalid={{this.isInvalid}}
+        {{on "input" this.updateUrl}}
+      />
+    </EuiFormRow>
+  </template>
 }
 ```

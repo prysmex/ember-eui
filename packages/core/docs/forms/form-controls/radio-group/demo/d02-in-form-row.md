@@ -12,24 +12,11 @@ objects' keys, and `@compressed` fits dense forms.
 
 </EuiText>
 
-```hbs template
-<EuiFormRow @label="Assignee" @labelType="legend" @legendType="legend">
-  <EuiRadioGroup
-    @name="assignee"
-    @options={{this.users}}
-    @valueKey="username"
-    @labelKey="name"
-    @idSelected={{this.assignee}}
-    @compressed={{true}}
-    @onChange={{this.assign}}
-  />
-</EuiFormRow>
-```
-
-```js component
+```gjs component
 import Component from '@glimmer/component';
 import { tracked } from '@glimmer/tracking';
 import { action } from '@ember/object';
+import { EuiFormRow, EuiRadioGroup } from '@ember-eui/core/components';
 
 export default class RadioGroupKeysDemo extends Component {
   users = [
@@ -43,5 +30,19 @@ export default class RadioGroupKeysDemo extends Component {
   assign(username) {
     this.assignee = username;
   }
+
+  <template>
+    <EuiFormRow @label="Assignee" @labelType="legend" @legendType="legend">
+      <EuiRadioGroup
+        @name="assignee"
+        @options={{this.users}}
+        @valueKey="username"
+        @labelKey="name"
+        @idSelected={{this.assignee}}
+        @compressed={{true}}
+        @onChange={{this.assign}}
+      />
+    </EuiFormRow>
+  </template>
 }
 ```

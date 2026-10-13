@@ -10,40 +10,14 @@ Click a facet to show only its items; click it again to show all.
 
 </EuiText>
 
-```hbs template
-<EuiFlexGroup>
-  <EuiFlexItem @grow={{false}} style="min-width: 200px;">
-    <EuiFacetGroup>
-      {{#each this.levels as |level|}}
-        <EuiFacetButton
-          @quantity={{level.count}}
-          @isSelected={{eq this.selected level.id}}
-          {{on "click" (fn this.select level.id)}}
-        >
-          <:default>{{level.label}}</:default>
-          <:icon>
-            <EuiIcon class="euiFacetButton__icon" @type="dot" @color={{level.color}} />
-          </:icon>
-        </EuiFacetButton>
-      {{/each}}
-    </EuiFacetGroup>
-  </EuiFlexItem>
-  <EuiFlexItem>
-    <EuiText @size="s">
-      <ul>
-        {{#each this.visibleLogs as |log|}}
-          <li><strong>{{log.level}}</strong> {{log.message}}</li>
-        {{/each}}
-      </ul>
-    </EuiText>
-  </EuiFlexItem>
-</EuiFlexGroup>
-```
-
-```js component
+```gjs component
 import Component from '@glimmer/component';
 import { tracked } from '@glimmer/tracking';
 import { action } from '@ember/object';
+import { EuiFlexGroup, EuiFlexItem, EuiFacetGroup, EuiFacetButton, EuiIcon, EuiText } from '@ember-eui/core/components';
+import { eq } from 'ember-truth-helpers';
+import { on } from '@ember/modifier';
+import { fn } from '@ember/helper';
 
 const LOGS = [
   { level: 'error', message: 'Payment service timed out' },
@@ -77,5 +51,35 @@ export default class FacetDemo extends Component {
   select(id) {
     this.selected = this.selected === id ? null : id;
   }
+
+  <template>
+    <EuiFlexGroup>
+      <EuiFlexItem @grow={{false}} style="min-width: 200px;">
+        <EuiFacetGroup>
+          {{#each this.levels as |level|}}
+            <EuiFacetButton
+              @quantity={{level.count}}
+              @isSelected={{eq this.selected level.id}}
+              {{on "click" (fn this.select level.id)}}
+            >
+              <:default>{{level.label}}</:default>
+              <:icon>
+                <EuiIcon class="euiFacetButton__icon" @type="dot" @color={{level.color}} />
+              </:icon>
+            </EuiFacetButton>
+          {{/each}}
+        </EuiFacetGroup>
+      </EuiFlexItem>
+      <EuiFlexItem>
+        <EuiText @size="s">
+          <ul>
+            {{#each this.visibleLogs as |log|}}
+              <li><strong>{{log.level}}</strong> {{log.message}}</li>
+            {{/each}}
+          </ul>
+        </EuiText>
+      </EuiFlexItem>
+    </EuiFlexGroup>
+  </template>
 }
 ```

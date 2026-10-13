@@ -12,17 +12,21 @@ and `@fullWidth`.
 
 </EuiText>
 
-```hbs template
-<EuiFormRow @label="No resizing">
-  <EuiTextArea @resize="none" @rows={{2}} @value="Fixed size" />
-</EuiFormRow>
-<EuiFormRow @label="Invalid" @isInvalid={{true}} @error="Required.">
-  <EuiTextArea @isInvalid={{true}} @rows={{2}} />
-</EuiFormRow>
-<EuiFormRow @label="Compressed" @display="rowCompressed">
-  <EuiTextArea @compressed={{true}} @rows={{2}} @value="Dense forms" />
-</EuiFormRow>
-<EuiFormRow @label="Disabled">
-  <EuiTextArea @disabled={{true}} @rows={{2}} @value="Can't edit" />
-</EuiFormRow>
+```gjs component
+import { EuiFormRow, EuiTextArea } from '@ember-eui/core/components';
+
+<template>
+  <EuiFormRow @label="No resizing">
+    <EuiTextArea @resize="none" @rows={{2}} @value="Fixed size" />
+  </EuiFormRow>
+  <EuiFormRow @label="Invalid" @isInvalid={{true}} @error="Required.">
+    <EuiTextArea @isInvalid={{true}} @rows={{2}} />
+  </EuiFormRow>
+  <EuiFormRow @label="Compressed" @display="rowCompressed">
+    <EuiTextArea @compressed={{true}} @rows={{2}} @value="Dense forms" />
+  </EuiFormRow>
+  <EuiFormRow @label="Disabled">
+    <EuiTextArea @disabled={{true}} @rows={{2}} @value="Can't edit" />
+  </EuiFormRow>
+</template>
 ```

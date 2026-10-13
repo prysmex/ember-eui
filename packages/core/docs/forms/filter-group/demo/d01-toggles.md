@@ -11,34 +11,14 @@ clicking the active one again shows everything.
 
 </EuiText>
 
-```hbs template
-<EuiFilterGroup>
-  <EuiFilterButton
-    @withNext={{true}}
-    @hasActiveFilters={{eq this.status "open"}}
-    @numFilters={{this.openCount}}
-    {{on "click" (fn this.toggle "open")}}
-  >Open</EuiFilterButton>
-  <EuiFilterButton
-    @hasActiveFilters={{eq this.status "closed"}}
-    @numFilters={{this.closedCount}}
-    {{on "click" (fn this.toggle "closed")}}
-  >Closed</EuiFilterButton>
-</EuiFilterGroup>
-<EuiSpacer />
-<EuiText @size="s">
-  <ul>
-    {{#each this.visible as |issue|}}
-      <li>{{issue.title}} <EuiBadge>{{issue.status}}</EuiBadge></li>
-    {{/each}}
-  </ul>
-</EuiText>
-```
-
-```js component
+```gjs component
 import Component from '@glimmer/component';
 import { tracked } from '@glimmer/tracking';
 import { action } from '@ember/object';
+import { EuiFilterGroup, EuiFilterButton, EuiSpacer, EuiText, EuiBadge } from '@ember-eui/core/components';
+import { eq } from 'ember-truth-helpers';
+import { on } from '@ember/modifier';
+import { fn } from '@ember/helper';
 
 const ISSUES = [
   { title: 'Login page is slow', status: 'open' },
@@ -69,5 +49,29 @@ export default class FilterToggles extends Component {
   toggle(status) {
     this.status = this.status === status ? null : status;
   }
+
+  <template>
+    <EuiFilterGroup>
+      <EuiFilterButton
+        @withNext={{true}}
+        @hasActiveFilters={{eq this.status "open"}}
+        @numFilters={{this.openCount}}
+        {{on "click" (fn this.toggle "open")}}
+      >Open</EuiFilterButton>
+      <EuiFilterButton
+        @hasActiveFilters={{eq this.status "closed"}}
+        @numFilters={{this.closedCount}}
+        {{on "click" (fn this.toggle "closed")}}
+      >Closed</EuiFilterButton>
+    </EuiFilterGroup>
+    <EuiSpacer />
+    <EuiText @size="s">
+      <ul>
+        {{#each this.visible as |issue|}}
+          <li>{{issue.title}} <EuiBadge>{{issue.status}}</EuiBadge></li>
+        {{/each}}
+      </ul>
+    </EuiText>
+  </template>
 }
 ```

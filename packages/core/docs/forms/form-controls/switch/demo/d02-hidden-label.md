@@ -6,36 +6,56 @@ order: 2
 
 <EuiText>
 
-When the context already names the setting (e.g. a table column or an
-`EuiFormRow` label), hide the switch's own label with
-`@showLabel={{false}}`. It is still read by screen readers, so keep it
-descriptive.
+If the switch is described in some other manner, like when using an `EuiFormRow`, you can eliminate the visible label with `@showLabel={{false}}` or use it to further describe the state.
+
+When providing the state as the label, you'll need to provide an `aria-describedby` with the label's `id` to associate it with the switch.
 
 </EuiText>
 
-```hbs template
-<EuiFormRow @label="Dark mode" @display="columnCompressedSwitch">
-  <EuiSwitch
-    @label="Dark mode"
-    @showLabel={{false}}
-    @compressed={{true}}
-    @checked={{this.dark}}
-    @onChange={{this.toggle}}
-  />
-</EuiFormRow>
-```
-
-```js component
+```gjs component
 import Component from '@glimmer/component';
 import { tracked } from '@glimmer/tracking';
 import { action } from '@ember/object';
+import { EuiFormRow, EuiSwitch } from '@ember-eui/core/components';
 
 export default class SwitchHiddenLabelDemo extends Component {
-  @tracked dark = false;
+  @tracked checked1 = false;
+  @tracked checked2 = false;
 
   @action
-  toggle(event) {
-    this.dark = event.target.checked;
+  onChange1(event) {
+    this.checked1 = event.target.checked;
   }
+
+  @action
+  onChange2(event) {
+    this.checked2 = event.target.checked;
+  }
+
+  <template>
+    <EuiFormRow @display="columnCompressed" @label="Autoscaling">
+      <EuiSwitch
+        @showLabel={{false}}
+        @label="Autoscaling"
+        @checked={{this.checked1}}
+        @onChange={{this.onChange1}}
+        @compressed={{true}}
+      />
+    </EuiFormRow>
+    <EuiFormRow @display="columnCompressed">
+      <:label>
+        <span id="toggleTextSwitch">Show something</span>
+      </:label>
+      <:field>
+        <EuiSwitch
+          @label={{if this.checked2 "on" "off"}}
+          @checked={{this.checked2}}
+          @onChange={{this.onChange2}}
+          @compressed={{true}}
+          aria-describedby="toggleTextSwitch"
+        />
+      </:field>
+    </EuiFormRow>
+  </template>
 }
 ```

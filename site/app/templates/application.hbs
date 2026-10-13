@@ -1,4 +1,7 @@
-<BorealisRoot @colorMode={{this.themeManager.currentTheme.key}}>
+<BorealisRoot
+  @colorMode={{this.themeManager.currentTheme.key}}
+  @highContrastMode={{this.themeManager.highContrast}}
+>
 {{#if this.isLatestShowcase}}
   <main>{{outlet}}</main>
 {{else}}
@@ -20,6 +23,26 @@
         </EuiHeaderSectionItem>
       </EuiHeaderSection>
       <EuiHeaderSection @side="right">
+        <EuiHeaderSectionItem @border="none">
+          {{! the header is always dark: render the toggle in dark mode }}
+          <EuiEmotionProvider @colorMode="dark" @wrapper={{false}}>
+            <EuiButtonIcon
+              @iconType="contrast"
+              @color="text"
+              @display={{if this.themeManager.highContrast "base" "empty"}}
+              @size="s"
+              @isSelected={{if this.themeManager.highContrast true false}}
+              aria-label="High contrast"
+              title={{if
+                this.themeManager.highContrast
+                "High contrast: on"
+                "High contrast: follows the system"
+              }}
+              data-test-high-contrast-toggle
+              {{on "click" this.themeManager.toggleHighContrast}}
+            />
+          </EuiEmotionProvider>
+        </EuiHeaderSectionItem>
         <EuiHeaderSectionItem @border="none">
           <EuiPopover
             @isOpen={{this.themePopover}}

@@ -28,6 +28,8 @@ import type { EuiBorealisOverrides } from '#src/utils/eui/theme.ts';
 
 const lightContext = resolveBorealisTheme('light');
 const light = lightContext.euiTheme;
+// High contrast replaces border tokens (upstream useHighContrastModifications).
+const lightHc = resolveBorealisTheme('light', {}, 'preferred').euiTheme;
 const dark = resolveBorealisTheme('dark').euiTheme;
 const forms = (theme: typeof light) =>
   theme.components.forms as unknown as Record<string, string>;
@@ -1059,7 +1061,7 @@ module('Integration | Component | Borealis form controls', function (hooks) {
     const hc = style(this.element, '[data-c="hc"]');
     assert.strictEqual(hc.borderTopStyle, 'solid');
     assert.strictEqual(hc.borderTopWidth, '1px');
-    assert.strictEqual(hc.borderTopColor, rgb(light.border.color));
+    assert.strictEqual(hc.borderTopColor, rgb(lightHc.border.color));
     assert.strictEqual(
       hc.backgroundColor,
       rgb(light.colors.emptyShade),

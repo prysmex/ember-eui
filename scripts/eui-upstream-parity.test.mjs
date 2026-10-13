@@ -2080,3 +2080,50 @@ test('data grid hand ports match upstream fullscreen, toolbar control and displa
   const rowHeight = port.euiDataGridRowHeightControlStyles;
   assert.ok(displaySelector.includes(`name: "${rowHeight.name}"`) && displaySelector.includes(`styles: "${rowHeight.styles}"`));
 });
+
+test('high contrast theme modifications port matches upstream useHighContrastModifications', () => {
+  const ported = buildSync({
+    entryPoints: [resolve(root, 'packages/core/src/utils/eui/theme.ts')],
+    bundle: true,
+    write: false,
+    format: 'cjs',
+    platform: 'node',
+    external: ['@elastic/eui-theme-common', '@elastic/eui-theme-borealis']
+  });
+  const portFile = resolve(root, 'packages/core/eui-theme-parity.cjs');
+  const portModule = new Module(portFile);
+  portModule.paths = Module._nodeModulePaths(dirname(portFile));
+  portModule._compile(ported.outputFiles[0].text, portFile);
+  const { euiHighContrastModifications } = portModule.exports;
+
+  // Run upstream's hook body with React's memo hooks stubbed out.
+  const originalLoad = Module._load;
+  Module._load = function (request, parent, isMain) {
+    if (request === 'react') return { useMemo: (fn) => fn() };
+    return originalLoad.call(this, request, parent, isMain);
+  };
+  try {
+    const hcPath = resolve(eui, 'lib/services/theme/high_contrast_overrides.js');
+    delete require.cache[hcPath];
+    const { useHighContrastModifications } = require(hcPath);
+    for (const colorMode of ['LIGHT', 'DARK'])
+      for (const modifications of [
+        {},
+        { border: { width: { thin: '3px', thick: '5px' } } }
+      ]) {
+        const upstream = useHighContrastModifications({
+          highContrastMode: 'preferred',
+          colorMode,
+          system: EuiThemeBorealis,
+          modifications
+        });
+        assert.deepEqual(
+          euiHighContrastModifications(colorMode, modifications),
+          { colors: upstream.colors, border: upstream.border },
+          `${colorMode}/${JSON.stringify(modifications)}`
+        );
+      }
+  } finally {
+    Module._load = originalLoad;
+  }
+});

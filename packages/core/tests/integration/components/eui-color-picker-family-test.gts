@@ -31,6 +31,8 @@ import type { EuiColorMode } from '#src/utils/emotion/theme.ts';
 import type { EuiBorealisOverrides } from '#src/utils/eui/theme.ts';
 
 const light = resolveBorealisTheme('light').euiTheme;
+// High contrast replaces border tokens (upstream useHighContrastModifications).
+const lightHc = resolveBorealisTheme('light', {}, 'preferred').euiTheme;
 const dark = resolveBorealisTheme('dark').euiTheme;
 const forms = (theme: typeof light) =>
   theme.components.forms as unknown as Record<string, string>;
@@ -975,24 +977,24 @@ module('Integration | Component | Borealis color picker family', function (hooks
     );
 
     const hcSwatch = q('.hc .euiColorPickerSwatch');
-    assert.strictEqual(css(hcSwatch).borderTopColor, rgb(light.border.color), 'border.thin');
+    assert.strictEqual(css(hcSwatch).borderTopColor, rgb(lightHc.border.color), 'border.thin');
     assert.strictEqual(css(hcSwatch).boxShadow, 'none');
     assert.notStrictEqual(css(q('.std .euiColorPickerSwatch')).boxShadow, 'none', 'standard inset highlight');
 
     const hue = q('.hc .euiHue');
     assert.strictEqual(css(hue).borderTopStyle, 'solid');
-    assert.strictEqual(css(hue).borderTopColor, rgb(light.border.color));
+    assert.strictEqual(css(hue).borderTopColor, rgb(lightHc.border.color));
     assert.strictEqual(css(q('.std .euiHue')).borderTopStyle, 'none');
 
     const satAfter = css(q('.hc .euiSaturation'), '::after');
     assert.strictEqual(satAfter.borderTopStyle, 'solid');
-    assert.strictEqual(satAfter.borderTopColor, rgb(light.border.color));
+    assert.strictEqual(satAfter.borderTopColor, rgb(lightHc.border.color));
     assert.strictEqual(css(q('.std .euiSaturation'), '::after').content, 'none');
 
     const indicator = q('.hc .euiSaturation__indicator');
     assert.strictEqual(css(indicator).borderTopWidth, light.border.width.thick);
     assert.strictEqual(css(indicator).backgroundColor, rgb(light.colors.plainLight));
 
-    assert.strictEqual(css(q('.hcpd'), '::after').borderTopColor, rgb(light.border.color));
+    assert.strictEqual(css(q('.hcpd'), '::after').borderTopColor, rgb(lightHc.border.color));
   });
 });

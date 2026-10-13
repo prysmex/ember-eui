@@ -55,7 +55,7 @@ export interface EuiListGroupItemExtraActionProps {
    * Styles composed after the upstream extra-action styles (upstream's
    * `css` prop on the action).
    */
-  css?: CSSInterpolation;
+  css?: EuiCss;
   'data-test-subj'?: string;
 }
 

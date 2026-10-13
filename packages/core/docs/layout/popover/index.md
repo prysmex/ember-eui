@@ -81,8 +81,8 @@ control `@isOpen` and close it in `@closePopover`.
 | `@shouldAccountForOtherPopovers` | `boolean` | `true` | When not `false`, a popover opened from inside another popover positions itself relative to that one. |
 | `@repositionOnScroll` | `boolean` |  | When `true`, the popover's position is re-calculated when the user scrolls, this supports having fixed-position popover anchors |
 | `@repositionToCrossAxis` | `boolean` | `true` | Whether the popover may move to the cross axis (e.g. from below to the side of the anchor) when there is no room. |
-| `@css` | `CSSInterpolation` |  | Extra styles composed last into the root's class (like upstream's `css` prop). Prefer this to an extra class when styling it from a parent. |
-| `@panelCss` | `CSSInterpolation` |  | Extra styles composed last into the panel's class (like upstream's `panelProps.css`). Prefer this to `@panelClassName` for styles. |
+| `@css` | `EuiCss` |  | Extra styles composed last into the root's class (like upstream's `css` prop). Prefer this to an extra class when styling it from a parent. |
+| `@panelCss` | `EuiCss` |  | Extra styles composed last into the panel's class (like upstream's `panelProps.css`). Prefer this to `@panelClassName` for styles. |
 | `@zIndex` | `number` |  | By default, popover content inherits the z-index of the anchor component; pass `zIndex` to override |
 | `@onTrapDeactivation` | `() => void` |  | Function callback for when the focus trap is deactivated |
 | `@offset` | `number` |  | Distance away from the anchor that the popover will render. Defaults to `0` with an arrow and `4` without (upstream). |

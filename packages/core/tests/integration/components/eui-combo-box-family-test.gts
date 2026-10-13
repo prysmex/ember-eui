@@ -26,6 +26,8 @@ import type { EuiBorealisOverrides } from '#src/utils/eui/theme.ts';
 const lightContext = resolveBorealisTheme('light');
 const darkContext = resolveBorealisTheme('dark');
 const light = lightContext.euiTheme;
+// High contrast replaces border tokens (upstream useHighContrastModifications).
+const lightHc = resolveBorealisTheme('light', {}, 'preferred').euiTheme;
 const dark = darkContext.euiTheme;
 const lightForm = euiFormVariables(lightContext);
 const darkForm = euiFormVariables(darkContext);
@@ -727,7 +729,7 @@ module('Integration | Component | Borealis combo box family', function (hooks) {
     );
     const hc = css(wrapOf('[data-c="hc"]'));
     assert.strictEqual(hc.borderTopStyle, 'solid');
-    assert.strictEqual(hc.borderTopColor, rgb(light.border.color));
+    assert.strictEqual(hc.borderTopColor, rgb(lightHc.border.color));
     assert.strictEqual(css(wrapOf('[data-c="std"]')).borderTopStyle, 'none', 'standard contrast isolated');
 
     await open('[data-c="hc"]');

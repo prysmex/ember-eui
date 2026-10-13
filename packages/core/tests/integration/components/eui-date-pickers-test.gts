@@ -25,6 +25,8 @@ import type { EuiBorealisOverrides } from '#src/utils/eui/theme.ts';
 
 const lightContext = resolveBorealisTheme('light');
 const light = lightContext.euiTheme;
+// High contrast replaces border tokens (upstream useHighContrastModifications).
+const lightHc = resolveBorealisTheme('light', {}, 'preferred').euiTheme;
 const dark = resolveBorealisTheme('dark').euiTheme;
 const darkContext = resolveBorealisTheme('dark');
 /** Upstream filled button colors (`{ color, backgroundColor }`). */
@@ -832,7 +834,7 @@ module('Integration | Component | Borealis date pickers', function (hooks) {
     // preferred high contrast: the group border, none on the inner wrapper
     const hcBorder = getComputedStyle(el(inside('hc', '.euiFormControlLayout')), '::after');
     assert.strictEqual(hcBorder.borderTopStyle, 'solid');
-    assert.strictEqual(hcBorder.borderTopColor, rgb(light.border.color));
+    assert.strictEqual(hcBorder.borderTopColor, rgb(lightHc.border.color));
     assert.strictEqual(css(inside('hc', '.euiFormControlLayout__childrenWrapper')).borderTopStyle, 'none');
     assert.strictEqual(css(inside('hc-invalid', '.euiFormControlLayout__childrenWrapper')).outlineWidth, '2px', 'thicker invalid outline');
 

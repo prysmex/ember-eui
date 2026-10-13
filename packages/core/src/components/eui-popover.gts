@@ -30,6 +30,7 @@ import simpleStyle from '../modifiers/simple-style.ts';
 import { cascadingMenuKeys } from '../utils/accesibility/index.ts';
 import { getEuiThemeContext } from '../utils/emotion/consume.ts';
 import { euiClass, useEuiBorealisStyles } from '../utils/eui/styles.ts';
+import type { EuiCss } from '../utils/eui/styles.ts';
 import {
   euiBackgroundColor,
   euiBorderColor,
@@ -55,7 +56,6 @@ import type {
   EuiPopoverPanelPaddingSize
 } from '../-private/eui-popover-panel-context.ts';
 import type EuiI18n from '../services/eui-i18n.ts';
-import type { CSSInterpolation } from '@emotion/css/create-instance';
 import type { EuiPopoverPosition } from '../utils/popover/types';
 import type { EmberKeyboardEvent } from 'ember-keyboard/modifiers/on-key';
 
@@ -194,17 +194,17 @@ export type EuiPopoverArgs = {
    * @private Styles composed last into the root's class (e.g.
    * EuiInputPopover's max width), like upstream's `css` prop.
    */
-  rootCss?: CSSInterpolation;
+  rootCss?: EuiCss;
   /**
    * Extra styles composed last into the root's class (like upstream's `css`
    * prop). Prefer this to an extra class when styling it from a parent.
    */
-  css?: CSSInterpolation;
+  css?: EuiCss;
   /**
    * Extra styles composed last into the panel's class (like upstream's
    * `panelProps.css`). Prefer this to `@panelClassName` for styles.
    */
-  panelCss?: CSSInterpolation;
+  panelCss?: EuiCss;
   /**
    * By default, popover content inherits the z-index of the anchor
    * component; pass `zIndex` to override

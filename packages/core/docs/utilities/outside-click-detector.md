@@ -8,7 +8,7 @@ title: Outside click detector
 
 <EuiText>
 
-The `outside-click-detector` modifier calls `onOutsideClick` when the
+Use the `outside-click-detector` modifier (upstream's **EuiOutsideClickDetector** component) to trigger a handler when the user clicks outside of the element. It calls `onOutsideClick` when the
 user clicks anywhere outside the element, e.g. to close a custom menu.
 `isDisabled` pauses it.
 

@@ -50,11 +50,10 @@ import GlimmerComponent from '@glimmer/component';
 import { tracked } from '@glimmer/tracking';
 import { action } from '@ember/object';
 
-export default class OutsideClickDetectorComponentDemo1 extends GlimmerComponent {
-  @tracked disabled = false;
+export default class MutationObserverDemo extends GlimmerComponent {
   @tracked lastMutation = 'no changes detected';
   @tracked buttonColor = 'primary';
-  @tracked items = ['item 1', 'item 2', 'item 3'];
+  @tracked items = ['Item 1', 'Item 2', 'Item 3'];
 
   @action
   toggleButtonColor() {

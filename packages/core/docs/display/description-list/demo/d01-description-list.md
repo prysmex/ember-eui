@@ -6,49 +6,55 @@ order: 1
 
 <EuiText>
 
-Pairs from `@listItems` (or written with the title and description
-components in the block).
+**EuiDescriptionList** is a component for listing pairs of information together. You can use the component on its own, passing in an array of items as `@listItems`.
 
 </EuiText>
 
 ```hbs template
-<EuiFlexGroup>
-  <EuiFlexItem>
-    <EuiDescriptionList @listItems={{this.favoriteVideoGames}} />
-  </EuiFlexItem>
-  <EuiFlexItem>
-    <EuiDescriptionList>
-      <EuiDescriptionListTitle>Dota 2</EuiDescriptionListTitle>
-      <EuiDescriptionListDescription>
-        A videogame that I have spent way too much time on over the years.
-      </EuiDescriptionListDescription>
-      <EuiDescriptionListTitle>Kings Quest VI</EuiDescriptionListTitle>
-      <EuiDescriptionListDescription>
-        The game that forced me to learn DOS.
-      </EuiDescriptionListDescription>
-    </EuiDescriptionList>
-  </EuiFlexItem>
-</EuiFlexGroup>
+<EuiDescriptionList @listItems={{this.favoriteVideoGames}} />
+<EuiSpacer />
+<EuiText>
+
+You can also use the **EuiDescriptionListTitle** and **EuiDescriptionListDescription** components separately to build a list manually.
+
+</EuiText>
+<EuiSpacer />
+<EuiDescriptionList>
+  <EuiDescriptionListTitle>
+    The Elder Scrolls: Morrowind
+  </EuiDescriptionListTitle>
+  <EuiDescriptionListDescription>
+    The opening music alone evokes such strong memories.
+  </EuiDescriptionListDescription>
+  <EuiDescriptionListTitle>TIE Fighter</EuiDescriptionListTitle>
+  <EuiDescriptionListDescription>
+    The sequel to XWING, join the dark side and fly for the Emperor.
+  </EuiDescriptionListDescription>
+  <EuiDescriptionListTitle>Quake 2</EuiDescriptionListTitle>
+  <EuiDescriptionListDescription>
+    The game that made me drop out of college.
+  </EuiDescriptionListDescription>
+</EuiDescriptionList>
 ```
 
 ```js component
 import Component from '@glimmer/component';
 
-export default class DemoComponent extends Component {
+export default class DescriptionListDemo extends Component {
   favoriteVideoGames = [
     {
       title: 'The Elder Scrolls: Morrowind',
-      description: 'The opening music alone evokes such strong memories.'
+      description: 'The opening music alone evokes such strong memories.',
     },
     {
       title: 'TIE Fighter',
       description:
-        'The sequel to XWING, join the dark side and fly for the Emporer.'
+        'The sequel to XWING, join the dark side and fly for the Emperor.',
     },
     {
       title: 'Quake 2',
-      description: 'The game that made me drop out of college.'
-    }
+      description: 'The game that made me drop out of college.',
+    },
   ];
 }
 ```

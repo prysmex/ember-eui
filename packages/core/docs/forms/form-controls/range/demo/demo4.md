@@ -6,7 +6,7 @@ order: 4
 
 <EuiText>
   <p>
-    To show clickable tick marks and labels at a given interval, add the arg <EuiCode>@showTicks={{true}}</EuiCode>. By default, tick mark interval is bound to the step arg, however, you can set a custom interval without changing the actual steps allowed by passing a number to the <EuiCode>@tickInterval</EuiCode> arg.
+    To show clickable tick marks and labels at a given interval, add the arg <EuiCode>@showTicks=\{{true}}</EuiCode>. By default, tick mark interval is bound to the step arg, however, you can set a custom interval without changing the actual steps allowed by passing a number to the <EuiCode>@tickInterval</EuiCode> arg.
   </p>
   <p>
     To pass completely custom tick marks, you can pass an array of objects that require a value and label. The value must be included in the range of values (min-max), though the label may be anythin you choose.

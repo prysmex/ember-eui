@@ -6,7 +6,7 @@ order: 9
 
 <EuiText>
   <p>
-    Set the <EuiCode>@resizable={{true}}</EuiCode> argument to render a flyout
+    Set the <EuiCode>@resizable=\{{true}}</EuiCode> argument to render a flyout
     that users can drag with their mouse or use arrow keys to resize. This may
     be useful for scenarios where the available space can be unpredictable due
     to dynamic content. Resizable flyouts allow users to adjust content to better
@@ -17,7 +17,7 @@ order: 9
     component which is a thin wrapper around <EuiCode>EuiFlyout</EuiCode> that
     sets <EuiCode>@resizable</EuiCode> for you. When writing new code, we
     recommend using the regular <EuiCode>EuiFlyout</EuiCode> component with
-    <EuiCode>@resizable={{true}}</EuiCode> added.
+    <EuiCode>@resizable=\{{true}}</EuiCode> added.
   </p>
   <p>
     We strongly recommend setting reasonable numerical

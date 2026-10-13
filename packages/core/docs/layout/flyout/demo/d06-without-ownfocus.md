@@ -10,7 +10,7 @@ order: 6
     <EuiCode>@ownFocus</EuiCode> which wraps the flyout with an overlay mask.
     However, there are use-cases where flyouts present more information or
     controls, but need to maintain the interactions of the page content. By
-    setting <EuiCode>@ownFocus={{false}}</EuiCode>, the underlying page content
+    setting <EuiCode>@ownFocus=\{{false}}</EuiCode>, the underlying page content
     will be visible and clickable.
   </p>
 </EuiText>

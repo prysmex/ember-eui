@@ -16,7 +16,7 @@ order: 10
     EUI it is a regular component that you place first inside
     <EuiCode>EuiFlyout</EuiCode> (upstream controls it with the
     <EuiCode>flyoutMenuProps</EuiCode> prop of <EuiCode>EuiFlyout</EuiCode>).
-    Pass <EuiCode>@hideCloseButton={{true}}</EuiCode> to the flyout, so the
+    Pass <EuiCode>@hideCloseButton=\{{true}}</EuiCode> to the flyout, so the
     menu renders the close button.
   </p>
   <p>

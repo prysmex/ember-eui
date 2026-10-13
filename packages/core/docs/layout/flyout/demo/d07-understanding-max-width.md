@@ -8,7 +8,7 @@ order: 7
   <p>
     By default, flyouts will continue to grow with the width of the window. To
     stop this growth at an ideal width, set <EuiCode>@maxWidth</EuiCode> to
-    <EuiCode>{{true}}</EuiCode>, or pass your own custom size.
+    <EuiCode>\{{true}}</EuiCode>, or pass your own custom size.
   </p>
 </EuiText>
 

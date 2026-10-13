@@ -14,6 +14,8 @@ When `@start` and `@end` change from interactions with the **Absolute**, **Relat
 
 Instead of hiding completely, you can reduce the footprint of the update button to just an icon with `@showUpdateButton="iconOnly"`. You can further configure the button using `@updateButtonProps`, like setting the `fill` to `false`.
 
+On small screens (`'xs'` and `'s'`) the button collapses to its icon, keeping its label for screen readers; change the sizes with `@updateButtonProps={{hash responsive=(array "xs")}}` or turn it off with `responsive=false`. After a change, once the date popover closes, the button shows a "Click to apply" tooltip for two seconds (`showTooltip`); `toolTipProps` configures that tooltip.
+
 </EuiText>
 
 ```gjs component

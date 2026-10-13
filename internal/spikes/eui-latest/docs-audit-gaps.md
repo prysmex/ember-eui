@@ -21,7 +21,6 @@ This is the list of those gaps. Effort: S/M/L.
 | Component | Missing prop/feature |
 | --- | --- |
 | EuiSearchBar | `box` prepend/append/onClick/onFocus/onBlur; filter option `view` as markup |
-| EuiSuperDatePicker | not in the audit, still missing: `isDisabled={ display }`, the pretty duration display (`showPrettyDuration`), `quickSelectButtonProps`, the auto refresh append button, `updateButtonProps` tooltip/`responsive` (see super-date-picker-handoff.md) |
 | EuiDatePicker | no calendar picker in core (flatpickr/pikaday packages) |
 
 ## Tables and data grid

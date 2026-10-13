@@ -18,7 +18,6 @@ This is the list of those gaps. Effort: S/M/L.
 | EuiTimeline | node `children` on items |
 | EuiTourStep | `@anchor`, `@zIndex`, `@footerAction` arg; no `useEuiTour` equivalent |
 | EuiToolTip | `@repositionOnScroll` |
-| EuiButton / EuiButtonIcon | `hasAriaDisabled` |
 | EuiTextDiff | `timeout`, `insertComponent`, `deleteComponent` |
 | EuiToast / toaster service | `body` is string-only |
 | EuiTreeView | `icon` takes icon type strings only |
@@ -67,15 +66,7 @@ This is the list of those gaps. Effort: S/M/L.
 
 | Component | Missing prop/feature | Upstream page | Effort | Notes |
 |---|---|---|---|---|
-| EuiButton / EuiButtonEmpty / EuiButtonIcon (and EuiSplitButton) | `hasAriaDisabled` (aria-disabled, stays focusable) | navigation/buttons/button.mdx | M | Not in any signature; the side-by-side disabled demo is dropped from d08. |
 | EuiButton | `minWidth` | navigation/buttons/button.mdx | S | Not in signature. |
-| EuiButtonGroup | `hasAriaDisabled` | navigation/buttons/group.mdx | M | Depends on the button-level prop. |
-| EuiButtonGroup | per-option `title` | navigation/buttons/group.mdx | S | `Option` has `aria-label`/`toolTipContent` only. |
-| EuiButtonGroup | Children API (EuiButton/EuiButtonEmpty/EuiButtonIcon as children, passing buttonSize/isDisabled down) | navigation/buttons/group.mdx | L | Signature is `options` only, no blocks. Gates the four rows below. |
-| EuiButtonGroup | `gutterSize` | navigation/buttons/group.mdx | M | Children API only. |
-| EuiButtonGroup | `variant="segmented"` (`showDividers`, `wrap`) | navigation/buttons/group.mdx | L | Children API only. |
-| EuiButtonGroup | `layout="vertical"` | navigation/buttons/group.mdx | M | Children API only. |
-| EuiButtonGroup | `variant="selection"` + `display` (regular/highlighted/inverse) | navigation/buttons/group.mdx | L | No `display` arg. |
 | EuiContextMenu | panel `height` (fixed height, scrollable) | navigation/context-menu.mdx | M | Example absent from demos. |
 | EuiContextMenu items | `renderItem` | navigation/context-menu.mdx | S/M | Only per-panel `content` block exists. |
 | EuiContextMenu items | `toolTipProps` (position etc.) | navigation/context-menu.mdx | S | Only `toolTipContent`/`toolTipTitle`. |

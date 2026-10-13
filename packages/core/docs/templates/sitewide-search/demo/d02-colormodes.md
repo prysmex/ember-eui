@@ -6,7 +6,11 @@ order: 2
 
 <EuiText>
 
-Upstream's `colorModes` prop (`{ search: 'default', popover: 'inverse' }`) applies a different color mode to the search and the popover than the nearest theme provider. Ember EUI's `EuiSelectableTemplateSitewide` has no `@colorModes` arg: it follows the color mode of the nearest provider. This is recorded as a gap.
+`EuiSelectableTemplateSitewide` by default has the color mode of the nearest provider applied. If you want to override this manually, you can pass `@colorModes` to the component. This allows you to apply different color modes to the search and popover components: `light`, `dark`, `inverse` (the opposite of the nearest provider's), `default` (the nearest provider's) and, for the popover, `global` (the outermost provider's).
+
+```hbs
+<EuiSelectableTemplateSitewide @colorModes={{hash search="default" popover="inverse"}} />
+```
 
 </EuiText>
 
@@ -23,8 +27,10 @@ export default class SitewideColorModesDemo extends Component {
     },
   ];
 
+  colorModes = { search: 'default', popover: 'inverse' };
+
   <template>
-    <EuiSelectableTemplateSitewide @options={{this.options}} />
+    <EuiSelectableTemplateSitewide @options={{this.options}} @colorModes={{this.colorModes}} />
   </template>
 }
 ```

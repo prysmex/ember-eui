@@ -36,8 +36,3 @@ This is the list of those gaps. Effort: S/M/L.
 
 | Component | Missing prop/feature | Upstream page | Effort | Notes |
 |---|---|---|---|---|
-| EuiSelectableTemplateSitewide | `searchProps` (`append`, `onKeyUpCapture`, `inputRef`, `className`) | templates/sitewide-search | M | Only `@onSearch`, `@placeholder`; Cmd+K demo needs it. |
-| EuiSelectableTemplateSitewide | `listProps`, `popoverProps` | templates/sitewide-search | S | `listProps` hard-coded internally. |
-| EuiSelectableTemplateSitewide | `popoverButtonBreakpoints` | templates/sitewide-search | S/M | Block always replaces the field. |
-| EuiSelectableTemplateSitewide | `colorModes` | templates/sitewide-search | S | Already noted unsupported in d02. |
-| EuiSelectableTemplateSitewide | meta class hook for custom types (`--PINK`) | templates/sitewide-search | S | Unverified. |

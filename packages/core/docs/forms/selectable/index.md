@@ -76,7 +76,7 @@ change applied.
 | `@onChange` |  |  | Called with all options after one is checked or unchecked (new objects; the given ones are not mutated), the click or keyboard event, and the changed option. |
 | `@onActiveOptionChange` | `(option: EuiSelectableOption \| null) => void` |  | Called with the current option (or `null`) whenever it changes through the keyboard, focus or searching. |
 | `@searchable` | `boolean` |  | Adds a search field that filters the options. |
-| `@searchProps` |  |  | Options of the search field: `{ placeholder, compressed, isLoading, isClearable, value, defaultValue, onChange(searchValue, matchingOptions), onSearch (same as onChange, not called on render), onKeyDown, onClick, onFocus, onBlur, inputRef, 'data-test-subj' }`. With `value` the search is controlled: update it from `onChange`. `onChange` is also called once after the first render. |
+| `@searchProps` |  |  | Options of the search field: `{ placeholder, compressed, isLoading, isClearable, value, defaultValue, onChange(searchValue, matchingOptions), onSearch (same as onChange, not called on render), onKeyDown, onKeyUpCapture, onInput, onClick, onFocus, onBlur, inputRef, className, prepend, append, 'data-test-subj' }`. With `value` the search is controlled: update it from `onChange`. `onChange` is also called once after the first render. |
 | `@optionMatcher` | `EuiSelectableOptionMatcher` | the label (or `searchableLabel`) containing the search, ignoring case | Decides whether an option matches the search: `({ option, searchValue, normalizedSearchValue }) => boolean`. |
 | `@selectableScreenReaderText` | `string` |  | Screen reader text read before the keyboard instructions of the search field. |
 | `@singleSelection` | `boolean \| 'always'` | `false` | `true`: one option at most; `'always'`: exactly one (clicking the checked option keeps it); `false`: several, shown with check boxes and `aria-checked`. |
@@ -198,6 +198,11 @@ Usually rendered for you by `EuiSelectable` with `@searchable={{true}}`.
 | `@onFocus` | `(event: FocusEvent) => void` |  | Called when the field gets focus. |
 | `@onBlur` | `(event: FocusEvent) => void` |  | Called when the field loses focus. |
 | `@dataTestSubj` | `string` |  | `data-test-subj` of the field. |
+| `@className` | `string` |  | Extra class name(s) of the field (upstream `className`). |
+| `@prepend` | `string \| ComponentLike` |  | Content before the field (upstream `prepend`): a string is shown as a label, a component is rendered as is. |
+| `@append` | `string \| ComponentLike` |  | Content after the field (upstream `append`): a string is shown as a label, a component is rendered as is. |
+| `@onKeyUpCapture` | `(event: KeyboardEvent) => void` |  | Called on `keyup` in the field, in the capture phase. |
+| `@onInput` | `(event: Event) => void` |  | Called on `input` in the field, before the search is updated. |
 
 HTML attributes and modifiers (`class`, `data-test-*`, `{{on …}}`) are applied to its `<input>`.
 

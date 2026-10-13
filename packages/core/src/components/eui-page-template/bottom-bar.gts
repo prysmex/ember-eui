@@ -10,6 +10,7 @@ import type {
 } from '../../utils/eui/page-layout.ts';
 import type { EuiCss } from '../../utils/eui/styles.ts';
 import type { EuiBottomBarSignature } from '../eui-bottom-bar';
+import type { TOC } from '@ember/component/template-only';
 
 /** Upstream `_EuiPageBottomBar`: hides wide flex margins, never shrinks. */
 const PAGE_BOTTOM_BAR_CSS = { overflow: 'hidden', flexShrink: 0 };
@@ -41,6 +42,11 @@ export interface EuiPageTemplateBottomBarSignature {
     position?: EuiBottomBarSignature['Args']['position'];
     /** Styles composed last into the bar's class (upstream's `css`). */
     css?: EuiCss;
+    /**
+     * @private The template's main element: the bar is rendered at its end
+     * (upstream `parent`), wherever `T.BottomBar` is placed.
+     */
+    parent?: HTMLElement | null;
   };
   Blocks: {
     /** The bar's content, e.g. buttons in an `EuiFlexGroup`. */
@@ -48,7 +54,47 @@ export interface EuiPageTemplateBottomBarSignature {
   };
 }
 
-/** Upstream `_EuiPageBottomBar` (page_template/bottom_bar). */
+interface BarSignature {
+  Element: EuiBottomBarSignature['Element'];
+  Args: Omit<EuiPageTemplateBottomBarSignature['Args'], 'parent' | 'css'> & {
+    css: EuiCss;
+  };
+  Blocks: { default: [] };
+}
+
+/** The bar itself: an `EuiBottomBar` around an aligned `EuiPageSection`. */
+const Bar: TOC<BarSignature> = <template>
+  <EuiBottomBar
+    @paddingSize="none"
+    @position={{if @position @position "sticky"}}
+    @usePortal={{@usePortal}}
+    @affordForDisplacement={{@affordForDisplacement}}
+    @bodyClassName={{@bodyClassName}}
+    @landmarkHeading={{@landmarkHeading}}
+    @top={{@top}}
+    @right={{@right}}
+    @left={{@left}}
+    @bottom={{@bottom}}
+    @css={{@css}}
+    ...attributes
+  >
+    <EuiPageSection
+      @paddingSize={{@paddingSize}}
+      @restrictWidth={{@restrictWidth}}
+    >
+      {{yield}}
+    </EuiPageSection>
+  </EuiBottomBar>
+</template>;
+
+/**
+ * Upstream `_EuiPageBottomBar` (page_template/bottom_bar). Upstream finds
+ * the template's main element by id after a frame and portals the bar to
+ * its end; here the template hands the element over (`@parent`, set once
+ * the main element is rendered) and `{{#in-element}}` (Ember's portal)
+ * renders the bar there. Until then, or outside a template, the bar
+ * renders in place, as upstream's does before its frame.
+ */
 export default class EuiPageTemplateBottomBar extends Component<EuiPageTemplateBottomBarSignature> {
   @cached
   get css(): EuiCss {
@@ -56,26 +102,41 @@ export default class EuiPageTemplateBottomBar extends Component<EuiPageTemplateB
   }
 
   <template>
-    <EuiBottomBar
-      @paddingSize="none"
-      @position={{if @position @position "sticky"}}
-      @usePortal={{@usePortal}}
-      @affordForDisplacement={{@affordForDisplacement}}
-      @bodyClassName={{@bodyClassName}}
-      @landmarkHeading={{@landmarkHeading}}
-      @top={{@top}}
-      @right={{@right}}
-      @left={{@left}}
-      @bottom={{@bottom}}
-      @css={{this.css}}
-      ...attributes
-    >
-      <EuiPageSection
+    {{#if @parent}}
+      {{! Upstream portals the bar to the end of the main element. }}
+      {{#in-element @parent insertBefore=null}}
+        <Bar
+          @css={{this.css}}
+          @paddingSize={{@paddingSize}}
+          @restrictWidth={{@restrictWidth}}
+          @position={{@position}}
+          @usePortal={{@usePortal}}
+          @affordForDisplacement={{@affordForDisplacement}}
+          @bodyClassName={{@bodyClassName}}
+          @landmarkHeading={{@landmarkHeading}}
+          @top={{@top}}
+          @right={{@right}}
+          @left={{@left}}
+          @bottom={{@bottom}}
+          ...attributes
+        >{{yield}}</Bar>
+      {{/in-element}}
+    {{else}}
+      <Bar
+        @css={{this.css}}
         @paddingSize={{@paddingSize}}
         @restrictWidth={{@restrictWidth}}
-      >
-        {{yield}}
-      </EuiPageSection>
-    </EuiBottomBar>
+        @position={{@position}}
+        @usePortal={{@usePortal}}
+        @affordForDisplacement={{@affordForDisplacement}}
+        @bodyClassName={{@bodyClassName}}
+        @landmarkHeading={{@landmarkHeading}}
+        @top={{@top}}
+        @right={{@right}}
+        @left={{@left}}
+        @bottom={{@bottom}}
+        ...attributes
+      >{{yield}}</Bar>
+    {{/if}}
   </template>
 }

@@ -13,6 +13,10 @@ import EuiEmptyPrompt from '#src/components/eui-empty-prompt.gts';
 import EuiPageSection from '#src/components/eui-page-section.gts';
 import EuiPageTemplate from '#src/components/eui-page-template.gts';
 import EuiPageTemplateSidebar from '#src/components/eui-page-template/sidebar.gts';
+import {
+  euiBreakpointsMedia,
+  euiOutsideBreakpointsMedia
+} from '#src/utils/eui/page-layout.ts';
 import { resolveBorealisTheme } from '#src/utils/eui/theme.ts';
 
 import type {
@@ -782,6 +786,145 @@ module('Integration | Component | EuiPageTemplate composable', function (hooks) 
     assert.strictEqual(computed.backgroundColor, rgb(dark.components.bottomBarBackground), 'dark bar');
     const sidebar = el(this.element, '[data-page] .euiPageSidebar').getBoundingClientRect();
     assert.true(bar.getBoundingClientRect().left >= sidebar.right - 0.5, 'never over the sidebar');
+  });
+
+  test('T.BottomBar renders at the end of main wherever it is placed', async function (assert) {
+    class State {
+      @tracked showLate = false;
+      @tracked label = 'Bar';
+    }
+    const state = new State();
+    await render(
+      <template>
+        <EuiPageTemplate @offset={{0}} data-page>
+          <:default as |T|>
+            <T.BottomBar data-bar>{{state.label}}</T.BottomBar>
+            <T.Section data-first>A</T.Section>
+            <T.Section>B</T.Section>
+            {{#if state.showLate}}<T.Section data-late>C</T.Section>{{/if}}
+          </:default>
+        </EuiPageTemplate>
+      </template>
+    );
+    const main = el(this.element, '[data-page] main');
+    const bar = el(main, '[data-bar]');
+    assert.strictEqual(bar.parentElement, main, 'a child of main');
+    assert.strictEqual(main.lastElementChild, bar, 'after the sections, although placed first');
+    assert.strictEqual(main.querySelectorAll('.euiBottomBar').length, 1, 'rendered once');
+
+    state.showLate = true;
+    await settled();
+    assert.strictEqual(main.lastElementChild, bar, 'content rendered later stays above the bar');
+    assert.dom('[data-late]').exists();
+    assert.strictEqual(
+      el(main, '[data-late]').compareDocumentPosition(bar) & Node.DOCUMENT_POSITION_FOLLOWING,
+      Node.DOCUMENT_POSITION_FOLLOWING
+    );
+
+    state.label = 'Changed';
+    await settled();
+    assert.strictEqual(el(main, '[data-bar]'), bar, 'updates in place');
+    assert.dom(el(bar, '.euiPageSection')).hasText('Changed');
+  });
+
+  test('T.BottomBar: several bars keep their order; a conditional bar goes last', async function (assert) {
+    class State {
+      @tracked showBar = false;
+    }
+    const state = new State();
+    await render(
+      <template>
+        <EuiPageTemplate @offset={{0}} @component="div" data-page>
+          <:sidebar as |T|><T.Sidebar>Nav</T.Sidebar></:sidebar>
+          <:default as |T|>
+            {{#if state.showBar}}<T.BottomBar data-late-bar>Late</T.BottomBar>{{/if}}
+            <T.BottomBar data-bar="1">One</T.BottomBar>
+            <T.Section>A</T.Section>
+            <T.BottomBar data-bar="2">Two</T.BottomBar>
+          </:default>
+        </EuiPageTemplate>
+      </template>
+    );
+    const main = el(this.element, '[data-page] > [id^="EuiPageTemplateInner"]');
+    const children = () => Array.from(main.children) as HTMLElement[];
+    assert.deepEqual(
+      children().map((child) => child.dataset['bar'] ?? child.className.split(' ')[0]),
+      ['euiPageSection', '1', '2'],
+      'bars after the content, in their order'
+    );
+
+    state.showBar = true;
+    await settled();
+    assert.strictEqual(main.lastElementChild, el(main, '[data-late-bar]'), 'a bar rendered later is appended');
+
+    state.showBar = false;
+    await settled();
+    assert.dom('[data-late-bar]').doesNotExist('removed with its condition');
+    assert.strictEqual(main.lastElementChild, el(main, '[data-bar="2"]'));
+  });
+
+  test('responsive: CSS media queries give the same result as upstream useIsWithinBreakpoints', function (assert) {
+    // Upstream (`CurrentEuiBreakpointProvider` + `useIsWithinBreakpoints`):
+    // the current breakpoint is the largest theme breakpoint whose value is
+    // <= window.innerWidth; the template responds while it is in `responsive`.
+    const upstreamIsWithin = (
+      breakpoints: Record<string, number>,
+      width: number,
+      sizes: EuiPageBreakpoint[]
+    ) => {
+      const current = Object.keys(breakpoints)
+        .sort((a, b) => breakpoints[b]! - breakpoints[a]!)
+        .find((key) => breakpoints[key]! <= width);
+      return current ? sizes.includes(current as EuiPageBreakpoint) : false;
+    };
+    const subsets: EuiPageBreakpoint[][] = [];
+    for (let mask = 0; mask < 1 << ALL_BREAKPOINTS.length; mask++) {
+      subsets.push(ALL_BREAKPOINTS.filter((_, i) => mask & (1 << i)));
+    }
+    const contexts = [
+      resolveBorealisTheme('light'),
+      // a theme with custom breakpoints (upstream `modify.breakpoint`)
+      resolveBorealisTheme('light', {
+        breakpoint: { xs: 0, s: 500, m: 900, l: 1100, xl: 1500 }
+      } as never)
+    ];
+
+    const iframe = document.createElement('iframe');
+    iframe.style.cssText = 'position:fixed;top:0;left:0;height:100px;border:0;visibility:hidden';
+    document.body.appendChild(iframe);
+    let checked = 0;
+    const mismatches: string[] = [];
+    try {
+      for (const context of contexts) {
+        const breakpoints = context.euiTheme.breakpoint as Record<string, number>;
+        const widths = new Set<number>([1, 2000]);
+        for (const value of Object.values(breakpoints)) {
+          for (const width of [value - 1, value, value + 1]) {
+            if (width > 0) widths.add(width);
+          }
+        }
+        for (const width of widths) {
+          iframe.style.width = `${width}px`;
+          const win = iframe.contentWindow!;
+          assert.strictEqual(win.innerWidth, width, `iframe viewport ${width}`);
+          for (const sizes of subsets) {
+            const inside = euiBreakpointsMedia(context, sizes);
+            const outside = euiOutsideBreakpointsMedia(context, sizes);
+            const matches = (query: string | undefined) =>
+              query ? win.matchMedia(query.replace(/^@media /, '')).matches : false;
+            const expected = upstreamIsWithin(breakpoints, win.innerWidth, sizes);
+            checked++;
+            if (matches(inside) !== expected || matches(outside) === expected) {
+              mismatches.push(`${width}px [${sizes.join(',')}]`);
+            }
+          }
+        }
+      }
+    } finally {
+      iframe.remove();
+    }
+    assert.deepEqual(mismatches, [], `no mismatch in ${checked} width × responsive cases`);
+    assert.true(checked > 800, `${checked} cases`);
   });
 
   test('light and dark: the nearest provider colors the panelled content', async function (assert) {

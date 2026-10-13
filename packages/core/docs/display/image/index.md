@@ -10,6 +10,8 @@ title: Image
 
 Use **EuiImage** when you need to place a static image into a page with an optional caption.
 
+Attributes you add to `EuiImage` (`class`, `style`, `loading`, `data-test-subj`…) go on the `<img>`, and on the full screen image too, like upstream's rest props. Use `@wrapperProps` for the `<figure>`: `className`, `css`, `style` and any other key as an attribute.
+
 </EuiText>
 
 <EuiSpacer />
@@ -55,6 +57,8 @@ An image with an optional caption, shadow and full screen view.
 | Block | Description |
 | --- | --- |
 | `<:caption>` | Rich caption (upstream's node `caption`), instead of `@caption`. The figure's accessible name is the caption's text. |
+
+HTML attributes and modifiers (`class`, `data-test-*`, `{{on …}}`) are applied to its `<img>`.
 
 </EuiText>
 <!-- api:end -->

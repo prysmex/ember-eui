@@ -4,6 +4,7 @@ import { isDestroying } from '@ember/destroyable';
 import { hash } from '@ember/helper';
 import { guidFor } from '@ember/object/internals';
 
+import { modifier as functionModifier } from 'ember-modifier';
 import style from 'ember-style-modifier/modifiers/style';
 import { and, eq, or } from 'ember-truth-helpers';
 
@@ -457,6 +458,23 @@ export default class EuiPageTemplate extends Component<EuiPageTemplateSignature>
     }
   };
 
+  /**
+   * The rendered main element, where `T.BottomBar`s render (upstream's
+   * `bottomBar.parent`: the bar is portaled to the end of the main
+   * content). Set once the element is in the DOM, like upstream's
+   * frame-delayed lookup.
+   */
+  @tracked mainElement: HTMLElement | null = null;
+
+  registerMain = functionModifier((element: Element) => {
+    this.mainElement = element as HTMLElement;
+    return () => {
+      if (!isDestroying(this) && this.mainElement === element) {
+        this.mainElement = null;
+      }
+    };
+  });
+
   /** Upstream: the layout depends on whether there are sidebars. */
   get layout(): ComposableLayout {
     return this.sidebarCount > 0
@@ -615,6 +633,7 @@ export default class EuiPageTemplate extends Component<EuiPageTemplateSignature>
             EuiPageTemplateBottomBar
             restrictWidth=this.composableRestrictWidth
             paddingSize=this.composablePaddingSize
+            parent=this.mainElement
           )
           Section=(component
             EuiPageSection
@@ -654,6 +673,7 @@ export default class EuiPageTemplate extends Component<EuiPageTemplateSignature>
               aria-labelledby={{@mainProps.aria-labelledby}}
               data-test-subj={{@mainProps.data-test-subj}}
               {{style this.mainStyle}}
+              {{this.registerMain}}
             >
               {{yield
                 (hash

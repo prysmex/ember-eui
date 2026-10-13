@@ -12,6 +12,7 @@ import { buttonReset } from '../../../utils/eui/form-controls.ts';
 import { euiDatePopoverButtonStyles } from '../../../utils/eui/styles.generated.ts';
 import { euiClass, useEuiBorealisStyles } from '../../../utils/eui/styles.ts';
 import EuiPopover from '../../eui-popover.gts';
+import EuiToolTip from '../../eui-tool-tip.gts';
 import { useFormatTimeString } from '../utils/index.ts';
 import { useI18nTimeOptions } from '../utils/time-options.ts';
 import EuiDatePopoverContent from './eui-date-popover-content.gts';
@@ -257,7 +258,15 @@ export default class EuiDatePopoverButton extends Component<EuiDatePopoverButton
     return euiClass(this.context, this.styles.tooltipAnchor);
   }
 
-  /** Upstream title: the date, or why it is invalid / needs updating. */
+  /**
+   * Upstream: the tooltip repeats the date, so screen readers only get it
+   * when it adds something (invalid or needs updating).
+   */
+  get hidesTitleFromScreenReaders() {
+    return !this.args.isInvalid && !this.args.needsUpdating;
+  }
+
+  /** Upstream tooltip: the date, or why it is invalid / needs updating. */
   get title() {
     const title = this.formattedValue;
 
@@ -302,19 +311,26 @@ export default class EuiDatePopoverButton extends Component<EuiDatePopoverButton
             to="button"
           }}
         {{else}}
-          <button
-            type="button"
-            class={{this.classes}}
-            title={{this.title}}
-            disabled={{@isDisabled}}
-            data-test-subj="superDatePicker{{this.position}}DatePopoverButton"
-            ...attributes
-            {{on "click" this.toggle}}
-            {{on "focus" this.onFocus}}
-            {{this.returnStrandedFocus this.isOpen}}
+          {{! Upstream wraps the button in a tooltip showing its title. }}
+          <EuiToolTip
+            @content={{this.title}}
+            @display="block"
+            @disableScreenReaderOutput={{this.hidesTitleFromScreenReaders}}
+            @anchorCss={{this.styles.tooltipAnchor}}
           >
-            {{this.formattedValue}}
-          </button>
+            <button
+              type="button"
+              class={{this.classes}}
+              disabled={{@isDisabled}}
+              data-test-subj="superDatePicker{{this.position}}DatePopoverButton"
+              ...attributes
+              {{on "click" this.toggle}}
+              {{on "focus" this.onFocus}}
+              {{this.returnStrandedFocus this.isOpen}}
+            >
+              {{this.formattedValue}}
+            </button>
+          </EuiToolTip>
         {{/if}}
       </:button>
 

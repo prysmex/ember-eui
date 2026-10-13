@@ -107,7 +107,7 @@ module('Integration | Component | eui-form-control-layout', function (hooks) {
 
     assert.dom('.euiFormControlLayoutDelimited input.start').hasClass('euiFormControlLayoutDelimited__input');
     // Upstream spelling (`__delimiter`); the misspelled legacy class is gone.
-    assert.dom('.euiFormControlLayoutDelimited__delimiter').hasText('→');
+    assert.dom('.euiFormControlLayoutDelimited__delimiter svg').hasAttribute('data-icon-type', 'sortRight').hasAria('label', 'to');
     assert.dom('input.end').hasClass('euiFormControlLayoutDelimited__input');
   });
 

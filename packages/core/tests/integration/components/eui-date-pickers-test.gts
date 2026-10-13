@@ -204,11 +204,11 @@ module('Integration | Component | Borealis date pickers', function (hooks) {
     assert.true(box(startPopover).width > box(endPopover).width);
     assert.strictEqual(box(el(inside('s', '.euiDatePopoverButton--start'))).height, 32);
     assert.dom(start).hasAttribute('data-test-subj', 'superDatePickerstartDatePopoverButton').hasAttribute('type', 'button');
-    assert.dom(end).hasAttribute('data-test-subj', 'superDatePickerendDatePopoverButton').hasAttribute('title', 'now');
+    assert.dom(end).hasAttribute('data-test-subj', 'superDatePickerendDatePopoverButton').hasText('now').doesNotHaveAttribute('title');
 
     // delimiter
     const delimiter = el(inside('m', '.euiFormControlLayoutDelimited__delimiter'));
-    assert.dom(delimiter).hasText('→');
+    assert.dom(el('svg', delimiter)).hasAttribute('data-icon-type', 'sortRight').hasAria('label', 'to');
     assert.strictEqual(css(delimiter).color, rgb(light.colors.textSubdued));
 
     // quick select prepend: upstream EuiFormPrepend button
@@ -269,7 +269,7 @@ module('Integration | Component | Borealis date pickers', function (hooks) {
     assert.strictEqual(css(inside('invalid', '.euiFormControlLayoutDelimited__delimiter')).color, rgb(light.colors.textDanger));
     assert.dom(inside('invalid', '.euiFormControlLayoutDelimited')).hasClass('euiFormControlLayoutDelimited--isInvalid');
     const invalidStart = el(inside('invalid', '.euiDatePopoverButton--start'));
-    assert.dom(invalidStart).hasClass('euiDatePopoverButton-isInvalid').hasAttribute('title', /^Invalid date: /);
+    assert.dom(invalidStart).hasClass('euiDatePopoverButton-isInvalid').doesNotHaveAttribute('title');
     assert.dom(inside('invalid', '.euiSuperUpdateButton')).isDisabled();
 
     // loading: the update button spins; without it the layout spins (upstream)
@@ -319,7 +319,7 @@ module('Integration | Component | Borealis date pickers', function (hooks) {
     assert.strictEqual(wrapper.color, rgb(light.colors.textSuccess));
     assert.strictEqual(wrapper.outlineStyle, 'solid');
     assert.strictEqual(wrapper.outlineColor, rgb(light.colors.success));
-    assert.dom(inside('a', '.euiDatePopoverButton--start')).hasClass('euiDatePopoverButton-needsUpdating').hasAttribute('title', /^Update needed: .*minutes ago$/);
+    assert.dom(inside('a', '.euiDatePopoverButton--start')).hasClass('euiDatePopoverButton-needsUpdating').doesNotHaveAttribute('title');
     assert.strictEqual(css(inside('a', '.euiFormControlLayoutDelimited__delimiter')).color, rgb(light.colors.textSuccess), 'delimiter inherits');
     assert.dom(update).hasText('Update');
     assert.strictEqual(css(update).backgroundColor, rgb(fill(lightContext, 'success').backgroundColor), 'success fill');

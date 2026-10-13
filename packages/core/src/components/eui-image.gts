@@ -6,6 +6,7 @@ import { service } from '@ember/service';
 import didInsert from '@ember/render-modifiers/modifiers/did-insert';
 
 import { focusTrap } from 'ember-focus-trap';
+import spreadAttributes from '../-private/eui-spread-attributes.ts';
 import { focusTrapFactory } from '../-private/focus-trap-registry.ts';
 import style from 'ember-style-modifier/modifiers/style';
 import { or } from 'ember-truth-helpers';
@@ -39,6 +40,9 @@ function isNamedSize(size: unknown): size is EuiImageSize {
 }
 
 // React's global reset zeroes figure margins and strips button chrome.
+/** `wrapperProps` keys handled by the template, not spread as attributes. */
+const WRAPPER_PROPS = ['id', 'role', 'aria-label', 'data-test-subj', 'style'];
+
 const figureReset: CSSObject = { boxSizing: 'border-box', margin: 0 };
 const buttonReset: CSSObject = {
   boxSizing: 'border-box',
@@ -51,8 +55,9 @@ const buttonReset: CSSObject = {
 };
 
 /**
- * Upstream's `wrapperProps` for the `<figure>`. Ember has no prop spreading,
- * so this lists what is supported; `...attributes` also lands on the figure.
+ * Upstream's `wrapperProps` for the `<figure>`. The keys below are
+ * handled; any other key with a string, number or boolean value is set
+ * as an attribute of the figure (upstream spreads `wrapperProps`).
  */
 export interface EuiImageWrapperProps {
   /** Added to the figure's classes. */
@@ -66,6 +71,7 @@ export interface EuiImageWrapperProps {
   /** Replaces the figure's accessible name (the caption's text). */
   'aria-label'?: string;
   'data-test-subj'?: string;
+  [attribute: string]: unknown;
 }
 
 type ImageArgs = {
@@ -125,7 +131,11 @@ type ImageArgs = {
 
 /** An image with an optional caption, shadow and full screen view. */
 export interface EuiImageSignature {
-  Element: HTMLElement;
+  /**
+   * Attributes go on the `<img>` (and on the full screen one), as
+   * upstream's rest props; use `@wrapperProps` for the `<figure>`.
+   */
+  Element: HTMLImageElement;
   Args: ImageArgs;
   Blocks: {
     /** Unused. */
@@ -316,7 +326,7 @@ export default class EuiImage extends Component<EuiImageSignature> {
       data-test-subj={{get @wrapperProps "data-test-subj"}}
       aria-label={{or (get @wrapperProps "aria-label") @caption captionText undefined}}
       {{style @wrapperProps.style}}
-      ...attributes
+      {{spreadAttributes @wrapperProps WRAPPER_PROPS}}
     >
       {{#if @allowFullScreen}}
         <button
@@ -331,6 +341,7 @@ export default class EuiImage extends Component<EuiImageSignature> {
             src={{or @src @url}}
             alt={{@alt}}
             width={{@width}}
+            ...attributes
           />
           <span class={{this.openIconClasses}}>
             <span class={{this.screenReaderClasses}}>
@@ -345,6 +356,7 @@ export default class EuiImage extends Component<EuiImageSignature> {
           src={{or @src @url}}
           alt={{@alt}}
           width={{@width}}
+          ...attributes
         />
       {{/if}}
       {{#if (or @caption (has-block "caption"))}}
@@ -390,6 +402,7 @@ export default class EuiImage extends Component<EuiImageSignature> {
               src={{or @src @url}}
               alt={{@alt}}
               width={{@width}}
+              ...attributes
             />
           </button>
           {{#if (or @caption (has-block "caption"))}}

@@ -61,8 +61,9 @@ input in the blocks (`EuiPikaday`, `EuiFlatpickr`, or
 | `@isInvalid` | `boolean` |  | Invalid look: danger outline, danger delimiter and a warning icon. |
 | `@isLoading` | `boolean` |  | Shows a spinner. |
 | `@iconType` | `boolean \| string` |  | Icon at the start: `true` (the default) shows `calendar`, `false` hides it, or any `EuiIcon` type. |
-| `@delimiter` | `string` | `'→'` | Text between the inputs. |
+| `@delimiter` | `string` | an arrow icon labelled "to" | Text between the inputs. |
 | `@inline` | `boolean` |  | For two calendars displayed in the page (e.g. inline flatpickr or pikaday calendars in the blocks): drops the field frame, the icon and `@fullWidth`/`@compressed`, lays the blocks out side by side and stacks them when the container is too narrow. Pass the inline option to your calendars too. |
+| `@showTimeSelect` | `boolean` |  | With `@inline`: tells the range that the calendars show a time list (react-datepicker's `showTimeSelect`), so they stack below a wider container (2 × 374px + the delimiter instead of 2 × 268px). Upstream reads `showTimeSelect` from its start and end controls; blocks can't be inspected, so pass it here. |
 | `@shadow` | `boolean` | `true` | With `@inline`: a shadow around both calendars. |
 
 | Block | Description |

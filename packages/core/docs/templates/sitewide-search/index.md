@@ -102,7 +102,8 @@ chosen one `checked: 'on'`).
 | `@loadingMessage` | `string` | "Loading results" | Text while `@isLoading`. |
 | `@emptyMessage` | `string` | "No results available" | Text when there are no results. |
 | `@noMatchesMessage` | `string` | `@emptyMessage`'s | Text when the search matches nothing. |
-| `@isPreFiltered` | `boolean` | `false` | The results are already filtered (e.g. by a server), so the search does not filter them again. |
+| `@isPreFiltered` |  | `false` | The results are already filtered (e.g. by a server), so the search does not filter them again. |
+| `@css` | `EuiCss` |  | Styles composed last into the selectable's class (upstream's `css`, part of the rest props spread onto `EuiSelectable`). |
 
 | Block | Description |
 | --- | --- |

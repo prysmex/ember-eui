@@ -217,10 +217,7 @@ export default class RelativeTab extends Component<RelativeTabSignature> {
         @compressed={{true}}
         @value={{this.formattedValue}}
         @readOnly={{true}}
-        aria-describedby={{if
-          @timeZoneDisplayProps.timeZone
-          this.timeZoneDescriptionId
-        }}
+        aria-describedby={{this.timeZoneDescriptionId}}
       >
         <:prepend as |classes|>
           <EuiFormLabel id={{this.labelId}} class={{classes}}>

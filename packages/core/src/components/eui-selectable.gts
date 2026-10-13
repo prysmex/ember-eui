@@ -92,7 +92,9 @@ export interface EuiSelectableSignature {
      * isClearable, value, defaultValue, onChange(searchValue,
      * matchingOptions), onSearch (same as onChange, not called on render),
      * onKeyDown, onKeyUpCapture, onInput, onClick, onFocus, onBlur,
-     * inputRef, className, prepend, append, 'data-test-subj' }`.
+     * inputRef, className, prepend, append, 'data-test-subj', fullWidth,
+     * incremental, disabled, isDisabled, readOnly, isInvalid, id }`; other
+     * keys become attributes of the `<input>` (upstream's rest spread).
      * With `value` the search is controlled: update it from `onChange`.
      * `onChange` is also called once after the first render.
      */
@@ -121,6 +123,25 @@ export interface EuiSelectableSignature {
       onKeyUpCapture?: (event: KeyboardEvent) => void;
       /** Called on `input` in the field, before the search is updated. */
       onInput?: (event: Event) => void;
+      /** Full width of its container. Defaults to `true`. */
+      fullWidth?: boolean;
+      /** Searches on every keystroke. Defaults to `true`. */
+      incremental?: boolean;
+      /** Disables the field. */
+      disabled?: boolean;
+      /** Disables the field (same as `disabled`). */
+      isDisabled?: boolean;
+      /** Read-only field. */
+      readOnly?: boolean;
+      /** Invalid look. */
+      isInvalid?: boolean;
+      /** `id` of the `<input>`. */
+      id?: string;
+      /**
+       * Any other key is set as an attribute of the `<input>` (upstream
+       * spreads the rest onto EuiFieldSearch), e.g. `name` or `maxlength`.
+       */
+      [attribute: string]: unknown;
     };
     /**
      * Decides whether an option matches the search: `({ option,
@@ -412,16 +433,22 @@ export default class EuiSelectable extends Component<EuiSelectableSignature> {
    * laid out inside (e.g. a footer button) are not list navigation. The
    * root itself also counts (Ember EUI: keydown dispatched on it).
    */
+  /** Upstream `target === this.inputRef` (searchable only). */
+  isSearchInput(target: EventTarget | null): boolean {
+    return Boolean(
+      this.args.searchable &&
+        target instanceof HTMLInputElement &&
+        target.classList.contains('euiSelectableSearch')
+    );
+  }
+
   isFromSearchOrList(event: Event): boolean {
     const target = event.target;
 
     if (target === event.currentTarget) return true;
     if (!(target instanceof Element)) return false;
 
-    return (
-      (this.args.searchable && target.classList.contains('euiSelectableSearch')) ||
-      Boolean(target.closest('.euiSelectableList'))
-    );
+    return this.isSearchInput(target) || Boolean(target.closest('.euiSelectableList'));
   }
 
   @action
@@ -430,15 +457,30 @@ export default class EuiSelectable extends Component<EuiSelectableSignature> {
     this.preventOnFocus = true;
   }
 
+  /**
+   * Upstream `onFocus`. Focusing the search field only marks the
+   * selectable as focused: the first option becomes current with the
+   * first key or search change. Focus on the list makes the first checked
+   * (or first) option current. Called without an event after a key or a
+   * search change.
+   */
   @action
-  onFocus(): void {
+  onFocus(event?: FocusEvent): void {
     if (this.preventOnFocus) {
       this.preventOnFocus = false;
 
       return;
     }
 
+    if (event && this.isSearchInput(event.target)) {
+      this.isFocused = true;
+
+      return;
+    }
+
     if (!this.visibleOptions.length || this.activeOptionIndex !== undefined) return;
+
+    if (event && !this.isFromSearchOrList(event)) return;
 
     const firstChecked = this.visibleOptions.findIndex(
       (option) => option.checked && this.isSelectable(option)
@@ -521,8 +563,10 @@ export default class EuiSelectable extends Component<EuiSelectableSignature> {
         break;
       }
       default:
-        // typing in the search: the current option is picked again
+        // upstream: any other key resets the current option and picks the
+        // first checked (or first) one again
         this.setActive(undefined);
+        this.onFocus();
         break;
     }
   }
@@ -611,6 +655,14 @@ export default class EuiSelectable extends Component<EuiSelectableSignature> {
             append=@searchProps.append
             onKeyUpCapture=@searchProps.onKeyUpCapture
             onInput=@searchProps.onInput
+            fullWidth=@searchProps.fullWidth
+            incremental=@searchProps.incremental
+            disabled=@searchProps.disabled
+            isDisabled=@searchProps.isDisabled
+            readOnly=@searchProps.readOnly
+            isInvalid=@searchProps.isInvalid
+            id=@searchProps.id
+            rest=@searchProps
           )
         )
         (component

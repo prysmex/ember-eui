@@ -10,7 +10,7 @@ Adding an [`EuiBottomBar`](/docs/core/docs/layout/bottom-bar) can be tricky to u
 
 It uses the `sticky` position so that it sticks to the bottom of and remains within the bounds of the page body. This way it will never overlap the sidebar, no matter the screen size. It also means not needing to accommodate for the height of the bar in the body element.
 
-It will also keep its content constrained to the `@restrictWidth` value so the contents are always horizontally aligned. Render it last: upstream moves it to the end of the main content, Ember renders it where you put it.
+It will also keep its content constrained to the `@restrictWidth` value so the contents are always horizontally aligned. Wherever you put it, it renders at the end of the main content, after the sections.
 
 </EuiText>
 

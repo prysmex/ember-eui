@@ -22,7 +22,7 @@ module('Integration | Component | eui-date-picker-range', function (hooks) {
     assert.dom('input[aria-label="Start date"]').hasClass('euiDatePickerRange__start').hasClass('euiDatePicker').hasClass('euiFormControlLayoutDelimited__input');
     assert.dom('input[aria-label="End date"]').hasClass('euiDatePickerRange__end');
     // upstream delimiter class (was the misspelled legacy `__delimeter`)
-    assert.dom('.euiFormControlLayoutDelimited__delimiter').hasText('→');
+    assert.dom('.euiFormControlLayoutDelimited__delimiter svg').hasAttribute('data-icon-type', 'sortRight').hasAria('label', 'to');
   });
 
   test('the default block replaces the layout', async function (assert) {

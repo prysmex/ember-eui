@@ -46,6 +46,7 @@ Styles plain HTML content (`<p>`, `<ul>`, `<h3>`, `<code>`…) with EUI's typogr
 
 | Argument | Type | Default | Description |
 | --- | --- | --- | --- |
+| `@component` | `string` | `'div'` | The element to render: a tag name such as `'span'` or `'p'` (upstream's `component`). |
 | `@grow` | `boolean` | `true` | `true` lets text span the container's full width; `false` caps lines at a readable width. |
 | `@size` | `'xs' \| 's' \| 'm' \| 'relative'` | `'s'` | `'xs'`, `'s'`, `'m'` or `'relative'` (inherits). |
 | `@textAlign` | `EuiTextAlignment` |  | `'left'`, `'center'` or `'right'` (logical, so they flip in RTL). |

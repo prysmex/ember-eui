@@ -61,9 +61,13 @@ don't want the settings to apply.
   `@mainProps` its `id`, `className`, `css`, `style`, `role`, labels and
   `data-test-subj`). Responsive stacking and border placement use CSS
   media queries over the `@responsive` breakpoints instead of measuring
-  the window.
-- `T.BottomBar` renders where you put it (upstream moves it to the end of
-  the main element): render it last.
+  the window. They switch at the same widths as upstream's
+  `useIsWithinBreakpoints` (the largest theme breakpoint at or below the
+  window width), also with custom theme breakpoints, and they apply on
+  the first render instead of after a resize listener runs.
+- `T.BottomBar` ends up at the end of the main element wherever you put
+  it, like upstream's portal: it renders through `{{#in-element}}` into
+  the main element once that element is rendered.
 - `T.EmptyPrompt`'s default block is the prompt's body; its title,
   actions, icon and footer are named blocks (`<:title>`, `<:actions as
   |Item|>`, `<:icon>`, `<:footer>`).

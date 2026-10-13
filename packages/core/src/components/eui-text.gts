@@ -41,6 +41,11 @@ export interface EuiTextSignature {
   Element: HTMLDivElement;
   Args: {
     /**
+     * The element to render: a tag name such as `'span'` or `'p'`
+     * (upstream's `component`). Defaults to `'div'`.
+     */
+    component?: string;
+    /**
      * `true` lets text span the container's full width; `false` caps lines
      * at a readable width. Defaults to `true`.
      */
@@ -66,6 +71,14 @@ export interface EuiTextSignature {
   };
 }
 
+/**
+ * The tag to render. Typed as `'div'` (the default) so that callers keep
+ * `HTMLDivElement` attributes; `@component` may name any element.
+ */
+function tagName(component: string | undefined): 'div' {
+  return (component || 'div') as 'div';
+}
+
 export default class EuiText extends Component<EuiTextSignature> {
   @cached
   get classes() {
@@ -86,6 +99,8 @@ export default class EuiText extends Component<EuiTextSignature> {
   }
 
   <template>
-    <div class="euiText {{this.classes}}" ...attributes>{{yield}}</div>
+    {{#let (element (tagName @component)) as |Tag|}}
+      <Tag class="euiText {{this.classes}}" ...attributes>{{yield}}</Tag>
+    {{/let}}
   </template>
 }

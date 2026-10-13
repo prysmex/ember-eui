@@ -220,6 +220,7 @@ const factories = {
   'components/date_picker/super_date_picker/super_date_picker.styles.js': ['euiSuperDatePickerStyles'],
   'components/date_picker/super_date_picker/date_popover/date_popover_button.styles.js': ['euiDatePopoverButtonStyles'],
   'components/date_picker/super_date_picker/date_popover/date_popover_content.styles.js': ['euiDatePopoverContentStyles'],
+  'components/date_picker/super_date_picker/date_popover/timezone_display.styles.js': ['euiTimeZoneDisplayStyles'],
   'components/date_picker/super_date_picker/date_popover/absolute_tab.styles.js': ['euiAbsoluteTabDateFormStyles'],
   'components/date_picker/super_date_picker/quick_select_popover/quick_select_panel.styles.js': ['euiQuickSelectPanelStyles'],
   'components/date_picker/super_date_picker/quick_select_popover/quick_select_popover.styles.js': ['euiQuickSelectPopoverStyles'],

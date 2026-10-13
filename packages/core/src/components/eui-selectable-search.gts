@@ -5,6 +5,7 @@ import { action } from '@ember/object';
 import { eq, not } from 'ember-truth-helpers';
 import { modifier } from 'ember-modifier';
 
+import spreadAttributes from '../-private/eui-spread-attributes.ts';
 import { getMatchingOptions } from '../-private/selectable-options.ts';
 import EuiFieldSearch from './eui-field-search.gts';
 import EuiFormAppend from './eui-form-append.gts';
@@ -78,6 +79,26 @@ export interface EuiSelectableSearchSignature {
     onKeyUpCapture?: (event: KeyboardEvent) => void;
     /** Called on `input` in the field, before the search is updated. */
     onInput?: (event: Event) => void;
+    /** Full width of its container. Defaults to `true` (upstream). */
+    fullWidth?: boolean;
+    /** Searches on every keystroke. Defaults to `true` (upstream). */
+    incremental?: boolean;
+    /** Disables the field. */
+    disabled?: boolean;
+    /** Disables the field (same as `@disabled`). */
+    isDisabled?: boolean;
+    /** Read-only field. */
+    readOnly?: boolean;
+    /** Invalid look. */
+    isInvalid?: boolean;
+    /** `id` of the `<input>`. */
+    id?: string;
+    /**
+     * Other props of `searchProps` (upstream spreads them onto the field):
+     * the ones that are not arguments are set as attributes of the
+     * `<input>` (e.g. `name`, `maxlength`); functions are skipped.
+     */
+    rest?: Record<string, unknown>;
     /** @private `aria-label` of the field (the placeholder by default). */
     ariaLabel?: string;
     /** @private `aria-activedescendant`: the current option's id. */
@@ -88,6 +109,32 @@ export interface EuiSelectableSearchSignature {
     instructions?: string;
   };
 }
+
+/**
+ * `searchProps` keys that are arguments (of EuiSelectable or of the
+ * field), never attributes.
+ */
+const SEARCH_PROPS = [
+  'placeholder',
+  'compressed',
+  'isLoading',
+  'isClearable',
+  'value',
+  'defaultValue',
+  'inputRef',
+  'data-test-subj',
+  'prepend',
+  'append',
+  'fullWidth',
+  'incremental',
+  'disabled',
+  'isDisabled',
+  'readOnly',
+  'isInvalid',
+  'id',
+  // upstream combines it with the message id (`getAccessibleName`); not ported
+  'aria-describedby'
+] as const;
 
 const callWithElement = modifier(
   (element: HTMLInputElement, [callback]: [((input: HTMLInputElement) => void) | undefined]) => {
@@ -187,8 +234,13 @@ export default class EuiSelectableSearch extends Component<EuiSelectableSearchSi
       @isFakeAppendBlock={{not @append}}
       @placeholder={{@placeholder}}
       @value={{this.fieldValue}}
-      @incremental={{true}}
-      @fullWidth={{true}}
+      @incremental={{if (isFalse @incremental) false true}}
+      @fullWidth={{if (isFalse @fullWidth) false true}}
+      @disabled={{@disabled}}
+      @isDisabled={{@isDisabled}}
+      @readOnly={{@readOnly}}
+      @isInvalid={{@isInvalid}}
+      @id={{@id}}
       @compressed={{if (isFalse @compressed) false true}}
       @isLoading={{@isLoading}}
       @isClearable={{@isClearable}}
@@ -204,6 +256,7 @@ export default class EuiSelectableSearch extends Component<EuiSelectableSearchSi
       aria-label={{@ariaLabel}}
       aria-activedescendant={{@activeDescendant}}
       data-test-subj={{@dataTestSubj}}
+      {{spreadAttributes @rest SEARCH_PROPS}}
       ...attributes
       {{on "input" this.onInput}}
       {{onIf "keydown" @onKeyDown}}

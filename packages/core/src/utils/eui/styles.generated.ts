@@ -8694,6 +8694,14 @@ var euiDatePopoverContentStyles = function euiDatePopoverContentStyles2(euiTheme
   };
 };
 
+// @elastic/eui/es/components/date_picker/super_date_picker/date_popover/timezone_display.styles.js
+var euiTimeZoneDisplayStyles = function euiTimeZoneDisplayStyles2(euiThemeContext) {
+  var euiTheme = euiThemeContext.euiTheme;
+  return {
+    euiTimeZoneDisplay: /* @__PURE__ */ css(logicalCSS("padding-horizontal", euiTheme.size.s), " ", logicalCSS("padding-bottom", euiTheme.size.s), ";;label:euiTimeZoneDisplay;")
+  };
+};
+
 // @elastic/eui/es/components/date_picker/super_date_picker/date_popover/absolute_tab.styles.js
 var _ref125 = true ? {
   name: "1oht9b5-euiAbsoluteTabDateForm__submit",
@@ -11920,6 +11928,7 @@ export {
   euiTextStyles,
   euiTextTruncate,
   euiTextTruncateStyles,
+  euiTimeZoneDisplayStyles,
   euiTimelineItemEventStyles,
   euiTimelineItemIconStyles,
   euiTimelineItemStyles,

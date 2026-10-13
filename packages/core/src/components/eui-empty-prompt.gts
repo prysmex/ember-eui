@@ -1,6 +1,9 @@
 import Component from '@glimmer/component';
 import { cached } from '@glimmer/tracking';
 
+import { and, or } from 'ember-truth-helpers';
+
+import argOrDefault from '../helpers/arg-or-default.ts';
 import { getEuiThemeContext } from '../utils/emotion/consume.ts';
 import { euiClass, useEuiBorealisStyles } from '../utils/eui/styles.ts';
 import type { EuiCss } from '../utils/eui/styles.ts';
@@ -86,10 +89,32 @@ export interface EuiEmptyPromptSignature {
     actions?: ComponentLike[];
     /** Text in a footer, e.g. a link to the docs. Use the `<:footer>` block for markup. */
     footer?: string;
+    /** @private Render the `<:icon>` block. Defaults to `true`. */
+    hasIconBlock?: boolean;
+    /** @private Render the `<:title>` block. Defaults to `true`. */
+    hasTitleBlock?: boolean;
+    /** @private Render the `<:body>` block. Defaults to `true`. */
+    hasBodyBlock?: boolean;
+    /** @private Render the `<:actions>` block. Defaults to `true`. */
+    hasActionsBlock?: boolean;
+    /** @private Render the `<:footer>` block. Defaults to `true`. */
+    hasFooterBlock?: boolean;
   };
   Blocks: {
     /** Custom content instead of the `@iconType` icon, e.g. an `EuiImage`. */
     icon?: [];
+    /**
+     * The title, inside an `EuiTitle` of `@titleSize`, instead of `@title`;
+     * bring your own heading, e.g. `<h2>No dashboards</h2>`.
+     */
+    title?: [];
+    /** The body, inside a subdued `EuiText`, instead of `@body`. */
+    body?: [];
+    /**
+     * Actions, instead of `@actions`, laid out like them. Wrap each in the
+     * yielded item: `<:actions as |Item|><Item><EuiButton …/></Item></:actions>`.
+     */
+    actions?: [ComponentLike<{ Blocks: { default: [] } }>];
     /** Replaces the title, body and actions with your own content. */
     content?: [];
     /** The footer, instead of `@footer`. */
@@ -218,59 +243,86 @@ export default class EuiEmptyPrompt extends Component<EuiEmptyPromptSignature> {
       @css={{this.panelCss}}
       ...attributes
     >
-      <div class="euiEmptyPrompt__main {{this.mainClass}}">
-        {{#if (has-block "icon")}}
-          <div class="euiEmptyPrompt__icon {{this.iconClass}}">{{yield
-              to="icon"
-            }}</div>
-        {{else if @iconType}}
-          <div class="euiEmptyPrompt__icon {{this.iconClass}}">
-            <EuiIcon
-              @type={{@iconType}}
-              @size="xxl"
-              @color={{this.iconColor}}
-            />
-          </div>
-        {{/if}}
-        <div class="euiEmptyPrompt__content {{this.contentClass}}">
-          {{#if (has-block "content")}}
-            {{yield to="content"}}
-          {{else}}
-            {{#if @title}}
-              <EuiTitle @size={{if @titleSize @titleSize "m"}}>{{@title}}</EuiTitle>
-            {{/if}}
-            {{#if @body}}
-              {{#if @title}}
-                <EuiSpacer @size="s" />
-              {{/if}}
-              <EuiText @color="subdued">{{@body}}</EuiText>
-            {{/if}}
-            {{#if this.hasActions}}
-              {{#if @body}}
-                <EuiSpacer @size="l" />
-              {{else if @title}}
-                <EuiSpacer @size="l" />
-              {{/if}}
-              <div class="euiFlexGroup euiEmptyPrompt__actions {{this.actionsClass}}">
-                {{#each @actions as |Action|}}
-                  <EuiFlexItem @grow={{false}}>
-                    <Action />
-                  </EuiFlexItem>
-                {{/each}}
+      {{#let
+        (and (argOrDefault @hasIconBlock true) (has-block "icon"))
+        (and (argOrDefault @hasTitleBlock true) (has-block "title"))
+        (and (argOrDefault @hasBodyBlock true) (has-block "body"))
+        (and (argOrDefault @hasActionsBlock true) (has-block "actions"))
+        (and (argOrDefault @hasFooterBlock true) (has-block "footer"))
+        as |hasIconBlock hasTitleBlock hasBodyBlock hasActionsBlock hasFooterBlock|
+      }}
+        {{#let
+          (or hasTitleBlock @title)
+          (or hasBodyBlock @body)
+          as |hasTitle hasBody|
+        }}
+          <div class="euiEmptyPrompt__main {{this.mainClass}}">
+            {{#if hasIconBlock}}
+              <div class="euiEmptyPrompt__icon {{this.iconClass}}">{{yield
+                  to="icon"
+                }}</div>
+            {{else if @iconType}}
+              <div class="euiEmptyPrompt__icon {{this.iconClass}}">
+                <EuiIcon
+                  @type={{@iconType}}
+                  @size="xxl"
+                  @color={{this.iconColor}}
+                />
               </div>
             {{/if}}
+            <div class="euiEmptyPrompt__content {{this.contentClass}}">
+              {{#if (has-block "content")}}
+                {{yield to="content"}}
+              {{else}}
+                {{#if hasTitleBlock}}
+                  <EuiTitle @size={{if @titleSize @titleSize "m"}}>{{yield
+                      to="title"
+                    }}</EuiTitle>
+                {{else if @title}}
+                  <EuiTitle
+                    @size={{if @titleSize @titleSize "m"}}
+                  >{{@title}}</EuiTitle>
+                {{/if}}
+                {{#if hasBody}}
+                  {{#if hasTitle}}
+                    <EuiSpacer @size="s" />
+                  {{/if}}
+                  <EuiText @color="subdued">
+                    {{#if hasBodyBlock}}{{yield to="body"}}{{else}}{{@body}}{{/if}}
+                  </EuiText>
+                {{/if}}
+                {{#if (or hasActionsBlock this.hasActions)}}
+                  {{#if (or hasTitle hasBody)}}
+                    <EuiSpacer @size="l" />
+                  {{/if}}
+                  <div
+                    class="euiFlexGroup euiEmptyPrompt__actions {{this.actionsClass}}"
+                  >
+                    {{#if hasActionsBlock}}
+                      {{yield (component EuiFlexItem grow=false) to="actions"}}
+                    {{else}}
+                      {{#each @actions as |Action|}}
+                        <EuiFlexItem @grow={{false}}>
+                          <Action />
+                        </EuiFlexItem>
+                      {{/each}}
+                    {{/if}}
+                  </div>
+                {{/if}}
+              {{/if}}
+            </div>
+          </div>
+          {{#if hasFooterBlock}}
+            <div class="euiEmptyPrompt__footer {{this.footerClass}}">
+              {{yield to="footer"}}
+            </div>
+          {{else if @footer}}
+            <div class="euiEmptyPrompt__footer {{this.footerClass}}">
+              {{@footer}}
+            </div>
           {{/if}}
-        </div>
-      </div>
-      {{#if (has-block "footer")}}
-        <div class="euiEmptyPrompt__footer {{this.footerClass}}">
-          {{yield to="footer"}}
-        </div>
-      {{else if @footer}}
-        <div class="euiEmptyPrompt__footer {{this.footerClass}}">
-          {{@footer}}
-        </div>
-      {{/if}}
+        {{/let}}
+      {{/let}}
     </EuiPanel>
   </template>
 }

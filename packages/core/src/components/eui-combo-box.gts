@@ -127,8 +127,8 @@ export interface EuiComboBoxSignature {
   Args: {
     /**
      * Allows only one selected option (still passed to `@onChange` as a
-     * one-item array). `{ asPlainText: true }` shows the selection as plain
-     * text instead of a pill. Defaults to multiple selection.
+     * one-item array). `{ asPlainText: true }` shows the selection as the
+     * input's text instead of a pill. Defaults to multiple selection.
      */
     singleSelection?:
       | boolean

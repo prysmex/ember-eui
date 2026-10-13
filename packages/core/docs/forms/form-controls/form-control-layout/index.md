@@ -56,10 +56,10 @@ match them.
 | `@isDisabled` | `boolean` |  | Same as `@disabled`. |
 | `@isInvalid` | `boolean` |  | Shows the danger warning icon on the right. |
 | `@isDropdown` | `boolean` |  | Shows a dropdown arrow on the right, as EuiSelect does. Hidden while disabled or read-only. |
-| `@icon` |  |  | Icon inside the control, anything `EuiIcon`'s `@type` accepts. |
-| `@iconSide` |  | `'left'` | Side of `@icon`: `'left'` or `'right'`. |
+| `@icon` |  |  | Icon inside the control, anything `EuiIcon`'s `@type` accepts, or an icon shape object (upstream `IconShape`): `{ type, side, color, onClick, … }`, where `onClick` makes it a button and other keys (`aria-label`, `data-test-subj`, `tabIndex`, …) are its attributes. |
+| `@iconSide` |  | `'left'` | Side of `@icon`: `'left'` or `'right'`. An icon shape's `side` wins. |
 | `@iconsPosition` | `'absolute' \| 'static'` | `'absolute'` | `'absolute'` overlays the icons on the control, `'static'` lays them out beside it. |
-| `@clear` |  |  | Shows a clear ("x") button calling this function. |
+| `@clear` |  |  | Shows a clear ("x") button calling this function, or with these props (upstream `clear`): `{ onClick, disabled, size, … }`, other keys (`data-test-subj`, `aria-label`, …) being its attributes. |
 | `@clearLabel` | `string` | "Clear input" | Accessible label of the clear button. |
 | `@isLoading` | `boolean` |  | Shows a spinner. |
 | `@inputId` | `string` |  | Id of the control. `EuiFormPrepend` / `EuiFormAppend` labels in the `<:prepend>` / `<:append>` blocks point to it (upstream `inputId`). |

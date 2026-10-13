@@ -11,47 +11,13 @@ title, and the option blocks add an avatar and the email under each name.
 
 </EuiText>
 
-```hbs template
-<EuiPopover
-  @isOpen={{this.isOpen}}
-  @closePopover={{this.close}}
-  @panelPaddingSize="none"
-  @anchorPosition="downLeft"
->
-  <:button>
-    <EuiButton @iconType="arrowDown" @iconSide="right" {{on "click" this.toggle}}>
-      Assignees ({{this.count}})
-    </EuiButton>
-  </:button>
-  <:content>
-    <div style="width: 300px;">
-      <EuiSelectable
-        @options={{this.people}}
-        @onChange={{this.setPeople}}
-        @searchable={{true}}
-        @listProps={{hash rowHeight=50}}
-        as |parts|
-      >
-        <EuiPopoverTitle @paddingSize="s"><parts.search /></EuiPopoverTitle>
-        <parts.list>
-          <:optionPrepend as |person|>
-            <EuiAvatar @name={{person.label}} @size="s" />
-          </:optionPrepend>
-          <:option as |person search|>
-            <EuiHighlight @text={{person.label}} @search={{search}} />
-            <EuiText @size="xs" @color="subdued"><small>{{person.email}}</small></EuiText>
-          </:option>
-        </parts.list>
-      </EuiSelectable>
-    </div>
-  </:content>
-</EuiPopover>
-```
-
-```js component
+```gjs component
 import Component from '@glimmer/component';
 import { tracked } from '@glimmer/tracking';
 import { action } from '@ember/object';
+import { EuiPopover, EuiButton, EuiSelectable, EuiPopoverTitle, EuiAvatar, EuiHighlight, EuiText } from '@ember-eui/core/components';
+import { on } from '@ember/modifier';
+import { hash } from '@ember/helper';
 
 export default class SelectablePopover extends Component {
   @tracked isOpen = false;
@@ -80,5 +46,42 @@ export default class SelectablePopover extends Component {
   close() {
     this.isOpen = false;
   }
+
+  <template>
+    <EuiPopover
+      @isOpen={{this.isOpen}}
+      @closePopover={{this.close}}
+      @panelPaddingSize="none"
+      @anchorPosition="downLeft"
+    >
+      <:button>
+        <EuiButton @iconType="arrowDown" @iconSide="right" {{on "click" this.toggle}}>
+          Assignees ({{this.count}})
+        </EuiButton>
+      </:button>
+      <:content>
+        <div style="width: 300px;">
+          <EuiSelectable
+            @options={{this.people}}
+            @onChange={{this.setPeople}}
+            @searchable={{true}}
+            @listProps={{hash rowHeight=50}}
+            as |parts|
+          >
+            <EuiPopoverTitle @paddingSize="s"><parts.search /></EuiPopoverTitle>
+            <parts.list>
+              <:optionPrepend as |person|>
+                <EuiAvatar @name={{person.label}} @size="s" />
+              </:optionPrepend>
+              <:option as |person search|>
+                <EuiHighlight @text={{person.label}} @search={{search}} />
+                <EuiText @size="xs" @color="subdued"><small>{{person.email}}</small></EuiText>
+              </:option>
+            </parts.list>
+          </EuiSelectable>
+        </div>
+      </:content>
+    </EuiPopover>
+  </template>
 }
 ```

@@ -11,34 +11,11 @@ shows the selected palette as colors (default) or by its title.
 
 </EuiText>
 
-```hbs template
-<EuiFlexGroup>
-  <EuiFlexItem>
-    <EuiFormRow @label="Color palette">
-      <EuiColorPalettePicker
-        @palettes={{this.palettes}}
-        @valueOfSelected={{this.palette}}
-        @onChange={{this.setPalette}}
-      />
-    </EuiFormRow>
-  </EuiFlexItem>
-  <EuiFlexItem>
-    <EuiFormRow @label="By title">
-      <EuiColorPalettePicker
-        @palettes={{this.palettes}}
-        @valueOfSelected={{this.palette}}
-        @onChange={{this.setPalette}}
-        @selectionDisplay="title"
-      />
-    </EuiFormRow>
-  </EuiFlexItem>
-</EuiFlexGroup>
-```
-
-```js component
+```gjs component
 import Component from '@glimmer/component';
 import { tracked } from '@glimmer/tracking';
 import { action } from '@ember/object';
+import { EuiFlexGroup, EuiFlexItem, EuiFormRow, EuiColorPalettePicker } from '@ember-eui/core/components';
 
 export default class PalettePickerDemo extends Component {
   @tracked palette = 'blind';
@@ -73,5 +50,29 @@ export default class PalettePickerDemo extends Component {
   setPalette(value) {
     this.palette = value;
   }
+
+  <template>
+    <EuiFlexGroup>
+      <EuiFlexItem>
+        <EuiFormRow @label="Color palette">
+          <EuiColorPalettePicker
+            @palettes={{this.palettes}}
+            @valueOfSelected={{this.palette}}
+            @onChange={{this.setPalette}}
+          />
+        </EuiFormRow>
+      </EuiFlexItem>
+      <EuiFlexItem>
+        <EuiFormRow @label="By title">
+          <EuiColorPalettePicker
+            @palettes={{this.palettes}}
+            @valueOfSelected={{this.palette}}
+            @onChange={{this.setPalette}}
+            @selectionDisplay="title"
+          />
+        </EuiFormRow>
+      </EuiFlexItem>
+    </EuiFlexGroup>
+  </template>
 }
 ```

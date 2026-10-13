@@ -11,26 +11,12 @@ error.
 
 </EuiText>
 
-```hbs template
-<EuiFormRow
-  @label="New password"
-  @helpText="At least 8 characters, with a number."
-  @isInvalid={{this.isInvalid}}
-  @error={{this.errors}}
->
-  <EuiFieldPassword
-    @value={{this.password}}
-    @isInvalid={{this.isInvalid}}
-    autocomplete="new-password"
-    {{on "input" this.updatePassword}}
-  />
-</EuiFormRow>
-```
-
-```js component
+```gjs component
 import Component from '@glimmer/component';
 import { tracked } from '@glimmer/tracking';
 import { action } from '@ember/object';
+import { EuiFormRow, EuiFieldPassword } from '@ember-eui/core/components';
+import { on } from '@ember/modifier';
 
 export default class PasswordValidationDemo extends Component {
   @tracked password = 'short';
@@ -52,5 +38,21 @@ export default class PasswordValidationDemo extends Component {
   updatePassword(event) {
     this.password = event.target.value;
   }
+
+  <template>
+    <EuiFormRow
+      @label="New password"
+      @helpText="At least 8 characters, with a number."
+      @isInvalid={{this.isInvalid}}
+      @error={{this.errors}}
+    >
+      <EuiFieldPassword
+        @value={{this.password}}
+        @isInvalid={{this.isInvalid}}
+        autocomplete="new-password"
+        {{on "input" this.updatePassword}}
+      />
+    </EuiFormRow>
+  </template>
 }
 ```

@@ -13,29 +13,11 @@ from `@onRefreshChange`.
 
 </EuiText>
 
-```hbs template
-<EuiSuperDatePicker
-  @start={{this.start}}
-  @end={{this.end}}
-  @onTimeChange={{this.onTimeChange}}
-  @isPaused={{this.isPaused}}
-  @refreshInterval={{this.refreshInterval}}
-  @onRefreshChange={{this.onRefreshChange}}
-  @onRefresh={{this.onRefresh}}
-/>
-<EuiSpacer />
-<EuiText @size="s">
-  <p>
-    {{if this.isPaused "Paused" "Refreshing"}}, every {{this.seconds}}s.
-    Refreshed {{this.refreshes}} times.
-  </p>
-</EuiText>
-```
-
-```js component
+```gjs component
 import Component from '@glimmer/component';
 import { tracked } from '@glimmer/tracking';
 import { action } from '@ember/object';
+import { EuiSuperDatePicker, EuiSpacer, EuiText } from '@ember-eui/core/components';
 
 export default class AutoRefreshDemo extends Component {
   @tracked start = 'now-15m';
@@ -64,5 +46,24 @@ export default class AutoRefreshDemo extends Component {
   onRefresh() {
     this.refreshes++;
   }
+
+  <template>
+    <EuiSuperDatePicker
+      @start={{this.start}}
+      @end={{this.end}}
+      @onTimeChange={{this.onTimeChange}}
+      @isPaused={{this.isPaused}}
+      @refreshInterval={{this.refreshInterval}}
+      @onRefreshChange={{this.onRefreshChange}}
+      @onRefresh={{this.onRefresh}}
+    />
+    <EuiSpacer />
+    <EuiText @size="s">
+      <p>
+        {{if this.isPaused "Paused" "Refreshing"}}, every {{this.seconds}}s.
+        Refreshed {{this.refreshes}} times.
+      </p>
+    </EuiText>
+  </template>
 }
 ```

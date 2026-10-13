@@ -13,36 +13,11 @@ and set to 5 seconds". Use `@shortHand` for a single-letter unit, and
 
 </EuiText>
 
-```hbs template
-<EuiFlexGroup @alignItems="center" @gutterSize="l" @responsive={{false}}>
-  <EuiFlexItem @grow={{false}}>
-    <EuiAutoRefreshButton
-      @isPaused={{this.isPaused}}
-      @refreshInterval={{this.refreshInterval}}
-      @onRefreshChange={{this.onRefreshChange}}
-    />
-  </EuiFlexItem>
-  <EuiFlexItem @grow={{false}}>
-    <EuiAutoRefreshButton
-      @isPaused={{this.isPaused}}
-      @refreshInterval={{this.refreshInterval}}
-      @shortHand={{true}}
-      @onRefreshChange={{this.onRefreshChange}}
-    />
-  </EuiFlexItem>
-  <EuiFlexItem @grow={{false}}>
-    <EuiAutoRefreshButton
-      @isDisabled={{true}}
-      @onRefreshChange={{this.onRefreshChange}}
-    />
-  </EuiFlexItem>
-</EuiFlexGroup>
-```
-
-```js component
+```gjs component
 import Component from '@glimmer/component';
 import { tracked } from '@glimmer/tracking';
 import { action } from '@ember/object';
+import { EuiFlexGroup, EuiFlexItem, EuiAutoRefreshButton } from '@ember-eui/core/components';
 
 export default class AutoRefreshButtonDemo extends Component {
   @tracked isPaused = true;
@@ -53,5 +28,31 @@ export default class AutoRefreshButtonDemo extends Component {
     this.isPaused = isPaused;
     this.refreshInterval = refreshInterval;
   }
+
+  <template>
+    <EuiFlexGroup @alignItems="center" @gutterSize="l" @responsive={{false}}>
+      <EuiFlexItem @grow={{false}}>
+        <EuiAutoRefreshButton
+          @isPaused={{this.isPaused}}
+          @refreshInterval={{this.refreshInterval}}
+          @onRefreshChange={{this.onRefreshChange}}
+        />
+      </EuiFlexItem>
+      <EuiFlexItem @grow={{false}}>
+        <EuiAutoRefreshButton
+          @isPaused={{this.isPaused}}
+          @refreshInterval={{this.refreshInterval}}
+          @shortHand={{true}}
+          @onRefreshChange={{this.onRefreshChange}}
+        />
+      </EuiFlexItem>
+      <EuiFlexItem @grow={{false}}>
+        <EuiAutoRefreshButton
+          @isDisabled={{true}}
+          @onRefreshChange={{this.onRefreshChange}}
+        />
+      </EuiFlexItem>
+    </EuiFlexGroup>
+  </template>
 }
 ```

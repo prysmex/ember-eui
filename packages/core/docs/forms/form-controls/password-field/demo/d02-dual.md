@@ -10,39 +10,13 @@ You can allow users to toggle between showing and obfuscating the password by pa
 
 </EuiText>
 
-```hbs template
-<EuiFlexGroup @wrap={{true}} @gutterSize="m" @responsive={{false}}>
-  {{#each this.toggles as |toggle|}}
-    <EuiFlexItem @grow={{false}}>
-      <EuiSwitch
-        @label={{toggle.label}}
-        @compressed={{true}}
-        @checked={{get this.flags toggle.key}}
-        @onChange={{fn this.toggle toggle.key}}
-      />
-    </EuiFlexItem>
-  {{/each}}
-</EuiFlexGroup>
-<EuiSpacer @size="m" />
-<EuiFieldPassword
-  @type="dual"
-  @value={{this.value}}
-  placeholder="Password"
-  @fullWidth={{this.flags.fullWidth}}
-  @compressed={{this.flags.compressed}}
-  @isInvalid={{this.flags.isInvalid}}
-  @isLoading={{this.flags.isLoading}}
-  @readOnly={{this.flags.readOnly}}
-  @disabled={{this.flags.disabled}}
-  aria-label="Password that can be toggled between hidden and shown"
-  {{on "input" this.onChange}}
-/>
-```
-
-```js component
+```gjs component
 import Component from '@glimmer/component';
 import { tracked } from '@glimmer/tracking';
 import { action } from '@ember/object';
+import { EuiFlexGroup, EuiFlexItem, EuiSwitch, EuiSpacer, EuiFieldPassword } from '@ember-eui/core/components';
+import { get, fn } from '@ember/helper';
+import { on } from '@ember/modifier';
 
 export default class PasswordFieldDualDemo extends Component {
   toggles = [
@@ -66,5 +40,34 @@ export default class PasswordFieldDualDemo extends Component {
   onChange(event) {
     this.value = event.target.value;
   }
+
+  <template>
+    <EuiFlexGroup @wrap={{true}} @gutterSize="m" @responsive={{false}}>
+      {{#each this.toggles as |toggle|}}
+        <EuiFlexItem @grow={{false}}>
+          <EuiSwitch
+            @label={{toggle.label}}
+            @compressed={{true}}
+            @checked={{get this.flags toggle.key}}
+            @onChange={{fn this.toggle toggle.key}}
+          />
+        </EuiFlexItem>
+      {{/each}}
+    </EuiFlexGroup>
+    <EuiSpacer @size="m" />
+    <EuiFieldPassword
+      @type="dual"
+      @value={{this.value}}
+      placeholder="Password"
+      @fullWidth={{this.flags.fullWidth}}
+      @compressed={{this.flags.compressed}}
+      @isInvalid={{this.flags.isInvalid}}
+      @isLoading={{this.flags.isLoading}}
+      @readOnly={{this.flags.readOnly}}
+      @disabled={{this.flags.disabled}}
+      aria-label="Password that can be toggled between hidden and shown"
+      {{on "input" this.onChange}}
+    />
+  </template>
 }
 ```

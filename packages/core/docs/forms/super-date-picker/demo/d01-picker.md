@@ -11,50 +11,15 @@ unexpected values in the start and end fields above it.
 
 </EuiText>
 
-```hbs template
-<EuiFormControlLayoutDelimited>
-  <:prepend as |classes|>
-    <EuiFormLabel class={{classes}}>Dates</EuiFormLabel>
-  </:prepend>
-
-  <:startControl as |classes|>
-    <input
-      class={{concat classes " euiFieldText"}}
-      type="text"
-      placeholder="start"
-      value={{this.start}}
-      {{on "change" this.onStartInputChange}}
-    />
-  </:startControl>
-
-  <:endControl as |classes|>
-    <input
-      class={{concat classes " euiFieldText"}}
-      type="text"
-      placeholder="end"
-      value={{this.end}}
-      {{on "change" this.onEndInputChange}}
-    />
-  </:endControl>
-</EuiFormControlLayoutDelimited>
-
-<EuiSpacer />
-
-<EuiSuperDatePicker
-  @onTimeChange={{this.onTimeChange}}
-  @start={{this.start}}
-  @end={{this.end}}
-  @isLoading={{this.isLoading}}
-  @onRefresh={{this.onRefresh}}
-/>
-```
-
-```javascript component
+```gjs component
 import Component from '@glimmer/component';
 import { tracked } from '@glimmer/tracking';
 import { action } from '@ember/object';
+import { EuiFormControlLayoutDelimited, EuiFormLabel, EuiSpacer, EuiSuperDatePicker } from '@ember-eui/core/components';
+import { concat } from '@ember/helper';
+import { on } from '@ember/modifier';
 
-export default class extends Component {
+export default class PickerDemo extends Component {
   @tracked start = 'now-30m';
   @tracked end = 'now';
   @tracked isLoading = false;
@@ -89,5 +54,43 @@ export default class extends Component {
   @action stopLoading() {
     this.isLoading = false;
   };
+
+  <template>
+    <EuiFormControlLayoutDelimited>
+      <:prepend as |classes|>
+        <EuiFormLabel class={{classes}}>Dates</EuiFormLabel>
+      </:prepend>
+
+      <:startControl as |classes|>
+        <input
+          class={{concat classes " euiFieldText"}}
+          type="text"
+          placeholder="start"
+          value={{this.start}}
+          {{on "change" this.onStartInputChange}}
+        />
+      </:startControl>
+
+      <:endControl as |classes|>
+        <input
+          class={{concat classes " euiFieldText"}}
+          type="text"
+          placeholder="end"
+          value={{this.end}}
+          {{on "change" this.onEndInputChange}}
+        />
+      </:endControl>
+    </EuiFormControlLayoutDelimited>
+
+    <EuiSpacer />
+
+    <EuiSuperDatePicker
+      @onTimeChange={{this.onTimeChange}}
+      @start={{this.start}}
+      @end={{this.end}}
+      @isLoading={{this.isLoading}}
+      @onRefresh={{this.onRefresh}}
+    />
+  </template>
 }
 ```

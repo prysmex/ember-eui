@@ -16,36 +16,12 @@ Make sure to pass a `@label` to ensure a larger clickable area and ensure that s
 
 </EuiText>
 
-```hbs template
-<EuiRadio
-  @label="I am a radio"
-  @checked={{this.checked}}
-  {{on "change" this.onChange}}
-/>
-
-<EuiSpacer @size="m" />
-
-<EuiRadio
-  @label="I am a disabled radio"
-  @checked={{this.checked}}
-  @disabled={{true}}
-  {{on "change" this.onChange}}
-/>
-
-<EuiSpacer @size="m" />
-
-<EuiRadio
-  @label="I am a compressed radio"
-  @checked={{this.checked}}
-  @compressed={{true}}
-  {{on "change" this.onChange}}
-/>
-```
-
-```js component
+```gjs component
 import Component from '@glimmer/component';
 import { tracked } from '@glimmer/tracking';
 import { action } from '@ember/object';
+import { EuiRadio, EuiSpacer } from '@ember-eui/core/components';
+import { on } from '@ember/modifier';
 
 export default class RadioDemo extends Component {
   @tracked checked = false;
@@ -54,5 +30,31 @@ export default class RadioDemo extends Component {
   onChange(event) {
     this.checked = event.target.checked;
   }
+
+  <template>
+    <EuiRadio
+      @label="I am a radio"
+      @checked={{this.checked}}
+      {{on "change" this.onChange}}
+    />
+
+    <EuiSpacer @size="m" />
+
+    <EuiRadio
+      @label="I am a disabled radio"
+      @checked={{this.checked}}
+      @disabled={{true}}
+      {{on "change" this.onChange}}
+    />
+
+    <EuiSpacer @size="m" />
+
+    <EuiRadio
+      @label="I am a compressed radio"
+      @checked={{this.checked}}
+      @compressed={{true}}
+      {{on "change" this.onChange}}
+    />
+  </template>
 }
 ```

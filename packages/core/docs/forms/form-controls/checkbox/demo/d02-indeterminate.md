@@ -12,28 +12,13 @@ everything.
 
 </EuiText>
 
-```hbs template
-<EuiCheckbox
-  @label="All notifications"
-  @checked={{this.allSelected}}
-  @indeterminate={{this.someSelected}}
-  {{on "change" this.toggleAll}}
-/>
-<div style="padding-left: 24px;">
-  {{#each this.items as |item|}}
-    <EuiCheckbox
-      @label={{item.label}}
-      @checked={{get this.selected item.id}}
-      {{on "change" (fn this.toggle item.id)}}
-    />
-  {{/each}}
-</div>
-```
-
-```js component
+```gjs component
 import Component from '@glimmer/component';
 import { tracked } from '@glimmer/tracking';
 import { action } from '@ember/object';
+import { EuiCheckbox } from '@ember-eui/core/components';
+import { on } from '@ember/modifier';
+import { get, fn } from '@ember/helper';
 
 export default class IndeterminateDemo extends Component {
   items = [
@@ -67,5 +52,23 @@ export default class IndeterminateDemo extends Component {
 
     this.selected = Object.fromEntries(this.items.map((item) => [item.id, value]));
   }
+
+  <template>
+    <EuiCheckbox
+      @label="All notifications"
+      @checked={{this.allSelected}}
+      @indeterminate={{this.someSelected}}
+      {{on "change" this.toggleAll}}
+    />
+    <div style="padding-left: 24px;">
+      {{#each this.items as |item|}}
+        <EuiCheckbox
+          @label={{item.label}}
+          @checked={{get this.selected item.id}}
+          {{on "change" (fn this.toggle item.id)}}
+        />
+      {{/each}}
+    </div>
+  </template>
 }
 ```

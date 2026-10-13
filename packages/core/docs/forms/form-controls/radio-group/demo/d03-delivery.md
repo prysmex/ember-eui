@@ -11,22 +11,11 @@ order: 3
 
 </EuiText>
 
-```hbs template
-<EuiRadioGroup
-  @legend="Delivery"
-  @name="delivery"
-  @options={{this.options}}
-  @idSelected={{this.selected}}
-  @onChange={{this.select}}
-/>
-<EuiSpacer />
-<EuiText @size="s" @color="subdued"><p>Selected: {{this.selected}}</p></EuiText>
-```
-
-```js component
+```gjs component
 import Component from '@glimmer/component';
 import { tracked } from '@glimmer/tracking';
 import { action } from '@ember/object';
+import { EuiRadioGroup, EuiSpacer, EuiText } from '@ember-eui/core/components';
 
 export default class RadioGroupDemo extends Component {
   options = [
@@ -41,5 +30,17 @@ export default class RadioGroupDemo extends Component {
   select(id) {
     this.selected = id;
   }
+
+  <template>
+    <EuiRadioGroup
+      @legend="Delivery"
+      @name="delivery"
+      @options={{this.options}}
+      @idSelected={{this.selected}}
+      @onChange={{this.select}}
+    />
+    <EuiSpacer />
+    <EuiText @size="s" @color="subdued"><p>Selected: {{this.selected}}</p></EuiText>
+  </template>
 }
 ```

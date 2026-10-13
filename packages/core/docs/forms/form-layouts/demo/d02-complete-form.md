@@ -12,64 +12,13 @@ Enter key submit it. On submit, check the values and set `@isInvalid` and
 
 </EuiText>
 
-```hbs template
-<EuiForm
-  @tagName="form"
-  @isInvalid={{this.showErrors}}
-  @error={{this.errors}}
-  @errorTitle="Please fix the following"
-  {{on "submit" this.submit}}
->
-  <EuiFormRow
-    @label="Name"
-    @isInvalid={{this.nameError}}
-    @error={{this.nameError}}
-  >
-    <EuiFieldText
-      @value={{this.name}}
-      @isInvalid={{this.nameError}}
-      {{on "input" (fn this.update "name")}}
-    />
-  </EuiFormRow>
-
-  <EuiFormRow @label="Role">
-    <EuiSelect
-      @options={{this.roles}}
-      @value={{this.role}}
-      {{on "change" (fn this.update "role")}}
-    />
-  </EuiFormRow>
-
-  <EuiFormRow @label="Bio" @helpText="Optional.">
-    <EuiTextArea
-      @value={{this.bio}}
-      @rows={{3}}
-      {{on "input" (fn this.update "bio")}}
-    />
-  </EuiFormRow>
-
-  <EuiFormRow @hasChildLabel={{false}}>
-    <EuiSwitch
-      @label="Send me a weekly summary"
-      @checked={{this.newsletter}}
-      @onChange={{this.toggleNewsletter}}
-    />
-  </EuiFormRow>
-
-  <EuiSpacer />
-  <EuiButton @type="submit" @fill={{true}}>Save</EuiButton>
-</EuiForm>
-
-{{#if this.saved}}
-  <EuiSpacer />
-  <EuiCallOut @title="Saved" @color="success" @iconType="check" />
-{{/if}}
-```
-
-```js component
+```gjs component
 import Component from '@glimmer/component';
 import { tracked } from '@glimmer/tracking';
 import { action } from '@ember/object';
+import { EuiForm, EuiFormRow, EuiFieldText, EuiSelect, EuiTextArea, EuiSwitch, EuiSpacer, EuiButton, EuiCallOut } from '@ember-eui/core/components';
+import { on } from '@ember/modifier';
+import { fn } from '@ember/helper';
 
 export default class CompleteFormDemo extends Component {
   @tracked name = '';
@@ -110,5 +59,59 @@ export default class CompleteFormDemo extends Component {
     this.showErrors = true;
     this.saved = this.errors.length === 0;
   }
+
+  <template>
+    <EuiForm
+      @tagName="form"
+      @isInvalid={{this.showErrors}}
+      @error={{this.errors}}
+      @errorTitle="Please fix the following"
+      {{on "submit" this.submit}}
+    >
+      <EuiFormRow
+        @label="Name"
+        @isInvalid={{this.nameError}}
+        @error={{this.nameError}}
+      >
+        <EuiFieldText
+          @value={{this.name}}
+          @isInvalid={{this.nameError}}
+          {{on "input" (fn this.update "name")}}
+        />
+      </EuiFormRow>
+
+      <EuiFormRow @label="Role">
+        <EuiSelect
+          @options={{this.roles}}
+          @value={{this.role}}
+          {{on "change" (fn this.update "role")}}
+        />
+      </EuiFormRow>
+
+      <EuiFormRow @label="Bio" @helpText="Optional.">
+        <EuiTextArea
+          @value={{this.bio}}
+          @rows={{3}}
+          {{on "input" (fn this.update "bio")}}
+        />
+      </EuiFormRow>
+
+      <EuiFormRow @hasChildLabel={{false}}>
+        <EuiSwitch
+          @label="Send me a weekly summary"
+          @checked={{this.newsletter}}
+          @onChange={{this.toggleNewsletter}}
+        />
+      </EuiFormRow>
+
+      <EuiSpacer />
+      <EuiButton @type="submit" @fill={{true}}>Save</EuiButton>
+    </EuiForm>
+
+    {{#if this.saved}}
+      <EuiSpacer />
+      <EuiCallOut @title="Saved" @color="success" @iconType="check" />
+    {{/if}}
+  </template>
 }
 ```

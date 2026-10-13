@@ -13,39 +13,11 @@ For dense forms, such as settings in a side panel, use
 
 </EuiText>
 
-```hbs template
-<EuiPanel @hasBorder={{true}} style="max-width: 400px;">
-  <EuiForm>
-    <EuiFormRow @label="Title" @display="columnCompressed">
-      <EuiFieldText @compressed={{true}} @value="Revenue" />
-    </EuiFormRow>
-    <EuiFormRow @label="Chart" @display="columnCompressed">
-      <EuiSelect
-        @compressed={{true}}
-        @options={{this.charts}}
-        @value="bar"
-      />
-    </EuiFormRow>
-    <EuiFormRow @label="Opacity" @display="columnCompressed">
-      <EuiRange @compressed={{true}} @value={{80}} @showInput={{true}} />
-    </EuiFormRow>
-    <EuiFormRow @label="Show legend" @display="columnCompressedSwitch">
-      <EuiSwitch
-        @label="Show legend"
-        @showLabel={{false}}
-        @compressed={{true}}
-        @checked={{this.legend}}
-        @onChange={{this.toggleLegend}}
-      />
-    </EuiFormRow>
-  </EuiForm>
-</EuiPanel>
-```
-
-```js component
+```gjs component
 import Component from '@glimmer/component';
 import { tracked } from '@glimmer/tracking';
 import { action } from '@ember/object';
+import { EuiPanel, EuiForm, EuiFormRow, EuiFieldText, EuiSelect, EuiRange, EuiSwitch } from '@ember-eui/core/components';
 
 export default class CompressedFormDemo extends Component {
   @tracked legend = true;
@@ -60,5 +32,34 @@ export default class CompressedFormDemo extends Component {
   toggleLegend(event) {
     this.legend = event.target.checked;
   }
+
+  <template>
+    <EuiPanel @hasBorder={{true}} style="max-width: 400px;">
+      <EuiForm>
+        <EuiFormRow @label="Title" @display="columnCompressed">
+          <EuiFieldText @compressed={{true}} @value="Revenue" />
+        </EuiFormRow>
+        <EuiFormRow @label="Chart" @display="columnCompressed">
+          <EuiSelect
+            @compressed={{true}}
+            @options={{this.charts}}
+            @value="bar"
+          />
+        </EuiFormRow>
+        <EuiFormRow @label="Opacity" @display="columnCompressed">
+          <EuiRange @compressed={{true}} @value={{80}} @showInput={{true}} />
+        </EuiFormRow>
+        <EuiFormRow @label="Show legend" @display="columnCompressedSwitch">
+          <EuiSwitch
+            @label="Show legend"
+            @showLabel={{false}}
+            @compressed={{true}}
+            @checked={{this.legend}}
+            @onChange={{this.toggleLegend}}
+          />
+        </EuiFormRow>
+      </EuiForm>
+    </EuiPanel>
+  </template>
 }
 ```

@@ -16,33 +16,12 @@ The switches above the group are docs-only helpers that toggle `@compressed` and
 
 </EuiText>
 
-```hbs template
-<EuiFlexGroup @wrap={{true}} @gutterSize="m" @responsive={{false}}>
-  {{#each this.toggles as |toggle|}}
-    <EuiFlexItem @grow={{false}}>
-      <EuiSwitch
-        @label={{toggle.label}}
-        @compressed={{true}}
-        @checked={{get this.flags toggle.key}}
-        @onChange={{fn this.toggle toggle.key}}
-      />
-    </EuiFlexItem>
-  {{/each}}
-</EuiFlexGroup>
-<EuiSpacer @size="m" />
-<EuiCheckboxGroup
-  @options={{this.checkboxes}}
-  @idToSelectedMap={{this.checkboxIdToSelectedMap}}
-  @compressed={{this.flags.compressed}}
-  @disabled={{this.flags.disabled}}
-  @onChange={{this.onChange}}
-/>
-```
-
-```js component
+```gjs component
 import Component from '@glimmer/component';
 import { tracked } from '@glimmer/tracking';
 import { action } from '@ember/object';
+import { EuiFlexGroup, EuiFlexItem, EuiSwitch, EuiSpacer, EuiCheckboxGroup } from '@ember-eui/core/components';
+import { get, fn } from '@ember/helper';
 
 export default class CheckboxGroupDemo extends Component {
   toggles = [
@@ -81,5 +60,28 @@ export default class CheckboxGroupDemo extends Component {
       [optionId]: !this.checkboxIdToSelectedMap[optionId],
     };
   }
+
+  <template>
+    <EuiFlexGroup @wrap={{true}} @gutterSize="m" @responsive={{false}}>
+      {{#each this.toggles as |toggle|}}
+        <EuiFlexItem @grow={{false}}>
+          <EuiSwitch
+            @label={{toggle.label}}
+            @compressed={{true}}
+            @checked={{get this.flags toggle.key}}
+            @onChange={{fn this.toggle toggle.key}}
+          />
+        </EuiFlexItem>
+      {{/each}}
+    </EuiFlexGroup>
+    <EuiSpacer @size="m" />
+    <EuiCheckboxGroup
+      @options={{this.checkboxes}}
+      @idToSelectedMap={{this.checkboxIdToSelectedMap}}
+      @compressed={{this.flags.compressed}}
+      @disabled={{this.flags.disabled}}
+      @onChange={{this.onChange}}
+    />
+  </template>
 }
 ```

@@ -13,28 +13,13 @@ order: 3
   </p>
 </EuiText>
 
-```hbs template
-<EuiRange
-  @value={{this.value}}
-  @onChange={{this.onChange}}
-  @showInput={{true}}
-  aria-label='An example of EuiRange'
-/>
-<EuiSpacer @size='xl' />
-<EuiDualRange
-  @value={{this.valueDual}}
-  @onChange={{this.onChangeDual}}
-  @showInput={{true}}
-  aria-label='An example of EuiDualRange with inputs'
-/>
-```
-
-```javascript component
+```gjs component
 import Component from '@glimmer/component';
 import { tracked } from '@glimmer/tracking';
 import { action } from '@ember/object';
+import { EuiRange, EuiSpacer, EuiDualRange } from '@ember-eui/core/components';
 
-export default class extends Component {
+export default class 3Demo extends Component {
   @tracked value = '20';
   @tracked valueDual = [20, 100];
 
@@ -47,5 +32,21 @@ export default class extends Component {
   onChangeDual(values) {
     this.valueDual = values;
   }
+
+  <template>
+    <EuiRange
+      @value={{this.value}}
+      @onChange={{this.onChange}}
+      @showInput={{true}}
+      aria-label='An example of EuiRange'
+    />
+    <EuiSpacer @size='xl' />
+    <EuiDualRange
+      @value={{this.valueDual}}
+      @onChange={{this.onChangeDual}}
+      @showInput={{true}}
+      aria-label='An example of EuiDualRange with inputs'
+    />
+  </template>
 }
 ```

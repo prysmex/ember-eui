@@ -1,8 +1,8 @@
 ---
-order: 2
+order: 4
 ---
 
-# Title and description
+# Title and description (extra)
 
 <EuiText>
 
@@ -12,30 +12,11 @@ aligns the check mark with the title.
 
 </EuiText>
 
-```hbs template
-<EuiFormRow @label="Index lifecycle" @fullWidth={{true}}>
-  <EuiSuperSelect
-    @options={{this.options}}
-    @valueOfSelected={{this.value}}
-    @onChange={{this.setValue}}
-    @hasDividers={{true}}
-    @itemLayoutAlign="top"
-    @fullWidth={{true}}
-  >
-    <:dropdownDisplay as |option|>
-      <strong>{{option.inputDisplay}}</strong>
-      <EuiText @size="s" @color="subdued">
-        <p>{{option.description}}</p>
-      </EuiText>
-    </:dropdownDisplay>
-  </EuiSuperSelect>
-</EuiFormRow>
-```
-
-```js component
+```gjs component
 import Component from '@glimmer/component';
 import { tracked } from '@glimmer/tracking';
 import { action } from '@ember/object';
+import { EuiFormRow, EuiSuperSelect, EuiText } from '@ember-eui/core/components';
 
 export default class SuperSelectComplex extends Component {
   @tracked value = 'hot';
@@ -62,5 +43,25 @@ export default class SuperSelectComplex extends Component {
   setValue(value) {
     this.value = value;
   }
+
+  <template>
+    <EuiFormRow @label="Index lifecycle" @fullWidth={{true}}>
+      <EuiSuperSelect
+        @options={{this.options}}
+        @valueOfSelected={{this.value}}
+        @onChange={{this.setValue}}
+        @hasDividers={{true}}
+        @itemLayoutAlign="top"
+        @fullWidth={{true}}
+      >
+        <:dropdownDisplay as |option|>
+          <strong>{{option.inputDisplay}}</strong>
+          <EuiText @size="s" @color="subdued">
+            <p>{{option.description}}</p>
+          </EuiText>
+        </:dropdownDisplay>
+      </EuiSuperSelect>
+    </EuiFormRow>
+  </template>
 }
 ```

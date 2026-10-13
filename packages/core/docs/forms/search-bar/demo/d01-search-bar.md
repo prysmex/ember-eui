@@ -11,39 +11,14 @@ The matching people come from `Query.execute`.
 
 </EuiText>
 
-```hbs template
-<EuiSearchBar
-  @defaultQuery="is:online"
-  @box={{hash placeholder="Search people" incremental=true}}
-  @filters={{this.filters}}
-  @onChange={{this.onChange}}
->
-  <:toolsRight>
-    <EuiButton @size="s" @iconType="refresh" {{on "click" this.reset}}>Reset</EuiButton>
-  </:toolsRight>
-</EuiSearchBar>
-<EuiSpacer />
-{{#if this.error}}
-  <EuiCallOut @color="danger" @iconType="warning" @title={{this.error}} />
-{{else}}
-  <EuiText @size="s">
-    <p><strong>Query:</strong> <code>{{this.queryText}}</code></p>
-    <ul>
-      {{#each this.people as |person|}}
-        <li>{{person.name}} ({{person.role}}){{if person.online " · online"}}</li>
-      {{else}}
-        <li>Nobody matches.</li>
-      {{/each}}
-    </ul>
-  </EuiText>
-{{/if}}
-```
-
-```js component
+```gjs component
 import Component from '@glimmer/component';
 import { tracked } from '@glimmer/tracking';
 import { action } from '@ember/object';
 import { Query } from '@ember-eui/core/components/eui-search-bar';
+import { EuiSearchBar, EuiButton, EuiSpacer, EuiCallOut, EuiText } from '@ember-eui/core/components';
+import { hash } from '@ember/helper';
+import { on } from '@ember/modifier';
 
 const PEOPLE = [
   { name: 'Ann', role: 'engineer', online: true },
@@ -89,5 +64,33 @@ export default class SearchBarDemo extends Component {
     this.queryText = '';
     this.error = null;
   }
+
+  <template>
+    <EuiSearchBar
+      @defaultQuery="is:online"
+      @box={{hash placeholder="Search people" incremental=true}}
+      @filters={{this.filters}}
+      @onChange={{this.onChange}}
+    >
+      <:toolsRight>
+        <EuiButton @size="s" @iconType="refresh" {{on "click" this.reset}}>Reset</EuiButton>
+      </:toolsRight>
+    </EuiSearchBar>
+    <EuiSpacer />
+    {{#if this.error}}
+      <EuiCallOut @color="danger" @iconType="warning" @title={{this.error}} />
+    {{else}}
+      <EuiText @size="s">
+        <p><strong>Query:</strong> <code>{{this.queryText}}</code></p>
+        <ul>
+          {{#each this.people as |person|}}
+            <li>{{person.name}} ({{person.role}}){{if person.online " · online"}}</li>
+          {{else}}
+            <li>Nobody matches.</li>
+          {{/each}}
+        </ul>
+      </EuiText>
+    {{/if}}
+  </template>
 }
 ```

@@ -12,27 +12,28 @@ error.
 
 </EuiText>
 
-```hbs template
-<EuiFormRow @isInvalid={{true}} @error={{this.errors}}>
-  <:label>
-    Display name <EuiBetaBadge @label="New" @size="s" />
-  </:label>
-  <:field>
-    <EuiFieldText @value="x" @isInvalid={{true}} />
-  </:field>
-  <:helpText>
-    Shown next to your comments. <EuiLink @href="#">Learn more</EuiLink>
-  </:helpText>
-  <:errors as |error|>
-    <EuiIcon @type="alert" @size="s" /> {{error}}
-  </:errors>
-</EuiFormRow>
-```
-
-```js component
+```gjs component
 import Component from '@glimmer/component';
+import { EuiFormRow, EuiBetaBadge, EuiFieldText, EuiLink, EuiIcon } from '@ember-eui/core/components';
 
 export default class RowBlocksDemo extends Component {
   errors = ['Too short: use at least 2 characters.', "Can't be a single letter."];
+
+  <template>
+    <EuiFormRow @isInvalid={{true}} @error={{this.errors}}>
+      <:label>
+        Display name <EuiBetaBadge @label="New" @size="s" />
+      </:label>
+      <:field>
+        <EuiFieldText @value="x" @isInvalid={{true}} />
+      </:field>
+      <:helpText>
+        Shown next to your comments. <EuiLink @href="#">Learn more</EuiLink>
+      </:helpText>
+      <:errors as |error|>
+        <EuiIcon @type="alert" @size="s" /> {{error}}
+      </:errors>
+    </EuiFormRow>
+  </template>
 }
 ```

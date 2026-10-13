@@ -11,19 +11,9 @@ buttons to the select; put the yielded class on them.
 
 </EuiText>
 
-```hbs template
-<EuiSelect @options={{this.sorts}} @value="date" aria-label="Sort by">
-  <:prepend as |classes|>
-    <EuiFormLabel class={{classes}}>Sort by</EuiFormLabel>
-  </:prepend>
-  <:append as |classes|>
-    <EuiButtonIcon class={{classes}} @iconType="sortDown" aria-label="Descending" />
-  </:append>
-</EuiSelect>
-```
-
-```js component
+```gjs component
 import Component from '@glimmer/component';
+import { EuiSelect, EuiFormLabel, EuiButtonIcon } from '@ember-eui/core/components';
 
 export default class SelectBlocksDemo extends Component {
   sorts = [
@@ -31,5 +21,16 @@ export default class SelectBlocksDemo extends Component {
     { value: 'name', text: 'Name' },
     { value: 'size', text: 'Size' },
   ];
+
+  <template>
+    <EuiSelect @options={{this.sorts}} @value="date" aria-label="Sort by">
+      <:prepend as |classes|>
+        <EuiFormLabel class={{classes}}>Sort by</EuiFormLabel>
+      </:prepend>
+      <:append as |classes|>
+        <EuiButtonIcon class={{classes}} @iconType="sortDown" aria-label="Descending" />
+      </:append>
+    </EuiSelect>
+  </template>
 }
 ```

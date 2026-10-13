@@ -12,31 +12,33 @@ says so.
 
 </EuiText>
 
-```hbs template
-<EuiFlexGroup>
-  <EuiFlexItem>
-    <EuiSelectable
-      @options={{this.none}}
-      @isLoading={{true}}
-      @listProps={{hash bordered=true}}
-      aria-label="Loading example"
-    />
-  </EuiFlexItem>
-  <EuiFlexItem>
-    <EuiSelectable
-      @options={{this.none}}
-      @emptyMessage="You have no saved searches yet"
-      @listProps={{hash bordered=true}}
-      aria-label="Empty example"
-    />
-  </EuiFlexItem>
-</EuiFlexGroup>
-```
-
-```js component
+```gjs component
 import Component from '@glimmer/component';
+import { EuiFlexGroup, EuiFlexItem, EuiSelectable } from '@ember-eui/core/components';
+import { hash } from '@ember/helper';
 
 export default class SelectableMessages extends Component {
   none = [];
+
+  <template>
+    <EuiFlexGroup>
+      <EuiFlexItem>
+        <EuiSelectable
+          @options={{this.none}}
+          @isLoading={{true}}
+          @listProps={{hash bordered=true}}
+          aria-label="Loading example"
+        />
+      </EuiFlexItem>
+      <EuiFlexItem>
+        <EuiSelectable
+          @options={{this.none}}
+          @emptyMessage="You have no saved searches yet"
+          @listProps={{hash bordered=true}}
+          aria-label="Empty example"
+        />
+      </EuiFlexItem>
+    </EuiFlexGroup>
+  </template>
 }
 ```

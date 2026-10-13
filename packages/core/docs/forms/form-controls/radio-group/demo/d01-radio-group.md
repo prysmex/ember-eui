@@ -14,35 +14,12 @@ The switches above the group are docs-only helpers that toggle `@compressed` and
 
 </EuiText>
 
-```hbs template
-<EuiFlexGroup @wrap={{true}} @gutterSize="m" @responsive={{false}}>
-  {{#each this.toggles as |toggle|}}
-    <EuiFlexItem @grow={{false}}>
-      <EuiSwitch
-        @label={{toggle.label}}
-        @compressed={{true}}
-        @checked={{get this.flags toggle.key}}
-        @onChange={{fn this.toggle toggle.key}}
-      />
-    </EuiFlexItem>
-  {{/each}}
-</EuiFlexGroup>
-<EuiSpacer @size="m" />
-<EuiRadioGroup
-  @options={{this.radios}}
-  @idSelected={{this.radioIdSelected}}
-  @onChange={{this.onChange}}
-  @name="radio group"
-  @legend="This is a legend for a radio group"
-  @compressed={{this.flags.compressed}}
-  @disabled={{this.flags.disabled}}
-/>
-```
-
-```js component
+```gjs component
 import Component from '@glimmer/component';
 import { tracked } from '@glimmer/tracking';
 import { action } from '@ember/object';
+import { EuiFlexGroup, EuiFlexItem, EuiSwitch, EuiSpacer, EuiRadioGroup } from '@ember-eui/core/components';
+import { get, fn } from '@ember/helper';
 
 export default class RadioGroupDemo extends Component {
   toggles = [
@@ -78,5 +55,30 @@ export default class RadioGroupDemo extends Component {
   onChange(optionId) {
     this.radioIdSelected = optionId;
   }
+
+  <template>
+    <EuiFlexGroup @wrap={{true}} @gutterSize="m" @responsive={{false}}>
+      {{#each this.toggles as |toggle|}}
+        <EuiFlexItem @grow={{false}}>
+          <EuiSwitch
+            @label={{toggle.label}}
+            @compressed={{true}}
+            @checked={{get this.flags toggle.key}}
+            @onChange={{fn this.toggle toggle.key}}
+          />
+        </EuiFlexItem>
+      {{/each}}
+    </EuiFlexGroup>
+    <EuiSpacer @size="m" />
+    <EuiRadioGroup
+      @options={{this.radios}}
+      @idSelected={{this.radioIdSelected}}
+      @onChange={{this.onChange}}
+      @name="radio group"
+      @legend="This is a legend for a radio group"
+      @compressed={{this.flags.compressed}}
+      @disabled={{this.flags.disabled}}
+    />
+  </template>
 }
 ```

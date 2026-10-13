@@ -16,24 +16,11 @@ that interval, as the counter below does. By default the unit is rounded up
 
 </EuiText>
 
-```hbs template
-<EuiAutoRefresh
-  @isPaused={{this.isPaused}}
-  @refreshInterval={{this.refreshInterval}}
-  @intervalUnits={{this.intervalUnits}}
-  @minInterval={{1000}}
-  @onRefreshChange={{this.onRefreshChange}}
-/>
-<EuiSpacer />
-<EuiText @size="s">
-  <p>Refreshed {{this.refreshes}} times.</p>
-</EuiText>
-```
-
-```js component
+```gjs component
 import Component from '@glimmer/component';
 import { tracked } from '@glimmer/tracking';
 import { action } from '@ember/object';
+import { EuiAutoRefresh, EuiSpacer, EuiText } from '@ember-eui/core/components';
 
 export default class AutoRefreshInputDemo extends Component {
   @tracked isPaused = true;
@@ -59,5 +46,19 @@ export default class AutoRefreshInputDemo extends Component {
       this.timer = setInterval(() => this.refreshes++, refreshInterval);
     }
   }
+
+  <template>
+    <EuiAutoRefresh
+      @isPaused={{this.isPaused}}
+      @refreshInterval={{this.refreshInterval}}
+      @intervalUnits={{this.intervalUnits}}
+      @minInterval={{1000}}
+      @onRefreshChange={{this.onRefreshChange}}
+    />
+    <EuiSpacer />
+    <EuiText @size="s">
+      <p>Refreshed {{this.refreshes}} times.</p>
+    </EuiText>
+  </template>
 }
 ```

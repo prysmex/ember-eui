@@ -12,39 +12,13 @@ The switches above the field are docs-only helpers that toggle its display argum
 
 </EuiText>
 
-```hbs template
-<EuiFlexGroup @wrap={{true}} @gutterSize="m" @responsive={{false}}>
-  {{#each this.toggles as |toggle|}}
-    <EuiFlexItem @grow={{false}}>
-      <EuiSwitch
-        @label={{toggle.label}}
-        @compressed={{true}}
-        @checked={{get this.flags toggle.key}}
-        @onChange={{fn this.toggle toggle.key}}
-      />
-    </EuiFlexItem>
-  {{/each}}
-</EuiFlexGroup>
-<EuiSpacer @size="m" />
-<EuiFieldText
-  @value={{this.value}}
-  placeholder="Placeholder text"
-  @fullWidth={{this.flags.fullWidth}}
-  @compressed={{this.flags.compressed}}
-  @isInvalid={{this.flags.isInvalid}}
-  @isLoading={{this.flags.isLoading}}
-  @readOnly={{this.flags.readOnly}}
-  @disabled={{this.flags.disabled}}
-  @clear={{if this.flags.clear this.clear}}
-  aria-label="Use aria labels when no actual label is in use"
-  {{on "input" this.onChange}}
-/>
-```
-
-```js component
+```gjs component
 import Component from '@glimmer/component';
 import { tracked } from '@glimmer/tracking';
 import { action } from '@ember/object';
+import { EuiFlexGroup, EuiFlexItem, EuiSwitch, EuiSpacer, EuiFieldText } from '@ember-eui/core/components';
+import { get, fn } from '@ember/helper';
+import { on } from '@ember/modifier';
 
 export default class TextFieldDemo extends Component {
   toggles = [
@@ -74,5 +48,34 @@ export default class TextFieldDemo extends Component {
   clear() {
     this.value = '';
   }
+
+  <template>
+    <EuiFlexGroup @wrap={{true}} @gutterSize="m" @responsive={{false}}>
+      {{#each this.toggles as |toggle|}}
+        <EuiFlexItem @grow={{false}}>
+          <EuiSwitch
+            @label={{toggle.label}}
+            @compressed={{true}}
+            @checked={{get this.flags toggle.key}}
+            @onChange={{fn this.toggle toggle.key}}
+          />
+        </EuiFlexItem>
+      {{/each}}
+    </EuiFlexGroup>
+    <EuiSpacer @size="m" />
+    <EuiFieldText
+      @value={{this.value}}
+      placeholder="Placeholder text"
+      @fullWidth={{this.flags.fullWidth}}
+      @compressed={{this.flags.compressed}}
+      @isInvalid={{this.flags.isInvalid}}
+      @isLoading={{this.flags.isLoading}}
+      @readOnly={{this.flags.readOnly}}
+      @disabled={{this.flags.disabled}}
+      @clear={{if this.flags.clear this.clear}}
+      aria-label="Use aria labels when no actual label is in use"
+      {{on "input" this.onChange}}
+    />
+  </template>
 }
 ```

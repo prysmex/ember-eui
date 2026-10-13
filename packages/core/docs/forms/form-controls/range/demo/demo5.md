@@ -13,41 +13,15 @@ order: 5
   </p>
 </EuiText>
 
-```hbs template
-<EuiRange
-  @value={{this.value}}
-  @onChange={{this.onChange}}
-  @showTicks={{true}}
-  @tickInterval={{20}}
-  @levels={{this.levels}}
-  aria-label='An example of EuiRange with levels prop'
-  aria-describedby='levelsHelp2'
-/>
-<EuiFormHelpText id='levelsHelp2'>
-  Recommended levels are {{get this.levels '1.min'}} and above.
-</EuiFormHelpText>
-<EuiSpacer @size='xl' />
-<EuiDualRange
-  @value={{this.dualValue}}
-  @onChange={{set this 'dualValue'}}
-  @showTicks={{true}}
-  @showInput={{true}}
-  @ticks={{array (hash label='20kb' value=20) (hash label='100kb' value=100)}}
-  @levels={{this.levels}}
-  aria-label='An example of EuiDualRange with levels prop'
-  aria-describedby='levelsHelp3'
-/>
-<EuiFormHelpText id='levelsHelp3'>
-  Recommended size is {{get this.levels '1.min'}}kb and above.
-</EuiFormHelpText>
-```
-
-```javascript component
+```gjs component
 import Component from '@glimmer/component';
 import { tracked } from '@glimmer/tracking';
 import { action } from '@ember/object';
+import { EuiRange, EuiFormHelpText, EuiSpacer, EuiDualRange } from '@ember-eui/core/components';
+import { get, array, hash } from '@ember/helper';
+import { set } from 'ember-set-helper';
 
-export default class extends Component {
+export default class 5Demo extends Component {
   @tracked value = '20';
   @tracked dualValue = [20, 100];
 
@@ -68,5 +42,34 @@ export default class extends Component {
       color: 'success'
     }
   ];
+
+  <template>
+    <EuiRange
+      @value={{this.value}}
+      @onChange={{this.onChange}}
+      @showTicks={{true}}
+      @tickInterval={{20}}
+      @levels={{this.levels}}
+      aria-label='An example of EuiRange with levels prop'
+      aria-describedby='levelsHelp2'
+    />
+    <EuiFormHelpText id='levelsHelp2'>
+      Recommended levels are {{get this.levels '1.min'}} and above.
+    </EuiFormHelpText>
+    <EuiSpacer @size='xl' />
+    <EuiDualRange
+      @value={{this.dualValue}}
+      @onChange={{set this 'dualValue'}}
+      @showTicks={{true}}
+      @showInput={{true}}
+      @ticks={{array (hash label='20kb' value=20) (hash label='100kb' value=100)}}
+      @levels={{this.levels}}
+      aria-label='An example of EuiDualRange with levels prop'
+      aria-describedby='levelsHelp3'
+    />
+    <EuiFormHelpText id='levelsHelp3'>
+      Recommended size is {{get this.levels '1.min'}}kb and above.
+    </EuiFormHelpText>
+  </template>
 }
 ```

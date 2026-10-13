@@ -10,31 +10,14 @@ order: 6
   </p>
 </EuiText>
 
-```hbs template
-<EuiRange
-  @value={{this.value}}
-  @onChange={{this.onChange}}
-  @showInput='inputWithPopover'
-  @showLabels={{true}}
-  aria-label='An example of EuiRange with showInput prop'
-/>
-<EuiSpacer @size='xl' />
-<EuiDualRange
-  @value={{this.dualValue}}
-  @onChange={{set this 'dualValue'}}
-  @showInput='inputWithPopover'
-  @showLabels={{true}}
-  @levels={{this.levels}}
-  aria-label='An example of EuiDualRange with showInput prop'
-/>
-```
-
-```javascript component
+```gjs component
 import Component from '@glimmer/component';
 import { tracked } from '@glimmer/tracking';
 import { action } from '@ember/object';
+import { EuiRange, EuiSpacer, EuiDualRange } from '@ember-eui/core/components';
+import { set } from 'ember-set-helper';
 
-export default class extends Component {
+export default class 6Demo extends Component {
   @tracked value = '20';
   @action
   onChange(e) {
@@ -53,5 +36,24 @@ export default class extends Component {
       color: 'success'
     }
   ];
+
+  <template>
+    <EuiRange
+      @value={{this.value}}
+      @onChange={{this.onChange}}
+      @showInput='inputWithPopover'
+      @showLabels={{true}}
+      aria-label='An example of EuiRange with showInput prop'
+    />
+    <EuiSpacer @size='xl' />
+    <EuiDualRange
+      @value={{this.dualValue}}
+      @onChange={{set this 'dualValue'}}
+      @showInput='inputWithPopover'
+      @showLabels={{true}}
+      @levels={{this.levels}}
+      aria-label='An example of EuiDualRange with showInput prop'
+    />
+  </template>
 }
 ```

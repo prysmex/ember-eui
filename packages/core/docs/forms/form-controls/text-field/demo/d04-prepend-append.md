@@ -13,25 +13,29 @@ field, and the input's id.
 
 </EuiText>
 
-```hbs template
-<EuiFormRow @label="Website">
-  <EuiFieldText @value="example">
-    <:prepend as |classes inputId|>
-      <EuiFormLabel class={{classes}} for={{inputId}}>https://</EuiFormLabel>
-    </:prepend>
-    <:append as |classes|>
-      <EuiFormLabel class={{classes}}>.com</EuiFormLabel>
-    </:append>
-  </EuiFieldText>
-</EuiFormRow>
+```gjs component
+import { EuiFormRow, EuiFieldText, EuiFormLabel, EuiButtonEmpty } from '@ember-eui/core/components';
 
-<EuiFormRow @label="Invite">
-  <EuiFieldText @value="jane@example.com">
-    <:append as |classes|>
-      <EuiButtonEmpty class={{classes}} @size="xs" @iconType="plusInCircle">
-        Add
-      </EuiButtonEmpty>
-    </:append>
-  </EuiFieldText>
-</EuiFormRow>
+<template>
+  <EuiFormRow @label="Website">
+    <EuiFieldText @value="example">
+      <:prepend as |classes inputId|>
+        <EuiFormLabel class={{classes}} for={{inputId}}>https://</EuiFormLabel>
+      </:prepend>
+      <:append as |classes|>
+        <EuiFormLabel class={{classes}}>.com</EuiFormLabel>
+      </:append>
+    </EuiFieldText>
+  </EuiFormRow>
+
+  <EuiFormRow @label="Invite">
+    <EuiFieldText @value="jane@example.com">
+      <:append as |classes|>
+        <EuiButtonEmpty class={{classes}} @size="xs" @iconType="plusInCircle">
+          Add
+        </EuiButtonEmpty>
+      </:append>
+    </EuiFieldText>
+  </EuiFormRow>
+</template>
 ```

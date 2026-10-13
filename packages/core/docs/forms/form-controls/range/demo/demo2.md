@@ -35,28 +35,29 @@ order: 2
   </EuiCallOut>
 </EuiText>
 
-```hbs template
-<EuiDualRange
-  @value={{this.value}}
-  @min={{-100}}
-  @max={{200}}
-  @step={{10}}
-  @onChange={{this.onChange}}
-  @showLabels={{true}}
-  aria-label='An example of EuiDualRange'
-/>
-```
-
-```javascript component
+```gjs component
 import Component from '@glimmer/component';
 import { tracked } from '@glimmer/tracking';
 import { action } from '@ember/object';
+import { EuiDualRange } from '@ember-eui/core/components';
 
-export default class extends Component {
+export default class 2Demo extends Component {
   @tracked value = ['', ''];
   @action
   onChange(values) {
     this.value = values;
   }
+
+  <template>
+    <EuiDualRange
+      @value={{this.value}}
+      @min={{-100}}
+      @max={{200}}
+      @step={{10}}
+      @onChange={{this.onChange}}
+      @showLabels={{true}}
+      aria-label='An example of EuiDualRange'
+    />
+  </template>
 }
 ```

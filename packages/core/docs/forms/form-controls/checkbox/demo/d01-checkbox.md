@@ -16,35 +16,12 @@ Make sure to pass a `@label` to ensure a larger clickable area and ensure that s
 
 </EuiText>
 
-```hbs template
-<EuiCheckbox
-  @label="I am a checkbox"
-  @checked={{this.checked}}
-  {{on "change" this.onChange}}
-/>
-
-<EuiSpacer @size="m" />
-
-<EuiCheckbox
-  @label="I am an indeterminate checkbox"
-  @indeterminate={{this.indeterminate}}
-  {{on "change" this.onChangeIndeterminate}}
-/>
-
-<EuiSpacer @size="m" />
-
-<EuiCheckbox
-  @label="I am a disabled checkbox"
-  @checked={{this.checked}}
-  @disabled={{true}}
-  {{on "change" this.onChange}}
-/>
-```
-
-```js component
+```gjs component
 import Component from '@glimmer/component';
 import { tracked } from '@glimmer/tracking';
 import { action } from '@ember/object';
+import { EuiCheckbox, EuiSpacer } from '@ember-eui/core/components';
+import { on } from '@ember/modifier';
 
 export default class CheckboxDemo extends Component {
   @tracked checked = false;
@@ -59,5 +36,30 @@ export default class CheckboxDemo extends Component {
   onChangeIndeterminate() {
     this.indeterminate = !this.indeterminate;
   }
+
+  <template>
+    <EuiCheckbox
+      @label="I am a checkbox"
+      @checked={{this.checked}}
+      {{on "change" this.onChange}}
+    />
+
+    <EuiSpacer @size="m" />
+
+    <EuiCheckbox
+      @label="I am an indeterminate checkbox"
+      @indeterminate={{this.indeterminate}}
+      {{on "change" this.onChangeIndeterminate}}
+    />
+
+    <EuiSpacer @size="m" />
+
+    <EuiCheckbox
+      @label="I am a disabled checkbox"
+      @checked={{this.checked}}
+      @disabled={{true}}
+      {{on "change" this.onChange}}
+    />
+  </template>
 }
 ```

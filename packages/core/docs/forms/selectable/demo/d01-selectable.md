@@ -11,24 +11,12 @@ and uncheck them. Group labels and disabled options cannot be picked.
 
 </EuiText>
 
-```hbs template
-<EuiPanel @paddingSize="none" style="max-width: 320px;">
-  <EuiSelectable
-    @options={{this.options}}
-    @onChange={{this.setOptions}}
-    @searchable={{true}}
-    @listProps={{hash bordered=true}}
-    aria-label="Planets"
-  />
-</EuiPanel>
-<EuiSpacer />
-<EuiText @size="s"><p>Selected: {{this.selected}}</p></EuiText>
-```
-
-```js component
+```gjs component
 import Component from '@glimmer/component';
 import { tracked } from '@glimmer/tracking';
 import { action } from '@ember/object';
+import { EuiPanel, EuiSelectable, EuiSpacer, EuiText } from '@ember-eui/core/components';
+import { hash } from '@ember/helper';
 
 export default class SelectableDemo extends Component {
   @tracked options = [
@@ -58,5 +46,19 @@ export default class SelectableDemo extends Component {
   setOptions(options) {
     this.options = options;
   }
+
+  <template>
+    <EuiPanel @paddingSize="none" style="max-width: 320px;">
+      <EuiSelectable
+        @options={{this.options}}
+        @onChange={{this.setOptions}}
+        @searchable={{true}}
+        @listProps={{hash bordered=true}}
+        aria-label="Planets"
+      />
+    </EuiPanel>
+    <EuiSpacer />
+    <EuiText @size="s"><p>Selected: {{this.selected}}</p></EuiText>
+  </template>
 }
 ```

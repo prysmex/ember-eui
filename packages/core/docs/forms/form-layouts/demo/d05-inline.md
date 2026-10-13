@@ -12,22 +12,26 @@ lines up with the fields.
 
 </EuiText>
 
-```hbs template
-<EuiFlexGroup @alignItems="flexStart">
-  <EuiFlexItem>
-    <EuiFormRow @label="First name">
-      <EuiFieldText />
-    </EuiFormRow>
-  </EuiFlexItem>
-  <EuiFlexItem>
-    <EuiFormRow @label="Last name">
-      <EuiFieldText />
-    </EuiFormRow>
-  </EuiFlexItem>
-  <EuiFlexItem @grow={{false}}>
-    <EuiFormRow @hasEmptyLabelSpace={{true}}>
-      <EuiButton>Invite</EuiButton>
-    </EuiFormRow>
-  </EuiFlexItem>
-</EuiFlexGroup>
+```gjs component
+import { EuiFlexGroup, EuiFlexItem, EuiFormRow, EuiFieldText, EuiButton } from '@ember-eui/core/components';
+
+<template>
+  <EuiFlexGroup @alignItems="flexStart">
+    <EuiFlexItem>
+      <EuiFormRow @label="First name">
+        <EuiFieldText />
+      </EuiFormRow>
+    </EuiFlexItem>
+    <EuiFlexItem>
+      <EuiFormRow @label="Last name">
+        <EuiFieldText />
+      </EuiFormRow>
+    </EuiFlexItem>
+    <EuiFlexItem @grow={{false}}>
+      <EuiFormRow @hasEmptyLabelSpace={{true}}>
+        <EuiButton>Invite</EuiButton>
+      </EuiFormRow>
+    </EuiFlexItem>
+  </EuiFlexGroup>
+</template>
 ```

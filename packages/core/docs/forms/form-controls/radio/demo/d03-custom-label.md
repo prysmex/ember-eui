@@ -10,10 +10,14 @@ The `<:label>` block takes markup instead of `@label`.
 
 </EuiText>
 
-```hbs template
-<EuiRadio @name="shipping" @checked={{true}}>
-  <:label>
-    Express <EuiBadge @color="success">Free</EuiBadge>
-  </:label>
-</EuiRadio>
+```gjs component
+import { EuiRadio, EuiBadge } from '@ember-eui/core/components';
+
+<template>
+  <EuiRadio @name="shipping" @checked={{true}}>
+    <:label>
+      Express <EuiBadge @color="success">Free</EuiBadge>
+    </:label>
+  </EuiRadio>
+</template>
 ```

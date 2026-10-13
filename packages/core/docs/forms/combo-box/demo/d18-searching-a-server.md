@@ -1,8 +1,8 @@
 ---
-order: 3
+order: 18
 ---
 
-# Searching a server
+# Searching a server (Ember EUI extra)
 
 <EuiText>
 
@@ -13,25 +13,11 @@ combo box shows a loading message until the promise resolves.
 
 </EuiText>
 
-```hbs template
-<EuiFormRow @label="Assignee">
-  <EuiComboBox
-    @search={{this.searchUsers}}
-    @selectedOptions={{this.selected}}
-    @onChange={{this.select}}
-    @searchMessage="Type to search users"
-    @placeholder="Search users"
-    as |user|
-  >
-    {{user.name}} <EuiTextColor @color="subdued">({{user.email}})</EuiTextColor>
-  </EuiComboBox>
-</EuiFormRow>
-```
-
-```js component
+```gjs component
 import Component from '@glimmer/component';
 import { tracked } from '@glimmer/tracking';
 import { action } from '@ember/object';
+import { EuiFormRow, EuiComboBox, EuiTextColor } from '@ember-eui/core/components';
 
 const USERS = [
   { name: 'Jane Cooper', email: 'jane@example.com' },
@@ -59,5 +45,20 @@ export default class AsyncSearchDemo extends Component {
   select(selected) {
     this.selected = selected;
   }
+
+  <template>
+    <EuiFormRow @label="Assignee">
+      <EuiComboBox
+        @search={{this.searchUsers}}
+        @selectedOptions={{this.selected}}
+        @onChange={{this.select}}
+        @searchMessage="Type to search users"
+        @placeholder="Search users"
+        as |user|
+      >
+        {{user.name}} <EuiTextColor @color="subdued">({{user.email}})</EuiTextColor>
+      </EuiComboBox>
+    </EuiFormRow>
+  </template>
 }
 ```

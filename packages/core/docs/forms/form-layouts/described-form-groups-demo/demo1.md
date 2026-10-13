@@ -12,73 +12,78 @@ the default block. On small screens the columns stack.
 
 </EuiText>
 
-```hbs template
-<EuiDescribedFormGroup @titleTagName="h3">
-  <:title>
-    Set heading level based on context
-  </:title>
-  <:description>
-    Will be wrapped in a small, subdued EuiText block.
-  </:description>
-  <:default>
-    <EuiFormRow @label='Text field' @helpText='Im helping!'>
-      <EuiFieldText />
-    </EuiFormRow>
-  </:default>
-</EuiDescribedFormGroup>
-<EuiDescribedFormGroup @titleTagName="h3">
-  <:title>
-    No description
-  </:title>
-  <:default>
-    <EuiFormRow @label='Text field' @helpText={{array 'Im helping!' 'Me too!'}}>
-      <EuiFieldText />
-    </EuiFormRow>
-  </:default>
-</EuiDescribedFormGroup>
-<EuiDescribedFormGroup @titleTagName="h3">
-  <:title>
-    Multiple fields
-  </:title>
-  <:description>
-    Here are three form rows. The first form row does not have a title.
-  </:description>
-  <:default>
-    <EuiFormRow @label='Text field'>
-      <:field>
-        <EuiFieldText />
-      </:field>
-      <:helpText>
-        Im helping!
-        <br />
-        Me too!
-      </:helpText>
-    </EuiFormRow>
-    <EuiFormRow @label='Text field'>
-      <EuiFilePicker />
-    </EuiFormRow>
-    <EuiFormRow @label='Text field'>
-      <EuiRangeSlider />
-    </EuiFormRow>
+```gjs component
+import { EuiDescribedFormGroup, EuiFormRow, EuiFieldText, EuiFilePicker, EuiRangeSlider, EuiSwitch } from '@ember-eui/core/components';
+import { array } from '@ember/helper';
 
-  </:default>
-</EuiDescribedFormGroup>
-<EuiDescribedFormGroup @fullWidth={{true}}>
-  <:title>
-    Full width
-  </:title>
-  <:description>
-    By default, EuiDescribedFormGroup will be double the default width of form
-    elements. However, you can pass fullWidth prop to this, the individual field
-    and row components to expand to their container.
-  </:description>
-  <:default>
-    <EuiFormRow @label='Use a switch instead of a single checkbox'>
-      <EuiSwitch />
-    </EuiFormRow>
-    <EuiFormRow @label='Text field'>
-      <EuiFieldText />
-    </EuiFormRow>
-  </:default>
-</EuiDescribedFormGroup>
+<template>
+  <EuiDescribedFormGroup @titleTagName="h3">
+    <:title>
+      Set heading level based on context
+    </:title>
+    <:description>
+      Will be wrapped in a small, subdued EuiText block.
+    </:description>
+    <:default>
+      <EuiFormRow @label='Text field' @helpText='Im helping!'>
+        <EuiFieldText />
+      </EuiFormRow>
+    </:default>
+  </EuiDescribedFormGroup>
+  <EuiDescribedFormGroup @titleTagName="h3">
+    <:title>
+      No description
+    </:title>
+    <:default>
+      <EuiFormRow @label='Text field' @helpText={{array 'Im helping!' 'Me too!'}}>
+        <EuiFieldText />
+      </EuiFormRow>
+    </:default>
+  </EuiDescribedFormGroup>
+  <EuiDescribedFormGroup @titleTagName="h3">
+    <:title>
+      Multiple fields
+    </:title>
+    <:description>
+      Here are three form rows. The first form row does not have a title.
+    </:description>
+    <:default>
+      <EuiFormRow @label='Text field'>
+        <:field>
+          <EuiFieldText />
+        </:field>
+        <:helpText>
+          Im helping!
+          <br />
+          Me too!
+        </:helpText>
+      </EuiFormRow>
+      <EuiFormRow @label='Text field'>
+        <EuiFilePicker />
+      </EuiFormRow>
+      <EuiFormRow @label='Text field'>
+        <EuiRangeSlider />
+      </EuiFormRow>
+
+    </:default>
+  </EuiDescribedFormGroup>
+  <EuiDescribedFormGroup @fullWidth={{true}}>
+    <:title>
+      Full width
+    </:title>
+    <:description>
+      By default, EuiDescribedFormGroup will be double the default width of form
+      elements. However, you can pass fullWidth prop to this, the individual field
+      and row components to expand to their container.
+    </:description>
+    <:default>
+      <EuiFormRow @label='Use a switch instead of a single checkbox'>
+        <EuiSwitch />
+      </EuiFormRow>
+      <EuiFormRow @label='Text field'>
+        <EuiFieldText />
+      </EuiFormRow>
+    </:default>
+  </EuiDescribedFormGroup>
+</template>
 ```

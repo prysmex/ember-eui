@@ -12,15 +12,19 @@ hides the clear button.
 
 </EuiText>
 
-```hbs template
-<EuiFieldSearch @value="kibana" @isLoading={{true}} aria-label="Loading search" />
-<EuiSpacer />
-<EuiFieldSearch @value="compact" @compressed={{true}} aria-label="Compressed search" />
-<EuiSpacer />
-<EuiFieldSearch
-  @value="no clear button"
-  @isClearable={{false}}
-  @fullWidth={{true}}
-  aria-label="Full width search"
-/>
+```gjs component
+import { EuiFieldSearch, EuiSpacer } from '@ember-eui/core/components';
+
+<template>
+  <EuiFieldSearch @value="kibana" @isLoading={{true}} aria-label="Loading search" />
+  <EuiSpacer />
+  <EuiFieldSearch @value="compact" @compressed={{true}} aria-label="Compressed search" />
+  <EuiSpacer />
+  <EuiFieldSearch
+    @value="no clear button"
+    @isClearable={{false}}
+    @fullWidth={{true}}
+    aria-label="Full width search"
+  />
+</template>
 ```

@@ -1,8 +1,8 @@
 ---
-order: 1
+order: 17
 ---
 
-# Multiple selection and custom options
+# Keeping the list open (Ember EUI extra)
 
 <EuiText>
 
@@ -13,30 +13,13 @@ keeps the list open to pick several options in a row.
 
 </EuiText>
 
-```hbs template
-<EuiComboBox
-  @onChange={{this.onChange}}
-  @options={{this.remainingOptions}}
-  @selectedOptions={{this.selected}}
-  @searchEnabled={{true}}
-  @closeOnSelect={{false}}
-  @searchField='label'
-  @placeholder='Select options'
-  @removeTag={{this.removeOption}}
-  @onCreateOption={{this.onCreateOption}}
-  @alwaysShowCreateOption={{false}}
-  as |option item|
->
-  {{option.label}}
-</EuiComboBox>
-```
-
-```javascript component
+```gjs component
 import Component from '@glimmer/component';
 import { tracked } from '@glimmer/tracking';
 import { action } from '@ember/object';
+import { EuiComboBox } from '@ember-eui/core/components';
 
-export default class extends Component {
+export default class KeepOpenDemo extends Component {
   @tracked selected = [];
   @tracked options = [];
   @tracked remainingOptions = [];
@@ -90,5 +73,23 @@ export default class extends Component {
 
     this.calculateRemainingOptions();
   }
+
+  <template>
+    <EuiComboBox
+      @onChange={{this.onChange}}
+      @options={{this.remainingOptions}}
+      @selectedOptions={{this.selected}}
+      @searchEnabled={{true}}
+      @closeOnSelect={{false}}
+      @searchField='label'
+      @placeholder='Select options'
+      @removeTag={{this.removeOption}}
+      @onCreateOption={{this.onCreateOption}}
+      @alwaysShowCreateOption={{false}}
+      as |option item|
+    >
+      {{option.label}}
+    </EuiComboBox>
+  </template>
 }
 ```

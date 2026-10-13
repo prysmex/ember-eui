@@ -12,33 +12,12 @@ clicking it again clears it, e.g. for "include / exclude" filters.
 
 </EuiText>
 
-```hbs template
-<EuiFlexGroup>
-  <EuiFlexItem>
-    <EuiSelectable
-      @options={{this.sizes}}
-      @onChange={{this.setSizes}}
-      @singleSelection="always"
-      @listProps={{hash bordered=true}}
-      aria-label="Size"
-    />
-  </EuiFlexItem>
-  <EuiFlexItem>
-    <EuiSelectable
-      @options={{this.tags}}
-      @onChange={{this.setTags}}
-      @allowExclusions={{true}}
-      @listProps={{hash bordered=true}}
-      aria-label="Tags"
-    />
-  </EuiFlexItem>
-</EuiFlexGroup>
-```
-
-```js component
+```gjs component
 import Component from '@glimmer/component';
 import { tracked } from '@glimmer/tracking';
 import { action } from '@ember/object';
+import { EuiFlexGroup, EuiFlexItem, EuiSelectable } from '@ember-eui/core/components';
+import { hash } from '@ember/helper';
 
 export default class SelectableSingle extends Component {
   @tracked sizes = [
@@ -63,5 +42,28 @@ export default class SelectableSingle extends Component {
   setTags(options) {
     this.tags = options;
   }
+
+  <template>
+    <EuiFlexGroup>
+      <EuiFlexItem>
+        <EuiSelectable
+          @options={{this.sizes}}
+          @onChange={{this.setSizes}}
+          @singleSelection="always"
+          @listProps={{hash bordered=true}}
+          aria-label="Size"
+        />
+      </EuiFlexItem>
+      <EuiFlexItem>
+        <EuiSelectable
+          @options={{this.tags}}
+          @onChange={{this.setTags}}
+          @allowExclusions={{true}}
+          @listProps={{hash bordered=true}}
+          aria-label="Tags"
+        />
+      </EuiFlexItem>
+    </EuiFlexGroup>
+  </template>
 }
 ```

@@ -14,37 +14,13 @@ The switches above the field are docs-only helpers that toggle its display argum
 
 </EuiText>
 
-```hbs template
-<EuiFlexGroup @wrap={{true}} @gutterSize="m" @responsive={{false}}>
-  {{#each this.toggles as |toggle|}}
-    <EuiFlexItem @grow={{false}}>
-      <EuiSwitch
-        @label={{toggle.label}}
-        @compressed={{true}}
-        @checked={{get this.flags toggle.key}}
-        @onChange={{fn this.toggle toggle.key}}
-      />
-    </EuiFlexItem>
-  {{/each}}
-</EuiFlexGroup>
-<EuiSpacer @size="m" />
-<EuiSelect
-  @options={{this.options}}
-  @value={{this.value}}
-  @fullWidth={{this.flags.fullWidth}}
-  @compressed={{this.flags.compressed}}
-  @isInvalid={{this.flags.isInvalid}}
-  @isLoading={{this.flags.isLoading}}
-  @disabled={{this.flags.disabled}}
-  aria-label="Use aria labels when no actual label is in use"
-  {{on "change" this.onChange}}
-/>
-```
-
-```js component
+```gjs component
 import Component from '@glimmer/component';
 import { tracked } from '@glimmer/tracking';
 import { action } from '@ember/object';
+import { EuiFlexGroup, EuiFlexItem, EuiSwitch, EuiSpacer, EuiSelect } from '@ember-eui/core/components';
+import { get, fn } from '@ember/helper';
+import { on } from '@ember/modifier';
 
 export default class SelectDemo extends Component {
   toggles = [
@@ -73,5 +49,32 @@ export default class SelectDemo extends Component {
   onChange(event) {
     this.value = event.target.value;
   }
+
+  <template>
+    <EuiFlexGroup @wrap={{true}} @gutterSize="m" @responsive={{false}}>
+      {{#each this.toggles as |toggle|}}
+        <EuiFlexItem @grow={{false}}>
+          <EuiSwitch
+            @label={{toggle.label}}
+            @compressed={{true}}
+            @checked={{get this.flags toggle.key}}
+            @onChange={{fn this.toggle toggle.key}}
+          />
+        </EuiFlexItem>
+      {{/each}}
+    </EuiFlexGroup>
+    <EuiSpacer @size="m" />
+    <EuiSelect
+      @options={{this.options}}
+      @value={{this.value}}
+      @fullWidth={{this.flags.fullWidth}}
+      @compressed={{this.flags.compressed}}
+      @isInvalid={{this.flags.isInvalid}}
+      @isLoading={{this.flags.isLoading}}
+      @disabled={{this.flags.disabled}}
+      aria-label="Use aria labels when no actual label is in use"
+      {{on "change" this.onChange}}
+    />
+  </template>
 }
 ```

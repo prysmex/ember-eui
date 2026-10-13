@@ -12,38 +12,13 @@ keeps the solid underline while it is open; an empty value is marked
 
 </EuiText>
 
-```hbs template
-<EuiPopover
-  @isOpen={{this.isOpen}}
-  @closePopover={{this.close}}
-  @anchorPosition="downLeft"
-  @ownFocus={{true}}
->
-  <:button>
-    <EuiExpression
-      @description="is above"
-      @value={{if this.threshold this.threshold "?"}}
-      @isActive={{this.isOpen}}
-      @isInvalid={{not this.threshold}}
-      @onClick={{this.toggle}}
-    />
-  </:button>
-  <:content>
-    <EuiPopoverTitle>Is above</EuiPopoverTitle>
-    <EuiFieldNumber
-      @value={{this.threshold}}
-      @compressed={{true}}
-      aria-label="Threshold"
-      {{on "input" this.setThreshold}}
-    />
-  </:content>
-</EuiPopover>
-```
-
-```js component
+```gjs component
 import Component from '@glimmer/component';
 import { tracked } from '@glimmer/tracking';
 import { action } from '@ember/object';
+import { EuiPopover, EuiExpression, EuiPopoverTitle, EuiFieldNumber } from '@ember-eui/core/components';
+import { not } from 'ember-truth-helpers';
+import { on } from '@ember/modifier';
 
 export default class EditableExpression extends Component {
   @tracked isOpen = false;
@@ -63,5 +38,33 @@ export default class EditableExpression extends Component {
   setThreshold(event) {
     this.threshold = event.target.value;
   }
+
+  <template>
+    <EuiPopover
+      @isOpen={{this.isOpen}}
+      @closePopover={{this.close}}
+      @anchorPosition="downLeft"
+      @ownFocus={{true}}
+    >
+      <:button>
+        <EuiExpression
+          @description="is above"
+          @value={{if this.threshold this.threshold "?"}}
+          @isActive={{this.isOpen}}
+          @isInvalid={{not this.threshold}}
+          @onClick={{this.toggle}}
+        />
+      </:button>
+      <:content>
+        <EuiPopoverTitle>Is above</EuiPopoverTitle>
+        <EuiFieldNumber
+          @value={{this.threshold}}
+          @compressed={{true}}
+          aria-label="Threshold"
+          {{on "input" this.setThreshold}}
+        />
+      </:content>
+    </EuiPopover>
+  </template>
 }
 ```

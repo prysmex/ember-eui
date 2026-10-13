@@ -10,24 +10,14 @@ Give every radio of a group the same `@name`, check the selected one with `@chec
 
 </EuiText>
 
-```hbs template
-{{#each this.plans as |plan|}}
-  <EuiRadio
-    @name="plan"
-    @label={{plan.label}}
-    @checked={{eq this.plan plan.id}}
-    {{on "change" (fn this.choose plan.id)}}
-  />
-{{/each}}
-<EuiRadio @name="plan" @label="Enterprise (contact sales)" @disabled={{true}} />
-<EuiSpacer />
-<EuiText @size="s" @color="subdued"><p>Plan: {{this.plan}}</p></EuiText>
-```
-
-```js component
+```gjs component
 import Component from '@glimmer/component';
 import { tracked } from '@glimmer/tracking';
 import { action } from '@ember/object';
+import { EuiRadio, EuiSpacer, EuiText } from '@ember-eui/core/components';
+import { eq } from 'ember-truth-helpers';
+import { on } from '@ember/modifier';
+import { fn } from '@ember/helper';
 
 export default class RadioNamedDemo extends Component {
   plans = [
@@ -41,5 +31,19 @@ export default class RadioNamedDemo extends Component {
   choose(id) {
     this.plan = id;
   }
+
+  <template>
+    {{#each this.plans as |plan|}}
+      <EuiRadio
+        @name="plan"
+        @label={{plan.label}}
+        @checked={{eq this.plan plan.id}}
+        {{on "change" (fn this.choose plan.id)}}
+      />
+    {{/each}}
+    <EuiRadio @name="plan" @label="Enterprise (contact sales)" @disabled={{true}} />
+    <EuiSpacer />
+    <EuiText @size="s" @color="subdued"><p>Plan: {{this.plan}}</p></EuiText>
+  </template>
 }
 ```

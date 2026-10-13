@@ -31,10 +31,6 @@ This is the list of those gaps. Effort: S/M/L.
 
 | Component | Missing prop/feature |
 | --- | --- |
-| EuiCheckbox | `readOnly` (+ styling) |
-| EuiColorPalettePicker | per-palette `append`; palettes `euiPaletteRed/Green/SkyBlue/Yellow/Orange` |
-| EuiInputPopover | `closeOnScroll` (selectable input popover demo leaves it out) |
-| EuiInlineEdit* | `readModeProps` color/iconSide, `inputProps` prepend/readOnly |
 | EuiSearchBar | `box` prepend/append/onClick/onFocus/onBlur; filter option `view` as markup |
 | EuiSuperDatePicker | not in the audit, still missing: `isDisabled={ display }`, the pretty duration display (`showPrettyDuration`), `quickSelectButtonProps`, the auto refresh append button, `updateButtonProps` tooltip/`responsive` (see super-date-picker-handoff.md) |
 | EuiDatePicker | no calendar picker in core (flatpickr/pikaday packages) |
@@ -48,15 +44,6 @@ This is the list of those gaps. Effort: S/M/L.
 | EuiTable | `stickyHeader`, `stickyScrollbar` |
 | EuiDataGrid | `virtualizationOptions.onScroll` direction/`scrollUpdateWasRequested`; `estimatedRowHeight`; no custom virtualization (react-window); `footerCellProps` style; cell-action `closePopover` (upstream doesn't pass it either) |
 | EuiDataGrid (extension) | renderers don't get row depth / expanded state |
-
-## Containers, flyouts and modals
-
-| Component | Missing prop/feature |
-| --- | --- |
-| EuiModal | `focusTrapProps.returnFocus` |
-| EuiSuperSelect | `popoverProps` |
-| EuiConfirmModal | `titleProps` |
-| EuiAccordion | hover-only extra action (always visible) |
 
 ## Layout, navigation, templates
 
@@ -79,8 +66,6 @@ This is the list of those gaps. Effort: S/M/L.
 | EuiCard | `hasBorder` | containers/card.mdx | S | Hard-coded false; "Bordered" example missing. |
 | EuiCard | `betaBadgeProps.color` / other badge props | containers/card.mdx | S | Colour derived from `isDisabled` only. |
 | EuiCard | `image` as element/node | containers/card.mdx | S/M | `image` is string; d02 notes adaptation. |
-| EuiResizableButton | standalone use (`isHorizontal`, `onMouseDown`, `onTouchStart`, `onKeyDown`) | containers/resizable-container.mdx | M | "Custom resize logic" example omitted. |
-| EuiResizablePanel | collapsible `mode` options `className`, `data-test-subj` | containers/resizable-container.mdx | S | `Mode` allows only `{position}`. |
 | EuiPageHeader | `tabsProps`; `breadcrumbProps`/`rightSideGroupProps`/`pageTitleProps`/`iconProps` accept only `{className}` | layout/page-header.mdx | S | Upstream passes `aria-label`, `data-test-subj`. |
 | EuiPage / EuiPageSidebar | `component` tag arg (EuiPage also `css`) | layout/page_components | S | Unverified against upstream source. |
 | EuiFlexGroup | `@tagName` beyond `div`/`span` | layout/flex/index.mdx | S | Template has an `eq "span"` branch; would need `{{element}}`. |

@@ -30,7 +30,12 @@ export {
   euiPaletteForStatus,
   euiPaletteForTemperature,
   euiPaletteGray,
+  euiPaletteGreen,
   euiPaletteNegative,
+  euiPaletteOrange,
   euiPalettePositive,
-  euiPaletteWarm
+  euiPaletteRed,
+  euiPaletteSkyBlue,
+  euiPaletteWarm,
+  euiPaletteYellow
 } from './eui_palettes.ts';

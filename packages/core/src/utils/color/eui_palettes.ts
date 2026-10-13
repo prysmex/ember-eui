@@ -24,6 +24,7 @@
 
 import chroma from 'chroma-js';
 
+import { resolveBorealisTheme } from '../eui/theme.ts';
 import { colorPalette } from './color_palette.ts';
 
 export type EuiPalette = string[];
@@ -273,3 +274,71 @@ export const euiPaletteGray = function (steps: number): EuiPalette {
     false
   );
 };
+
+/**
+ * Ported from @elastic/eui 123.1.0 `services/color/eui_palettes.ts`
+ * (`euiPaletteRed`, `Green`, `SkyBlue`, `Yellow`, `Orange`).
+ *
+ * Upstream reads the theme's visualization colors from the global
+ * `EUI_VIS_COLOR_STORE`, which the React provider keeps in sync. Ember has
+ * no such global: by default these use the Borealis vis colors (identical in
+ * light and dark mode), and `colors` takes any other set, e.g. the current
+ * theme's `euiTheme.colors.vis`.
+ */
+export type EuiPaletteVisColors = Record<string, string>;
+
+export interface EuiPaletteCommonProps {
+  /**
+   * Defines the set of vis colors the palette uses. Defaults to the
+   * Borealis vis colors.
+   */
+  colors?: EuiPaletteVisColors;
+}
+
+let defaultVisColors: EuiPaletteVisColors | undefined;
+
+function visColorsOf(colors?: EuiPaletteVisColors): EuiPaletteVisColors {
+  if (colors) return colors;
+  defaultVisColors ??= resolveBorealisTheme('light').euiTheme.colors
+    .vis as unknown as EuiPaletteVisColors;
+  return defaultVisColors;
+}
+
+function semanticPalette(
+  steps: number,
+  name: string,
+  colors?: EuiPaletteVisColors
+): EuiPalette {
+  const vis = visColorsOf(colors);
+
+  if (steps === 1) {
+    return [vis[`euiColorVis${name}1`]!];
+  }
+
+  return euiPalette([vis['euiColorVisBase0']!, vis[`euiColorVis${name}0`]!], steps);
+}
+
+export const euiPaletteRed = (
+  steps: number,
+  { colors }: EuiPaletteCommonProps = {}
+): EuiPalette => semanticPalette(steps, 'Danger', colors);
+
+export const euiPaletteGreen = (
+  steps: number,
+  { colors }: EuiPaletteCommonProps = {}
+): EuiPalette => semanticPalette(steps, 'Success', colors);
+
+export const euiPaletteSkyBlue = (
+  steps: number,
+  { colors }: EuiPaletteCommonProps = {}
+): EuiPalette => semanticPalette(steps, 'Neutral', colors);
+
+export const euiPaletteYellow = (
+  steps: number,
+  { colors }: EuiPaletteCommonProps = {}
+): EuiPalette => semanticPalette(steps, 'Warning', colors);
+
+export const euiPaletteOrange = (
+  steps: number,
+  { colors }: EuiPaletteCommonProps = {}
+): EuiPalette => semanticPalette(steps, 'Risk', colors);

@@ -7,6 +7,7 @@ import EuiSpacer from './eui-spacer.gts';
 import EuiSuperSelect from './eui-super-select.gts';
 import EuiText from './eui-text.gts';
 
+import type { ComponentLike } from '@glint/template';
 import type { ColorStop } from '../-private/color.ts';
 import type { EuiSuperSelectOption } from './eui-super-select';
 
@@ -22,6 +23,12 @@ export interface EuiColorPalettePickerPalette {
   type: 'fixed' | 'gradient' | 'text';
   /** The colors or `{ stop, color }` stops (not for `'text'`). */
   palette?: (string | ColorStop)[];
+  /**
+   * Shown to the right of the title in the list (not for `'text'`
+   * options, as upstream): text, or a component (React nodes become
+   * components in Ember), e.g. a badge or a button.
+   */
+  append?: string | ComponentLike;
 }
 
 /**
@@ -114,6 +121,15 @@ export default class EuiColorPalettePicker extends Component<EuiColorPalettePick
                       @size="xs"
                     >{{palette.title}}</EuiText>
                   </EuiFlexItem>
+                  {{#if palette.append}}
+                    <EuiFlexItem @grow={{false}}>
+                      {{#if (isString palette.append)}}
+                        {{asText palette.append}}
+                      {{else}}
+                        {{#let (asComponent palette.append) as |Append|}}<Append />{{/let}}
+                      {{/if}}
+                    </EuiFlexItem>
+                  {{/if}}
                 </EuiFlexGroup>
                 <EuiSpacer @size="xs" />
               {{/if}}
@@ -144,4 +160,16 @@ function fixedOrGradient(type: string): 'fixed' | 'gradient' {
 
 function isText(type: string): boolean {
   return type === 'text';
+}
+
+function isString(value: unknown): boolean {
+  return typeof value === 'string';
+}
+
+function asText(value: unknown): string {
+  return String(value);
+}
+
+function asComponent(value: unknown): ComponentLike {
+  return value as ComponentLike;
 }

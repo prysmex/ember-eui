@@ -10,6 +10,8 @@ Use `EuiColorPalettePicker` to select palettes to apply colors to data visualiza
 
 Use the `@palettes` argument to pass your palettes as an array of strings or an array of color stops in the form of `{ stop: number, color: string }`. For each object, you should pass a palette (array of hex values) and specify the `type`. Use `fixed` palettes for categorical data and `gradient` palettes for continuous data.
 
+Each of the `@palettes`, excluding `type: 'text'` palettes, can use `append` to add something to the right of its title in the list: text, or a component (the Ember counterpart of upstream's element).
+
 The switch above the picker and the toggles are docs-only helpers.
 
 </EuiText>
@@ -25,6 +27,7 @@ import {
   EuiFlexItem,
   EuiSpacer,
   EuiSwitch,
+  EuiText,
 } from '@ember-eui/core/components';
 import {
   euiPaletteColorBlind,
@@ -39,9 +42,21 @@ const stops = [
   { stop: 470, color: 'black' },
 ];
 
+// Appended content can be a component, e.g. subdued text
+const labelled = (label) =>
+  <template>
+    <EuiText @color="subdued" @size="xs"><span>{{label}}</span></EuiText>
+  </template>;
+
+const FIXED = labelled('fixed');
+const GRADIENT = labelled('gradient');
+const GRADIENT_STOPS = labelled('gradient with stops');
+const FIXED_STOPS = labelled('fixed with stops');
+
 export default class PalettePickerDemo extends Component {
   toggles = [
     { key: 'selectionDisplay', label: 'Display selected item as a title' },
+    { key: 'append', label: 'Display append element on title' },
     { key: 'fullWidth', label: 'fullWidth' },
     { key: 'compressed', label: 'compressed' },
     { key: 'isInvalid', label: 'isInvalid' },
@@ -49,35 +64,43 @@ export default class PalettePickerDemo extends Component {
     { key: 'disabled', label: 'disabled' },
   ];
 
-  palettes = [
+  get palettes() {
+    const append = this.flags.append;
+
+    return [
     {
       value: 'palette_1',
       title: 'EUI color blind',
       palette: euiPaletteColorBlind(),
+      append: append && FIXED,
       type: 'fixed',
     },
     {
       value: 'palette_2',
       title: 'EUI palette for status',
       palette: euiPaletteForStatus(5),
+      append: append && GRADIENT,
       type: 'gradient',
     },
     {
       value: 'palette_3',
       title: 'EUI palette for temperature',
       palette: euiPaletteForTemperature(5),
+      append: append && FIXED,
       type: 'fixed',
     },
     {
       value: 'palette_4',
       title: 'Grayscale',
       palette: stops,
+      append: append && GRADIENT_STOPS,
       type: 'gradient',
     },
     {
       value: 'palette_5',
       title: 'Grayscale',
       palette: stops,
+      append: append && FIXED_STOPS,
       type: 'fixed',
     },
     {
@@ -85,7 +108,8 @@ export default class PalettePickerDemo extends Component {
       title: 'Plain text as a custom option',
       type: 'text',
     },
-  ];
+    ];
+  }
 
   @tracked flags = {};
   @tracked selectedPalette = 'palette_1';

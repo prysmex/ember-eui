@@ -56,7 +56,9 @@ const DEFAULT_PARSING_PLUGINS: Record<
   ExcludableDefaultPlugins,
   DefaultEuiMarkdownParsingPlugins[0]
 > = {
-  emoji: [emoji, { emoticon: false }],
+  // remark-emoji's types follow whichever `unified` pnpm hoists (like
+  // remark-breaks below), not the processor types used here
+  emoji: [emoji as any, { emoticon: false }],
   lineBreaks: [breaks as any, {}],
   linkValidator: [euiMarkdownLinkValidator, LINK_VALIDATOR_DEFAULTS],
   checkbox: [MarkdownCheckbox.parser, {}],

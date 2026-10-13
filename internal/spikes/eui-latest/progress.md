@@ -90,6 +90,15 @@ around @docfy/ember-vite re-adding its plugins on in-process Vite restarts
 markdown, `\{{` inside raw HTML. Main: core 1302/1302, site 8/8 + 17/17
 (nav 114). Upstream gaps found by the audit: see docs-audit-gaps.md.
 
+Update 4 (2026-10-13): closed audit gaps. Buttons: `hasAriaDisabled` on
+EuiButton/Empty/Icon/SplitButton/ButtonGroup; EuiButtonGroup option `title`,
+yielded child buttons (no `@options`), gutterSize, segmented/selection
+variants, vertical layout, display (button-group-handoff.md). EuiComboBox:
+option prepend/append/tooltips, truncationProps, rowHeight auto, delimiter,
+isCaseSensitive, sortMatchesBy, noSuggestions, prepend/append, search value in
+the option block (combo-box-handoff.md, incl. behaviour that still differs).
+Main: core 1333/1333, parity 349/349, site 8/8 + 17/17.
+
 Follow-ups: data grid renderers lack row depth/expanded state; EuiTableHeaderCell `@append`; EuiButtonEmpty `hasAriaDisabled`; the skeleton's private
 screen-reader-live copy could reuse EuiScreenReaderLive; button docs page loads
 slowly (~20s under load); open decision on focusing the form error callout;

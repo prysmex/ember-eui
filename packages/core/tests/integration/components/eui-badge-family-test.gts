@@ -6,7 +6,8 @@ import {
   focus,
   render,
   settled,
-  triggerEvent
+  triggerEvent,
+  waitUntil
 } from '@ember/test-helpers';
 import { setupRenderingTest } from 'ember-qunit';
 import { module, test } from 'qunit';
@@ -410,6 +411,7 @@ module('Integration | Component | Borealis badge family', function (hooks) {
           @iconOnClickAriaLabel="Remove"
           @onClick={{press}}
           @onClickAriaLabel="Open"
+          class="both"
           data-both
         >Both</EuiBadge>
         <EuiBadge
@@ -417,6 +419,7 @@ module('Integration | Component | Borealis badge family', function (hooks) {
           @iconOnClick={{pressIcon}}
           @iconOnClickAriaLabel="Remove"
           @href="#both"
+          class="both-link"
           data-both-link
         >Both link</EuiBadge>
       </template>
@@ -484,25 +487,70 @@ module('Integration | Component | Borealis badge family', function (hooks) {
     await click('[data-removable] .euiBadge__iconButton');
     assert.deepEqual(calls, ['icon']);
 
-    assert.dom('[data-both]').hasTagName('span');
+    // upstream: className on the outer span, the other props on the text button
+    assert.dom('.both').hasTagName('span').doesNotHaveAttribute('data-both');
     assert
-      .dom('[data-both] .euiBadge__childButton')
+      .dom('.both .euiBadge__childButton')
       .hasTagName('button')
+      .hasAttribute('data-both')
       .hasAttribute('aria-label', 'Open')
       .hasAttribute('title', 'Both');
-    assert.dom('[data-both] .euiBadge__content > :last-child').hasClass('euiBadge__iconButton');
+    assert.dom('.both .euiBadge__content > :last-child').hasClass('euiBadge__iconButton');
     calls.length = 0;
-    await click('[data-both] .euiBadge__childButton');
-    await click('[data-both] .euiBadge__iconButton');
+    await click('.both .euiBadge__childButton');
+    await click('.both .euiBadge__iconButton');
     assert.deepEqual(calls, ['badge', 'icon'], 'text and icon act separately');
     assert
-      .dom('[data-both-link] a.euiBadge__childButton')
+      .dom('.both-link a.euiBadge__childButton')
+      .hasAttribute('data-both-link')
       .hasAttribute('href', '#both')
       .hasAttribute('rel', 'noreferrer');
-    const child = style(this.element, '[data-both] .euiBadge__childButton');
+    const child = style(this.element, '.both .euiBadge__childButton');
     assert.strictEqual(child.backgroundColor, 'rgba(0, 0, 0, 0)');
     assert.strictEqual(child.fontWeight, String(light.font.weight.medium));
-    assert.strictEqual(child.color, style(this.element, '[data-both]').color);
+    assert.strictEqual(child.color, style(this.element, '.both').color);
+  });
+
+  // upstream badge.tsx: with iconOnClick and onClick/href, `className` and
+  // `style` stay on the outer span; `...rest` goes on the text button/link
+  test('with both handlers, attributes go on the text button; class and style stay on the root', async function (assert) {
+    class State {
+      @tracked subj = 'first';
+    }
+    const state = new State();
+    await render(
+      <template>
+        <EuiBadge
+          @iconType="cross"
+          @iconOnClick={{noop}}
+          @iconOnClickAriaLabel="Remove"
+          @onClick={{noop}}
+          @onClickAriaLabel="Open"
+          class="mine"
+          style="margin-top: 3px"
+          data-test-subj={{state.subj}}
+          aria-describedby="help"
+          id="badge-text"
+        >Both</EuiBadge>
+        <EuiBadge @iconType="cross" @iconOnClick={{noop}} @iconOnClickAriaLabel="Remove" data-test-subj="icon-only" class="icon-only">Icon only</EuiBadge>
+      </template>
+    );
+
+    assert.dom('.mine').hasTagName('span').hasStyle({ marginTop: '3px' });
+    for (const name of ['data-test-subj', 'aria-describedby', 'id']) {
+      assert.dom('.mine').doesNotHaveAttribute(name);
+    }
+    assert
+      .dom('.mine .euiBadge__childButton')
+      .hasAttribute('data-test-subj', 'first')
+      .hasAttribute('aria-describedby', 'help')
+      .hasAttribute('id', 'badge-text')
+      .doesNotHaveClass('mine');
+    state.subj = 'second';
+    await settled();
+    await waitUntil(() => document.querySelector('.mine .euiBadge__childButton')?.getAttribute('data-test-subj') === 'second');
+    assert.dom('.mine').doesNotHaveAttribute('data-test-subj', 'an update is moved too');
+    assert.dom('.icon-only').hasAttribute('data-test-subj', 'icon-only', 'iconOnClick alone: on the root (upstream)');
   });
 
   test('long text truncates with an ellipsis and keeps the full text as title', async function (assert) {
@@ -515,6 +563,7 @@ module('Integration | Component | Borealis badge family', function (hooks) {
             @iconOnClick={{noop}}
             @iconOnClickAriaLabel="Remove"
             @onClick={{noop}}
+            class="long-child"
             data-long-child
           >Another very long badge label here</EuiBadge>
         </div>
@@ -529,9 +578,10 @@ module('Integration | Component | Borealis badge family', function (hooks) {
     assert
       .dom('[data-long]')
       .hasAttribute('title', 'A very long badge label that cannot fit');
-    const child = el(this.element, '[data-long-child] .euiBadge__childButton');
+    // upstream: the attributes are on the text button, the class on the root
+    const child = el(this.element, '.long-child .euiBadge__childButton[data-long-child]');
     assert.strictEqual(getComputedStyle(child).textOverflow, 'ellipsis');
-    assert.true(box(this.element, '[data-long-child]').width <= 90);
+    assert.true(box(this.element, '.long-child').width <= 90);
   });
 
   test('EuiBetaBadge sizes, circles, colors, alignment and link/button/tooltip semantics', async function (assert) {

@@ -320,4 +320,49 @@ module('Integration | Component | EuiFlyout upstream parity', function (hooks) {
       );
     });
   });
+
+  // upstream flyout.component.tsx push padding effect:
+  // `shouldPush = isPushed && (!isInManagedContext || isActiveManagedFlyout)`
+  module('Push padding', function () {
+    test('a pushed standard flyout nested in a managed flyout does not push; a standalone one does', async function (assert) {
+      const state = new Flyouts();
+      state.a = true;
+
+      await render(
+        <template>
+          <EuiEmotionProvider>
+            {{#if state.a}}
+              <EuiFlyout @session="start" @flyoutMenuProps={{hash title="A"}} @onClose={{state.closeA}} data-test-subj="a">
+                {{#if state.inner}}
+                  <EuiFlyout @session="never" @type="push" @pushMinBreakpoint="xs" @size={{240}} @onClose={{state.closeInner}} data-test-subj="nested-push">nested</EuiFlyout>
+                {{/if}}
+              </EuiFlyout>
+            {{/if}}
+            {{#if state.b}}
+              <EuiFlyout @type="push" @pushMinBreakpoint="xs" @size={{260}} @onClose={{state.closeB}} data-test-subj="standalone-push">standalone</EuiFlyout>
+            {{/if}}
+          </EuiEmotionProvider>
+        </template>
+      );
+      await managed();
+      state.inner = true;
+      await managed();
+
+      assert.dom('[data-test-subj="nested-push"]', document.body).exists();
+      assert.strictEqual(document.body.style.paddingInlineEnd, '', 'the nested push flyout does not pad the body');
+      assert.strictEqual(document.documentElement.style.getPropertyValue('--euiPushFlyoutOffsetInlineEnd'), '');
+      assert.strictEqual(manager.state.pushPadding?.right ?? 0, 0, 'nor reports padding to the manager');
+
+      state.inner = false;
+      state.a = false;
+      await managed();
+      state.b = true;
+      await managed();
+      assert.strictEqual(document.body.style.paddingInlineEnd, '260px', 'a standalone push flyout pads the body');
+
+      state.b = false;
+      await managed();
+      assert.strictEqual(document.body.style.paddingInlineEnd, '');
+    });
+  });
 });

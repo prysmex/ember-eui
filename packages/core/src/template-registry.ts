@@ -7,6 +7,7 @@ import type EuiBadge from './components/eui-badge';
 import type EuiBadgeGroup from './components/eui-badge-group';
 import type EuiBanner from './components/eui-banner';
 import type EuiBasicTable from './components/eui-basic-table';
+import type EuiBasicTablePanel from './components/eui-basic-table-panel';
 import type EuiBetaBadge from './components/eui-beta-badge';
 import type EuiBottomBar from './components/eui-bottom-bar';
 import type EuiBreadcrumbs from './components/eui-breadcrumbs';
@@ -296,6 +297,8 @@ export default interface EmberEuiRegistry {
   'eui-banner': typeof EuiBanner;
   EuiBasicTable: typeof EuiBasicTable;
   'eui-basic-table': typeof EuiBasicTable;
+  EuiBasicTablePanel: typeof EuiBasicTablePanel;
+  'eui-basic-table-panel': typeof EuiBasicTablePanel;
   EuiBottomBar: typeof EuiBottomBar;
   'eui-bottom-bar': typeof EuiBottomBar;
   EuiButtonGroup: typeof EuiButtonGroup;

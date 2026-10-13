@@ -5,6 +5,9 @@ import { action } from '@ember/object';
 import { Query } from '../utils/eui/search-bar/query.ts';
 import { Comparators } from '../utils/eui/sort.ts';
 import EuiBasicTable from './eui-basic-table.gts';
+import EuiBasicTablePanel, {
+  useEuiBasicTablePanelProps
+} from './eui-basic-table-panel.gts';
 import { PAGINATION_DEFAULTS } from './eui-basic-table/pagination-bar.gts';
 import EuiSearchBar from './eui-search-bar.gts';
 import EuiSearchBox from './eui-search-bar/eui-search-box.gts';
@@ -20,6 +23,7 @@ import type {
 } from '../-private/basic-table.ts';
 import type { Direction, PropertySort } from '../utils/eui/sort.ts';
 import type { EuiBasicTableSignature } from './eui-basic-table.gts';
+import type { EuiBasicTablePanelProps } from './eui-basic-table-panel.gts';
 import type {
   EuiSearchBarOnChangeArgs,
   EuiSearchBarSignature,
@@ -104,8 +108,16 @@ export interface EuiInMemoryTableSignature<T extends object> {
     };
   };
   Blocks: EuiBasicTableSignature<T>['Blocks'] & {
-    /** Content between the search bar and the table. */
-    childrenBetween: [];
+    /**
+     * Content between the search bar and the table (only with `@search`,
+     * as upstream). Yields `EuiBasicTablePanel` and the
+     * `useEuiBasicTablePanelProps()` result, to build supporting panels
+     * for a `@panelled` table.
+     */
+    childrenBetween: [
+      Panel: typeof EuiBasicTablePanel,
+      panelProps: EuiBasicTablePanelProps
+    ];
     /** Search bar tools on the left. */
     toolsLeft: [];
     /** Search bar tools on the right. */
@@ -610,6 +622,8 @@ export default class EuiInMemoryTable<T extends object = any> extends Component<
         responsiveBreakpoint=@responsiveBreakpoint
         hasBackground=@hasBackground
         scrollableInline=@scrollableInline
+        stickyHeader=@stickyHeader
+        stickyScrollbar=@stickyScrollbar
         css=@css
         hasExpandedRowBlock=(has-block "expandedRow")
         hasNoItemsBlock=(has-block "noItemsMessage")
@@ -645,7 +659,7 @@ export default class EuiInMemoryTable<T extends object = any> extends Component<
             </EuiSearchBar>
           {{/if}}
           <EuiSpacer @size="l" />
-          {{yield to="childrenBetween"}}
+          {{yield EuiBasicTablePanel PANEL_PROPS to="childrenBetween"}}
           <Table ...attributes>
             <:expandedRow as |item itemId value|>{{yield item itemId value to="expandedRow"}}</:expandedRow>
             <:noItemsMessage>{{yield to="noItemsMessage"}}</:noItemsMessage>
@@ -660,6 +674,8 @@ export default class EuiInMemoryTable<T extends object = any> extends Component<
     {{/let}}
   </template>
 }
+
+const PANEL_PROPS = useEuiBasicTablePanelProps();
 
 function isText(format: string): boolean {
   return format === 'text';

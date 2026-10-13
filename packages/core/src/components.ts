@@ -8,6 +8,7 @@ import EuiBadge from './components/eui-badge.gts';
 import EuiBadgeGroup from './components/eui-badge-group.gts';
 import EuiBanner from './components/eui-banner.gts';
 import EuiBasicTable from './components/eui-basic-table.gts';
+import EuiBasicTablePanel from './components/eui-basic-table-panel.gts';
 import EuiBeacon from './components/eui-beacon.gts';
 import EuiBetaBadge from './components/eui-beta-badge.gts';
 import EuiBottomBar from './components/eui-bottom-bar.gts';
@@ -267,6 +268,7 @@ export {
   EuiBadgeGroup,
   EuiBanner,
   EuiBasicTable,
+  EuiBasicTablePanel,
   EuiBeacon,
   EuiBetaBadge,
   EuiBottomBar,

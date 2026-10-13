@@ -14,8 +14,10 @@ import {
   getCellProps,
   getItemId,
   getRendererForDataType,
-  getRowProps
+  getRowProps,
+  splitCellProps
 } from '../-private/basic-table.ts';
+import TableNode from '../-private/table-node.gts';
 import { randomId } from '../-private/random-id.ts';
 import { getEuiThemeContext } from '../utils/emotion/consume.ts';
 import { euiClass, useEuiBorealisStyles } from '../utils/eui/styles.ts';
@@ -57,10 +59,13 @@ import type {
   CriteriaWithPagination,
   EuiBasicTableColumn,
   EuiTableActionsColumnType,
+  EuiTableCellArgs,
   EuiTableCellComponent,
+  EuiTableColumnName,
   EuiTableComputedColumnType,
   EuiTableContent,
   EuiTableElementProps,
+  EuiTableVerticalAlign,
   EuiTableFieldDataColumnType,
   EuiTableSelectionType,
   EuiTableSortingType,
@@ -72,8 +77,10 @@ import type {
 import type {
   TableAlignment,
   TableMobileOptions,
-  TableResponsiveBreakpoint
+  TableResponsiveBreakpoint,
+  TableTruncateText
 } from '../-private/table.ts';
+import type { EuiTableStickyCellOptions } from '../utils/eui/table.ts';
 import type { EuiTableHeaderCellTooltipProps } from './eui-table-header-cell.gts';
 import type EuiI18n from '../services/eui-i18n';
 import type { EuiCss } from '../utils/eui/styles.ts';
@@ -88,20 +95,26 @@ export type {
   DefaultItemAction,
   EuiBasicTableColumn,
   EuiTableActionsColumnType,
+  EuiTableCellArgs,
   EuiTableCellComponentArgs,
+  EuiTableColumnName,
   EuiTableColumnNameTooltipProps,
   EuiTableComputedColumnType,
   EuiTableContent,
   EuiTableDataType,
   EuiTableFieldDataColumnType,
   EuiTableFooterProps,
+  EuiTableNode,
   EuiTableSelectionType,
   EuiTableSortingType,
+  EuiTableVerticalAlign,
   ItemId,
   Pagination,
   RowPropsCallback
 } from '../-private/basic-table.ts';
 export { getItemId } from '../-private/basic-table.ts';
+export { useEuiBasicTablePanelProps } from './eui-basic-table-panel.gts';
+export type { EuiBasicTablePanelProps } from './eui-basic-table-panel.gts';
 
 /**
  * A table built from `@items` and `@columns` (field, computed and actions
@@ -128,7 +141,12 @@ export interface EuiBasicTableSignature<T extends object> {
      * the `<:expandedRow>` block.
      */
     itemIdToExpandedRowMap?: Record<string, unknown>;
-    /** Attributes of every row cell, or a function of the item and column. */
+    /**
+     * Props of every row cell, or a function of the item and column:
+     * `EuiTableRowCell` arguments (`align`, `textOnly`, `truncateText`,
+     * `valign`, `width`, `mobileOptions`, …) and attributes/listeners for
+     * the cell element.
+     */
     cellProps?: EuiTableElementProps | CellPropsCallback<T>;
     /** Attributes of every row (`onClick` makes rows clickable), or a function of the item. */
     rowProps?: EuiTableElementProps | RowPropsCallback<T>;
@@ -168,6 +186,17 @@ export interface EuiBasicTableSignature<T extends object> {
     hasBackground?: boolean;
     /** Lets the table scroll inline (upstream beta). */
     scrollableInline?: boolean;
+    /**
+     * Keeps the header at the top of the viewport while scrolling a long
+     * table (not in the cards layout). Upstream beta.
+     */
+    stickyHeader?: boolean;
+    /**
+     * Shows a horizontal scrollbar sticking to the bottom of the viewport
+     * while the table's own one is out of view. Requires
+     * `@scrollableInline`. Upstream beta.
+     */
+    stickyScrollbar?: boolean;
     /** Styles composed last into the root `<div>`'s class (upstream `css`). */
     css?: EuiCss;
     /** @private Whether the caller's `<:expandedRow>` block exists (when forwarding it). */
@@ -192,7 +221,8 @@ interface SortOptions {
 
 interface HeaderModel {
   key: string;
-  name?: string;
+  name?: EuiTableColumnName;
+  sticky?: EuiTableStickyCellOptions;
   tooltipProps?: EuiTableHeaderCellTooltipProps;
   width?: string;
   minWidth?: string;
@@ -214,11 +244,15 @@ interface CellModel<T extends object> {
   align?: TableAlignment;
   isExpander?: boolean;
   textOnly?: boolean;
-  truncateText?: boolean;
+  truncateText?: TableTruncateText;
+  valign?: EuiTableVerticalAlign;
   setScopeRow?: boolean;
-  width?: string;
-  minWidth?: string;
-  maxWidth?: string;
+  width?: string | number;
+  minWidth?: string | number;
+  maxWidth?: string | number;
+  hasActionsArg?: boolean | 'custom';
+  showOnHover?: boolean;
+  sticky?: EuiTableStickyCellOptions;
   mobileOptions?: TableMobileOptions;
   mobileContent?: EuiTableContent;
   mobileComponent?: EuiTableCellComponent<T>;
@@ -254,6 +288,15 @@ interface RowModel<T extends object> {
   onClick?: (event: Event) => void;
   cells: CellModel<T>[];
 }
+
+interface FooterModel {
+  key: string;
+  align?: TableAlignment;
+  sticky?: EuiTableStickyCellOptions;
+  content?: EuiTableContent;
+}
+
+const STICKY_END: EuiTableStickyCellOptions = { side: 'end' };
 
 const SAFARI_LOADING_WORKAROUND = safariLoadingWorkaround;
 
@@ -438,7 +481,7 @@ export default class EuiBasicTable<T extends object = any> extends Component<
       return undefined;
     }
     if (!this.args.onChange) {
-      throw new Error(`BasicTable is configured to be sortable on column [${name}] but
+      throw new Error(`BasicTable is configured to be sortable on column [${String(name)}] but
           [onChange] is not configured. This callback must be implemented to handle the sort requests`);
     }
     return () => this.onColumnSortChange(column);
@@ -452,6 +495,15 @@ export default class EuiBasicTable<T extends object = any> extends Component<
       onSort: this.resolveColumnOnSort(column),
       readOnly: this.args.sorting?.readOnly || readOnly
     };
+  }
+
+  /** Upstream: a sticky actions column needs inline scrolling. */
+  stickyActions(column: EuiBasicTableColumn<T>): boolean {
+    return Boolean(
+      this.args.scrollableInline &&
+        (column as EuiTableActionsColumnType<T>).actions &&
+        (column as EuiTableActionsColumnType<T>).sticky
+    );
   }
 
   @cached
@@ -479,7 +531,11 @@ export default class EuiBasicTable<T extends object = any> extends Component<
         tooltipProps: nameTooltip && {
           content: nameTooltip.content,
           icon: nameTooltip.icon,
-          tooltipProps: { position: nameTooltip.position }
+          iconProps: nameTooltip.iconProps,
+          tooltipProps: {
+            ...nameTooltip.tooltipProps,
+            position: nameTooltip.position ?? nameTooltip.tooltipProps?.position
+          }
         },
         description,
         mobileOptions,
@@ -489,7 +545,13 @@ export default class EuiBasicTable<T extends object = any> extends Component<
 
       // actions column
       if ((original as EuiTableActionsColumnType<T>).actions) {
-        return { ...shared, key: `_actions_h_${index}`, align: 'right', sorting: {} };
+        return {
+          ...shared,
+          key: `_actions_h_${index}`,
+          align: 'right',
+          sticky: this.stickyActions(original) ? STICKY_END : undefined,
+          sorting: {}
+        };
       }
 
       // computed column: only sortable if its `sortable` is a function
@@ -735,7 +797,8 @@ export default class EuiBasicTable<T extends object = any> extends Component<
         isActions: true,
         actions: actualActions,
         collapsed,
-        hasActions: hasCustomActions ? 'custom' : true
+        hasActions: hasCustomActions ? 'custom' : true,
+        sticky: this.stickyActions(column) ? STICKY_END : undefined
       };
     }
 
@@ -765,14 +828,25 @@ export default class EuiBasicTable<T extends object = any> extends Component<
       textOnly,
       name,
       mobileOptions,
-      truncateText,
-      width,
-      minWidth,
-      maxWidth,
       className,
       component
     } = fieldColumn;
-    const cellProps = getCellProps(item, column, this.args.cellProps);
+    // Upstream spreads `cellProps` onto `EuiTableRowCell` (after the
+    // derived props, before the column's own cell props): its cell
+    // arguments are consumed by the cell, the rest reaches the element.
+    const { args: cellArgs, attributes } = splitCellProps(
+      getCellProps(item, column, this.args.cellProps)
+    );
+    const fromCellProps = <K extends keyof EuiTableCellArgs>(
+      key: K,
+      fallback: EuiTableCellArgs[K]
+    ) => (Object.prototype.hasOwnProperty.call(cellArgs, key) ? cellArgs[key] : fallback);
+    const fromColumn = <K extends 'width' | 'minWidth' | 'maxWidth' | 'truncateText' | 'valign'>(
+      key: K
+    ) =>
+      Object.prototype.hasOwnProperty.call(column, key)
+        ? (fieldColumn as Pick<EuiTableCellArgs, K>)[key]
+        : cellArgs[key];
     const mobileComponent = mobileOptions?.component;
     const mobileContent = mobileOptions?.render?.(item);
     return {
@@ -784,30 +858,38 @@ export default class EuiBasicTable<T extends object = any> extends Component<
       content,
       component,
       value,
-      align: align || getAlignForDataType(dataType),
-      isExpander,
-      textOnly: textOnly || (!render && !component),
-      truncateText,
-      setScopeRow: !!field && field === rowHeader,
-      width,
-      minWidth,
-      maxWidth,
-      mobileOptions: { ...mobileOptions, header: mobileOptions?.header ?? name },
+      align: fromCellProps('align', align || getAlignForDataType(dataType)),
+      isExpander: fromCellProps('isExpander', isExpander),
+      textOnly: fromCellProps('textOnly', textOnly || (!render && !component)),
+      truncateText: fromColumn('truncateText'),
+      valign: fromColumn('valign'),
+      setScopeRow: fromCellProps('setScopeRow', !!field && field === rowHeader),
+      width: fromColumn('width'),
+      minWidth: fromColumn('minWidth'),
+      maxWidth: fromColumn('maxWidth'),
+      hasActionsArg: cellArgs.hasActions,
+      showOnHover: cellArgs.showOnHover,
+      sticky: cellArgs.sticky,
+      mobileOptions: fromCellProps('mobileOptions', {
+        ...mobileOptions,
+        header: mobileOptions?.header ?? name
+      }),
       mobileContent,
       mobileComponent,
       hasMobile: !!mobileComponent || mobileContent != null,
       attributes: {
-        className,
-        'data-test-subj': fieldColumn['data-test-subj'],
-        ...cellProps
+        ...attributes,
+        // the column's own props come after `cellProps` (upstream)
+        className: [attributes['className'], className].filter(Boolean).join(' ') || undefined,
+        'data-test-subj': fieldColumn['data-test-subj'] ?? attributes['data-test-subj']
       }
     };
   }
 
   @cached
-  get footers(): Array<{ key: string; align?: TableAlignment; content?: EuiTableContent }> | null {
-    const { items, columns, pagination, selection } = this.args;
-    const footers: Array<{ key: string; align?: TableAlignment; content?: EuiTableContent }> = [];
+  get footers(): FooterModel[] | null {
+    const { items, columns, pagination, selection, scrollableInline } = this.args;
+    const footers: FooterModel[] = [];
     let hasDefinedFooter = false;
     if (selection) {
       // an empty cell for the selection column
@@ -821,11 +903,17 @@ export default class EuiBasicTable<T extends object = any> extends Component<
       }
       const content =
         typeof footer === 'function' ? footer({ items, pagination }) : footer;
+      const sticky =
+        scrollableInline &&
+        (column as EuiTableActionsColumnType<T>).actions &&
+        (column as EuiTableActionsColumnType<T>).sticky === true
+          ? STICKY_END
+          : undefined;
       if (content) {
-        footers.push({ key: `footer_${String(field)}_${footers.length - 1}`, align, content });
+        footers.push({ key: `footer_${String(field)}_${footers.length - 1}`, align, sticky, content });
         hasDefinedFooter = true;
       } else {
-        footers.push({ key: `footer_empty_${footers.length - 1}`, align });
+        footers.push({ key: `footer_empty_${footers.length - 1}`, align, sticky });
       }
     });
     return footers.length && hasDefinedFooter ? footers : null;
@@ -1031,6 +1119,8 @@ class BasicTableContent<T extends object> extends Component<
         @compressed={{t.args.compressed}}
         @hasBackground={{t.args.hasBackground}}
         @scrollableInline={{t.args.scrollableInline}}
+        @stickyHeader={{t.args.stickyHeader}}
+        @stickyScrollbar={{t.args.stickyScrollbar}}
         @css={{if t.args.loading SAFARI_LOADING_WORKAROUND}}
       >
         <caption class="euiTableCaption euiScreenReaderOnly {{t.classes.caption}}">
@@ -1077,9 +1167,10 @@ class BasicTableContent<T extends object> extends Component<
               @isSortAscending={{header.sorting.isSortAscending}}
               @onSort={{header.sorting.onSort}}
               @readOnly={{header.sorting.readOnly}}
+              @sticky={{header.sticky}}
               data-test-subj={{header.testSubj}}
             >
-              {{header.name}}
+              <TableNode @node={{header.name}} />
             </EuiTableHeaderCell>
           {{/each}}
         </EuiTableHeader>
@@ -1127,6 +1218,7 @@ class BasicTableContent<T extends object> extends Component<
                       @align="right"
                       @textOnly={{false}}
                       @hasActions={{cell.hasActions}}
+                      @sticky={{cell.sticky}}
                     >
                       <ExpandedItemActions
                         @actions={{actionsOrEmpty cell.actions}}
@@ -1152,10 +1244,14 @@ class BasicTableContent<T extends object> extends Component<
                       @isExpander={{cell.isExpander}}
                       @textOnly={{cell.textOnly}}
                       @truncateText={{cell.truncateText}}
+                      @valign={{cell.valign}}
                       @setScopeRow={{cell.setScopeRow}}
                       @width={{cell.width}}
                       @minWidth={{cell.minWidth}}
                       @maxWidth={{cell.maxWidth}}
+                      @hasActions={{cell.hasActionsArg}}
+                      @showOnHover={{cell.showOnHover}}
+                      @sticky={{cell.sticky}}
                       @mobileOptions={{cell.mobileOptions}}
                       {{elementProps cell.attributes}}
                     >
@@ -1180,10 +1276,14 @@ class BasicTableContent<T extends object> extends Component<
                       @isExpander={{cell.isExpander}}
                       @textOnly={{cell.textOnly}}
                       @truncateText={{cell.truncateText}}
+                      @valign={{cell.valign}}
                       @setScopeRow={{cell.setScopeRow}}
                       @width={{cell.width}}
                       @minWidth={{cell.minWidth}}
                       @maxWidth={{cell.maxWidth}}
+                      @hasActions={{cell.hasActionsArg}}
+                      @showOnHover={{cell.showOnHover}}
+                      @sticky={{cell.sticky}}
                       @mobileOptions={{cell.mobileOptions}}
                       {{elementProps cell.attributes}}
                     >
@@ -1227,7 +1327,7 @@ class BasicTableContent<T extends object> extends Component<
         {{#if t.footers}}
           <EuiTableFooter>
             {{#each t.footers key="key" as |footer|}}
-              <EuiTableFooterCell @align={{footer.align}}>{{footer.content}}</EuiTableFooterCell>
+              <EuiTableFooterCell @align={{footer.align}} @sticky={{footer.sticky}}>{{footer.content}}</EuiTableFooterCell>
             {{/each}}
           </EuiTableFooter>
         {{/if}}

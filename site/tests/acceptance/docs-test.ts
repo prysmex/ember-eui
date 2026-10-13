@@ -18,7 +18,7 @@ module('Acceptance | docs', function (hooks) {
     assert.dom('.euiSideNav').exists();
     assert
       .dom('.euiSideNavItem')
-      .exists({ count: 113 }, 'every docs section is listed');
+      .exists({ count: 114 }, 'every docs section is listed');
   });
 
   test('every docs page renders with its demos', async function (assert) {
@@ -59,7 +59,7 @@ module('Acceptance | docs', function (hooks) {
     await visit('/docs/core/docs/display/card');
 
     assert.dom('.euiPageHeader').containsText('Card');
-    assert.dom('.docfy-demo .docfy-demo__example').exists({ count: 9 });
+    assert.dom('.docfy-demo .docfy-demo__example').exists({ count: 10 });
     assert.dom('.docfy-demo__snippet').doesNotExist('code is collapsed');
 
     await click('.docfy-demo__snippets__tabs__button');
@@ -125,7 +125,7 @@ module('Acceptance | docs', function (hooks) {
       assert.strictEqual(fields.get('project[template]'), 'node');
       assert.true(
         (
-          fields.get('project[files][app/components/demo.hbs]') as string
+          fields.get('project[files][app/components/demo.gjs]') as string
         ).includes('<EuiCard'),
         'the selected card demo is included',
       );

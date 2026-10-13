@@ -6,7 +6,7 @@ order: 1
 
 <EuiText>
 	<p>
-		Setting <EuiCode>@target="_blank"</EuiCode> defaults to `@external={{true}}`. This adds an icon indicator instructing users that a new window will open. You can also manually apply this icon in case you handle the target behavior by other means.
+		Setting <EuiCode>@target="_blank"</EuiCode> defaults to <code>@external=\{{true}}</code>. This adds an icon indicator instructing users that a new window will open. You can also manually apply this icon in case you handle the target behavior by other means.
   </p>
 
 </EuiText>

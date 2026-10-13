@@ -24,7 +24,7 @@ and `overscanColumnCount` extra ones (1 by default), are rendered.
     <strong>EuiDataGrid</strong> does not accommodate for its height
     switching to or from <code>undefined</code>. For demonstration
     purposes, the example below wraps the grid in an
-    <code>&#123;&#123;#each&#125;&#125;</code> keyed by "constrained" or "unconstrained" to
+    <code>\{{#each}}</code> keyed by "constrained" or "unconstrained" to
     force it to completely re-render when its height changes between
     constrained and unconstrained heights.
   </p>

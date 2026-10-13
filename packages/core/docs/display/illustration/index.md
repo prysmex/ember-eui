@@ -27,7 +27,7 @@ The markup is inserted as-is: only pass trusted, package-authored SVGs, never us
 <EuiSpacer />
 
 <EuiCallOut @title="Accessibility recommendation" @color="success" @iconType="accessibility">
-  <p>The accessible label defaults to the illustration's <code>title</code>. Provide a more specific <code>@alt</code> when the illustration conveys meaning or pass <code>@alt=""</code> to mark it as purely decorative (it will be hidden from assistive technology). It fills its container's width unless <code>@fullWidth=&#123;&#123;false&#125;&#125;</code>.</p>
+  <p>The accessible label defaults to the illustration's <code>title</code>. Provide a more specific <code>@alt</code> when the illustration conveys meaning or pass <code>@alt=""</code> to mark it as purely decorative (it will be hidden from assistive technology). It fills its container's width unless <code>@fullWidth=\{{false}}</code>.</p>
 </EuiCallOut>
 
 <EuiHorizontalRule />

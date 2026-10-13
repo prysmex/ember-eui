@@ -7,7 +7,7 @@ order: 11
 <EuiText>
     If the popover should not trap focus within itself, then you can remove it
     with
-    <EuiCode @language="jsx">@ownFocus=&#123;&#123;false&#125;&#125;</EuiCode>.
+    <code>@ownFocus=\{{false}}</code>.
   </EuiText>
 
 ```hbs template

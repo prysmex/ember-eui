@@ -21,16 +21,16 @@ conditional row details cell below) are required.
 
 <EuiSpacer />
 
+<div>
 <EuiCallOut @title="Warning" @color="warning" @iconType="warning">
-  <:body>
     This argument is meant to be an <strong>escape hatch</strong>, and should
     only be used if you know exactly what you are doing. Once a custom
     renderer is used, you are in charge of ensuring the grid has all the
     correct semantic and aria labels required by the
     <EuiLink @href="https://www.w3.org/WAI/ARIA/apg/patterns/grid" @target="_blank">data grid spec</EuiLink>,
     and that keyboard focus and navigation still work in an accessible manner.
-  </:body>
 </EuiCallOut>
+</div>
 
 <EuiSpacer />
 

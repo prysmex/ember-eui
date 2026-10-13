@@ -11,19 +11,23 @@ Images can be added in place of, or in conjunction with, icons. Just pass a url 
 </EuiText>
 <EuiSpacer />
 <EuiCallOut @color="success" @size="s" @title="Make sure that all images are the same proportions when used in a singular row.">
-  <p>Ember EUI's <code>@image</code> takes a URL only; upstream also accepts an element.</p>
+  <p><code>@image</code> takes a URL, or a component for a custom image element (as the first card does).</p>
 </EuiCallOut>
 <EuiSpacer />
 
 ```gjs component
 import { EuiButton, EuiCard, EuiFlexGroup, EuiFlexItem } from '@ember-eui/core/components';
 
+const NatureImage = <template>
+  <div><img src="https://picsum.photos/id/13/400/200" alt="Nature" /></div>
+</template>;
+
 <template>
 <EuiFlexGroup @gutterSize="l">
   <EuiFlexItem>
     <EuiCard
       @textAlign="left"
-      @image="https://picsum.photos/id/13/400/200"
+      @image={{NatureImage}}
       @title="Elastic in Nature"
       @description="Example of a card's description. Stick to one or two sentences."
     >

@@ -43,7 +43,8 @@ Generated from the components' TypeScript signatures by
 | `@onClick` | `(e: MouseEvent) => void` |  | Makes the title a button; clicking anywhere on the card calls it. |
 | `@isDisabled` | `boolean` |  | Disables the card's link or button and greys it out. |
 | `@textAlign` | `'left' \| 'center' \| 'right'` | `'center'` | `'left'`, `'center'` or `'right'` (logical: start/end in RTL). Ignored by the horizontal layout. |
-| `@image` | `string` |  | URL of an image across the top of the card (vertical layout only). |
+| `@image` | `string \| EuiRenderNodeType` |  | Image across the top of the card (vertical layout only): a URL, or a component for a custom image (upstream's `ReactElement`), e.g. `(component EuiImage …)` or a template-only component. |
+| `@hasBorder` | `boolean` | `false`; has no effect with `@display` | Uses a border instead of a shadow. |
 | `@icon` |  |  | Icon above the title; anything `EuiIcon`'s `@type` accepts. |
 | `@layout` | `'horizontal' \| 'vertical'` | `'vertical'` | `'vertical'` stacks icon, title, description and footer. `'horizontal'` puts the icon next to the text and ignores the image, footer and text alignment. |
 | `@display` |  |  | Background of the card, any `EuiPanel` color (`'plain'`, `'subdued'`, `'transparent'`, `'primary'`, …). Without it the card is plain with a shadow; with it the card has neither shadow nor border. |

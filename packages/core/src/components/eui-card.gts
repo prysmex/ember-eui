@@ -6,6 +6,7 @@ import optional from '@nullvoxpopuli/ember-composable-helpers/helpers/optional';
 import { modifier } from 'ember-modifier';
 import { and, eq, not, or } from 'ember-truth-helpers';
 
+import EuiRenderNode from '../-private/eui-render-node.gts';
 import { randomId } from '../-private/random-id.ts';
 import { getEuiThemeContext } from '../utils/emotion/consume.ts';
 import { euiClass, useEuiBorealisStyles } from '../utils/eui/styles.ts';
@@ -24,6 +25,7 @@ import EuiPanel from './eui-panel.gts';
 import EuiSpacer from './eui-spacer.gts';
 import EuiText from './eui-text.gts';
 
+import type { EuiRenderNode as EuiRenderNodeType } from '../-private/eui-render-node.gts';
 import type { EuiThemeContext } from '../utils/emotion/context.ts';
 import type { EuiBorealisContext } from '../utils/eui/theme.ts';
 import type { EuiCss } from '../utils/eui/styles.ts';
@@ -70,6 +72,23 @@ type EuiCardComponentArgs = {
     title?: string;
     tooltipContent?: string;
     tooltipPosition?: 'top' | 'right' | 'bottom' | 'left';
+    /**
+     * Badge color. Defaults to `'hollow'`, or `'subdued'` for a disabled
+     * card whose badge is not a link or button.
+     */
+    color?: 'hollow' | 'accent' | 'subdued' | 'warning';
+    iconType?: EuiIconSignature['Args']['type'];
+    size?: 's' | 'm';
+    alignment?: 'baseline' | 'middle';
+    /** Makes the badge a link. */
+    href?: string;
+    target?: string;
+    rel?: string;
+    /** Makes the badge a button. */
+    onClick?: (event: MouseEvent) => void;
+    onClickAriaLabel?: string;
+    /** Styles composed after the card's own badge styles. */
+    css?: EuiCss;
   };
   /** Text under the title. Use the `<:description>` block for markup. */
   description?: string;
@@ -95,8 +114,17 @@ type EuiCardComponentArgs = {
    * by the horizontal layout. Defaults to `'center'`.
    */
   textAlign?: 'left' | 'center' | 'right';
-  /** URL of an image across the top of the card (vertical layout only). */
-  image?: string;
+  /**
+   * Image across the top of the card (vertical layout only): a URL, or a
+   * component for a custom image (upstream's `ReactElement`), e.g.
+   * `(component EuiImage …)` or a template-only component.
+   */
+  image?: string | EuiRenderNodeType;
+  /**
+   * Uses a border instead of a shadow. Defaults to `false`; has no effect
+   * with `@display`.
+   */
+  hasBorder?: boolean;
   /** Icon above the title; anything `EuiIcon`'s `@type` accepts. */
   icon?: EuiIconSignature['Args']['type'];
   /**
@@ -255,8 +283,20 @@ export default class EuiCardComponent extends Component<EuiCardSignature> {
     return !(this.isDisabled || this.args.display);
   }
 
-  get betaBadgeColor(): 'subdued' | 'hollow' {
-    return this.isDisabled ? 'subdued' : 'hollow';
+  get betaBadgeColor(): 'hollow' | 'accent' | 'subdued' | 'warning' {
+    const props = this.args.betaBadgeProps;
+    return (
+      props?.color ??
+      (this.isDisabled && !props?.onClick && !props?.href
+        ? 'subdued'
+        : 'hollow')
+    );
+  }
+
+  /** `@image` when it is a URL; a component renders through the node. */
+  get imageUrl(): string | undefined {
+    const image = this.args.image;
+    return typeof image === 'string' ? image : undefined;
   }
 
   /** The description's id, when there is one (`@description` or block). */
@@ -424,7 +464,7 @@ export default class EuiCardComponent extends Component<EuiCardSignature> {
   /** Upstream's `css` on the EuiBetaBadge. */
   @cached
   get betaBadgeCss(): EuiCss {
-    return this.betaStyles.euiCard__betaBadge;
+    return [this.betaStyles.euiCard__betaBadge, this.args.betaBadgeProps?.css];
   }
 
   get spacerSize(): 's' | 'm' | 'l' | undefined {
@@ -471,7 +511,7 @@ export default class EuiCardComponent extends Component<EuiCardSignature> {
       @css={{this.panelCss}}
       @color={{this.color}}
       @hasShadow={{this.hasShadow}}
-      @hasBorder={{false}}
+      @hasBorder={{if @hasBorder true false}}
       @paddingSize={{this.paddingSize}}
       {{on "click" this.outerOnClick}}
       ...attributes
@@ -484,7 +524,11 @@ export default class EuiCardComponent extends Component<EuiCardSignature> {
             {{else}}
               {{#if this.hasImage}}
                 <div class="euiCard__image {{this.imageClass}}">
-                  <img src={{@image}} alt="" />
+                  {{#if this.imageUrl}}
+                    <img src={{this.imageUrl}} alt="" />
+                  {{else}}
+                    <EuiRenderNode @value={{@image}} />
+                  {{/if}}
                 </div>
               {{/if}}
               {{#if @icon}}
@@ -575,6 +619,14 @@ export default class EuiCardComponent extends Component<EuiCardSignature> {
               @title={{@betaBadgeProps.title}}
               @tooltipContent={{@betaBadgeProps.tooltipContent}}
               @tooltipPosition={{@betaBadgeProps.tooltipPosition}}
+              @iconType={{@betaBadgeProps.iconType}}
+              @size={{@betaBadgeProps.size}}
+              @alignment={{@betaBadgeProps.alignment}}
+              @href={{@betaBadgeProps.href}}
+              @target={{@betaBadgeProps.target}}
+              @rel={{@betaBadgeProps.rel}}
+              @onClick={{@betaBadgeProps.onClick}}
+              @onClickAriaLabel={{@betaBadgeProps.onClickAriaLabel}}
             />
           </span>
         {{/if}}

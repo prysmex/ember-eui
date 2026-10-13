@@ -11,34 +11,10 @@ just `src`. Both are uncontrolled: the grid owns the state after that.
 
 </EuiText>
 
-```hbs template
-<EuiTitle @size="xxs" @tagName="h3">defaultExpandedRowIds="all"</EuiTitle>
-<EuiSpacer @size="s" />
-<EuiDataGrid
-  aria-label="All rows expanded"
-  @columns={{this.columns}}
-  @rowTree={{hash rows=this.files defaultExpandedRowIds="all"}}
-  @toolbarVisibility={{false}}
-  @height={{240}}
->
-  <:cell as |cell|>{{get cell.row cell.columnId}}</:cell>
-</EuiDataGrid>
-<EuiSpacer />
-<EuiTitle @size="xxs" @tagName="h3">defaultExpandedRowIds=(array "src")</EuiTitle>
-<EuiSpacer @size="s" />
-<EuiDataGrid
-  aria-label="Some rows expanded"
-  @columns={{this.columns}}
-  @rowTree={{hash rows=this.files defaultExpandedRowIds=(array "src")}}
-  @toolbarVisibility={{false}}
-  @height={{200}}
->
-  <:cell as |cell|>{{get cell.row cell.columnId}}</:cell>
-</EuiDataGrid>
-```
-
-```js component
+```gjs component
 import Component from '@glimmer/component';
+import { array, get, hash } from '@ember/helper';
+import { EuiDataGrid, EuiSpacer, EuiTitle } from '@ember-eui/core/components';
 
 export default class DefaultExpandedDemo extends Component {
   columns = [
@@ -63,5 +39,31 @@ export default class DefaultExpandedDemo extends Component {
     },
     { id: 'README.md', name: 'README.md', size: 8 }
   ];
+
+  <template>
+    <EuiTitle @size="xxs" @tagName="h3">defaultExpandedRowIds="all"</EuiTitle>
+    <EuiSpacer @size="s" />
+    <EuiDataGrid
+      aria-label="All rows expanded"
+      @columns={{this.columns}}
+      @rowTree={{hash rows=this.files defaultExpandedRowIds="all"}}
+      @toolbarVisibility={{false}}
+      @height={{240}}
+    >
+      <:cell as |cell|>{{get cell.row cell.columnId}}</:cell>
+    </EuiDataGrid>
+    <EuiSpacer />
+    <EuiTitle @size="xxs" @tagName="h3">defaultExpandedRowIds=(array "src")</EuiTitle>
+    <EuiSpacer @size="s" />
+    <EuiDataGrid
+      aria-label="Some rows expanded"
+      @columns={{this.columns}}
+      @rowTree={{hash rows=this.files defaultExpandedRowIds=(array "src")}}
+      @toolbarVisibility={{false}}
+      @height={{200}}
+    >
+      <:cell as |cell|>{{get cell.row cell.columnId}}</:cell>
+    </EuiDataGrid>
+  </template>
 }
 ```

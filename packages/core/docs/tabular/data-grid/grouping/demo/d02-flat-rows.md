@@ -13,19 +13,10 @@ child may come before its parent.
 
 </EuiText>
 
-```hbs template
-<EuiDataGrid
-  aria-label="Flat rows"
-  @columns={{this.columns}}
-  @rowTree={{hash rows=this.tasks defaultExpandedRowIds="all"}}
-  @height={{300}}
->
-  <:cell as |cell|>{{get (get this.tasks cell.rowIndex) cell.columnId}}</:cell>
-</EuiDataGrid>
-```
-
-```js component
+```gjs component
 import Component from '@glimmer/component';
+import { get, hash } from '@ember/helper';
+import { EuiDataGrid } from '@ember-eui/core/components';
 
 export default class FlatRowsDemo extends Component {
   columns = [
@@ -42,5 +33,16 @@ export default class FlatRowsDemo extends Component {
     { id: 't5', title: 'Release', owner: 'Linus', status: 'todo' },
     { id: 't6', parentId: 't5', title: 'Changelog', owner: 'Linus', status: 'todo' }
   ];
+
+  <template>
+    <EuiDataGrid
+      aria-label="Flat rows"
+      @columns={{this.columns}}
+      @rowTree={{hash rows=this.tasks defaultExpandedRowIds="all"}}
+      @height={{300}}
+    >
+      <:cell as |cell|>{{get (get this.tasks cell.rowIndex) cell.columnId}}</:cell>
+    </EuiDataGrid>
+  </template>
 }
 ```

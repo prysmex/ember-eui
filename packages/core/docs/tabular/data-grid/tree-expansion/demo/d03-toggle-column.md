@@ -12,30 +12,11 @@ Space) work in that column's cells.
 
 </EuiText>
 
-```hbs template
-<EuiDataGrid
-  aria-label="Toggle column"
-  @columns={{this.columns}}
-  @rowTree={{hash rows=this.services defaultExpandedRowIds="all" toggleColumnId="name"}}
-  @toolbarVisibility={{false}}
-  @height={{260}}
->
-  <:cell as |cell|>
-    {{#if (eq cell.columnId "status")}}
-      <EuiIcon
-        @type={{if (eq cell.row.status "ok") "checkInCircleFilled" "warning"}}
-        @color={{if (eq cell.row.status "ok") "success" "warning"}}
-        aria-label={{cell.row.status}}
-      />
-    {{else}}
-      {{get cell.row cell.columnId}}
-    {{/if}}
-  </:cell>
-</EuiDataGrid>
-```
-
-```js component
+```gjs component
 import Component from '@glimmer/component';
+import { get, hash } from '@ember/helper';
+import { eq } from 'ember-truth-helpers';
+import { EuiDataGrid, EuiIcon } from '@ember-eui/core/components';
 
 export default class ToggleColumnDemo extends Component {
   columns = [
@@ -63,5 +44,27 @@ export default class ToggleColumnDemo extends Component {
       children: [{ id: 'search-es', name: 'elasticsearch', status: 'ok', latency: 30 }]
     }
   ];
+
+  <template>
+    <EuiDataGrid
+      aria-label="Toggle column"
+      @columns={{this.columns}}
+      @rowTree={{hash rows=this.services defaultExpandedRowIds="all" toggleColumnId="name"}}
+      @toolbarVisibility={{false}}
+      @height={{260}}
+    >
+      <:cell as |cell|>
+        {{#if (eq cell.columnId "status")}}
+          <EuiIcon
+            @type={{if (eq cell.row.status "ok") "checkInCircleFilled" "warning"}}
+            @color={{if (eq cell.row.status "ok") "success" "warning"}}
+            aria-label={{cell.row.status}}
+          />
+        {{else}}
+          {{get cell.row cell.columnId}}
+        {{/if}}
+      </:cell>
+    </EuiDataGrid>
+  </template>
 }
 ```

@@ -12,19 +12,10 @@ focus a "Name" cell and press Space.
 
 </EuiText>
 
-```hbs template
-<EuiDataGrid
-  aria-label="Quick start"
-  @columns={{this.columns}}
-  @rowTree={{this.files}}
-  @height={{320}}
->
-  <:cell as |cell|>{{get cell.row cell.columnId}}</:cell>
-</EuiDataGrid>
-```
-
-```js component
+```gjs component
 import Component from '@glimmer/component';
+import { get } from '@ember/helper';
+import { EuiDataGrid } from '@ember-eui/core/components';
 
 export default class QuickStartDemo extends Component {
   columns = [
@@ -63,5 +54,16 @@ export default class QuickStartDemo extends Component {
     { id: 'package.json', name: 'package.json', kind: 'file', size: 4 },
     { id: 'README.md', name: 'README.md', kind: 'file', size: 8 }
   ];
+
+  <template>
+    <EuiDataGrid
+      aria-label="Quick start"
+      @columns={{this.columns}}
+      @rowTree={{this.files}}
+      @height={{320}}
+    >
+      <:cell as |cell|>{{get cell.row cell.columnId}}</:cell>
+    </EuiDataGrid>
+  </template>
 }
 ```

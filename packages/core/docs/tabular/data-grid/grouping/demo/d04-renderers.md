@@ -12,43 +12,22 @@ expansion popover. Here the component formats the size and the in-memory
 renderer reads the formatted values to sort them: sort a column from its
 header actions and the children are sorted within their parent.
 
-In a `.gjs`/`.gts` file the cell would be
-`const SizeCell = <template>{{formatSize @row @columnId}}</template>;`. The
-demo is plain JavaScript, so it compiles the same template with
-`precompileTemplate`.
+The cell component is a template-only `<template>` component declared
+next to the demo class.
 
 </EuiText>
 
-```hbs template
-<EuiDataGrid
-  aria-label="Renderers"
-  @columns={{this.columns}}
-  @rowTree={{hash rows=this.files defaultExpandedRowIds="all"}}
-  @renderCellValue={{this.CellValue}}
-  @inMemory={{hash level="sorting"}}
-  @sorting={{hash columns=this.sortingColumns onSort=this.onSort}}
-  @height={{300}}
-/>
-```
-
-```js component
+```gjs component
 import Component from '@glimmer/component';
 import { tracked } from '@glimmer/tracking';
 import { action } from '@ember/object';
-import { setComponentTemplate } from '@ember/component';
-import templateOnly from '@ember/component/template-only';
-import { precompileTemplate } from '@ember/template-compilation';
+import { hash } from '@ember/helper';
+import { EuiDataGrid } from '@ember-eui/core/components';
 
 const formatValue = (row, columnId) =>
   columnId === 'size' ? `${row[columnId]} KB` : row[columnId];
 
-const CellValue = setComponentTemplate(
-  precompileTemplate('{{formatValue @row @columnId}}', {
-    strictMode: true,
-    scope: () => ({ formatValue })
-  }),
-  templateOnly()
-);
+const CellValue = <template>{{formatValue @row @columnId}}</template>;
 
 export default class RenderersDemo extends Component {
   CellValue = CellValue;
@@ -83,5 +62,17 @@ export default class RenderersDemo extends Component {
   @action onSort(columns) {
     this.sortingColumns = columns;
   }
+
+  <template>
+    <EuiDataGrid
+      aria-label="Renderers"
+      @columns={{this.columns}}
+      @rowTree={{hash rows=this.files defaultExpandedRowIds="all"}}
+      @renderCellValue={{this.CellValue}}
+      @inMemory={{hash level="sorting"}}
+      @sorting={{hash columns=this.sortingColumns onSort=this.onSort}}
+      @height={{300}}
+    />
+  </template>
 }
 ```

@@ -12,34 +12,12 @@ the expansion you had before searching.
 
 </EuiText>
 
-```hbs template
-<EuiFieldSearch
-  @value={{this.query}}
-  @onSearch={{this.search}}
-  @incremental={{true}}
-  @isClearable={{true}}
-  placeholder="Filter files"
-  aria-label="Filter files"
-/>
-<EuiSpacer @size="s" />
-<EuiDataGrid
-  aria-label="Filtered tree"
-  @columns={{this.columns}}
-  @rowTree={{hash
-    rows=this.filtered.rows
-    expandedRowIds=this.expandedRowIds
-    onExpandedChange=this.onExpandedChange
-  }}
-  @height={{320}}
->
-  <:cell as |cell|>{{get cell.row cell.columnId}}</:cell>
-</EuiDataGrid>
-```
-
-```js component
+```gjs component
 import Component from '@glimmer/component';
-import { tracked, cached } from '@glimmer/tracking';
+import { cached, tracked } from '@glimmer/tracking';
 import { action } from '@ember/object';
+import { get, hash } from '@ember/helper';
+import { EuiDataGrid, EuiFieldSearch, EuiSpacer } from '@ember-eui/core/components';
 
 const FILES = [
   {
@@ -113,5 +91,29 @@ export default class FilteringDemo extends Component {
     if (this.query.trim()) this.searchingIds = ids;
     else this.browsingIds = ids;
   }
+
+  <template>
+    <EuiFieldSearch
+      @value={{this.query}}
+      @onSearch={{this.search}}
+      @incremental={{true}}
+      @isClearable={{true}}
+      placeholder="Filter files"
+      aria-label="Filter files"
+    />
+    <EuiSpacer @size="s" />
+    <EuiDataGrid
+      aria-label="Filtered tree"
+      @columns={{this.columns}}
+      @rowTree={{hash
+        rows=this.filtered.rows
+        expandedRowIds=this.expandedRowIds
+        onExpandedChange=this.onExpandedChange
+      }}
+      @height={{320}}
+    >
+      <:cell as |cell|>{{get cell.row cell.columnId}}</:cell>
+    </EuiDataGrid>
+  </template>
 }
 ```

@@ -12,27 +12,13 @@ be folders themselves.
 
 </EuiText>
 
-```hbs template
-<EuiDataGrid
-  aria-label="Lazy loading"
-  @columns={{this.columns}}
-  @rowTree={{hash rows=this.rows onExpandedChange=this.onExpandedChange}}
-  @height={{320}}
->
-  <:cell as |cell|>
-    {{#if cell.row.isPlaceholder}}
-      {{#if (eq cell.columnId "name")}}<EuiLoadingSpinner @size="s" /> Loading…{{/if}}
-    {{else}}
-      {{get cell.row cell.columnId}}
-    {{/if}}
-  </:cell>
-</EuiDataGrid>
-```
-
-```js component
+```gjs component
 import Component from '@glimmer/component';
 import { tracked } from '@glimmer/tracking';
 import { action } from '@ember/object';
+import { get, hash } from '@ember/helper';
+import { eq } from 'ember-truth-helpers';
+import { EuiDataGrid, EuiLoadingSpinner } from '@ember-eui/core/components';
 
 const folder = (path) => ({ id: path, name: path.split('/').pop(), kind: 'folder', hasChildren: true });
 
@@ -83,5 +69,22 @@ export default class LazyLoadingDemo extends Component {
       });
     }
   }
+
+  <template>
+    <EuiDataGrid
+      aria-label="Lazy loading"
+      @columns={{this.columns}}
+      @rowTree={{hash rows=this.rows onExpandedChange=this.onExpandedChange}}
+      @height={{320}}
+    >
+      <:cell as |cell|>
+        {{#if cell.row.isPlaceholder}}
+          {{#if (eq cell.columnId "name")}}<EuiLoadingSpinner @size="s" /> Loading…{{/if}}
+        {{else}}
+          {{get cell.row cell.columnId}}
+        {{/if}}
+      </:cell>
+    </EuiDataGrid>
+  </template>
 }
 ```

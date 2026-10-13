@@ -11,34 +11,11 @@ Flat rows (as exported from an HR system) with `email` ids and a
 
 </EuiText>
 
-```hbs template
-<EuiDataGrid
-  aria-label="Org chart"
-  @columns={{this.columns}}
-  @rowTree={{hash
-    rows=this.people
-    getRowId=this.getRowId
-    getParentId=this.getParentId
-    defaultExpandedRowIds="all"
-  }}
-  @rowHeightsOptions={{hash defaultHeight=44}}
-  @height={{380}}
->
-  <:cell as |cell|>
-    {{#if (eq cell.columnId "name")}}
-      <EuiAvatar @name={{cell.row.name}} @size="s" />
-      {{cell.row.name}}
-    {{else if (eq cell.columnId "reports")}}
-      {{this.reportCount cell.row}}
-    {{else}}
-      {{get cell.row cell.columnId}}
-    {{/if}}
-  </:cell>
-</EuiDataGrid>
-```
-
-```js component
+```gjs component
 import Component from '@glimmer/component';
+import { get, hash } from '@ember/helper';
+import { eq } from 'ember-truth-helpers';
+import { EuiAvatar, EuiDataGrid } from '@ember-eui/core/components';
 
 export default class OrgChartDemo extends Component {
   columns = [
@@ -62,5 +39,31 @@ export default class OrgChartDemo extends Component {
   getParentId = (person) => person.managerEmail;
 
   reportCount = (person) => this.people.filter((other) => other.managerEmail === person.email).length;
+
+  <template>
+    <EuiDataGrid
+      aria-label="Org chart"
+      @columns={{this.columns}}
+      @rowTree={{hash
+        rows=this.people
+        getRowId=this.getRowId
+        getParentId=this.getParentId
+        defaultExpandedRowIds="all"
+      }}
+      @rowHeightsOptions={{hash defaultHeight=44}}
+      @height={{380}}
+    >
+      <:cell as |cell|>
+        {{#if (eq cell.columnId "name")}}
+          <EuiAvatar @name={{cell.row.name}} @size="s" />
+          {{cell.row.name}}
+        {{else if (eq cell.columnId "reports")}}
+          {{this.reportCount cell.row}}
+        {{else}}
+          {{get cell.row cell.columnId}}
+        {{/if}}
+      </:cell>
+    </EuiDataGrid>
+  </template>
 }
 ```

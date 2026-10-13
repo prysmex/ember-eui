@@ -82,7 +82,7 @@ Existing assertions changed (old -> new; upstream `avatar.tsx`,
 
 - New: `eui-tooltips-test` (5), popover (7), text area (4), header logo (1),
   avatar (1), combo box (3).
-- Core full suite: see the final run below. Validated-form 25/25 and
+- Core full suite: 1965/1965 (1945 before). Validated-form 25/25 and
   changeset-form 24/24, built against this worktree's core (temporary
   worktree-local `node_modules` with `@ember-eui/core` -> worktree core, plus
   a rollup `dist`; the symlinks were restored and `core/dist`, `dist-tests`

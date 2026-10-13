@@ -12,6 +12,8 @@ Checkboxes are ideal for allowing users to select options among a small list of 
 
 Use the `@checked` argument to handle the checked and unchecked state. You can also use the `@indeterminate` argument to set an indeterminate state. This state is commonly used in hierarchical checkboxes to indicate that only some of the checkbox's descendants are checked.
 
+Use `@readOnly` for a checkbox that shows a state but cannot be changed (it keeps its colours, even on focus). Native `readonly` does not stop checkboxes from toggling, so clicks are cancelled for you.
+
 Make sure to pass a `@label` to ensure a larger clickable area and ensure that screen readers will read out the label when the user is focused on the input.
 
 </EuiText>
@@ -59,6 +61,14 @@ export default class CheckboxDemo extends Component {
       @checked={{this.checked}}
       @disabled={{true}}
       {{on "change" this.onChange}}
+    />
+
+    <EuiSpacer @size="m" />
+
+    <EuiCheckbox
+      @label="I am a readonly checkbox"
+      @checked={{this.checked}}
+      @readOnly={{true}}
     />
   </template>
 }

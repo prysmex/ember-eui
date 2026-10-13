@@ -164,6 +164,8 @@ screens.
 | `@panelPaddingSize` |  | `'s'`, as upstream (formerly `'none'`) | Padding of the popover. |
 | `@popoverButtonIconType` |  | `'apps'` | Icon of the popover button. |
 | `@popoverButtonAriaLabel` | `string` | `'Open menu'` | Accessible name of the popover button. |
+| `@popoverButtonProps` | `EuiHeaderLinksPopoverButtonProps` |  | Props for the popover's button (upstream `popoverButtonProps`), see {@link EuiHeaderLinksPopoverButtonProps}. `iconType` wins over `@popoverButtonIconType` and an `aria-label` over `@popoverButtonAriaLabel`; `onClick` is called before the menu toggles. |
+| `@popoverProps` | `EuiHeaderLinksPopoverProps` |  | Props for the mobile menu's EuiPopover (upstream `popoverProps`), see {@link EuiHeaderLinksPopoverProps}. `panelPaddingSize` wins over `@panelPaddingSize`. |
 
 | Block | Description |
 | --- | --- |

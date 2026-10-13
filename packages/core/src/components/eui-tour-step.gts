@@ -52,6 +52,38 @@ export interface EuiTourStepConfig {
 }
 
 /**
+ * The EuiPopover args a step passes on (upstream's popover props). They
+ * replace the step's own values, except `panelClassName` (added to
+ * `euiTour`) and `panelProps` (its `css` is composed after the tour's).
+ * `hasArrow` defaults to whether there is a beacon, and `offset` to `10`
+ * with a beacon and an arrow.
+ */
+export type EuiTourStepPopoverArgs = Partial<
+  Pick<
+    EuiPopoverSignature['Args'],
+    | 'attachToAnchor'
+    | 'buffer'
+    | 'container'
+    | 'display'
+    | 'focusTrapProps'
+    | 'hasArrow'
+    | 'initialFocus'
+    | 'insert'
+    | 'isOpen'
+    | 'offset'
+    | 'onPositionChange'
+    | 'ownFocus'
+    | 'panelClassName'
+    | 'panelPaddingSize'
+    | 'panelProps'
+    | 'panelStyle'
+    | 'popoverScreenReaderText'
+    | 'repositionOnScroll'
+    | 'repositionToCrossAxis'
+  >
+>;
+
+/**
  * One step of a guided tour: a popover with a pulsing beacon next to the
  * element it explains (the block), a title, content, the progress and a
  * button to skip or end the tour. Render it through `EuiTour`, which opens
@@ -102,7 +134,12 @@ export interface EuiTourStepSignature {
     decoration?: 'beacon' | 'none';
     /** @private Set by `EuiTour`. */
     tour?: EuiTourContext;
-  };
+    /**
+     * Extra styles composed into the panel's class, after the tour's own
+     * (upstream's `css`, which EuiTourStep moves to the panel).
+     */
+    css?: EuiCss;
+  } & EuiTourStepPopoverArgs;
   Blocks: {
     /** The element the step points at (unused with `@anchor`). */
     default: [];
@@ -110,6 +147,11 @@ export interface EuiTourStepSignature {
     content: [];
     /** Replaces the "Skip tour" button, e.g. with "Next" / "Back" buttons. */
     footerAction: [];
+    /**
+     * Content of the popover's arrow, instead of the beacon (upstream
+     * `arrowChildren`).
+     */
+    arrowChildren: [];
   };
 }
 
@@ -135,6 +177,29 @@ export default class EuiTourStep extends Component<EuiTourStepSignature> {
 
   get config(): EuiTourStepConfig | undefined {
     return this.args.tour?.stepConfig(this.step);
+  }
+
+  /** Upstream: the popover's own `isOpen` wins over `isStepOpen`. */
+  get popoverIsOpen(): boolean {
+    return this.args.isOpen ?? this.isOpen;
+  }
+
+  get hasArrow(): boolean {
+    return this.args.hasArrow ?? this.hasBeacon;
+  }
+
+  get offset(): number | undefined {
+    if (this.args.offset !== undefined) return this.args.offset;
+
+    return this.hasBeacon && this.args.hasArrow !== false ? 10 : undefined;
+  }
+
+  get ownFocus(): boolean {
+    return this.args.ownFocus ?? false;
+  }
+
+  get panelClassName(): string {
+    return ['euiTour', this.args.panelClassName].filter(Boolean).join(' ');
   }
 
   get isOpen(): boolean {
@@ -186,7 +251,11 @@ export default class EuiTourStep extends Component<EuiTourStepSignature> {
   @cached
   get panelCss(): EuiCss {
     const context = getEuiThemeContext(this);
-    return useEuiBorealisStyles(context, euiTourStyles).euiTour;
+    return [
+      useEuiBorealisStyles(context, euiTourStyles).euiTour,
+      this.args.css,
+      this.args.panelProps?.css
+    ];
   }
 
   /**
@@ -275,27 +344,47 @@ export default class EuiTourStep extends Component<EuiTourStepSignature> {
   }
 
   <template>
-    {{#let (has-block "content") (has-block "footerAction") as |hasContent hasFooterAction|}}
+    {{#let
+      (has-block "content")
+      (has-block "footerAction")
+      (has-block "arrowChildren")
+      as |hasContent hasFooterAction hasArrowChildren|
+    }}
       {{#if @anchor}}
         <span hidden class="euiTourAnchor__resolver" {{this.resolveAnchor @anchor}}></span>
         {{#if this.anchorNode}}
           <EuiWrappingPopover
             class="euiTourAnchor"
             @button={{this.anchorNode}}
-            @isOpen={{this.isOpen}}
+            @isOpen={{this.popoverIsOpen}}
             @closePopover={{this.close}}
             @anchorPosition={{this.anchorPosition}}
-            @ownFocus={{false}}
-            @panelClassName="euiTour"
+            @ownFocus={{this.ownFocus}}
+            @panelClassName={{this.panelClassName}}
             @panelCss={{this.panelCss}}
-            @hasArrow={{this.hasBeacon}}
-            @offset={{if this.hasBeacon 10}}
+            @panelProps={{@panelProps}}
+            @hasArrow={{this.hasArrow}}
+            @offset={{this.offset}}
             @zIndex={{@zIndex}}
             @ariaLabelledBy={{this.titleId}}
+            @attachToAnchor={{@attachToAnchor}}
+            @buffer={{@buffer}}
+            @container={{@container}}
+            @display={{@display}}
+            @focusTrapProps={{@focusTrapProps}}
+            @initialFocus={{@initialFocus}}
+            @onPositionChange={{@onPositionChange}}
+            @panelPaddingSize={{@panelPaddingSize}}
+            @panelStyle={{@panelStyle}}
+            @popoverScreenReaderText={{@popoverScreenReaderText}}
+            @repositionOnScroll={{@repositionOnScroll}}
+            @repositionToCrossAxis={{@repositionToCrossAxis}}
             ...attributes
           >
             <:arrowChildren>
-              {{#if this.hasBeacon}}
+              {{#if hasArrowChildren}}
+                {{yield to="arrowChildren"}}
+              {{else if this.hasBeacon}}
                 <EuiBeacon class="euiTour__beacon" @css={{this.beaconCss}} />
               {{/if}}
             </:arrowChildren>
@@ -314,21 +403,37 @@ export default class EuiTourStep extends Component<EuiTourStepSignature> {
       {{else}}
         <EuiPopover
           class="euiTourAnchor"
-          @isOpen={{this.isOpen}}
+          @isOpen={{this.popoverIsOpen}}
           @closePopover={{this.close}}
           @anchorPosition={{this.anchorPosition}}
-          @ownFocus={{false}}
-          @panelClassName="euiTour"
+          @ownFocus={{this.ownFocus}}
+          @panelClassName={{this.panelClassName}}
           @panelCss={{this.panelCss}}
-          @hasArrow={{this.hasBeacon}}
-          @offset={{if this.hasBeacon 10}}
+          @panelProps={{@panelProps}}
+          @hasArrow={{this.hasArrow}}
+          @offset={{this.offset}}
           @zIndex={{@zIndex}}
           @ariaLabelledBy={{this.titleId}}
+          @attachToAnchor={{@attachToAnchor}}
+          @buffer={{@buffer}}
+          @container={{@container}}
+          @display={{@display}}
+          @focusTrapProps={{@focusTrapProps}}
+          @initialFocus={{@initialFocus}}
+          @onPositionChange={{@onPositionChange}}
+          @panelPaddingSize={{@panelPaddingSize}}
+          @panelStyle={{@panelStyle}}
+          @popoverScreenReaderText={{@popoverScreenReaderText}}
+          @repositionOnScroll={{@repositionOnScroll}}
+          @repositionToCrossAxis={{@repositionToCrossAxis}}
+          @insert={{@insert}}
           ...attributes
         >
           <:button>{{yield}}</:button>
           <:arrowChildren>
-            {{#if this.hasBeacon}}
+            {{#if hasArrowChildren}}
+              {{yield to="arrowChildren"}}
+            {{else if this.hasBeacon}}
               <EuiBeacon class="euiTour__beacon" @css={{this.beaconCss}} />
             {{/if}}
           </:arrowChildren>

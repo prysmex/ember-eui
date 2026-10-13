@@ -56,6 +56,7 @@ levels and a value tooltip. For a range of two values use EuiDualRange.
 
 | Argument | Type | Default | Description |
 | --- | --- | --- | --- |
+| `@inputPopoverProps` | `EuiRangeInputPopoverProps` |  | Props of the EuiInputPopover used with `@showInput="inputWithPopover"` (upstream `inputPopoverProps`): EuiInputPopover args except `isOpen`, `closePopover`, `disableFocusTrap`, `ownFocus`, `popoverScreenReaderText` and `fullWidth`, which the range controls. Its `className` is added to the popover root. |
 | `@compressed` | `boolean` | `false` | Smaller slider, for dense forms. |
 | `@readOnly` | `boolean` |  | Makes the number input read-only. |
 | `@fullWidth` | `boolean` | `false` | Stretches the slider to its container's width. |
@@ -101,6 +102,7 @@ value use EuiRange.
 
 | Argument | Type | Default | Description |
 | --- | --- | --- | --- |
+| `@inputPopoverProps` | `EuiRangeInputPopoverProps` |  | Props of the EuiInputPopover used with `@showInput="inputWithPopover"` (upstream `inputPopoverProps`): EuiInputPopover args except `isOpen`, `closePopover`, `disableFocusTrap`, `ownFocus`, `popoverScreenReaderText` and `fullWidth`, which the range controls. Its `className` is added to the popover root. |
 | `@value` (required) | `[ValueMember, ValueMember]` |  | The selected range, `[lower, upper]`. Update it in `@onChange`. |
 | `@onBlur` | `(event: FocusEvent) => void` |  | Called when a thumb or input loses focus. |
 | `@onFocus` | `(event: FocusEvent) => void` |  | Called when a thumb or input gets focus. |

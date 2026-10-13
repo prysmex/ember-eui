@@ -359,6 +359,26 @@ export type EuiFlyoutArgs = {
   container?: EuiFlyoutContainer;
   /** Focus trap options (upstream `focusTrapProps`): `returnFocus`, `shards`. */
   focusTrapProps?: EuiFlyoutFocusTrapProps;
+
+  /**
+   * Makes fixed `EuiHeader`s (`@position="fixed"`) part of the focus trap,
+   * so Tab reaches them while the flyout is open. Defaults to `true`, as
+   * upstream (deprecated there in favour of `@includeSelectorInFocusTrap`
+   * with `@container`).
+   */
+  includeFixedHeadersInFocusTrap?: boolean;
+
+  /**
+   * CSS selectors of extra elements in the focus trap, e.g.
+   * `'[data-sidebar]'` or a list of them. Found when the flyout opens.
+   */
+  includeSelectorInFocusTrap?: string[] | string;
+
+  /**
+   * @deprecated Has no effect (ignored upstream as well); use
+   * `@hasAnimation`.
+   */
+  pushAnimation?: boolean;
 };
 
 export const SIZES = FLYOUT_SIZES as unknown as readonly [
@@ -1215,7 +1235,10 @@ export default class EuiFlyoutComponent
    * side-by-side child, its main flyout (one modal unit with the child).
    */
   get focusTrapShards(): HTMLElement[] | undefined {
-    const shards = [...(this.args.focusTrapProps?.shards ?? [])];
+    const shards = [
+      ...this.selectorShards,
+      ...(this.args.focusTrapProps?.shards ?? [])
+    ];
     if (this.isSideBySideChild) {
       shards.push(
         ...Array.from(
@@ -1228,7 +1251,46 @@ export default class EuiFlyoutComponent
     return shards.length ? shards : undefined;
   }
 
+  /** Upstream `focusTrapSelectors`: extra selectors and fixed headers. */
+  get focusTrapSelectors(): string[] {
+    const { includeSelectorInFocusTrap, includeFixedHeadersInFocusTrap } =
+      this.args;
+    const selectors = includeSelectorInFocusTrap
+      ? Array.isArray(includeSelectorInFocusTrap)
+        ? [...includeSelectorInFocusTrap]
+        : [includeSelectorInFocusTrap]
+      : [];
+
+    if (includeFixedHeadersInFocusTrap ?? true) {
+      selectors.push('.euiHeader[data-fixed-header]');
+    }
+
+    return selectors;
+  }
+
+  /** The elements matching `focusTrapSelectors`, when the trap is created. */
+  get selectorShards(): HTMLElement[] {
+    return this.focusTrapSelectors.flatMap((selector) =>
+      Array.from(document.querySelectorAll<HTMLElement>(selector))
+    );
+  }
+
+  get hasSelectorShards(): boolean {
+    return this.selectorShards.length > 0 || this.isSideBySideChild;
+  }
+
   get description() {
+    const base = this.baseDescription;
+
+    return this.hasSelectorShards
+      ? `${base} ${this.euiI18n.lookupToken(
+          'euiFlyout.screenReaderFocusTrapShards',
+          'You can still continue tabbing through other global page landmarks.'
+        )}`
+      : base;
+  }
+
+  get baseDescription() {
     return this.hasOverlayMask
       ? this.euiI18n.lookupToken(
           'euiFlyout.screenReaderModalDialog',

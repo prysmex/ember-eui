@@ -100,6 +100,9 @@ export default class EuiWrappingPopover extends Component<EuiWrappingPopoverSign
         @popoverScreenReaderText={{@popoverScreenReaderText}}
         @ariaLabel={{@ariaLabel}}
         @ariaLabelledBy={{@ariaLabelledBy}}
+        @panelProps={{@panelProps}}
+        @focusTrapProps={{@focusTrapProps}}
+        @onPositionChange={{@onPositionChange}}
         ...attributes
       >
         <:button>

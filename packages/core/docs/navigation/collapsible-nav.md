@@ -66,6 +66,8 @@ Generated from the components' TypeScript signatures by
 | `@closeButtonPosition` | `'outside' \| 'inside'` | `'outside'` | Close button `'outside'` or `'inside'` the flyout (hidden while docked). |
 | `@paddingSize` | `string` | `'none'` | Padding inside the nav, any `EuiFlyout` padding size. |
 | `@onClose` (required) |  |  | Called to close the nav (close button, Escape, outside click). |
+| `@session` | `EuiFlyoutArgs['session']` | `'never'`, as upstream: the nav stays out of managed flyout sessions | Flyout session (EuiFlyout `@session`). |
+| `@focusTrapProps` | `EuiFlyoutArgs['focusTrapProps']` |  | Focus trap options (EuiFlyout `@focusTrapProps`). The toggle button is always added to `shards`, as upstream. |
 
 Deprecated: `@children` (Has no effect, use the `<:content>` block.).
 
@@ -91,6 +93,7 @@ Deprecated: `@children` (Has no effect, use the `<:content>` block.).
 | `@paddingSize` |  |  | Padding of a collapsible group's content, see `EuiAccordion`. |
 | `@buttonElement` |  |  | Tag of a collapsible group's title button, see `EuiAccordion`. |
 | `@onToggle` |  |  | Called with the new open state when a collapsible group toggles. |
+| `@iconProps` |  |  | More props for the title's EuiIcon (upstream `iconProps`, without `type` and `size`): `className`, `color`, `css`, `title`, `aria-label` and other keys as attributes. |
 
 | Block | Description |
 | --- | --- |

@@ -159,6 +159,12 @@ export interface EuiFlyoutMenuSignature {
     pagination?: EuiFlyoutMenuPagination;
     /** Extra styles composed last into the menu's class. */
     css?: EuiCss;
+    /**
+     * Icon next to the session's title in the managed flyouts' history
+     * menu. It is read by `EuiFlyout` from `@flyoutMenuProps`; the menu
+     * itself ignores it, as upstream.
+     */
+    iconType?: IconType;
   };
 }
 

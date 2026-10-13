@@ -5,16 +5,19 @@ import { getElementZIndex } from '../utils/popover/index.ts';
 import { cached, tracked } from '@glimmer/tracking';
 import { isArray } from '@ember/array';
 import { action } from '@ember/object';
+import { schedule } from '@ember/runloop';
 import { service } from '@ember/service';
 import { htmlSafe, isHTMLSafe } from '@ember/template';
 import { isEqual } from '@ember/utils';
 
 import optional from '@nullvoxpopuli/ember-composable-helpers/helpers/optional';
 import queue from '@nullvoxpopuli/ember-composable-helpers/helpers/queue';
+import defaultCalculatePosition from 'ember-basic-dropdown/utils/calculate-position';
 import PowerSelect from 'ember-power-select/components/power-select';
 import emberPowerSelectIsGroup from 'ember-power-select/helpers/ember-power-select-is-group';
 import { and, not } from 'ember-truth-helpers';
 
+import spreadAttributes from '../-private/eui-spread-attributes.ts';
 import argOrDefault from '../helpers/arg-or-default.ts';
 import classNames from '../helpers/class-names.ts';
 import { getEuiThemeContext } from '../utils/emotion/consume.ts';
@@ -68,7 +71,10 @@ import type { PopoverAnchorPosition } from './eui-popover';
  * applies to the options list here: it is an ember-basic-dropdown panel, not
  * an EuiPopover. `zIndex` replaces the anchor's z-index plus 2000, and
  * `anchorPosition` picks the side (`up*` above, `down*` below) unless
- * `@verticalPosition` is set.
+ * `@verticalPosition` is set. `className` and any other key not listed
+ * (`data-test-subj`, `aria-*`, …) go on the combo box root, which wraps the
+ * input like upstream's popover root. `panelRef`, `popoverRef` and
+ * EuiPopover's own focus props do not apply.
  */
 export interface EuiComboBoxInputPopoverProps {
   /** Class name of the options list panel. */
@@ -89,7 +95,82 @@ export interface EuiComboBoxInputPopoverProps {
   anchorPosition?: PopoverAnchorPosition;
   /** Extra styles composed last into the combo box's root class. */
   css?: EuiCss;
+  /**
+   * Closes the list when the page, or an element containing the input,
+   * scrolls (scrolling the list or the input does not). Defaults to `true`,
+   * as upstream's combo box.
+   */
+  closeOnScroll?: boolean;
+  /**
+   * The open list always follows the input when the page scrolls
+   * (ember-basic-dropdown); `false` is not supported.
+   */
+  repositionOnScroll?: boolean;
+  /**
+   * Distance in px between the input and the list. Defaults to `0`
+   * (attached).
+   */
+  offset?: number;
+  /**
+   * Minimum distance in px between the list and the edges of the window or
+   * of `container`, horizontally: a number, or `[top, right, bottom,
+   * left]`. Only applied with `buffer` or `container`; then defaults to
+   * `16`.
+   */
+  buffer?: number | [number, number, number, number];
+  /** Keeps the list horizontally within this element's bounds. */
+  container?: HTMLElement;
+  /**
+   * Called with the list's width (the input's, at least `panelMinWidth`)
+   * when the combo box renders and whenever the input resizes.
+   */
+  onPanelResize?: (width: number) => void;
+  /** Class of the combo box root (upstream's popover root). */
+  className?: string;
+  [key: string]: unknown;
 }
+
+/** `inputPopoverProps` keys that are not attributes of the root. */
+const INPUT_POPOVER_ARGS = [
+  'panelClassName',
+  'panelPaddingSize',
+  'panelStyle',
+  'panelMinWidth',
+  'panelCss',
+  'panelProps',
+  'zIndex',
+  'anchorPosition',
+  'closeOnScroll',
+  'repositionOnScroll',
+  'offset',
+  'buffer',
+  'container',
+  'onPanelResize',
+  'panelRef',
+  'popoverRef',
+  'inputRef',
+  'input',
+  'isOpen',
+  'closePopover',
+  'fullWidth',
+  'disableFocusTrap',
+  'ownFocus',
+  'initialFocus',
+  'focusTrapProps',
+  'attachToAnchor',
+  'display',
+  'hasArrow',
+  'insert',
+  'repositionToCrossAxis',
+  'popoverScreenReaderText',
+  'onPositionChange',
+  'onTrapDeactivation',
+  'shouldAccountForOtherPopovers',
+  'style'
+];
+
+/** Upstream waits before listening, as opening may scroll (Firefox). */
+const CLOSE_ON_SCROLL_DELAY = 500;
 
 export type {
   EuiComboBoxNode,
@@ -973,6 +1054,7 @@ export default class EuiComboBoxComponent extends Component<EuiComboBoxSignature
 
     <PowerSelect
       @multiple={{true}}
+      {{spreadAttributes @inputPopoverProps this.inputPopoverArgs}}
       ...attributes
       @onChange={{this.onChange}}
       @onFocus={{this.onFocus}}
@@ -1042,7 +1124,7 @@ export default class EuiComboBoxComponent extends Component<EuiComboBoxSignature
       @renderInPlace={{@renderInPlace}}
       @verticalPosition={{this.verticalPosition}}
       @disabled={{@isDisabled}}
-      @calculatePosition={{@calculatePosition}}
+      @calculatePosition={{this.calculatePosition}}
       @eventType={{@eventType}}
       @ariaLabel={{unless (argOrDefault @searchEnabled true) @ariaLabel}}
       @ariaLabelledBy={{unless
@@ -1102,6 +1184,7 @@ export default class EuiComboBoxComponent extends Component<EuiComboBoxSignature
       @triggerClass={{classNames
         "euiComboBox"
         this.rootClass
+        @inputPopoverProps.className
         (if @isDisabled "euiComboBox-isDisabled")
         (if this.markAsInvalid "euiComboBox-isInvalid")
         (if this.select.isOpen "euiComboBox-isOpen")
@@ -1194,9 +1277,177 @@ export default class EuiComboBoxComponent extends Component<EuiComboBoxSignature
     }
   }
 
+  get inputPopoverArgs(): readonly string[] {
+    return INPUT_POPOVER_ARGS;
+  }
+
+  /** The combo box root (power-select's trigger). */
+  triggerElement(): HTMLElement | null {
+    const id = (this.select as unknown as { uniqueId?: string } | undefined)
+      ?.uniqueId;
+
+    return id
+      ? document.querySelector<HTMLElement>(`[data-ebd-id="${id}-trigger"]`)
+      : null;
+  }
+
+  /** The open list's panel. */
+  contentElement(): HTMLElement | null {
+    const id = (this.select as unknown as { uniqueId?: string } | undefined)
+      ?.uniqueId;
+
+    return id
+      ? document.getElementById(`ember-basic-dropdown-content-${id}`)
+      : null;
+  }
+
+  /**
+   * ember-basic-dropdown's position with upstream's `offset` (a gap from
+   * the input) and `buffer` / `container` (horizontal bounds).
+   */
+  calculatePosition = (
+    trigger: HTMLElement,
+    content: HTMLElement,
+    destination: HTMLElement,
+    options: { renderInPlace?: boolean; [key: string]: unknown }
+  ) => {
+    const calculate = (this.args.calculatePosition ??
+      defaultCalculatePosition) as (...args: unknown[]) => {
+      horizontalPosition: string;
+      verticalPosition: string;
+      style: { top?: number; left?: number; [key: string]: unknown };
+    };
+    const position = calculate(trigger, content, destination, options);
+    const props = this.args.inputPopoverProps;
+
+    if (!props) return position;
+
+    const style = { ...position.style };
+    const offset = props.offset ?? 0;
+
+    if (offset && typeof style.top === 'number') {
+      style.top += position.verticalPosition === 'above' ? -offset : offset;
+    }
+
+    if (
+      (props.buffer !== undefined || props.container) &&
+      typeof style.left === 'number' &&
+      !options.renderInPlace
+    ) {
+      const buffer = props.buffer ?? 16;
+      const [, right, , left] = Array.isArray(buffer)
+        ? buffer
+        : [buffer, buffer, buffer, buffer];
+      const bounds = props.container?.getBoundingClientRect() ?? {
+        left: 0,
+        right: document.documentElement.clientWidth || window.innerWidth
+      };
+      // `style.left` is relative to the panel's positioned ancestor, or to
+      // the document
+      const parent = content.offsetParent;
+      const origin =
+        !parent ||
+        parent === document.body ||
+        parent === document.documentElement
+          ? -window.scrollX
+          : parent.getBoundingClientRect().left;
+      const width = content.getBoundingClientRect().width;
+      const min = bounds.left + left - origin;
+      const max = bounds.right - right - width - origin;
+
+      style.left = Math.max(min, Math.min(style.left as number, max));
+    }
+
+    return { ...position, style };
+  };
+
+  private scrollCleanup?: () => void;
+
+  /** Upstream `closeOnScroll` (EuiInputPopover), on by default here. */
+  private listenToScroll(): void {
+    this.stopListeningToScroll();
+
+    if (this.args.inputPopoverProps?.closeOnScroll === false) return;
+
+    const onScroll = (event: Event) => {
+      const target = event.target as Node | null;
+      const trigger = this.triggerElement();
+      const panel = this.contentElement();
+
+      if (!target || !trigger) return;
+      if (panel?.contains(target) || trigger.contains(target)) return;
+      // only scrolling that moves the input closes the list
+      if (!target.contains(trigger)) return;
+
+      const api = this.select as
+        | (Select & { isOpen?: boolean; actions: { close?: () => void } })
+        | undefined;
+
+      if (api?.isOpen) api.actions.close?.();
+    };
+    const timeout = window.setTimeout(() => {
+      window.addEventListener('scroll', onScroll, {
+        passive: true,
+        capture: true
+      });
+    }, CLOSE_ON_SCROLL_DELAY);
+
+    this.scrollCleanup = () => {
+      window.clearTimeout(timeout);
+      window.removeEventListener('scroll', onScroll, { capture: true });
+    };
+  }
+
+  private stopListeningToScroll(): void {
+    this.scrollCleanup?.();
+    this.scrollCleanup = undefined;
+  }
+
+  private panelResizeObserver?: ResizeObserver;
+  private lastPanelWidth?: number;
+
+  /** Upstream `onPanelResize`: the input's width, at least `panelMinWidth`. */
+  private observePanelWidth(): void {
+    if (this.panelResizeObserver || !this.args.inputPopoverProps?.onPanelResize) {
+      return;
+    }
+
+    const trigger = this.triggerElement();
+
+    if (!trigger || typeof ResizeObserver === 'undefined') return;
+
+    this.panelResizeObserver = new ResizeObserver(() => {
+      const props = this.args.inputPopoverProps;
+      const width = Math.max(
+        trigger.getBoundingClientRect().width,
+        props?.panelMinWidth ?? 0
+      );
+
+      if (width === this.lastPanelWidth) return;
+
+      this.lastPanelWidth = width;
+      props?.onPanelResize?.(width);
+    });
+    this.panelResizeObserver.observe(trigger);
+  }
+
+  willDestroy(): void {
+    super.willDestroy();
+    this.stopListeningToScroll();
+    this.panelResizeObserver?.disconnect();
+    this.panelResizeObserver = undefined;
+  }
+
   @action
   registerAPI(select: Select) {
     this.select = select;
+
+    if (!this.panelResizeObserver && this.args.inputPopoverProps?.onPanelResize) {
+      // the trigger is in the DOM once power-select has rendered
+      schedule('afterRender', () => {
+        if (!this.isDestroying && !this.isDestroyed) this.observePanelWidth();
+      });
+    }
 
     // ember-power-select may change the search itself (e.g. after a choice)
     this.updateSearchValue(
@@ -1321,6 +1572,8 @@ export default class EuiComboBoxComponent extends Component<EuiComboBoxSignature
       (trigger ? getElementZIndex(trigger, document.body) : 0) +
       COMBO_BOX_LIST_Z_INDEX_OFFSET;
 
+    this.listenToScroll();
+
     // upstream `onComboBoxClick`: single selection highlights its option
     const selected = this.selectedOptions[0];
 
@@ -1343,7 +1596,10 @@ export default class EuiComboBoxComponent extends Component<EuiComboBoxSignature
       | undefined;
     const result = onClose?.(select, event);
 
-    if (result !== false) this.pendingHighlight = undefined;
+    if (result !== false) {
+      this.pendingHighlight = undefined;
+      this.stopListeningToScroll();
+    }
 
     return result;
   }

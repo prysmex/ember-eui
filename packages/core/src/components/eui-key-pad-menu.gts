@@ -5,6 +5,7 @@ import { getEuiThemeContext } from '../utils/emotion/consume.ts';
 import { euiClass, useEuiBorealisStyles } from '../utils/eui/styles.ts';
 import type { EuiCss } from '../utils/eui/styles.ts';
 import { euiKeyPadMenuStyles } from '../utils/eui/styles.generated.ts';
+import spreadAttributes from '../-private/eui-spread-attributes.ts';
 import EuiFormLabel from './eui-form-label.gts';
 
 import type { EuiIconSignature } from './eui-icon';
@@ -26,13 +27,20 @@ export interface EuiKeyPadMenuSignature {
     /**
      * Makes the menu a `<fieldset>` of radios or checkboxes (items with
      * `@checkable`): `true`, or `{ legend }` for a visible legend and/or
-     * `{ ariaLegend }` for an `aria-label`.
+     * `{ ariaLegend }` for an `aria-label`. `legendProps` (upstream) are
+     * for the legend's EuiFormLabel: `className`, `css` and other keys as
+     * attributes.
      */
     checkable?:
       | boolean
       | {
           legend?: string;
           ariaLegend?: string;
+          legendProps?: {
+            className?: string;
+            css?: EuiCss;
+            [key: string]: unknown;
+          };
         };
     /** @deprecated Has no effect. */
     iconType?: EuiIconSignature['Args']['type'];
@@ -89,16 +97,29 @@ export default class EuiKeyPadMenu extends Component<EuiKeyPadMenuSignature> {
     return `euiKeyPadMenu ${euiClass(this.context, RESET, this.styles.euiKeyPadMenu)}`;
   }
 
+  /** `legendProps` keys handled as args. */
+  legendArgs = ['type'] as const;
+
+  get legendProps() {
+    const { checkable } = this.args;
+    return typeof checkable === 'object' ? checkable.legendProps : undefined;
+  }
+
   @cached
   get legendCss(): EuiCss {
-    return this.styles.euiKeyPadMenu__legend;
+    return [this.styles.euiKeyPadMenu__legend, this.legendProps?.css];
   }
 
   <template>
     {{#if this.isCheckable}}
       <fieldset class={{this.classes}} aria-label={{this.ariaLegend}} ...attributes>
         {{#if this.legend}}
-          <EuiFormLabel @type="legend" @css={{this.legendCss}}>
+          <EuiFormLabel
+            @type="legend"
+            @css={{this.legendCss}}
+            class={{this.legendProps.className}}
+            {{spreadAttributes this.legendProps this.legendArgs}}
+          >
             {{this.legend}}
           </EuiFormLabel>
         {{/if}}

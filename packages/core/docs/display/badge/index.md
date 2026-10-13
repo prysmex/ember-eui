@@ -92,6 +92,7 @@ HTML attributes and modifiers (`class`, `data-test-*`, `{{on …}}`) are applied
 | `@rel` | `string` |  | `rel` of the `@href` link. `noreferrer` (and `noopener` for `_blank`) is always added. |
 | `@onClick` | `(event: MouseEvent) => void` |  | Makes the badge a button calling this function. |
 | `@css` | `EuiCss` |  | Extra styles composed last into this component's class (like upstream's `css` prop). Prefer this to an extra class when styling it from a parent. |
+| `@anchorProps` |  |  | Props for the element around the badge (upstream `anchorProps`): the tooltip's anchor with `@tooltipContent` (see EuiToolTip's `@anchorProps`), otherwise a plain `span` wrapping the badge, which gets `className`, `css`, `style` and the other keys as attributes. |
 
 | Block | Description |
 | --- | --- |

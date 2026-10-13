@@ -46,6 +46,9 @@ const EuiMaybeToolTip: TemplateOnlyComponent<EuiMaybeToolTipSignature> = <templa
         @css={{@props.css}}
         @anchorClassName={{if @anchorClass @anchorClass @props.anchorClassName}}
         @anchorCss={{if @anchorCss @anchorCss @props.anchorCss}}
+        @anchorStyle={{@props.anchorStyle}}
+        @anchorProps={{@props.anchorProps}}
+        @attachTo={{@props.attachTo}}
       >
         <:anchor>{{yield}}</:anchor>
         <:content>{{yield to="content"}}</:content>
@@ -70,6 +73,9 @@ const EuiMaybeToolTip: TemplateOnlyComponent<EuiMaybeToolTipSignature> = <templa
         @css={{@props.css}}
         @anchorClassName={{if @anchorClass @anchorClass @props.anchorClassName}}
         @anchorCss={{if @anchorCss @anchorCss @props.anchorCss}}
+        @anchorStyle={{@props.anchorStyle}}
+        @anchorProps={{@props.anchorProps}}
+        @attachTo={{@props.attachTo}}
       >
         {{yield}}
       </EuiToolTip>

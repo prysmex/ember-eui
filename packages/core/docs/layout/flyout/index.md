@@ -143,8 +143,10 @@ that keep the page context. Render it only while open:
 | `@hasChildBackground` | `boolean` | `false` | A managed child flyout gets the subdued background. |
 | `@container` | `EuiFlyoutContainer` |  | Keeps the flyout (and its mask) within an element's bounds, e.g. an app area next to a side navigation: an element, a getter or a CSS selector. Push flyouts pad it instead of `<body>`, and its width replaces the window's for push breakpoints and resizing. Nested flyouts inherit it. `null` forces the viewport and puts the flyout above fixed headers. |
 | `@focusTrapProps` | `EuiFlyoutFocusTrapProps` |  | Focus trap options (upstream `focusTrapProps`): `returnFocus`, `shards`. |
+| `@includeFixedHeadersInFocusTrap` | `boolean` | `true`, as upstream (deprecated there in favour of `@includeSelectorInFocusTrap` with `@container`) | Makes fixed `EuiHeader`s (`@position="fixed"`) part of the focus trap, so Tab reaches them while the flyout is open. |
+| `@includeSelectorInFocusTrap` | `string[] \| string` |  | CSS selectors of extra elements in the focus trap, e.g. `'[data-sidebar]'` or a list of them. Found when the flyout opens. |
 
-Deprecated: `@isOpen` (Has no effect: render the flyout only while it is open.); `@isDocked` (Has no effect, see EuiCollapsibleNav; use `@type="push"`.); `@dockedBreakpoint` (Has no effect; use `@pushMinBreakpoint`.); `@showButtonIfDocked` (Has no effect.).
+Deprecated: `@isOpen` (Has no effect: render the flyout only while it is open.); `@isDocked` (Has no effect, see EuiCollapsibleNav; use `@type="push"`.); `@dockedBreakpoint` (Has no effect; use `@pushMinBreakpoint`.); `@showButtonIfDocked` (Has no effect.); `@pushAnimation` (Has no effect (ignored upstream as well); use `@hasAnimation`.).
 
 | Block | Description |
 | --- | --- |
@@ -217,6 +219,7 @@ it first inside an `EuiFlyout`. Upstream's `EuiFlyoutMenu`.
 | `@trailingActions` | `EuiFlyoutMenuAction[]` |  | Actions at the inline end of the bar. |
 | `@pagination` | `EuiFlyoutMenuPagination` |  | Previous/next controls and a counter. They replace the back button and history. |
 | `@css` | `EuiCss` |  | Extra styles composed last into the menu's class. |
+| `@iconType` | `IconType` |  | Icon next to the session's title in the managed flyouts' history menu. It is read by `EuiFlyout` from `@flyoutMenuProps`; the menu itself ignores it, as upstream. |
 
 Deprecated: `@hideTitle` (Hides the title visually. Defaults to `true`. Use `EuiFlyoutHeader` for visible titles.); `@customActions` (Use `@trailingActions`, which takes precedence when both are set.).
 

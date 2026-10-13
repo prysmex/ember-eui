@@ -1,4 +1,10 @@
-import { DATE_MODES, getDateMode } from './index.ts';
+import {
+  DATE_MODES,
+  getDateMode,
+  parseRelativeParts,
+  useFormatTimeString
+} from './index.ts';
+import { useI18nTimeOptions } from './time-options.ts';
 
 import type EuiI18n from '../../../services/eui-i18n';
 import type { DurationRange, ShortDate } from '../types/global';
@@ -147,5 +153,114 @@ export const showPrettyDuration = (
 
   return isRelativeToNow(timeFrom, timeTo);
 };
+
+/**
+ * Upstream `useRelativeDurationRoundedI18n`: "{prettyDuration} rounded to
+ * the hour" and so on, by rounding unit.
+ */
+const ROUNDED_DURATION_TOKENS: Record<string, [token: string, text: string]> =
+  {
+    s: [
+      'euiPrettyDuration.durationRoundedToSecond',
+      '{prettyDuration} rounded to the second'
+    ],
+    m: [
+      'euiPrettyDuration.durationRoundedToMinute',
+      '{prettyDuration} rounded to the minute'
+    ],
+    h: [
+      'euiPrettyDuration.durationRoundedToHour',
+      '{prettyDuration} rounded to the hour'
+    ],
+    d: [
+      'euiPrettyDuration.durationRoundedToDay',
+      '{prettyDuration} rounded to the day'
+    ],
+    w: [
+      'euiPrettyDuration.durationRoundedToWeek',
+      '{prettyDuration} rounded to the week'
+    ],
+    M: [
+      'euiPrettyDuration.durationRoundedToMonth',
+      '{prettyDuration} rounded to the month'
+    ],
+    y: [
+      'euiPrettyDuration.durationRoundedToYear',
+      '{prettyDuration} rounded to the year'
+    ]
+  };
+
+/**
+ * Upstream `usePrettyDuration`: a quick range's label ("Today"), else a
+ * relative duration ("Last 15 minutes", "Next 2 days rounded to the day"),
+ * else "{displayFrom} to {displayTo}".
+ */
+export function prettyDuration(
+  euiI18n: EuiI18n,
+  {
+    timeFrom,
+    timeTo,
+    quickRanges,
+    dateFormat
+  }: {
+    timeFrom: ShortDate;
+    timeTo: ShortDate;
+    quickRanges?: DurationRange[];
+    dateFormat: string;
+  }
+): string {
+  const ranges = quickRanges || useI18nTimeOptions(euiI18n).commonDurationRanges;
+  const matchingQuickRange = hasRangeMatch(timeFrom, timeTo, ranges);
+
+  if (matchingQuickRange && matchingQuickRange.label) {
+    return matchingQuickRange.label;
+  }
+
+  if (isRelativeToNow(timeFrom, timeTo)) {
+    const relativeParts =
+      getDateMode(timeTo) === DATE_MODES.NOW
+        ? parseRelativeParts(timeFrom)
+        : parseRelativeParts(timeTo);
+    const durations = useRelativeDurationI18n(relativeParts.count, euiI18n);
+    const relative = relativeParts.unit
+      ? ((durations as Record<string, unknown>)[relativeParts.unit] as
+          | string
+          | undefined) ?? ''
+      : '';
+    const rounded =
+      relativeParts.round && relativeParts.roundUnit
+        ? ROUNDED_DURATION_TOKENS[relativeParts.roundUnit]
+        : undefined;
+    const roundedString = rounded
+      ? (euiI18n.lookupToken(rounded[0], rounded[1], {
+          prettyDuration: relative
+        }) as string)
+      : '';
+    const pretty = roundedString || relative;
+
+    if (pretty) return pretty;
+  }
+
+  const displayFrom = useFormatTimeString(
+    timeFrom,
+    dateFormat,
+    false,
+    'en',
+    euiI18n
+  );
+  const displayTo = useFormatTimeString(
+    timeTo,
+    dateFormat,
+    true,
+    'en',
+    euiI18n
+  );
+
+  return euiI18n.lookupToken(
+    'euiPrettyDuration.fallbackDuration',
+    '{displayFrom} to {displayTo}',
+    { displayFrom, displayTo }
+  ) as string;
+}
 
 export default useRelativeDurationI18n;

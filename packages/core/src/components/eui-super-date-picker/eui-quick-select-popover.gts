@@ -4,6 +4,8 @@ import { hash } from '@ember/helper';
 import { action } from '@ember/object';
 import { service } from '@ember/service';
 
+import { modifier } from 'ember-modifier';
+
 import { getEuiThemeContext } from '../../utils/emotion/consume.ts';
 import { euiQuickSelectPopoverStyles } from '../../utils/eui/styles.generated.ts';
 import { euiClass, useEuiBorealisStyles } from '../../utils/eui/styles.ts';
@@ -19,6 +21,8 @@ import EuiRecentlyUsed from './eui-quick-select-popover/eui-recently-used.gts';
 import { useI18nTimeOptions } from './utils/time-options.ts';
 
 import type EuiI18n from '../../services/eui-i18n';
+import type { EuiCss } from '../../utils/eui/styles.ts';
+import type { EuiIconSignature } from '../eui-icon';
 import type { EuiCommonlyUsedTimeRangesSignature } from './eui-quick-select-popover/eui-commonly-used-time-ranges';
 import type { EuiQuickSelectSignature } from './eui-quick-select-popover/eui-quick-select';
 import type { EuiRecentlyUsedSignature } from './eui-quick-select-popover/eui-recently-used';
@@ -46,6 +50,41 @@ export interface CustomQuickSelectRenderOptions {
   refreshInterval: ComponentLike;
   customQuickSelectPanels: ComponentLike;
 }
+
+/**
+ * Upstream `EuiQuickSelectButtonProps`: props for the quick select button
+ * (an `EuiFormPrepend` button), spread over its defaults. `label`,
+ * `iconLeft`, `iconRight` and `css` are EuiFormPrepend arguments,
+ * `className` is added to its class, `on*` functions (`onClick`,
+ * `onMouseDown`, …) become event listeners (`onClick` runs after the
+ * popover toggles), and any other key is set as an attribute
+ * (`'aria-label'`, `'data-test-subj'`, `title`, …).
+ */
+export interface EuiQuickSelectButtonProps {
+  label?: string;
+  iconLeft?: EuiIconSignature['Args']['type'];
+  iconRight?: EuiIconSignature['Args']['type'];
+  css?: EuiCss;
+  className?: string;
+  onClick?: (event: MouseEvent) => void;
+  'aria-label'?: string;
+  'data-test-subj'?: string;
+  [key: string]: unknown;
+}
+
+/** Keys of `EuiQuickSelectButtonProps` that are not plain attributes. */
+const BUTTON_ARG_KEYS = new Set([
+  'label',
+  'iconLeft',
+  'iconRight',
+  'css',
+  'className',
+  'onClick',
+  'aria-label',
+  'data-test-subj',
+  'children',
+  'isDisabled'
+]);
 
 /** Upstream: each custom panel's content gets `applyTime`. */
 const CustomPanels: TOC<{
@@ -132,6 +171,10 @@ export interface EuiQuickSelectPopoverSignature {
     isPaused?: boolean;
     /** The refresh interval in milliseconds. */
     refreshInterval?: number;
+    /** moment format of absolute dates (for the recently used ranges). */
+    dateFormat?: string;
+    /** Props for the quick select button (upstream `buttonProps`). */
+    buttonProps?: EuiQuickSelectButtonProps;
   };
   Blocks: {
     /** Replaces the popover's content; yields the default panels. */
@@ -168,10 +211,73 @@ export default class EuiQuickSelectPopover extends Component<EuiQuickSelectPopov
     }
   }
 
+  /** Upstream toggles the popover, then calls `buttonProps.onClick`. */
   @action
-  toggle() {
+  toggle(event: MouseEvent) {
     this.isOpen = !this.isOpen;
+    this.args.buttonProps?.onClick?.(event);
   }
+
+  get buttonProps(): EuiQuickSelectButtonProps {
+    return this.args.buttonProps ?? {};
+  }
+
+  get buttonAriaLabel() {
+    return this.buttonProps['aria-label'] ?? this.buttonLabel;
+  }
+
+  get buttonTestSubj() {
+    return (
+      this.buttonProps['data-test-subj'] ??
+      'superDatePickerToggleQuickMenuButton'
+    );
+  }
+
+  get buttonIconLeft() {
+    return 'iconLeft' in this.buttonProps
+      ? this.buttonProps.iconLeft
+      : 'calendar';
+  }
+
+  get buttonIconRight() {
+    return 'iconRight' in this.buttonProps
+      ? this.buttonProps.iconRight
+      : 'chevronSingleDown';
+  }
+
+  /**
+   * The rest of `@buttonProps` (React spreads them onto the button):
+   * `on*` functions as event listeners, other values as attributes.
+   */
+  spreadButtonProps = modifier(
+    (element: HTMLElement, [props]: [EuiQuickSelectButtonProps | undefined]) => {
+      const cleanups: (() => void)[] = [];
+
+      for (const [key, value] of Object.entries(props ?? {})) {
+        if (BUTTON_ARG_KEYS.has(key)) continue;
+
+        if (/^on[A-Z]/.test(key) && typeof value === 'function') {
+          const type = key.slice(2).toLowerCase();
+          const listener = value as EventListener;
+          element.addEventListener(type, listener);
+          cleanups.push(() => element.removeEventListener(type, listener));
+        } else if (value !== undefined && value !== null && value !== false) {
+          const previous = element.getAttribute(key);
+          element.setAttribute(
+            key,
+            value === true ? '' : String(value as string | number)
+          );
+          cleanups.push(() =>
+            previous === null
+              ? element.removeAttribute(key)
+              : element.setAttribute(key, previous)
+          );
+        }
+      }
+
+      return () => cleanups.forEach((cleanup) => cleanup());
+    }
+  );
 
   @action
   close() {
@@ -218,12 +324,15 @@ export default class EuiQuickSelectPopover extends Component<EuiQuickSelectPopov
             @element="button"
             @compressed={{@compressed}}
             @isDisabled={{@isDisabled}}
-            @iconLeft="calendar"
-            @iconRight="chevronSingleDown"
+            @iconLeft={{this.buttonIconLeft}}
+            @iconRight={{this.buttonIconRight}}
+            @label={{this.buttonProps.label}}
+            @css={{this.buttonProps.css}}
             @onClick={{this.toggle}}
-            class="euiQuickSelectPopover__button"
-            aria-label={{this.buttonLabel}}
-            data-test-subj="superDatePickerToggleQuickMenuButton"
+            class="euiQuickSelectPopover__button {{this.buttonProps.className}}"
+            aria-label={{this.buttonAriaLabel}}
+            data-test-subj={{this.buttonTestSubj}}
+            {{this.spreadButtonProps @buttonProps}}
           />
         </EuiToolTip>
       </:button>
@@ -250,6 +359,8 @@ export default class EuiQuickSelectPopover extends Component<EuiQuickSelectPopov
               EuiRecentlyUsed
               applyTime=this.applyTime
               recentlyUsedRanges=@recentlyUsedRanges
+              commonlyUsedRanges=@commonlyUsedRanges
+              dateFormat=@dateFormat
             )
             (component
               RefreshIntervalPanel

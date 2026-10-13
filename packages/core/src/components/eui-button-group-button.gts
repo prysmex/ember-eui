@@ -4,6 +4,7 @@ import { fn } from '@ember/helper';
 import { on } from '@ember/modifier';
 import didInsert from '@ember/render-modifiers/modifiers/did-insert';
 
+import euiDisabledElement from '../-private/eui-disabled-element.ts';
 import { randomId } from '../-private/random-id.ts';
 import screenReaderOnly from '../modifiers/screen-reader-only.ts';
 import { getEuiThemeContext } from '../utils/emotion/consume.ts';
@@ -56,6 +57,16 @@ export interface EuiButtonGroupButtonSignature {
     label?: string;
     /** Disables the button. */
     isDisabled?: boolean;
+    /**
+     * Beta: a disabled button gets `aria-disabled="true"` instead of
+     * `disabled`, so it stays focusable (e.g. for its tooltip).
+     */
+    hasAriaDisabled?: boolean;
+    /**
+     * Native browser tooltip. Defaults to the button's text; pass `''` to
+     * unset it.
+     */
+    title?: string;
     /** Whether the option is selected. */
     isSelected?: boolean;
     /** Shows only the icon; the label is kept for screen readers. */
@@ -104,12 +115,14 @@ const GroupButtonElement: TOC<GroupButtonElementSignature> = <template>
       <EuiInnerText as |setInnerTextRef innerText|>
         <Tag
           class={{@button.classes}}
-          disabled={{if @button.isButton args.isDisabled}}
+          disabled={{@button.disabledAttr}}
+          aria-disabled={{@button.ariaDisabled}}
           aria-pressed={{@button.pressed}}
           type={{@button.type}}
           for={{if @button.isButton undefined inputId}}
           id={{if @button.isButton inputId}}
-          title={{innerText}}
+          title={{@button.titleFor innerText}}
+          {{euiDisabledElement args.isDisabled args.hasAriaDisabled}}
           {{on "click" @button.onClick}}
           {{didInsert setInnerTextRef}}
           ...attributes
@@ -175,6 +188,19 @@ export default class EuiButtonGroupButton extends Component<EuiButtonGroupButton
   get type() {
     return this.isButton ? (this.args.type ?? 'button') : undefined;
   }
+  /** Native `disabled`, unless `@hasAriaDisabled` swaps it for `aria-disabled`. */
+  get disabledAttr() {
+    if (!this.isButton || this.args.hasAriaDisabled) return undefined;
+    return this.args.isDisabled;
+  }
+  get ariaDisabled() {
+    return this.args.hasAriaDisabled && this.args.isDisabled
+      ? 'true'
+      : undefined;
+  }
+  /** Upstream `title`: the option's own, else the button's text. */
+  titleFor = (innerText: string | undefined) =>
+    this.args.title !== undefined ? this.args.title : innerText;
 
   @cached
   get classes() {

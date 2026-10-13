@@ -116,6 +116,7 @@ export default class EuiSplitButtonActionPrimary extends Component<EuiSplitButto
             @iconType={{@iconType}}
             @iconSize={{@iconSize}}
             @isDisabled={{this.isDisabled}}
+            @hasAriaDisabled={{this.split.hasAriaDisabled}}
             @isLoading={{this.isLoading}}
             @isSelected={{@isSelected}}
             @href={{@href}}
@@ -134,6 +135,7 @@ export default class EuiSplitButtonActionPrimary extends Component<EuiSplitButto
             @iconSide={{@iconSide}}
             @iconSize={{@iconSize}}
             @isDisabled={{this.isDisabled}}
+            @hasAriaDisabled={{this.split.hasAriaDisabled}}
             @isLoading={{this.isLoading}}
             @isSelected={{@isSelected}}
             @href={{@href}}
@@ -153,6 +155,7 @@ export default class EuiSplitButtonActionPrimary extends Component<EuiSplitButto
         @iconType={{@iconType}}
         @iconSize={{@iconSize}}
         @isDisabled={{this.isDisabled}}
+        @hasAriaDisabled={{this.split.hasAriaDisabled}}
         @isLoading={{this.isLoading}}
         @isSelected={{@isSelected}}
         @href={{@href}}
@@ -171,6 +174,7 @@ export default class EuiSplitButtonActionPrimary extends Component<EuiSplitButto
         @iconSide={{@iconSide}}
         @iconSize={{@iconSize}}
         @isDisabled={{this.isDisabled}}
+        @hasAriaDisabled={{this.split.hasAriaDisabled}}
         @isLoading={{this.isLoading}}
         @isSelected={{@isSelected}}
         @href={{@href}}

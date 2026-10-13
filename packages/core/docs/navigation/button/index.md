@@ -16,7 +16,7 @@ Buttons trigger actions. EUI has four kinds, from most to least prominent:
 | `EuiButton` | Secondary actions. |
 | `EuiButtonEmpty` | Low-prominence actions: cancel, "show more", actions in dense UIs and toolbars. |
 | `EuiButtonIcon` | Icon-only actions (edit, delete, settings). Always give it an `aria-label`. |
-| `EuiButtonGroup` | A set of toggle buttons, picking one option or several. |
+| `EuiButtonGroup` | Related buttons in a row or a segmented control, or toggle buttons picking one option or several. |
 
 ```hbs
 <EuiButton @fill={{true}} @iconType="save" {{on "click" this.save}}>Save</EuiButton>
@@ -26,7 +26,8 @@ Buttons trigger actions. EUI has four kinds, from most to least prominent:
 
 Actions are attached with `{{on "click" …}}`; with `@href` the button
 renders as a link instead. `@isLoading` shows a spinner and disables the
-button, `@isDisabled` greys it out. In forms, use `@type="submit"` on the
+button, `@isDisabled` greys it out (add `@hasAriaDisabled={{true}}` to keep
+it focusable, e.g. for a tooltip). In forms, use `@type="submit"` on the
 submit button.
 
 </EuiText>
@@ -66,6 +67,8 @@ Generated from the components' TypeScript signatures by
 | `@type` | `string` | `'button'` | `type` of the `<button>`, e.g. `'submit'` in a form. |
 | `@element` | `string` | `'a'` with `@href`, `'button'` otherwise | Tag to render, e.g. `'label'` for a file input trigger. |
 | `@isDisabled` | `boolean` |  | Disables the button and greys it out. |
+| `@hasAriaDisabled` | `boolean` |  | Beta: with `@isDisabled`, renders `aria-disabled="true"` instead of the native `disabled` attribute. The button keeps focus (e.g. for a tooltip) while clicks, pointer and key events (except Tab and Escape) are blocked. Style it with `[aria-disabled="true"]`, not `:disabled`. |
+| `@id` | `string` |  | `id` of the button. Inside an `EuiButtonGroup` with `@variant="selection"` it identifies the button for `@idSelected`, `@idToSelectedMap` and `@onChange`. |
 | `@css` | `EuiCss` |  | Extra styles composed last into this component's class (like upstream's `css` prop). Prefer this to an extra class when styling it from a parent. |
 
 Deprecated: `@useComponent` (Not needed: a component passed as `@iconType` is rendered.); `@useSvg` (Has no effect, see `EuiIcon`.).
@@ -94,6 +97,7 @@ HTML attributes and modifiers (`class`, `data-test-*`, `{{on …}}`) are applied
 | `@href` | `string` |  | Renders an `<a>` link instead of a `<button>` (a disabled or loading button stays a `<button>`). |
 | `@target` | `string` |  | `target` of the `@href` link, e.g. `'_blank'`. |
 | `@isDisabled` | `boolean` |  | Disables the button and greys it out. |
+| `@hasAriaDisabled` | `boolean` |  | Beta: with `@isDisabled`, renders `aria-disabled="true"` instead of the native `disabled` attribute. The button keeps focus (e.g. for a tooltip) while clicks, pointer and key events (except Tab and Escape) are blocked. Style it with `[aria-disabled="true"]`, not `:disabled`. |
 | `@type` | `string` | `'button'` | `type` of the `<button>`, e.g. `'submit'`. |
 | `@isSelected` | `boolean` |  | For toggle buttons: sets `aria-pressed` to `"true"` / `"false"`. Leave it undefined for regular buttons. |
 | `@disabled` | `boolean` |  | Same as `@isDisabled`. |
@@ -118,6 +122,8 @@ HTML attributes and modifiers (`class`, `data-test-*`, `{{on …}}`) are applied
 | `@href` | `string` |  | Renders an `<a>` link instead of a `<button>` (a disabled or loading button stays a `<button>`). |
 | `@target` | `string` |  | `target` of the `@href` link, e.g. `'_blank'`. |
 | `@isDisabled` | `boolean` |  | Disables the button and greys it out. |
+| `@hasAriaDisabled` | `boolean` |  | Beta: with `@isDisabled`, renders `aria-disabled="true"` instead of the native `disabled` attribute. The button keeps focus (e.g. for a tooltip) while clicks, pointer and key events (except Tab and Escape) are blocked. Style it with `[aria-disabled="true"]`, not `:disabled`. |
+| `@id` | `string` |  | `id` of the button. Inside an `EuiButtonGroup` with `@variant="selection"` it identifies the button for `@idSelected`, `@idToSelectedMap` and `@onChange`. |
 | `@isLoading` | `boolean` |  | Replaces the icon with a loading spinner and disables the button. |
 | `@isSelected` | `boolean` |  | For toggle buttons: sets `aria-pressed` to `"true"` / `"false"`. Leave it undefined for regular buttons. |
 | `@display` | `'empty' \| 'base' \| 'fill'` | `'empty'` | `'empty'` (just the icon), `'base'` (light background) or `'fill'` (solid background). |
@@ -135,21 +141,32 @@ HTML attributes and modifiers (`class`, `data-test-*`, `{{on …}}`) are applied
 | Argument | Type | Default | Description |
 | --- | --- | --- | --- |
 | `@css` | `EuiCss` |  | Extra styles composed last into this component's class (like upstream's `css` prop). Prefer this to an extra class when styling it from a parent. |
-| `@buttonSize` | `'s' \| 'm' \| 'compressed'` | `'s'` | `'s'`, `'m'`, or `'compressed'` (for forms, e.g. inside an `EuiFormRow` with `@display="rowCompressed"`). |
+| `@buttonSize` | `'s' \| 'm' \| 'compressed'` | `'s'` | `'s'`, `'m'`, or `'compressed'` (for forms, e.g. inside an `EuiFormRow` with `@display="rowCompressed"`; renders as `'s'`). With a block it sets the size of every yielded button. |
 | `@color` |  | `'text'` | Color of the selected buttons: `'text'`, `'primary'`, `'accent'`, `'accentSecondary'`, `'success'`, `'warning'`, `'danger'`, `'neutral'` or `'risk'`. `'ghost'` is still accepted and renders as `'text'` (latest EUI dropped it). |
 | `@isFullWidth` | `boolean` |  | Stretches the group, and its buttons evenly, to its container's width. |
-| `@isDisabled` | `boolean` |  | Disables every option. |
-| `@type` | `'single' \| 'multi'` | `'single'` | `'single'`: one option selected at a time, set with `@idSelected` (radio buttons). `'multi'`: each option toggles, set with `@idToSelectedMap`. |
-| `@legend` | `string` |  | Describes the group for screen readers (visually hidden legend). Required for accessibility. |
+| `@isDisabled` | `boolean` |  | Disables every option (with a block: every yielded button). |
+| `@hasAriaDisabled` | `boolean` |  | Beta: renders the disabled state with `aria-disabled` instead of the native `disabled` attribute, so the buttons stay focusable (e.g. for tooltips) while clicks and key presses are blocked. |
+| `@type` | `'single' \| 'multi'` | `'single'` | `'single'`: one option selected at a time, set with `@idSelected` (radio buttons). `'multi'`: each option toggles, set with `@idToSelectedMap`. Also applies to `@variant="selection"` blocks. |
+| `@legend` | `string` |  | Describes the group for screen readers (visually hidden legend, or the `aria-label` of the `role="group"` element with a block). Required for accessibility. |
 | `@name` | `string` | a random id | `name` of the radio inputs (single selection). |
 | `@className` | `string` |  | Extra class(es) for the fieldset. |
 | `@isIconOnly` |  |  | Shows only the options' icons; their labels stay for screen readers. |
-| `@onChange` (required) |  |  | Called with the clicked option's `id` (and its `value` for `'single'`). Update `@idSelected` / `@idToSelectedMap` here. |
+| `@onChange` |  |  | Called with the clicked option's `id` (and its `value` for `'single'`). Update `@idSelected` / `@idToSelectedMap` here. Required with `@options`; with a block it is only called by `@variant="selection"`. |
 | `@idSelected` | `Option['id']` |  | Id of the selected option (`@type="single"`). |
 | `@idToSelectedMap` |  |  | Selected state by option id, e.g. `{ bold: true, italic: false }` (`@type="multi"`). |
-| `@options` | `Array<Option>` |  | The buttons: `[{ id: 'left', label: 'Left', iconType: 'editorAlignLeft' }]`. |
+| `@options` | `Array<Option>` |  | The buttons: `[{ id: 'left', label: 'Left', iconType: 'editorAlignLeft' }]`. Without it, the group renders its block (the yielded buttons). |
+| `@variant` | `'default' \| 'segmented' \| 'selection'` | `'default'` | Block only. `'default'`: a row of buttons spaced by `@gutterSize`. `'segmented'`: one connected, inset control (only `Button` or only `ButtonIcon` children). `'selection'`: segmented toggle buttons; give each one an `@id` and use `@type`, `@idSelected` / `@idToSelectedMap` and `@onChange`. |
+| `@gutterSize` | `EuiButtonGroupGutterSize` | `'s'` | Block with `@variant="default"` only: gap between the buttons, `'none'`, `'xs'`, `'s'`, `'m'`, `'l'` or `'xl'`. |
+| `@showDividers` | `boolean` |  | Segmented and selection blocks only: lines between the buttons. |
+| `@layout` | `'horizontal' \| 'vertical'` | `'horizontal'` | Segmented and selection blocks only: `'vertical'` stacks the buttons (use it with `ButtonIcon` children only). |
+| `@wrap` | `boolean` | `true` | Segmented and selection blocks only: `false` shrinks (truncates) the buttons instead of wrapping them. |
+| `@display` | `'regular' \| 'highlighted' \| 'inverse'` | `'regular'` | `@variant="selection"` only: `'regular'` (subdued toggle state), `'highlighted'` (filled toggle state) or `'inverse'` (light toggle state on a subdued background). |
 
-HTML attributes and modifiers (`class`, `data-test-*`, `{{on …}}`) are applied to its `<fieldset>`.
+| Block | Description |
+| --- | --- |
+| default block | Without `@options`: the buttons, as the yielded `Button`, `ButtonEmpty` and `ButtonIcon` (they inherit `@buttonSize`, `@isDisabled`, `@hasAriaDisabled` and the variant's styling). They can be wrapped, e.g. in `EuiToolTip` or `EuiPopover`. |
+
+HTML attributes and modifiers (`class`, `data-test-*`, `{{on …}}`) are applied to its `<fieldset>` / `<div>`.
 
 ### EuiSplitButton
 
@@ -159,6 +176,7 @@ HTML attributes and modifiers (`class`, `data-test-*`, `{{on …}}`) are applied
 | `@color` | `string` |  | `'primary'`, `'accent'`, `'accentSecondary'`, `'neutral'`, `'success'`, `'warning'`, `'risk'`, `'danger'` or `'text'`. Defaults to `'primary'`. |
 | `@fill` | `boolean` | `false` | Solid background. |
 | `@isDisabled` | `boolean` |  | Disables both actions. |
+| `@hasAriaDisabled` | `boolean` |  | Beta: renders the disabled actions with `aria-disabled` instead of `disabled`, so they stay focusable (e.g. for a tooltip). |
 | `@isLoading` | `boolean` |  | Shows a loading spinner in both actions and disables them. |
 | `@css` | `EuiCss` |  | Extra styles composed last into this component's class (like upstream's `css` prop). Prefer this to an extra class when styling it from a parent. |
 

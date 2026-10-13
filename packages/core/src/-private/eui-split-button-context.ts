@@ -9,6 +9,7 @@ export interface EuiSplitButtonContext {
   readonly color: string;
   readonly fill: boolean;
   readonly isDisabled: boolean | undefined;
+  readonly hasAriaDisabled: boolean | undefined;
   readonly isLoading: boolean | undefined;
   /** @private The divider's class, rendered before the secondary action. */
   readonly dividerClass: string | undefined;
@@ -28,6 +29,7 @@ const DEFAULTS: EuiSplitButtonContext = {
   color: 'primary',
   fill: false,
   isDisabled: undefined,
+  hasAriaDisabled: undefined,
   isLoading: undefined,
   dividerClass: undefined
 };

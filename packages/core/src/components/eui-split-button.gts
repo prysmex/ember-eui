@@ -38,6 +38,11 @@ export interface EuiSplitButtonSignature {
     fill?: boolean;
     /** Disables both actions. */
     isDisabled?: boolean;
+    /**
+     * Beta: renders the disabled actions with `aria-disabled` instead of
+     * `disabled`, so they stay focusable (e.g. for a tooltip).
+     */
+    hasAriaDisabled?: boolean;
     /** Shows a loading spinner in both actions and disables them. */
     isLoading?: boolean;
     /**
@@ -100,6 +105,9 @@ export default class EuiSplitButton extends Component<EuiSplitButtonSignature> {
       },
       get isDisabled() {
         return split.args.isDisabled;
+      },
+      get hasAriaDisabled() {
+        return split.args.hasAriaDisabled;
       },
       get isLoading() {
         return split.args.isLoading;

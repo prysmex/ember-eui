@@ -1,18 +1,19 @@
 import { cached } from '@glimmer/tracking';
+import { on } from '@ember/modifier';
 import { service } from '@ember/service';
 import { htmlSafe } from '@ember/template';
 
 //@ts-expect-error
 import { VerticalCollection } from '@html-next/vertical-collection';
 import EmberPowerSelectOptions from 'ember-power-select/components/power-select/options';
-import emberPowerSelectIsEqual from 'ember-power-select/helpers/ember-power-select-is-equal';
 import emberPowerSelectIsGroup from 'ember-power-select/helpers/ember-power-select-is-group';
 import { and, eq, not, or } from 'ember-truth-helpers';
 
 import { getEuiThemeContext } from '../../utils/emotion/consume.ts';
 import {
   comboBoxBoxReset,
-  comboBoxOptionLabel
+  comboBoxOptionLabel,
+  isComboBoxOptionChecked
 } from '../../utils/eui/combo-box.ts';
 import {
   euiComboBoxOptionListStyles,
@@ -167,6 +168,28 @@ export default class EuiComboBoxOptionsComponent extends EmberPowerSelectOptions
   get singleSelection(): boolean {
     //@ts-expect-error `singleSelection` is curried by EuiComboBox
     return Boolean(this.args.singleSelection);
+  }
+
+  /**
+   * Single selection's check mark (upstream: same label and key). In
+   * multiple selection the selected options are not listed.
+   */
+  isChecked = (option: unknown): boolean =>
+    this.singleSelection &&
+    isComboBoxOptionChecked(
+      option,
+      //@ts-expect-error `selectedOptions` is curried by EuiComboBox
+      this.args.selectedOptions,
+      //@ts-expect-error `searchField` is curried by EuiComboBox
+      this.args.searchField
+    );
+
+  /** The list keeps the focus in the input (upstream). */
+  keepFocus = (event: MouseEvent) => event.preventDefault();
+
+  /** Upstream `aria-multiselectable` only for multiple selection. */
+  get ariaMultiselectable(): 'true' | undefined {
+    return this.singleSelection ? undefined : 'true';
   }
 
   /** Upstream `getListItemSize`: group labels after the first get 16px more. */
@@ -378,8 +401,11 @@ export default class EuiComboBoxOptionsComponent extends EmberPowerSelectOptions
   <template>
     {{! @glint-nocheck: not typesafe yet }}
     {{#let (component @groupComponent) as |Group|}}
-      {{#if @select.loading}}
-        <div class="euiComboBoxOptionsList {{this.emptyClass}}">
+      {{#if (or @select.loading @isLoading)}}
+        <div
+          class="euiComboBoxOptionsList {{this.emptyClass}}"
+          {{on "mousedown" this.keepFocus}}
+        >
           <EuiText @size="xs" class="euiComboBoxOptionsList__empty">
             <EuiFlexGroup
               @gutterSize="s"
@@ -411,7 +437,10 @@ export default class EuiComboBoxOptionsComponent extends EmberPowerSelectOptions
             {{this.listClass}}
             {{@class}}"
           {{this.setupHandlers}}
+          {{on "mousedown" this.keepFocus}}
           ...attributes
+          aria-multiselectable={{this.ariaMultiselectable}}
+          aria-label={{if @listboxAriaLabel @listboxAriaLabel}}
           as |opt index|
         >
           {{! template-lint-enable }}
@@ -425,8 +454,12 @@ export default class EuiComboBoxOptionsComponent extends EmberPowerSelectOptions
             />
           {{else}}
             {{#let
-              (emberPowerSelectIsEqual opt @select.selected)
-              (and (eq opt @select.highlighted) (not (this.isDisabled opt)))
+              (this.isChecked opt)
+              (and
+                @onFocusBadge
+                (eq opt @select.highlighted)
+                (not (this.isDisabled opt))
+              )
               as |selected showEnter|
             }}
               <div

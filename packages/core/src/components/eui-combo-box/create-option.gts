@@ -54,6 +54,9 @@ export interface EuiComboBoxCreateOptionSignature {
 export default class EuiComboBoxCreateOptionComponent extends Component<EuiComboBoxCreateOptionSignature> {
   @service declare euiI18n: EuiI18n;
 
+  /** The list keeps the focus in the input (upstream). */
+  keepFocus = (event: MouseEvent) => event.preventDefault();
+
   _regex = /\{\s*(.*?)\s*\}/g;
 
   get createLabel() {
@@ -154,6 +157,7 @@ export default class EuiComboBoxCreateOptionComponent extends Component<EuiCombo
       class="euiComboBoxOptionsList euiComboBoxOptionsList__rowWrap
         {{this.classes}}"
       data-test-subj="comboBoxCreateOption"
+      {{on "mousedown" this.keepFocus}}
       {{on "pointerup" @onCreateOption}}
     >
       <EuiText @size="xs" class="euiComboBoxOptionsList__empty">

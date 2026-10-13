@@ -5,6 +5,7 @@ import { cached, tracked } from '@glimmer/tracking';
 import { isArray } from '@ember/array';
 import { action } from '@ember/object';
 import { service } from '@ember/service';
+import { htmlSafe, isHTMLSafe } from '@ember/template';
 import { isEqual } from '@ember/utils';
 
 import optional from '@nullvoxpopuli/ember-composable-helpers/helpers/optional';
@@ -19,10 +20,16 @@ import { getEuiThemeContext } from '../utils/emotion/consume.ts';
 import {
   comboBoxBoxReset,
   comboBoxOptionLabel,
+  createPartialStringEqualityOptionMatcher,
+  entriesToPowerSelectOptions,
+  findNextSelectableIndex,
+  flattenComboBoxRows,
   flattenOptionGroups,
-  partialStringMatcher,
+  getMatchingEntries,
+  isComboBoxGroupLabel,
+  isComboBoxOptionChecked,
+  isComboBoxOptionSelected,
   selectedOptionForSearchValue,
-  sortMatchesByStartsWith,
   transformForCaseSensitivity
 } from '../utils/eui/combo-box.ts';
 import {
@@ -45,12 +52,19 @@ import EuiComboBoxSearchMessage from './eui-combo-box/search-message.gts';
 import EuiComboBoxTrigger from './eui-combo-box/trigger.gts';
 
 import type EuiI18n from '../services/eui-i18n';
-import type { EuiComboBoxSortMatchesBy } from '../utils/eui/combo-box.ts';
+import type {
+  EuiComboBoxOptionMatcher,
+  EuiComboBoxSortMatchesBy
+} from '../utils/eui/combo-box.ts';
 import type { EuiComboBoxNode } from './eui-combo-box/node.gts';
 import type { EuiComboBoxTruncationProps } from './eui-combo-box/option-text.gts';
 import type { EuiTooltipArgs } from './eui-tool-tip';
 
-export type { EuiComboBoxNode, EuiComboBoxTruncationProps };
+export type {
+  EuiComboBoxNode,
+  EuiComboBoxOptionMatcher,
+  EuiComboBoxTruncationProps
+};
 
 /** `@onCreateOption`: the value, and all options with groups flattened. */
 export type EuiComboBoxOnCreateOption = (
@@ -123,25 +137,30 @@ export interface EuiComboBoxSignature {
     /**
      * Lets the user add the typed text as a new option: shows an "add"
      * option when nothing matches (or always, with
-     * `@alwaysShowCreateOption`). Called with the search text and all
-     * options (groups flattened); return `false` to reject it. Add the
-     * result to `@options` / `@selectedOptions` yourself. Text equal to a
-     * selected option is not added again, and text equal to the only
-     * matching option selects that option (upstream).
+     * `@alwaysShowCreateOption`), and Enter or leaving the combo box adds
+     * the text (upstream). Called with the search text and all options
+     * (groups flattened); return `false` to reject it. Add the result to
+     * `@options` / `@selectedOptions` yourself. Text equal to a selected
+     * option is not added again, and text equal to the only matching
+     * option selects that option.
      */
     onCreateOption?: EuiComboBoxOnCreateOption;
     /** Shows the "add" option even when some options match. */
     alwaysShowCreateOption?: boolean;
     /**
-     * The options: strings, or objects shown by the default block (e.g.
-     * `{{option.label}}`). Groups are `{ groupName: 'Fruits', options: [...] }`.
-     * A promise is supported (shows `@loadingMessage` while pending).
+     * The options: strings, or objects with a `label` (or `@searchField`).
+     * Groups are `{ groupName: 'Fruits', options: [...] }` (or upstream's
+     * `{ label: 'Fruits', options: [...] }`). In multiple selection the
+     * selected options are not listed (upstream). A promise is supported
+     * (shows `@loadingMessage` while pending). Never changed by the combo
+     * box; pass a new array to change the options.
      */
     options: any[];
     /**
      * Custom search, e.g. to query a server: `(term, select) => results`
      * (or a promise). Without it the options are filtered locally, by
-     * `@searchField` for objects.
+     * `@searchField` for objects. Selected options are left out of the
+     * results in multiple selection.
      */
     search?: (term: string, select: Select) => any[] | PromiseProxy<any[]>;
     /** Key of object options to match the search text against, e.g. `'label'`. */
@@ -156,7 +175,7 @@ export interface EuiComboBoxSignature {
     searchEnabled?: boolean;
     /** Shows a button clearing the selection. Defaults to `true`. */
     isClearable?: boolean;
-    /** Shows a spinner in the input, e.g. while options load. */
+    /** Shows a spinner in the input and the list, e.g. while options load. */
     isLoading?: boolean;
     /** Disables the combo box. */
     isDisabled?: boolean;
@@ -166,7 +185,7 @@ export interface EuiComboBoxSignature {
     searchMessageComponent?: any;
     /** Smaller combo box, for dense forms. */
     compressed?: boolean;
-    /** Called when the input gets focus. */
+    /** Called when the input gets focus (which opens the list, upstream). */
     onFocus?: (e: FocusEvent) => void;
     /** Called when the input loses focus. */
     onBlur?: (e: FocusEvent) => void;
@@ -209,15 +228,23 @@ export interface EuiComboBoxSignature {
     placeholder?: string;
     /** Anything, passed to custom components as `@extra`. */
     extra?: any;
-    /** Closes the options list after selecting one. */
+    /**
+     * Closes the options list after selecting one. Defaults to `true` for
+     * single selection and `false` for multiple selection (upstream).
+     */
     closeOnSelect?: boolean;
     /** Focuses the combo box and opens its options on render. */
     autoFocus?: boolean;
-    /** Option highlighted when the list opens. */
+    /**
+     * Option highlighted when the list opens, or an ember-power-select
+     * `defaultHighlighted` function. By default nothing is highlighted
+     * until the arrow keys are used (upstream), except single selection's
+     * option when the list is opened by clicking.
+     */
     defaultHighlighted?: any;
     /** Makes the options list as wide as the input. */
     matchTriggerWidth?: boolean;
-    /** `tabindex` of the combo box. */
+    /** `tabindex` of the search input. */
     tabindex?: number;
     /** Opens the options list on render. */
     initiallyOpen?: boolean;
@@ -229,7 +256,11 @@ export interface EuiComboBoxSignature {
     destination?: string;
     /** Prevents the page from scrolling while the options list is open. */
     preventScroll?: boolean;
-    /** Message when no option matches. Defaults to "No results found". */
+    /**
+     * Message when no option matches the search (or when there are no
+     * options). Defaults to upstream's "{searchValue} doesn't match any
+     * options" / "There aren't any options available".
+     */
     noMatchesMessage?: string;
     /** @deprecated Has no effect; the "no matches" / "add" option is built in. */
     noMatchesMessageComponent?: any;
@@ -278,9 +309,30 @@ export interface EuiComboBoxSignature {
     append?: EuiComboBoxNode | EuiComboBoxNode[];
     /**
      * Custom matching for local filtering: `(option, searchText) => -1` for
-     * no match, anything else for a match.
+     * no match, anything else for a match. Defaults to upstream's matching
+     * (the label includes the search text, ignoring case unless
+     * `@isCaseSensitive`).
      */
     matcher?: (option: any, searchText: string) => number;
+    /**
+     * Upstream's custom matching, used before `@matcher`:
+     * `({ option, searchValue, normalizedSearchValue, isCaseSensitive }) =>
+     * boolean`.
+     */
+    optionMatcher?: EuiComboBoxOptionMatcher;
+    /**
+     * The options are already filtered for the search text (e.g. loaded
+     * from a server in `@onSearchChange`): they are listed as they are,
+     * without the selected options.
+     */
+    async?: boolean;
+    /**
+     * Called whenever the search text changes, with the text and whether
+     * any option matches it.
+     */
+    onSearchChange?: (searchValue: string, hasMatchingOptions?: boolean) => void;
+    /** Shows a "return" badge on the highlighted option. */
+    onFocusBadge?: boolean;
     /** Matching used when typing while the list is closed. */
     typeAheadOptionMatcher?: (option: any, searchText: string) => number;
     /** Icon in the input, anything `EuiIcon`'s `@type` accepts. */
@@ -289,7 +341,10 @@ export interface EuiComboBoxSignature {
     removeTag?: (option: any) => void;
     /** Called on every input with the text and the select API. */
     onInput?: (text: string, select: any, event: Event) => any;
-    /** Called on keydown; return `false` to prevent the default behavior. */
+    /**
+     * Called on keydown (with the select API and the event) before the
+     * combo box handles the key; return `false` to prevent that.
+     */
     onKeydown?: (select: any, event: KeyboardEvent) => any;
     /** Called with ember-power-select's API (`actions.open()`, `search`, …). */
     registerApi?: (select: any) => void;
@@ -303,7 +358,7 @@ export interface EuiComboBoxSignature {
     ariaLabelledBy?: string;
     /** Marks the combo box as required for assistive technology. */
     required?: boolean;
-    /** `role` of the input. */
+    /** `role` of the search input. Defaults to `combobox`. */
     triggerRole?: string;
     /** `title` of the combo box. */
     title?: string;
@@ -350,16 +405,41 @@ export const COMBO_BOX_LIST_Z_INDEX = 99999;
 export default class EuiComboBoxComponent extends Component<EuiComboBoxSignature> {
   @service declare euiI18n: EuiI18n;
 
-  @tracked select: any = null;
-  @tracked private _resolvedOptions?: any[];
-  @tracked searchText = '';
-  @tracked private _searchResult?: any[];
+  // UI state only: everything else is derived from the arguments
 
-  private _filterResultsCache: {
-    results: any[];
-    options: any[];
-    searchText: string;
-  } = { results: [], options: [], searchText: this.searchText };
+  /** ember-power-select's API (open state, highlighted option, …). */
+  @tracked select: any = null;
+
+  /**
+   * The search text, as typed (upstream `searchValue`). Kept apart from
+   * `select`, which is replaced on every highlight change: options derived
+   * from it would re-run ember-power-select's options modifier, which
+   * resets the highlight, in a loop.
+   */
+  @tracked searchValue = '';
+
+  /** The combo box has focus (upstream `hasFocus`). */
+  @tracked hasFocus = false;
+
+  /** The search input itself has focus (the screen reader instructions). */
+  @tracked inputHasFocus = false;
+
+  /** The value `@options` resolved to, when it is a promise. */
+  @tracked private settledOptions?: { promise: unknown; value: unknown };
+
+  private watchedPromises = new WeakSet<object>();
+
+  /** The last search text given to `@onSearchChange`. */
+  private notifiedSearch = '';
+
+  /**
+   * The option to highlight next: after adding one (upstream moves the
+   * active option to the next one), or the selected option when single
+   * selection opens on click.
+   */
+  private pendingHighlight?:
+    | { index: number; added: unknown }
+    | { selected: unknown };
 
   get loadingMessage() {
     return (
@@ -469,49 +549,308 @@ export default class EuiComboBoxComponent extends Component<EuiComboBoxSignature
       .join(' ');
   }
 
-  /**
-   * The search text, as typed (upstream `searchValue`). Kept apart from
-   * `select`, which is replaced on every highlight change: options derived
-   * from it would re-run ember-power-select's options modifier, which
-   * resets the highlight, in a loop.
-   */
-  @tracked searchValue = '';
 
   /**
-   * Options given to ember-power-select: `@options`, with the matches
-   * starting with the search text first for `@sortMatchesBy="startsWith"`.
+   * `@options`, or what it resolved to when it is a promise (`undefined`
+   * while it is pending).
    */
-  @cached
-  get powerSelectOptions(): any {
-    const options = this.options;
-    const search = this.searchValue;
+  get sourceOptions(): unknown[] | undefined {
+    const options = this.args.options as unknown;
 
-    if (
-      this.args.sortMatchesBy !== 'startsWith' ||
-      !search.trim() ||
-      !Array.isArray(options)
-    ) {
-      return options;
+    if (isPromiseLike(options)) {
+      if (this.settledOptions?.promise === options) {
+        return toList(this.settledOptions.value);
+      }
+
+      this.watchPromise(options);
+
+      return undefined;
     }
 
-    return sortMatchesByStartsWith(
-      options,
-      search,
-      this.args.searchField,
-      Boolean(this.args.isCaseSensitive)
+    return toList(options);
+  }
+
+  private watchPromise(promise: PromiseLike<unknown>) {
+    if (this.watchedPromises.has(promise as object)) return;
+
+    this.watchedPromises.add(promise as object);
+
+    const settle = (value: unknown) => {
+      if (this.isDestroying || this.isDestroyed) return;
+      // only the latest `@options` counts
+      if (this.args.options !== (promise as unknown)) return;
+
+      this.settledOptions = { promise, value };
+    };
+
+    promise.then(settle, () => settle([]));
+  }
+
+  /** `@options` is a promise that has not resolved yet. */
+  get optionsPending(): boolean {
+    return this.sourceOptions === undefined;
+  }
+
+  @cached
+  get selectedOptions(): unknown[] {
+    return toList(this.args.selectedOptions);
+  }
+
+  /**
+   * `@optionMatcher` (upstream), else `@matcher` (ember-power-select's
+   * `(option, searchText) => index`), else upstream's partial string
+   * matcher: the label includes the search text, ignoring case unless
+   * `@isCaseSensitive`.
+   */
+  @cached
+  get optionMatcher(): EuiComboBoxOptionMatcher {
+    const { optionMatcher, matcher, searchField } = this.args;
+
+    if (optionMatcher) return optionMatcher;
+
+    if (matcher) {
+      return ({ option, searchValue }) => matcher(option, searchValue) >= 0;
+    }
+
+    return createPartialStringEqualityOptionMatcher(searchField);
+  }
+
+  /** Upstream `getMatchingOptions` (with group titles) for a search text. */
+  matchingEntriesFor(
+    searchValue: string,
+    selectedOptions: readonly unknown[] = this.selectedOptions
+  ): unknown[] {
+    const { async, isCaseSensitive, search, searchField, singleSelection } =
+      this.args;
+
+    return getMatchingEntries({
+      options: this.sourceOptions ?? [],
+      selectedOptions,
+      searchValue,
+      optionMatcher: this.optionMatcher,
+      searchField,
+      isCaseSensitive,
+      // `@async` options (and `@search` results) are already filtered
+      isPreFiltered: Boolean(async || search),
+      showPrevSelected: Boolean(singleSelection),
+      sortMatchesBy: this.args.sortMatchesBy
+    });
+  }
+
+  @cached
+  get matchingEntries(): unknown[] {
+    return this.matchingEntriesFor(this.searchValue);
+  }
+
+  /**
+   * What the list shows, derived on every change of `@options`,
+   * `@selectedOptions` and the search text (upstream `matchingOptions`):
+   * the matches, without the selected options in multiple selection, as
+   * ember-power-select options. Neither `@options` nor its options are
+   * copied or changed.
+   */
+  @cached
+  get powerSelectOptions(): unknown[] {
+    return entriesToPowerSelectOptions(this.matchingEntries);
+  }
+
+  /**
+   * `@search`, with its results filtered like `@options` (selected options
+   * removed in multiple selection, `@sortMatchesBy`).
+   */
+  @cached
+  get search(): EuiComboBoxSignature['Args']['search'] {
+    const search = this.args.search;
+
+    if (!search) return undefined;
+
+    return (term: string, select: Select) => {
+      const results = search(term, select) as unknown;
+      const strip = (list: unknown) =>
+        entriesToPowerSelectOptions(
+          getMatchingEntries({
+            options: toList(list),
+            selectedOptions: this.selectedOptions,
+            searchValue: term,
+            optionMatcher: this.optionMatcher,
+            searchField: this.args.searchField,
+            isCaseSensitive: this.args.isCaseSensitive,
+            isPreFiltered: true,
+            showPrevSelected: Boolean(this.args.singleSelection),
+            sortMatchesBy: this.args.sortMatchesBy
+          })
+        );
+
+      if (isPromiseLike(results)) {
+        const stripped = Promise.resolve(results).then(strip) as Promise<
+          unknown[]
+        > & { cancel?: () => void };
+        const cancel = (results as { cancel?: () => void }).cancel;
+
+        // ember-power-select cancels pending ember-concurrency searches
+        if (typeof cancel === 'function') {
+          stripped.cancel = () => cancel.call(results);
+        }
+
+        return stripped as unknown as PromiseProxy<any[]>;
+      }
+
+      return strip(results);
+    };
+  }
+
+  /** Upstream `areAllOptionsSelected` (never with `@async` options). */
+  get areAllOptionsSelected(): boolean {
+    if (this.args.async || this.args.search) return false;
+
+    const options = flattenOptionGroups(this.sourceOptions ?? []);
+
+    return (
+      options.length > 0 &&
+      options.every((option) =>
+        isComboBoxOptionSelected(
+          option,
+          this.selectedOptions,
+          this.args.searchField,
+          this.args.isCaseSensitive
+        )
+      )
     );
   }
 
   /**
-   * `@matcher`, else upstream's partial string matcher when matching is
-   * case-sensitive (ember-power-select's default ignores case and accents).
+   * Upstream empty states of the list: the search does not match, there
+   * are no options, or all of them are selected.
    */
-  @cached
-  get matcher(): ((option: any, searchText: string) => number) | undefined {
-    if (this.args.matcher) return this.args.matcher;
-    if (!this.args.isCaseSensitive) return undefined;
+  get emptyStateMessage(): ReturnType<typeof htmlSafe> | string {
+    const search = this.searchValue;
+    const custom = this.args.noMatchesMessage;
 
-    return partialStringMatcher(this.args.searchField, true);
+    if (search) {
+      return (
+        custom ??
+        this.i18nHtml(
+          'euiComboBoxOptionsList.noMatchingOptions',
+          "{searchValue} doesn't match any options",
+          { searchValue: strong(search) }
+        )
+      );
+    }
+
+    if (!(this.sourceOptions ?? []).length && !this.args.search) {
+      return (
+        custom ??
+        this.euiI18n.lookupToken(
+          'euiComboBoxOptionsList.noAvailableOptions',
+          "There aren't any options available"
+        )
+      );
+    }
+
+    if (this.areAllOptionsSelected) {
+      return this.euiI18n.lookupToken(
+        'euiComboBoxOptionsList.allOptionsSelected',
+        "You've selected all available options"
+      );
+    }
+
+    return this.noMatchesMessage;
+  }
+
+  /**
+   * Upstream: with `@onCreateOption`, text equal to a selected option is
+   * not offered again ("… has already been added").
+   */
+  get alreadyAddedMessage(): ReturnType<typeof htmlSafe> | undefined {
+    const search = this.searchValue;
+
+    if (!search || !this.args.onCreateOption) return undefined;
+    if (this.args.delimiter && search.includes(this.args.delimiter)) {
+      return undefined;
+    }
+
+    const selected = selectedOptionForSearchValue(
+      this.selectedOptions,
+      search,
+      this.args.searchField,
+      this.args.isCaseSensitive
+    );
+
+    if (selected === undefined) return undefined;
+
+    return this.i18nHtml(
+      'euiComboBoxOptionsList.alreadyAdded',
+      '{label} has already been added',
+      { label: strong(comboBoxOptionLabel(selected, this.args.searchField)) }
+    );
+  }
+
+  private i18nHtml(
+    token: string,
+    fallback: string,
+    values: Record<string, string>
+  ): ReturnType<typeof htmlSafe> {
+    const text = this.euiI18n.lookupToken(token, fallback, values) as unknown;
+
+    return htmlSafe(
+      isHTMLSafe(text) ? (text as { toString(): string }).toString() : String(text)
+    );
+  }
+
+  /** The list shows a spinner: `@isLoading`, or `@options` still loading. */
+  get isLoadingOptions(): boolean {
+    return Boolean(this.args.isLoading) || this.optionsPending;
+  }
+
+  /**
+   * Upstream: leftover text marks the combo box invalid once the list
+   * closes or it loses focus (it was not added).
+   */
+  get markAsInvalid(): boolean {
+    if (this.args.isInvalid) return true;
+    if (!this.searchValue) return false;
+
+    return !this.hasFocus || (!this.args.noSuggestions && !this.select?.isOpen);
+  }
+
+  /** Upstream closes the list after a choice only with single selection. */
+  get closeOnSelect(): boolean {
+    return this.args.closeOnSelect ?? Boolean(this.args.singleSelection);
+  }
+
+  /**
+   * Upstream's screen reader instructions, read (politely) while the input
+   * has focus.
+   */
+  get screenReaderInstructions(): string | undefined {
+    if (!this.inputHasFocus) return undefined;
+
+    const { placeholder } = this.args;
+    const search = this.searchValue;
+    const selected = this.selectedOptions;
+    const value = selected
+      .map((option) => comboBoxOptionLabel(option, this.args.searchField))
+      .join(', ');
+    const last = selected[selected.length - 1];
+
+    return (
+      `Combo box. Selected. ${search ? `${search}. Selected. ` : ''}${
+        selected.length > 0
+          ? `${value}. Press Backspace to delete ${comboBoxOptionLabel(
+              last,
+              this.args.searchField
+            )}. `
+          : ''
+      }Combo box input. ${placeholder ? `${placeholder}.` : ''} Type some text or, to display a list of choices, press Down Arrow. ` +
+      'To exit the list of choices, press Escape.'
+    );
+  }
+
+  get listboxAriaLabel(): string {
+    return this.euiI18n.lookupToken(
+      'euiComboBox.listboxAriaLabel',
+      'Choose from the following options'
+    );
   }
 
   /** Untracked: the first measured option row shares its width (upstream). */
@@ -539,6 +878,9 @@ export default class EuiComboBoxComponent extends Component<EuiComboBoxSignature
   /** Options rows yield their index; pills yield the select API. */
   isOptionRow = (index: unknown) => typeof index === 'number';
 
+  /** ember-power-select must not filter the matches again. */
+  matchAll = () => 0;
+
   <template>
     {{! @glint-nocheck: not typesafe yet }}
 
@@ -546,10 +888,10 @@ export default class EuiComboBoxComponent extends Component<EuiComboBoxSignature
       @multiple={{true}}
       ...attributes
       @onChange={{this.onChange}}
-      @onFocus={{@onFocus}}
+      @onFocus={{this.onFocus}}
       @onBlur={{this.onBlur}}
       @onOpen={{this.onOpen}}
-      @onClose={{@onClose}}
+      @onClose={{this.onClose}}
       @placeholderComponent={{@placeholderComponent}}
       @searchMessage={{this.searchMessage}}
       @searchMessageComponent={{if
@@ -561,34 +903,45 @@ export default class EuiComboBoxComponent extends Component<EuiComboBoxSignature
       @matchTriggerWidth={{@matchTriggerWidth}}
       @options={{this.powerSelectOptions}}
       @selected={{@selectedOptions}}
-      @closeOnSelect={{@closeOnSelect}}
-      @defaultHighlighted={{@defaultHighlighted}}
+      @closeOnSelect={{this.closeOnSelect}}
+      @defaultHighlighted={{if
+        @defaultHighlighted
+        @defaultHighlighted
+        this.defaultHighlighted
+      }}
+      @highlightOnHover={{false}}
       @searchField={{@searchField}}
       @searchEnabled={{argOrDefault @searchEnabled true}}
-      @tabindex={{@tabindex}}
+      @tabindex={{if (argOrDefault @searchEnabled true) "-1" @tabindex}}
       @initiallyOpened={{and (not @isDisabled) @autoFocus (not @noSuggestions)}}
       @triggerComponent={{component
         EuiComboBoxTrigger
         fullWidth=@fullWidth
         compressed=@compressed
-        isInvalid=@isInvalid
+        isInvalid=this.markAsInvalid
         singleSelection=@singleSelection
         onClose=@removeTag
-        onCreateOption=(if @onCreateOption this.onCreateOption)
         isLoading=@isLoading
         autoFocus=(and (not @isDisabled) @autoFocus)
         icon=@triggerIcon
         prepend=@prepend
         append=@append
         noSuggestions=@noSuggestions
+        inputTabindex=@tabindex
+        inputRole=@triggerRole
+        inputAriaLabel=@ariaLabel
+        inputAriaLabelledBy=@ariaLabelledBy
+        inputRequired=@required
+        onClear=this.clearSelectedOptions
+        screenReaderInstructions=this.screenReaderInstructions
       }}
-      @matcher={{this.matcher}}
+      @matcher={{this.matchAll}}
       @initiallyOpen={{@initiallyOpen}}
       @typeAheadOptionMatcher={{@typeAheadOptionMatcher}}
       @buildSelection={{this.buildSelection}}
-      @search={{@search}}
+      @search={{this.search}}
       @onInput={{this.onInput}}
-      @onKeydown={{@onKeydown}}
+      @onKeydown={{this.onKeydown}}
       @scrollTo={{this.scrollTo}}
       @registerAPI={{queue this.registerAPI (optional @registerApi)}}
       @horizontalPosition={{@horizontalPosition}}
@@ -599,10 +952,17 @@ export default class EuiComboBoxComponent extends Component<EuiComboBoxSignature
       @disabled={{@isDisabled}}
       @calculatePosition={{@calculatePosition}}
       @eventType={{@eventType}}
-      @ariaLabel={{@ariaLabel}}
-      @ariaLabelledBy={{@ariaLabelledBy}}
-      @required={{@required}}
-      @triggerRole={{@triggerRole}}
+      @ariaLabel={{unless (argOrDefault @searchEnabled true) @ariaLabel}}
+      @ariaLabelledBy={{unless
+        (argOrDefault @searchEnabled true)
+        @ariaLabelledBy
+      }}
+      @required={{unless (argOrDefault @searchEnabled true) @required}}
+      @triggerRole={{if
+        (argOrDefault @searchEnabled true)
+        "presentation"
+        @triggerRole
+      }}
       @title={{@title}}
       @triggerId={{@triggerId}}
       @allowClear={{and (argOrDefault @isClearable true) (not @isDisabled)}}
@@ -616,8 +976,10 @@ export default class EuiComboBoxComponent extends Component<EuiComboBoxSignature
           (and
             @onCreateOption
             (not this.select.loading)
-            this.select.searchText
+            (not this.isLoadingOptions)
+            this.searchValue
             this.alwaysShowCreateOption
+            (not this.alreadyAddedMessage)
           )
           (component
             EuiComboBoxCreateOption
@@ -637,7 +999,11 @@ export default class EuiComboBoxComponent extends Component<EuiComboBoxSignature
         truncationProps=@truncationProps
         class=@optionsClass
         singleSelection=(if @singleSelection true false)
+        selectedOptions=this.selectedOptions
         searchField=@searchField
+        isLoading=this.isLoadingOptions
+        onFocusBadge=@onFocusBadge
+        listboxAriaLabel=this.listboxAriaLabel
       }}
       @extra={{@extra}}
       @groupComponent={{component EuiComboBoxGroup}}
@@ -645,20 +1011,40 @@ export default class EuiComboBoxComponent extends Component<EuiComboBoxSignature
         "euiComboBox"
         this.rootClass
         (if @isDisabled "euiComboBox-isDisabled")
-        (if @isInvalid "euiComboBox-isInvalid")
+        (if this.markAsInvalid "euiComboBox-isInvalid")
         (if this.select.isOpen "euiComboBox-isOpen")
       }}
       @noMatchesMessageComponent={{if
-        (and @onCreateOption (not this.alwaysShowCreateOption))
+        this.isLoadingOptions
         (component
-          EuiComboBoxCreateOption
-          customOptionText=@customOptionText
-          onCreateOption=this.onCreateOption
-          select=this.select
-          alwaysShow=false
-          delimiter=@delimiter
+          EuiComboBoxOptions
+          isLoading=true
+          loadingMessage=this.loadingMessage
         )
-        (component EuiComboBoxNoMatchesMessage)
+        (if
+          (and
+            @onCreateOption
+            this.searchValue
+            (not this.alwaysShowCreateOption)
+            (not this.alreadyAddedMessage)
+          )
+          (component
+            EuiComboBoxCreateOption
+            customOptionText=@customOptionText
+            onCreateOption=this.onCreateOption
+            select=this.select
+            alwaysShow=false
+            delimiter=@delimiter
+          )
+          (component
+            EuiComboBoxNoMatchesMessage
+            message=(if
+              this.alreadyAddedMessage
+              this.alreadyAddedMessage
+              this.emptyStateMessage
+            )
+          )
+        )
       }}
       @dropdownClass={{this.dropdownClass}}
       as |option i|
@@ -681,67 +1067,9 @@ export default class EuiComboBoxComponent extends Component<EuiComboBoxSignature
     </PowerSelect>
   </template>
 
-  //This is to allow scrolling between virtualized groups
-  @cached
-  get opts() {
-    // `@options` may still be a promise (ember-power-select shows loading)
-    const results = Array.isArray(this.results) ? this.results : [];
-
-    return results.reduce((acc, curr) => {
-      if (emberPowerSelectIsGroup(curr)) {
-        acc.push(curr, ...curr.options);
-      } else {
-        acc.push(curr);
-      }
-
-      return acc;
-    }, []);
-  }
-
-  @cached
-  get options(): any[] {
-    if (this._resolvedOptions) return toPlainArray(this._resolvedOptions);
-
-    if (this.args.options) {
-      return toPlainArray(this.args.options);
-    } else {
-      return [];
-    }
-  }
-
-  @cached
-  get results(): any[] {
-    if (this.searchText.length > 0) {
-      if (this.args.search) {
-        return toPlainArray(this._searchResult || this.options);
-      } else {
-        if (
-          this._filterResultsCache.options === this.options &&
-          this._filterResultsCache.searchText === this.searchText
-        ) {
-          // This is an optimization to avoid filtering several times, which may be a bit expensive
-          // if there are many options, if neither the options nor the searchtext have changed
-          return this._filterResultsCache.results;
-        }
-
-        //@ts-ignore
-        const results = this._filter(this.options, this.searchText);
-        //eslint-disable-next-line
-        this._filterResultsCache = {
-          results,
-          options: this.options,
-          searchText: this.searchText
-        };
-
-        return results;
-      }
-    } else {
-      return this.options;
-    }
-  }
-
+  /** Keeps the highlighted option in view in the virtualized list. */
   @action
-  scrollTo(option: any, select: { results: []; uniqueId: string }): void {
+  scrollTo(option: any, select: { results: unknown[]; uniqueId: string }): void {
     const optionsList = document.querySelector(
       `[data-combo-box-list="${select.uniqueId}"]`
     ) as HTMLElement;
@@ -750,7 +1078,7 @@ export default class EuiComboBoxComponent extends Component<EuiComboBoxSignature
       return;
     }
 
-    const index = this.opts.indexOf(option);
+    const index = flattenComboBoxRows(toList(select.results)).indexOf(option);
 
     if (index === -1) {
       return;
@@ -778,10 +1106,93 @@ export default class EuiComboBoxComponent extends Component<EuiComboBoxSignature
   registerAPI(select: Select) {
     this.select = select;
 
-    const searchText = (select as { searchText?: string })?.searchText ?? '';
-
-    if (searchText !== this.searchValue) this.searchValue = searchText;
+    // ember-power-select may change the search itself (e.g. after a choice)
+    this.updateSearchValue(
+      (select as { searchText?: string })?.searchText ?? ''
+    );
   }
+
+  /** Keeps `searchValue` in step and tells `@onSearchChange`. */
+  updateSearchValue(value: string) {
+    if (value !== this.searchValue) this.searchValue = value;
+
+    if (value === this.notifiedSearch) return;
+
+    this.notifiedSearch = value;
+
+    const onSearchChange = this.args.onSearchChange;
+
+    if (onSearchChange) {
+      const hasMatchingOptions = this.matchingEntriesFor(value).some(
+        (entry) => !isComboBoxGroupLabel(entry)
+      );
+
+      onSearchChange(value, hasMatchingOptions);
+    }
+  }
+
+  /** Upstream `clearSearchValue`. */
+  clearSearch() {
+    this.select?.actions.search('');
+    this.updateSearchValue('');
+  }
+
+  /**
+   * Upstream `activeOptionIndex` rules, as ember-power-select's
+   * `defaultHighlighted`: nothing is highlighted when the list opens (the
+   * selected option when single selection opens on click), the highlight
+   * stays while its option is listed, and after adding an option it moves
+   * to the next one.
+   */
+  defaultHighlighted = ({
+    results,
+    highlighted
+  }: {
+    results: unknown[];
+    highlighted: unknown;
+  }): unknown => {
+    const { rows, selectable } = selectableRows(toList(results));
+    const pending = this.pendingHighlight;
+
+    if (pending && 'selected' in pending) {
+      this.pendingHighlight = undefined;
+
+      return rows.find(
+        (row, index) =>
+          selectable[index] &&
+          isComboBoxOptionChecked(
+            row,
+            [pending.selected],
+            this.args.searchField
+          )
+      );
+    }
+
+    if (pending) {
+      const remainingIndexes = rows
+        .map((_, index) => index)
+        .filter((index) => rows[index] !== pending.added);
+
+      // the added option left the list: the move is done
+      if (remainingIndexes.length === rows.length) {
+        this.pendingHighlight = undefined;
+      }
+
+      const next = findNextSelectableIndex(
+        remainingIndexes,
+        (i) => selectable[remainingIndexes[i]!] === true,
+        Math.max(0, Math.min(pending.index, remainingIndexes.length - 1))
+      );
+
+      return next === -1 ? undefined : rows[remainingIndexes[next]!];
+    }
+
+    if (highlighted !== undefined && rows.includes(highlighted)) {
+      return highlighted;
+    }
+
+    return undefined;
+  };
 
   @action
   onChange(selected: any[]) {
@@ -807,7 +1218,56 @@ export default class EuiComboBoxComponent extends Component<EuiComboBoxSignature
       | ((select: Select, event: Event) => boolean | void)
       | undefined;
 
-    return onOpen?.(select, event);
+    const result = onOpen?.(select, event);
+
+    if (result === false) return false;
+
+    // upstream `onComboBoxClick`: single selection highlights its option
+    const selected = this.selectedOptions[0];
+
+    if (
+      this.args.singleSelection &&
+      selected !== undefined &&
+      event &&
+      /^(mouse|pointer|touch|click)/.test(event.type)
+    ) {
+      this.pendingHighlight = { selected };
+    }
+
+    return result;
+  }
+
+  @action
+  onClose(select: Select, event: Event): boolean | void {
+    const onClose = this.args.onClose as
+      | ((select: Select, event: Event) => boolean | void)
+      | undefined;
+    const result = onClose?.(select, event);
+
+    if (result !== false) this.pendingHighlight = undefined;
+
+    return result;
+  }
+
+  /** Upstream `onComboBoxFocus`: focusing the input opens the list. */
+  @action
+  onFocus(select: Select, event: FocusEvent): void {
+    (this.args.onFocus as ((...args: unknown[]) => void) | undefined)?.(
+      select,
+      event
+    );
+
+    this.hasFocus = true;
+    this.inputHasFocus = true;
+
+    const api = (this.select ?? select) as Select & {
+      isOpen?: boolean;
+      actions: { open?: () => void };
+    };
+
+    if (!this.args.isDisabled && !this.args.noSuggestions && !api?.isOpen) {
+      api?.actions.open?.();
+    }
   }
 
   /**
@@ -823,11 +1283,9 @@ export default class EuiComboBoxComponent extends Component<EuiComboBoxSignature
     const text = typeof corrected === 'string' ? corrected : term;
     const delimiter = this.args.delimiter;
 
-    if (
-      delimiter &&
-      text.endsWith(delimiter) &&
-      this.setCustomOptions(text, { keepOpen: true })
-    ) {
+    this.updateSearchValue(text);
+
+    if (delimiter && text.endsWith(delimiter) && this.setCustomOptions(text)) {
       const input = event?.target as HTMLInputElement | null;
 
       if (input && 'value' in input) input.value = '';
@@ -839,9 +1297,179 @@ export default class EuiComboBoxComponent extends Component<EuiComboBoxSignature
   }
 
   /**
-   * Upstream `onContainerBlur`: leaving the combo box adds the typed text,
-   * so it does not look like a text input. Only with `@noSuggestions` or
-   * `@delimiter` (see the docs' Ember differences).
+   * Upstream `onKeyDown`: arrows move through the options (wrapping), Enter
+   * chooses the highlighted option or adds the typed text, Escape closes
+   * the list, and Tab is held while an option is highlighted.
+   */
+  @action
+  onKeydown(select: Select, event: KeyboardEvent): boolean | void {
+    if (this.args.onKeydown?.(select, event) === false) return false;
+    if (this.args.isDisabled) return;
+
+    const target = event.target as HTMLElement | null;
+
+    // only the search input's own keys (not the clear or pill buttons')
+    if (!target?.classList.contains('euiComboBox__input')) return;
+
+    const api = (this.select ?? select) as Select & {
+      isOpen: boolean;
+      highlighted: unknown;
+      results: unknown[];
+      actions: {
+        highlight: (option: unknown) => void;
+        scrollTo: (option: unknown) => void;
+        close: (e?: Event) => void;
+      };
+    };
+    const hasActiveOption = api.isOpen && api.highlighted !== undefined;
+
+    switch (event.key) {
+      case 'ArrowUp':
+      case 'ArrowDown': {
+        if (!api.isOpen) return; // ember-power-select opens the list
+
+        event.preventDefault();
+        event.stopPropagation();
+
+        const next = this.nextActiveOption(
+          api.results,
+          api.highlighted,
+          event.key === 'ArrowDown' ? 1 : -1
+        );
+
+        if (next !== undefined) {
+          api.actions.highlight(next);
+          api.actions.scrollTo(next);
+        }
+
+        return false;
+      }
+
+      case 'Escape':
+        if (!api.isOpen) return;
+
+        event.preventDefault();
+        event.stopPropagation();
+        api.actions.close(event);
+
+        return false;
+
+      case 'Enter':
+        event.preventDefault();
+        event.stopPropagation();
+
+        // ember-power-select chooses the highlighted option
+        if (hasActiveOption) return;
+
+        this.setCustomOptions(this.searchValue);
+
+        return false;
+
+      case 'Tab':
+        // no tabbing away while navigating the options
+        if (hasActiveOption) {
+          event.preventDefault();
+          event.stopPropagation();
+
+          return false;
+        }
+
+        return;
+
+      case 'Backspace':
+        // deleting text works as usual (and opens the list)
+        if ((target as HTMLInputElement).value?.length) return;
+
+        this.onBackspace(event);
+
+        return false;
+    }
+  }
+
+  /** Upstream `incrementActiveOptionIndex`. */
+  nextActiveOption(
+    results: unknown[],
+    highlighted: unknown,
+    direction: 1 | -1
+  ): unknown {
+    const { rows, selectable } = selectableRows(toList(results));
+
+    if (!rows.length) return undefined;
+
+    const active = highlighted === undefined ? -1 : rows.indexOf(highlighted);
+    const start =
+      active < 0
+        ? direction < 0
+          ? rows.length - 1
+          : 0
+        : (active + direction + rows.length) % rows.length;
+    const index = findNextSelectableIndex(
+      rows,
+      (i) => selectable[i] === true,
+      start,
+      direction
+    );
+
+    return index === -1 ? undefined : rows[index];
+  }
+
+  /**
+   * Upstream Backspace in an empty input: removes the last selection (and
+   * reopens single selection's list). Plain text single selection deletes
+   * one character of the selection's text too.
+   */
+  @action
+  onBackspace(event: KeyboardEvent): void {
+    const selected = this.selectedOptions;
+    const select = this.select;
+
+    if (!selected.length || !select) return;
+
+    const last = selected[selected.length - 1];
+    const single = this.args.singleSelection;
+    const asPlainText = Boolean(
+      single && typeof single === 'object' && single.asPlainText
+    );
+
+    event.preventDefault();
+    this.args.onChange(selected.filter((option) => option !== last));
+    this.pendingHighlight = undefined;
+
+    if (asPlainText) {
+      const text = comboBoxOptionLabel(last, this.args.searchField).slice(0, -1);
+
+      select.actions.search(text);
+      this.updateSearchValue(text);
+    }
+
+    if ((single || asPlainText) && !select.isOpen) {
+      select.actions.open?.(event);
+    }
+  }
+
+  /** Upstream `clearSelectedOptions`: empties the selection, focuses the input. */
+  @action
+  clearSelectedOptions(event?: Event): void {
+    event?.stopPropagation();
+    this.args.onChange([]);
+
+    const input = document.getElementById(
+      `ember-power-select-trigger-multiple-input-${this.select?.uniqueId}`
+    );
+
+    // focusing opens the list (upstream opens it too)
+    input?.focus();
+
+    if (this.select && !this.select.isOpen && !this.args.noSuggestions) {
+      this.select.actions.open?.();
+    }
+  }
+
+  /**
+   * Upstream `onContainerBlur`: leaving the combo box closes the list and
+   * adds the typed text (`@onCreateOption`, or the option it names), so it
+   * does not look like a text input. Text that is not added stays, and
+   * marks the combo box invalid.
    */
   @action
   onBlur(select: Select, event: FocusEvent): void {
@@ -850,44 +1478,56 @@ export default class EuiComboBoxComponent extends Component<EuiComboBoxSignature
       event
     );
 
-    const api = select as Select & { searchText?: string; uniqueId?: string };
+    this.inputHasFocus = false;
 
-    if (
-      !(this.args.noSuggestions || this.args.delimiter) ||
-      !this.args.onCreateOption ||
-      !api?.searchText
-    ) {
-      return;
-    }
-
+    const api = (this.select ?? select) as Select & {
+      uniqueId?: string;
+      isOpen?: boolean;
+      highlighted?: unknown;
+      actions: { close?: (e?: Event) => void };
+    };
     const next = event?.relatedTarget as Node | null;
-    const list = api.uniqueId
+    const list = api?.uniqueId
       ? document.getElementById(`ember-basic-dropdown-content-${api.uniqueId}`)
       : null;
+    const root = (event?.target as HTMLElement | null)?.closest(
+      '.euiComboBox'
+    );
 
-    if (next && list?.contains(next)) return;
+    if (next && (list?.contains(next) || root?.contains(next))) return;
 
-    this.setCustomOptions(api.searchText, { keepOpen: true });
+    const hasActiveOption = Boolean(
+      api?.isOpen && api.highlighted !== undefined
+    );
+
+    this.hasFocus = false;
+
+    if (api?.isOpen) api.actions.close?.(event);
+
+    if (!hasActiveOption && this.searchValue) {
+      this.setCustomOptions(this.searchValue, true);
+    }
   }
 
-  /** The "add" option, Enter without matches, and `@noSuggestions` Enter. */
+  /** The "add" option. */
   @action
   onCreateOption() {
-    this.setCustomOptions(this.select?.searchText ?? '');
+    this.setCustomOptions(this.searchValue);
   }
 
   /**
    * Upstream `setCustomOptions`: the text, or each value separated by
-   * `@delimiter` (trimmed, without duplicates), is added.
+   * `@delimiter` (trimmed, without duplicates), is added. Returns whether
+   * anything was added.
    */
-  setCustomOptions(text: string, { keepOpen = false } = {}): boolean {
+  setCustomOptions(text: string, isContainerBlur = false): boolean {
     const delimiter = this.args.delimiter;
     const values = delimiter
       ? [...new Set(text.split(delimiter).map((value) => value.trim()))]
       : [text];
     let seen = this.args.selectedOptions;
-    let selection = [...(seen ?? [])];
-    let cleared = false;
+    let selection = toList(seen);
+    let added = false;
 
     values.forEach((value) => {
       if (!value.length) return;
@@ -895,29 +1535,19 @@ export default class EuiComboBoxComponent extends Component<EuiComboBoxSignature
       // the consumer may have updated `@selectedOptions` already
       if (this.args.selectedOptions !== seen) {
         seen = this.args.selectedOptions;
-        selection = [...(seen ?? [])];
+        selection = toList(seen);
       }
 
-      const result = this.addCustomOption(value, selection);
+      const result = this.addCustomOption(value, selection, isContainerBlur);
 
       if (result === false) return;
 
-      cleared = true;
+      added = true;
 
       if (result) selection = result;
     });
 
-    if (cleared) {
-      this.select?.actions.search('');
-    }
-
-    // like before: adding closes the list (upstream keeps it open for
-    // multiple selection); typing a delimiter keeps typing going
-    if (cleared && !keepOpen) {
-      (this.select as any)?.actions.close();
-    }
-
-    return cleared;
+    return added;
   }
 
   /**
@@ -926,19 +1556,25 @@ export default class EuiComboBoxComponent extends Component<EuiComboBoxSignature
    * option with that label is selected. Returns the new selection when an
    * existing option was chosen, `false` when nothing was added.
    */
-  addCustomOption(value: string, selection: any[]): any[] | false | void {
+  addCustomOption(
+    value: string,
+    selection: unknown[],
+    isContainerBlur: boolean
+  ): unknown[] | false | void {
     const { isCaseSensitive, searchField, singleSelection } = this.args;
     const matched = this.onlyMatchingOption(value, selection);
 
     if (matched !== undefined) {
+      if ((matched as { disabled?: boolean } | null)?.disabled) return false;
+
       const next = singleSelection ? [matched] : [...selection, matched];
 
-      this.args.onChange(next);
+      this.onAddOption(matched, next, isContainerBlur);
 
       return next;
     }
 
-    if (!this.args.onCreateOption) return false;
+    if (!this.args.onCreateOption || !value) return false;
 
     if (
       selectedOptionForSearchValue(
@@ -953,29 +1589,45 @@ export default class EuiComboBoxComponent extends Component<EuiComboBoxSignature
 
     const created = this.args.onCreateOption(
       value,
-      flattenOptionGroups(Array.isArray(this.options) ? this.options : [])
+      flattenOptionGroups(this.sourceOptions ?? [])
     );
 
     // the consumer rejects a custom option explicitly
     if (created === false) return false;
+
+    this.clearSearch();
+
+    // a custom single selection closes the list
+    if (singleSelection) this.select?.actions.close();
+  }
+
+  /**
+   * Upstream `onAddOption` for an option chosen by its text: single
+   * selection closes the list, multiple selection keeps it open with the
+   * next option highlighted.
+   */
+  onAddOption(option: unknown, next: unknown[], isContainerBlur: boolean) {
+    const { rows } = selectableRows(toList(this.select?.results));
+    const index = rows.indexOf(option);
+
+    this.args.onChange(next);
+    this.clearSearch();
+
+    if (this.args.singleSelection) {
+      this.select?.actions.close();
+    } else if (!isContainerBlur && index > -1) {
+      this.pendingHighlight = { index, added: option };
+    }
   }
 
   /**
    * Upstream `doesSearchMatchOnlyOption`: the value matches exactly one
-   * (enabled, unselected) option, and equals its label.
+   * (unselected) option, and equals its label.
    */
-  onlyMatchingOption(value: string, selection: any[]): unknown {
+  onlyMatchingOption(value: string, selection: unknown[]): unknown {
     const { isCaseSensitive, searchField } = this.args;
-    const options = flattenOptionGroups(
-      Array.isArray(this.options) ? this.options : []
-    );
-    const matcher =
-      this.matcher ?? partialStringMatcher(searchField, Boolean(isCaseSensitive));
-    const matches = options.filter(
-      (option) =>
-        !(option as { disabled?: boolean } | null)?.disabled &&
-        !(this.args.singleSelection ? false : selection.includes(option)) &&
-        matcher(option, value) >= 0
+    const matches = this.matchingEntriesFor(value, selection).filter(
+      (entry) => !isComboBoxGroupLabel(entry)
     );
 
     if (matches.length !== 1) return undefined;
@@ -990,33 +1642,104 @@ export default class EuiComboBoxComponent extends Component<EuiComboBoxSignature
       : undefined;
   }
 
+  /**
+   * ember-power-select's choice: adds the option (single selection: makes
+   * it the selection; a chosen option is never deselected from the list,
+   * like upstream). Removing a pill passes a selected option: it is
+   * removed.
+   */
   @action
   buildSelection(option: any, select: Select) {
-    const newSelection = (select.selected || []).slice(0);
-    let idx = -1;
+    const current = toList(select.selected);
+    const index = current.findIndex((item) => isEqual(item, option));
 
-    for (let i = 0; i < newSelection.length; i++) {
-      if (isEqual(newSelection[i], option)) {
-        idx = i;
+    if (this.args.singleSelection) {
+      if (index > -1 && current.length === 1) return current;
 
-        break;
-      }
+      this.clearSearch();
+
+      return [option];
     }
 
-    if (idx > -1) {
-      newSelection.splice(idx, 1);
-    } else {
-      newSelection.push(option);
+    if (index > -1) {
+      return current.filter((_, i) => i !== index);
     }
 
-    if (this.args.singleSelection && newSelection.length === 0) {
-      select.actions.search('');
-    }
+    const { rows } = selectableRows(
+      toList((select as unknown as { results?: unknown[] }).results)
+    );
+    const at = rows.indexOf(option);
 
-    if (select?.selected?.length < newSelection.length) {
-      select.actions.search('');
-    }
+    if (at > -1) this.pendingHighlight = { index: at, added: option };
 
-    return newSelection;
+    this.clearSearch();
+
+    return [...current, option];
   }
+}
+
+/** A list from an array, an Ember array or nothing (never the same array). */
+function toList(collection: unknown): unknown[] {
+  if (!collection) return [];
+  if (Array.isArray(collection)) return collection;
+  if (isArray(collection)) {
+    return (collection as unknown as { slice(): unknown[] }).slice();
+  }
+
+  return [];
+}
+
+function isPromiseLike(value: unknown): value is PromiseLike<unknown> {
+  return Boolean(
+    value &&
+      (typeof value === 'object' || typeof value === 'function') &&
+      typeof (value as { then?: unknown }).then === 'function'
+  );
+}
+
+/** Escaped user text in bold, for i18n messages rendered as HTML. */
+function strong(text: string): string {
+  return `<strong>${text
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;')}</strong>`;
+}
+
+/**
+ * The rows of ember-power-select results (groups, then their options) and
+ * which can be highlighted: options that are not disabled, in groups that
+ * are not disabled.
+ */
+function selectableRows(results: unknown[]): {
+  rows: unknown[];
+  selectable: boolean[];
+} {
+  const rows: unknown[] = [];
+  const selectable: boolean[] = [];
+  const disabled = (value: unknown) =>
+    Boolean(
+      value &&
+        typeof value === 'object' &&
+        (value as { disabled?: boolean }).disabled === true
+    );
+
+  results.forEach((entry) => {
+    if (emberPowerSelectIsGroup(entry)) {
+      const group = entry as unknown as { options: unknown[] };
+
+      rows.push(entry);
+      selectable.push(false);
+      group.options.forEach((child) => {
+        rows.push(child);
+        selectable.push(!disabled(entry) && !disabled(child));
+      });
+    } else {
+      rows.push(entry);
+      selectable.push(!disabled(entry));
+    }
+  });
+
+  return { rows, selectable };
 }

@@ -411,6 +411,11 @@ export interface EuiDataGridRowTreeOptions<T = any> {
   getParentId?: (row: T) => string | number | null | undefined;
   /** Row id. Defaults to `row.id`, else the row index. */
   getRowId?: (row: T, rowIndex: number) => string | number | null | undefined;
+  /**
+   * Whether a row shows a toggle before its children are loaded (lazy
+   * loading). Defaults to `row.hasChildren === true`.
+   */
+  hasChildren?: (row: T) => boolean;
   /** Controlled expanded row ids. Without it the grid keeps its own state. */
   expandedRowIds?: string[];
   /** Initially expanded row ids (uncontrolled), or `'all'`. */

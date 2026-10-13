@@ -59,7 +59,7 @@ Generated from the components' TypeScript signatures by
 | `@columns` (required) | `EuiDataGridColumn[]` |  | Column definitions (`id`, `displayAsText`, `schema`, `initialWidth`, `actions`, `cellActions`, …). |
 | `@columnVisibility` | `EuiDataGridColumnVisibility` |  | Controlled column order/visibility. Optional in Ember: without it the grid keeps its own state, starting with every column visible. |
 | `@rowCount` | `number` |  | Number of rows in the data (not needed with `@rowTree` or `@grouping.rows`). |
-| `@rowTree` | `EuiDataGridRowTree` |  | Ember EUI extension: nested rows. The rows array (nested through each row's `children`, or flat with `parentId`), or options `{ rows, getChildren, getParentId, getRowId, expandedRowIds, defaultExpandedRowIds, onExpandedChange, toggleColumnId }`. |
+| `@rowTree` | `EuiDataGridRowTree` |  | Ember EUI extension: nested rows. The rows array (nested through each row's `children`, or flat with `parentId`), or options `{ rows, getChildren, getParentId, getRowId, hasChildren, expandedRowIds, defaultExpandedRowIds, onExpandedChange, toggleColumnId }`. |
 | `@grouping` | `EuiDataGridGrouping` |  | Ember EUI extension: groups rows by column values (`{ groupBy, getValue, rows, expandedGroupIds, defaultExpandedGroupIds, onExpandedChange, renderGroupCell, toggleColumnId }`). |
 | `@renderCellValue` |  |  | Component rendering a cell's value; receives `@rowIndex`, `@colIndex`, `@columnId`, `@isDetails`, `@isExpanded`, `@isExpandable`, `@setCellProps`, `@schema`, `@cellContext` and (with `@rowTree` or `@grouping.rows`) `@row`. Or use the `<:cell>` block. |
 | `@cellContext` | `Record<string, unknown>` |  | Extra data passed to every cell renderer as `@cellContext`. |

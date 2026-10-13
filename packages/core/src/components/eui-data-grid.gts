@@ -196,8 +196,9 @@ export interface EuiDataGridSignature {
     /**
      * Ember EUI extension: nested rows. The rows array (nested through each
      * row's `children`, or flat with `parentId`), or options
-     * `{ rows, getChildren, getParentId, getRowId, expandedRowIds,
-     * defaultExpandedRowIds, onExpandedChange, toggleColumnId }`.
+     * `{ rows, getChildren, getParentId, getRowId, hasChildren,
+     * expandedRowIds, defaultExpandedRowIds, onExpandedChange,
+     * toggleColumnId }`.
      */
     rowTree?: EuiDataGridRowTree;
     /**
@@ -1153,6 +1154,20 @@ export default class EuiDataGrid extends Component<EuiDataGridSignature> {
     return !!this.rowModel;
   }
 
+  /**
+   * With `@rowTree`/`@grouping`, collapsing rows can leave the page index
+   * past the last page: move to the last page.
+   */
+  clampPageIndex = modifier(
+    (_element: HTMLElement, [hasRowModel, rowCount, pageIndex, pageSize]: [boolean, number, number | undefined, number | undefined]) => {
+      if (!hasRowModel || pageIndex == null || !pageSize || rowCount === 0) return;
+      const lastPage = Math.ceil(rowCount / pageSize) - 1;
+      if (pageIndex > lastPage) {
+        afterRender(this, () => this.pagination?.onChangePage(lastPage));
+      }
+    }
+  );
+
   /** Toggles a tree row or group (closes a popover: rows below it move). */
   @action
   toggleRow(row: { id: string; kind: 'row' | 'group'; isExpanded: boolean }): void {
@@ -1187,6 +1202,7 @@ export default class EuiDataGrid extends Component<EuiDataGridSignature> {
         {{this.observeWidth}}
         {{this.restrictBody this.isFullScreen this.restrictBodyClass}}
         {{this.registerApi @registerApi this.hasRowModel}}
+        {{this.clampPageIndex this.hasRowModel this.rowCount this.pagination.pageIndex this.pagination.pageSize}}
         ...attributes
         {{this.moveAriaAttributes}}
       >

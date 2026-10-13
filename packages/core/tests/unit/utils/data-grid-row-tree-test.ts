@@ -246,4 +246,20 @@ module('Unit | utils | data-grid row-tree', function () {
     assert.strictEqual(findAncestors(roots, 42), null);
     assert.deepEqual(collectExpandableIds(roots).row, ['a', 'a1']);
   });
+
+  test('hasChildren: rows can expand before their children are loaded', function (assert) {
+    const lazy = [{ id: 'p', hasChildren: true }, { id: 'q' }];
+    const { roots } = buildRowTree({ rows: lazy });
+    const visible = flattenRowTree(roots, all);
+    assert.deepEqual(
+      visible.map((row) => [row.id, row.hasChildren, row.isExpanded]),
+      [
+        ['p', true, true],
+        ['q', false, false]
+      ]
+    );
+    assert.deepEqual(collectExpandableIds(roots).row, ['p']);
+    const custom = buildRowTree({ rows: [{ id: 'x', more: 1 }], hasChildren: (row: { more?: number }) => !!row.more });
+    assert.true(flattenRowTree(custom.roots, none)[0]!.hasChildren);
+  });
 });

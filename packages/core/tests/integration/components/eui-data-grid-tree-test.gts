@@ -422,4 +422,51 @@ module('Integration | Component | EuiDataGrid nested rows & grouping', function 
     assert.strictEqual(document.activeElement, cell(3, 1));
     assert.throws(() => api!.setFocusedCell({ rowIndex: 5, colIndex: 0 }), /not a valid row/);
   });
+
+  test('lazy loading: hasChildren rows expand, then rows get their children', async function (assert) {
+    class Lazy {
+      @tracked rows: Array<Record<string, unknown>> = [
+        { id: 'p', name: 'parent', size: 1, hasChildren: true },
+        { id: 'q', name: 'other', size: 2 }
+      ];
+      onExpandedChange = (ids: string[]) => {
+        if (ids.includes('p') && !this.rows[0]!['children']) {
+          this.rows = [{ ...this.rows[0], children: [{ id: 'c', name: 'child', size: 3 }] }, this.rows[1]!];
+        }
+      };
+    }
+    const lazy = new Lazy();
+    await render(
+      <template>
+        <div style="width:600px">
+          <EuiDataGrid aria-label="Lazy" @columns={{COLUMNS}} @rowTree={{hash rows=lazy.rows onExpandedChange=lazy.onExpandedChange}} @renderCellValue={{RowCell}} @toolbarVisibility={{false}} />
+        </div>
+      </template>
+    );
+    assert.dom(row(0)).hasAttribute('aria-expanded', 'false');
+    await click(el('[data-test-subj=euiDataGridRowToggle]', cell(0, 0)));
+    assert.deepEqual(columnTexts(0), ['parent', 'child', 'other'], 'expansion state survives the rows update (ids)');
+  });
+
+  test('collapsing rows clamps a page index past the last page', async function (assert) {
+    const pagination = new Pagination();
+    let api: EuiDataGridRefProps | undefined;
+    const registerApi = (value: EuiDataGridRefProps) => {
+      api = value;
+    };
+    await render(
+      <template>
+        <div style="width:600px">
+          <EuiDataGrid aria-label="Clamp" @columns={{COLUMNS}} @rowTree={{hash rows=FILES defaultExpandedRowIds="all"}} @renderCellValue={{RowCell}} @pagination={{pagination}} @registerApi={{registerApi}} @toolbarVisibility={{false}} />
+        </div>
+      </template>
+    );
+    pagination.pageIndex = 2;
+    await settled();
+    assert.deepEqual(columnTexts(0), ['README.md']);
+    api!.collapseAll!();
+    await settled();
+    assert.strictEqual(pagination.pageIndex, 0, 'moved to the last page');
+    assert.deepEqual(columnTexts(0), ['src', 'README.md']);
+  });
 });

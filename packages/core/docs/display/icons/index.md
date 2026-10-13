@@ -21,6 +21,8 @@ and accept the same values.
 <EuiButton @iconType="plusCircle">Add</EuiButton>
 ```
 
+Provide a descriptive `@title` based on the icon use, if possible. Without a title the icon is considered purely decorative and defaults to `aria-hidden="true"` (see *Accessibility* below).
+
 ## What `@type` accepts
 
 | `@type`                         | Renders                                                                  |
@@ -77,6 +79,8 @@ An icon registered in `euiIcon.icons` under the same name as an EUI icon
 wins, so app icons keep rendering when EUI adds icons with their names.
 
 ## All icons
+
+Glyphs, Elastic logos, apps, machine learning icons and tokens. Glyphs are small, monochromatic icons that should use the default `@size="m"`; logos and app icons are drawn for `xl`. Tokens (`EuiToken`) have their own [page](/docs/display/token).
 
 Search by name or filter by category; click an icon to copy its tag.
 

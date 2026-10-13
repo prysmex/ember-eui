@@ -39,12 +39,12 @@ import Component from '@glimmer/component';
 
 export default class IconSizesDemo extends Component {
   sizes = [
-    { name: 's', pixels: '12px' },
-    { name: 'm', pixels: '16px' },
-    { name: 'l', pixels: '24px' },
-    { name: 'xl', pixels: '32px' },
-    { name: 'xxl', pixels: '40px' },
-    { name: 'original', pixels: 'svg size' },
+    { name: 's', pixels: '12px · small' },
+    { name: 'm', pixels: '16px · medium (default)' },
+    { name: 'l', pixels: '24px · large' },
+    { name: 'xl', pixels: '32px · x-large' },
+    { name: 'xxl', pixels: '40px · xx-large' },
+    { name: 'original', pixels: 'svg size · original' },
   ];
 }
 ```

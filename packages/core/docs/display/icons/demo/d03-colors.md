@@ -9,7 +9,7 @@ order: 3
 Without `@color` an icon inherits the text color (`currentColor`). `@color`
 takes one of EUI's color names (`primary`, `success`, `accent`, `warning`,
 `danger`, `text`, `subdued`, `ghost`, `default`, `inherit`) or any CSS color
-such as `"#DA8B45"` or `"rgb(0 119 204)"`.
+such as `"#DA8B45"`. The `ghost` color is meant for dark backgrounds, so it is shown on one.
 
 Multi-color icons (logos and apps) keep their colors unless you pass a color:
 `ghost` and `text` turn them into a single color, e.g. for dark backgrounds.
@@ -22,7 +22,7 @@ For your own svgs to take a color, remove their `fill` attributes.
   {{#each this.colors as |color|}}
     <EuiFlexItem @grow={{false}}>
       <EuiFlexGroup @direction="column" @alignItems="center" @gutterSize="s" @responsive={{false}}>
-        <EuiFlexItem @grow={{false}}>
+        <EuiFlexItem @grow={{false}} style={{if (eq color "ghost") "background: #25282f; padding: 4px; border-radius: 4px;"}}>
           <EuiIcon @type="brush" @size="l" @color={{color}} />
         </EuiFlexItem>
         <EuiFlexItem @grow={{false}}>
@@ -61,6 +61,7 @@ import Component from '@glimmer/component';
 export default class IconColorsDemo extends Component {
   colors = [
     'default',
+    'inherit',
     'primary',
     'success',
     'accent',
@@ -68,8 +69,9 @@ export default class IconColorsDemo extends Component {
     'danger',
     'text',
     'subdued',
+    'ghost',
     '#DA8B45',
-    'rgb(0 119 204)',
+    '#DDDDDD',
   ];
 }
 ```

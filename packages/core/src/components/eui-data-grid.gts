@@ -29,6 +29,9 @@ import { computeSortedRowMap } from '../utils/data-grid/sorting.ts';
 import { afterRender, observeResize } from '../utils/data-grid/scheduling.ts';
 import * as keys from '../utils/keys.ts';
 import EuiDataGridBody from './eui-data-grid/body.gts';
+import EuiDataGridCopyMarker from './eui-data-grid/copy-marker.gts';
+import { euiScreenReaderOnlyClass } from './eui-screen-reader-only.gts';
+import { onTabularCopy } from '../utils/data-grid/tabular-copy.ts';
 import EuiDataGridCustomBody from './eui-data-grid/custom-body.gts';
 import type EuiDataGridBodyBase from './eui-data-grid/body-base.ts';
 import EuiDataGridInMemoryRenderer from './eui-data-grid/in-memory-renderer.gts';
@@ -648,6 +651,9 @@ export default class EuiDataGrid extends Component<EuiDataGridSignature> {
     this.initialRowHeightsOptions = args.rowHeightsOptions ?? {};
     // copies the focused cell's text on Ctrl/Cmd+C (static handler: deduped)
     document.addEventListener('copy', copyFocusedDataGridCell);
+    // tabs/newlines for selections copied across cells (upstream
+    // OverrideCopiedTabularContent; static handler: deduped)
+    document.addEventListener('copy', onTabularCopy);
   }
 
   /* ---------------------------------------------------------------------- */
@@ -838,6 +844,12 @@ export default class EuiDataGrid extends Component<EuiDataGridSignature> {
     ]
       .filter(Boolean)
       .join(' ');
+  }
+
+  /** Class of the hidden tabular copy marker characters. */
+  @cached
+  get copyMarkerClass(): string {
+    return euiScreenReaderOnlyClass(this.styles.context);
   }
 
   @cached
@@ -1111,6 +1123,7 @@ export default class EuiDataGrid extends Component<EuiDataGridSignature> {
           {{on "keyup" this.onContentKeyUp}}
           {{this.setupContent}}
         >
+          <EuiDataGridCopyMarker @grid={{this}} @type="boundary" />
           {{#if (or @renderCustomGridBody (has-block "customGridBody"))}}
             <EuiDataGridCustomBody
               @grid={{this}}
@@ -1133,6 +1146,7 @@ export default class EuiDataGrid extends Component<EuiDataGridSignature> {
               <:controlFooterCell as |cell|>{{yield cell to="controlFooterCell"}}</:controlFooterCell>
             </EuiDataGridBody>
           {{/if}}
+          <EuiDataGridCopyMarker @grid={{this}} @type="boundary" />
         </div>
         {{#if this.showPagination}}
           {{#if this.rawAriaLabelledBy}}

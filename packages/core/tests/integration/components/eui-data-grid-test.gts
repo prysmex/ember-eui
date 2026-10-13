@@ -128,8 +128,8 @@ module('Integration | Component | EuiDataGrid', function (hooks) {
       .hasClass('euiDataGridHeaderCell')
       .hasAttribute('data-gridcell-column-index', '0')
       .hasAttribute('data-gridcell-row-index', '-1')
-      .hasAttribute('tabindex', '-1')
-      .hasText('Name');
+      .hasAttribute('tabindex', '-1');
+    assert.dom('[data-gridcell-column-id=name] .euiDataGridHeaderCell__content').hasText('Name');
     assert.dom('[data-gridcell-column-id=age].euiDataGridHeaderCell').hasClass('euiDataGridHeaderCell--numeric');
 
     assert.dom('.euiDataGridRow[role=row]').exists({ count: 5 });
@@ -141,9 +141,9 @@ module('Integration | Component | EuiDataGrid', function (hooks) {
     assert.dom(first).hasAttribute('data-gridcell-row-index', '0');
     assert.dom(first).hasAttribute('tabindex', '-1');
     assert.dom('[data-datagrid-cellcontent]', first).hasClass('euiDataGridRowCell__content--defaultHeight').hasClass('eui-textTruncate');
-    assert.dom(first).hasText(value(0, 'name'));
+    assert.dom('[data-datagrid-cellcontent]', first).hasText(value(0, 'name'));
     assert.dom(cell(1, 2)).hasClass('euiDataGridRowCell--numeric').hasClass('euiDataGridRowCell--lastColumn');
-    assert.dom(cell(1, 2)).hasText('21');
+    assert.dom('[data-datagrid-cellcontent]', cell(1, 2)).hasText('21');
     assert.dom('.euiDataGridRow[data-grid-visible-row-index="1"]').hasClass('euiDataGridRow--striped', 'odd rows are marked striped');
     assert.dom('.euiDataGridRow[data-grid-visible-row-index="2"]').doesNotHaveClass('euiDataGridRow--striped');
     assert.dom(`#${el('[role=grid]').id} ~ p[hidden]`).hasText('Cell contains interactive content.');
@@ -162,8 +162,8 @@ module('Integration | Component | EuiDataGrid', function (hooks) {
       </template>
     );
     assert.dom('[data-block]').exists({ count: 9 });
-    assert.dom(cell(2, 2)).hasText('age:2:2:cell:numeric');
-    assert.dom(cell(0, 1)).hasText('email:0:1:cell:');
+    assert.dom('[data-datagrid-cellcontent]', cell(2, 2)).hasText('age:2:2:cell:numeric');
+    assert.dom('[data-datagrid-cellcontent]', cell(0, 1)).hasText('email:0:1:cell:');
   });
 
   test('matches upstream computed styles for the default grid style', async function (assert) {
@@ -412,14 +412,14 @@ module('Integration | Component | EuiDataGrid', function (hooks) {
     await click(first);
     assert.dom('.euiDataGridRowCell__actions', first).doesNotExist('setCellProps isExpandable: false');
     assert.dom('.euiDataGridRow[data-grid-visible-row-index="1"]').hasClass('highlighted-row');
-    assert.dom(cell(2, 1)).hasText('email2!');
+    assert.dom('[data-datagrid-cellcontent]', cell(2, 1)).hasText('email2!');
 
     const kept = cell(1, 1);
     state.rowCount = 4;
     state.context = { suffix: '?' };
     await settled();
     assert.strictEqual(cell(1, 1), kept, 'cells survive row count and context changes');
-    assert.dom(cell(1, 1)).hasText('email1?');
+    assert.dom('[data-datagrid-cellcontent]', cell(1, 1)).hasText('email1?');
     assert.dom('.euiDataGridRow').exists({ count: 4 });
     assert.dom('[role=grid]').hasAttribute('aria-rowcount', '4');
   });

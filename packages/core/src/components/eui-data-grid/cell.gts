@@ -33,6 +33,7 @@ import EuiLiveAnnouncer from '../eui-live-announcer.gts';
 import EuiPopover from '../eui-popover.gts';
 import EuiScreenReaderOnly from '../eui-screen-reader-only.gts';
 import EuiText from '../eui-text.gts';
+import EuiDataGridCopyMarker from './copy-marker.gts';
 import {
   EuiDataGridCellActions,
   EuiDataGridCellPopoverActions
@@ -239,6 +240,17 @@ export default class EuiDataGridCell extends Component<EuiDataGridCellSignature>
 
   get isLastColumn(): boolean {
     return this.args.colIndex === this.grid.visibleColCount - 1;
+  }
+
+  /** The last data column ends a copied row (tabular copy). */
+  get isLastCopyColumn(): boolean {
+    const columnCount = this.grid.columns.length;
+    return columnCount > 0 && this.args.colIndex === this.leadingCount + columnCount - 1;
+  }
+
+  get copyMarkerType(): 'no-copy' | 'newline' | 'tab' {
+    if (this.isControlColumn) return 'no-copy';
+    return this.isLastCopyColumn ? 'newline' : 'tab';
   }
 
   /* -------------------------------------------------------------------- */
@@ -868,6 +880,7 @@ export default class EuiDataGridCell extends Component<EuiDataGridCellSignature>
       {{this.setupCell}}
       ...attributes
     >
+      {{#if this.isControlColumn}}<EuiDataGridCopyMarker @grid={{@grid}} @type="no-copy" />{{/if}}
       {{#if this.isExpandable}}
         {{! template-lint-disable no-duplicate-landmark-elements }}
         <div
@@ -963,8 +976,15 @@ export default class EuiDataGridCell extends Component<EuiDataGridCellSignature>
           {{/if}}
         </div>
       {{/if}}
+      <EuiDataGridCopyMarker @grid={{@grid}} @type={{this.copyMarkerType}} />
       {{#if this.isFocused}}
-        <EuiScreenReaderOnly><p>{{this.screenReaderDescription}}</p></EuiScreenReaderOnly>
+        <EuiScreenReaderOnly><p><EuiDataGridCopyMarker
+              @grid={{@grid}}
+              @type="no-copy"
+            />{{this.screenReaderDescription}}<EuiDataGridCopyMarker
+              @grid={{@grid}}
+              @type="no-copy"
+            /></p></EuiScreenReaderOnly>
       {{/if}}
       {{#if this.showCellActions}}
         <EuiDataGridCellActions

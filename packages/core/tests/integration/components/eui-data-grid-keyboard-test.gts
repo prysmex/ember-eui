@@ -88,7 +88,7 @@ module('Integration | Component | EuiDataGrid keyboard and focus', function (hoo
     assert.strictEqual(document.activeElement, cell(3, 1), 'clicking a cell focuses it');
     assert.dom(cell(3, 1)).hasAttribute('tabindex', '0');
     assert.dom('[role=gridcell][tabindex="0"]').exists({ count: 1 });
-    assert.dom('.euiScreenReaderOnly', cell(3, 1)).includesText('B, column 2, row 4');
+    assert.dom('.euiScreenReaderOnly:not([data-tabular-copy-marker])', cell(3, 1)).includesText('B, column 2, row 4');
   });
 
   test('Enter opens the expansion popover; Escape closes it and returns focus', async function (assert) {
@@ -107,7 +107,7 @@ module('Integration | Component | EuiDataGrid keyboard and focus', function (hoo
     await click(cell(1, 1));
     assert.dom('.euiDataGridRowCell__actions', cell(1, 1)).exists('focused expandable cells show their actions');
     assert.dom('[data-test-subj=euiDataGridCellExpandButton]', cell(1, 1)).exists();
-    assert.dom('.euiScreenReaderOnly', cell(1, 1)).includesText('Press the Enter key to expand this cell.');
+    assert.dom('.euiScreenReaderOnly:not([data-tabular-copy-marker])', cell(1, 1)).includesText('Press the Enter key to expand this cell.');
 
     await press('Enter');
     assert.dom('[data-test-subj=euiDataGridExpansionPopover]', document.body).exists();

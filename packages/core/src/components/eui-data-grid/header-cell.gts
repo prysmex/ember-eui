@@ -27,6 +27,7 @@ import EuiIcon from '../eui-icon.gts';
 import EuiLiveAnnouncer from '../eui-live-announcer.gts';
 import EuiDataGridColumnActions, { hasColumnActions } from './column-actions.gts';
 import EuiDataGridColumnResizer from './column-resizer.gts';
+import EuiDataGridCopyMarker from './copy-marker.gts';
 
 import type Owner from '@ember/owner';
 import type EuiI18n from '../../services/eui-i18n.ts';
@@ -131,6 +132,15 @@ export default class EuiDataGridHeaderCell extends Component<EuiDataGridHeaderCe
 
   get isLastColumn(): boolean {
     return this.args.index === this.args.grid.visibleColCount - 1;
+  }
+
+  /** The last data column ends a copied row (tabular copy). */
+  get copyMarkerType(): 'no-copy' | 'newline' | 'tab' {
+    if (this.isControlColumn) return 'no-copy';
+    const columns = this.args.grid.columns;
+    const isLastCopyColumn =
+      columns.length > 0 ? columns[columns.length - 1]!.id === this.id : this.isLastColumn;
+    return isLastCopyColumn ? 'newline' : 'tab';
   }
 
   get hasColumnActions(): boolean {
@@ -448,6 +458,7 @@ export default class EuiDataGridHeaderCell extends Component<EuiDataGridHeaderCe
       {{this.setupHeader}}
       {{this.dragHandleModifier}}
     >
+      {{#if this.isControlColumn}}<EuiDataGridCopyMarker @grid={{@grid}} @type="no-copy" />{{/if}}
       <div
         data-focus-lock-disabled={{if this.isCellEntered "false" "disabled"}}
         {{focusTrap isActive=this.isCellEntered focusTrapOptions=this.focusTrapOptions}}
@@ -520,6 +531,7 @@ export default class EuiDataGridHeaderCell extends Component<EuiDataGridHeaderCe
           </EuiLiveAnnouncer>
         {{/if}}
       </div>
+      <EuiDataGridCopyMarker @grid={{@grid}} @type={{this.copyMarkerType}} />
     </div>
   </template>
 

@@ -352,7 +352,7 @@ module('Integration | Component | EuiDataGrid API', function (hooks) {
           </div>
         </template>
       );
-      await waitUntil(() => cell(0, 0).textContent?.trim() === '4');
+      await waitUntil(() => cell(0, 0).querySelector('[data-datagrid-cellcontent]')?.textContent?.trim() === '4');
 
       // descending: data row 4 is visible row 0, data row 1 is visible row 3 (page 2)
       state.api!.setFocusedCell({ rowIndex: 4, colIndex: 0 });
@@ -395,7 +395,7 @@ module('Integration | Component | EuiDataGrid API', function (hooks) {
       state.api!.scrollToItem!({ rowIndex: 50, align: 'start' });
       await settled();
       assert.strictEqual(outer.scrollTop, rowHeight * 50, "'start' puts the row under the header");
-      assert.dom(cell(50, 0)).hasText('a50');
+      assert.dom('[data-datagrid-cellcontent]', cell(50, 0)).hasText('a50');
 
       state.api!.scrollToItem!({ rowIndex: 49 });
       await settled();
@@ -580,7 +580,7 @@ module('Integration | Component | EuiDataGrid API', function (hooks) {
       assert.dom('[role=grid] .euiDataGridHeader[role=row]').exists();
       assert.dom('.myRow').exists({ count: 3 });
       assert.dom('[role=gridcell]').exists({ count: 9 });
-      assert.dom(cell(2, 1)).hasText('b2');
+      assert.dom('[data-datagrid-cellcontent]', cell(2, 1)).hasText('b2');
       assert.notStrictEqual(cell(0, 0).style.position, 'absolute', 'cells flow in the consumer rows');
       assert.ok(cell(0, 0).offsetHeight > 20, 'cells keep the row height');
       assert.strictEqual(cell(0, 1).style.width, header(1).style.width, 'columns share widths');
@@ -642,7 +642,7 @@ module('Integration | Component | EuiDataGrid API', function (hooks) {
       assert.dom('.rows').hasAttribute('data-start', '2');
       assert.dom('.rows').hasAttribute('data-end', '4');
       assert.dom('.rows [role=gridcell]').exists({ count: 6 });
-      assert.dom(cell(0, 0)).hasText('a-2', 'visible rows map to the page');
+      assert.dom('[data-datagrid-cellcontent]', cell(0, 0)).hasText('a-2', 'visible rows map to the page');
       assert.dom('.euiDataGridFooter [role=gridcell]').exists({ count: 3 });
       assert.dom('.euiDataGridFooter').includesText('total a');
       await click(cell(1, 2));
@@ -727,6 +727,82 @@ module('Integration | Component | EuiDataGrid API', function (hooks) {
       await settled();
       await frame();
       assert.strictEqual(outer.scrollTop, rowHeight * 40, 'no compensation by default');
+    });
+  });
+
+  module('tabular copy', function () {
+    function copySelection(): { text: string; prevented: boolean } {
+      const clipboardData = new DataTransfer();
+      const event = new ClipboardEvent('copy', { clipboardData, bubbles: true, cancelable: true });
+      document.dispatchEvent(event);
+      return { text: clipboardData.getData('text/plain'), prevented: event.defaultPrevented };
+    }
+
+    function select(node: Node) {
+      const range = document.createRange();
+      range.selectNodeContents(node);
+      const selection = window.getSelection()!;
+      selection.removeAllRanges();
+      selection.addRange(range);
+    }
+
+    test('a selection across cells copies as tab/newline separated text', async function (assert) {
+      const controlColumns = [{ id: 'select', width: 40 }];
+      await render(
+        <template>
+          <div style="width:600px">
+            <EuiDataGrid
+              aria-label="Grid"
+              @columns={{COLUMNS}}
+              @rowCount={{2}}
+              @toolbarVisibility={{false}}
+              @leadingControlColumns={{controlColumns}}
+            >
+              <:cell as |c|>{{c.columnId}}{{c.rowIndex}}</:cell>
+              <:controlHeaderCell>Select</:controlHeaderCell>
+              <:controlCell>[ ]</:controlCell>
+            </EuiDataGrid>
+          </div>
+        </template>
+      );
+
+      // markers are hidden from screen readers and visually
+      const markers = document.querySelectorAll('[data-tabular-copy-marker]');
+      assert.ok(markers.length > 0);
+      assert.ok(
+        Array.from(markers).every((marker) => marker.getAttribute('aria-hidden') === 'true'),
+        'aria-hidden markers'
+      );
+      assert.dom('[role=grid] > [data-tabular-copy-marker=boundary]').exists({ count: 2 });
+      assert.dom('[data-tabular-copy-marker=newline]', header(3)).exists('last data column ends the row');
+      assert.dom('[data-tabular-copy-marker=tab]', cell(0, 1)).exists();
+      assert.dom('[data-tabular-copy-marker=no-copy]', cell(0, 0)).exists({ count: 2 }, 'control columns are not copied');
+
+      select(el('[role=grid]'));
+      const { text, prevented } = copySelection();
+      assert.true(prevented);
+      assert.strictEqual(text, 'A\tB\tC\na0\tb0\tc0\na1\tb1\tc1\n');
+
+      // the focused cell's screen reader description is not copied either
+      await click(cell(1, 2));
+      select(el('[role=grid]'));
+      assert.strictEqual(copySelection().text, 'A\tB\tC\na0\tb0\tc0\na1\tb1\tc1\n');
+      window.getSelection()!.removeAllRanges();
+    });
+
+    test('copying without a selection still copies the focused cell', async function (assert) {
+      await render(
+        <template>
+          <div style="width:600px">
+            <EuiDataGrid aria-label="Grid" @columns={{COLUMNS}} @rowCount={{2}} @toolbarVisibility={{false}}>
+              <:cell as |c|>{{c.columnId}}{{c.rowIndex}}</:cell>
+            </EuiDataGrid>
+          </div>
+        </template>
+      );
+      window.getSelection()!.removeAllRanges();
+      await click(cell(1, 1));
+      assert.strictEqual(copySelection().text, 'b1');
     });
   });
 });

@@ -90,6 +90,9 @@ export default defineConfig({
     docfy({
       root,
       config: freshDocfyConfig(),
+      staticExport: {
+        enabled: true,
+      },
     }),
     docfyRolldownOptimizeDeps(),
     siteDocfyComponents(),

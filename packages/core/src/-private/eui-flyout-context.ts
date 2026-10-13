@@ -16,6 +16,11 @@ export interface EuiFlyoutContext {
   close(event?: Event, meta?: EuiFlyoutCloseMeta): void;
   /** The flyout's container, which nested flyouts inherit. */
   readonly containerElement: HTMLElement | null;
+  /**
+   * The flyout is managed, or nested in a managed one (upstream
+   * `EuiFlyoutIsManagedProvider` around a managed flyout's content).
+   */
+  readonly isInManagedContext: boolean;
 }
 
 export const EUI_FLYOUT_CONTEXT = '@ember-eui/core/flyout' as const;

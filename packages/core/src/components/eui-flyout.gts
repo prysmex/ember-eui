@@ -568,11 +568,27 @@ export default class EuiFlyoutComponent
     return this.id;
   }
 
-  // Manager state (read only by managed flyouts)
+  /**
+   * Upstream `useIsInManagedFlyout()`: a managed flyout, or any flyout
+   * nested in one (managed flyouts wrap their content in
+   * `EuiFlyoutIsManagedProvider`). Such a standard flyout takes the
+   * session's z-index, is not tracked as unmanaged, and follows the
+   * managed Escape rules.
+   */
+  get isInManagedContext(): boolean {
+    return (
+      Boolean(this.level) || Boolean(euiFlyoutContext(this)?.isInManagedContext)
+    );
+  }
 
+  // Manager state (read by flyouts in a managed context)
+
+  /** The latest session (upstream `currentSession`). */
   @cached
   get currentSession(): FlyoutSession | null {
-    return this.level ? getCurrentSession(this.manager.state) : null;
+    return this.isInManagedContext
+      ? getCurrentSession(this.manager.state)
+      : null;
   }
 
   /** The session this flyout is the main or current child of. */
@@ -872,7 +888,7 @@ export default class EuiFlyoutComponent
       getEuiThemeContext(this).upstream,
       this.headerZindexLocation,
       this.isPushed,
-      this.level && session ? session.zIndex : this.mountZIndex,
+      this.isInManagedContext && session ? session.zIndex : this.mountZIndex,
       this.isChildFlyout
     );
   }
@@ -1245,13 +1261,13 @@ export default class EuiFlyoutComponent
   }
 
   /**
-   * Escape closes a standard flyout, a managed one without a child, or the
-   * child; not a main flyout while it has a child, nor a managed flyout of
-   * a backgrounded session (hidden; an Ember deviation, see the handoff).
+   * Upstream `shouldCloseOnEscape`: a flyout outside a managed context
+   * always closes; in one, every flyout closes unless the latest session
+   * has a child, then only that child does. Every rendered flyout listens,
+   * so Escape also closes the (hidden) flyouts of earlier sessions.
    */
   get shouldCloseOnEscape(): boolean {
-    if (!this.level) return true;
-    if (!this.isActiveManagedFlyout) return false;
+    if (!this.isInManagedContext) return true;
     if (!this.currentSession?.childFlyoutId) return true;
     return this.isChildFlyout;
   }
@@ -1339,19 +1355,31 @@ export default class EuiFlyoutComponent
   registration = valueModifier(
     (
       element: Element,
-      [flyoutId, level, size, minWidth, historyKey, iconType, menuTitle]: [
+      [
+        flyoutId,
+        level,
+        size,
+        minWidth,
+        historyKey,
+        iconType,
+        menuTitle,
+        isInManagedContext
+      ]: [
         string,
         EuiFlyoutLevel | null,
         number | string,
         number | undefined,
         symbol | undefined,
         IconType | undefined,
-        string | undefined
+        string | undefined,
+        boolean
       ]
     ) => {
       const manager = this.manager;
 
       if (!level) {
+        // upstream tracks only flyouts outside a managed context
+        if (isInManagedContext) return;
         afterRender(() => manager.addUnmanagedFlyout(flyoutId));
         return () => afterRender(() => manager.closeUnmanagedFlyout(flyoutId));
       }
@@ -1820,6 +1848,7 @@ export default class EuiFlyoutComponent
                   @historyKey
                   @flyoutMenuProps.iconType
                   @flyoutMenuProps.title
+                  this.isInManagedContext
                 }}
                 {{this.watchRegistration this.isRegistered}}
                 {{this.watchActive this.currentSession}}
@@ -1920,6 +1949,7 @@ export default class EuiFlyoutComponent
                     @historyKey
                     @flyoutMenuProps.iconType
                     @flyoutMenuProps.title
+                    this.isInManagedContext
                   }}
                   {{this.watchRegistration this.isRegistered}}
                   {{this.watchActive this.currentSession}}

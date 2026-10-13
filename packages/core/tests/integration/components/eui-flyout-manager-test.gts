@@ -449,10 +449,14 @@ module('Integration | Component | EuiFlyout session management', function (hooks
 
     assert.dom('[data-test-subj="never"]', document.body).doesNotHaveAttribute('data-managed-flyout');
     assert.strictEqual(manager.state.sessions[0]!.childFlyoutId, null);
-    assert.true(
-      Number(getComputedStyle($('[data-test-subj="never"]')).zIndex) > FLYOUT_LEVEL,
-      'a standard flyout opened over a session stacks above it'
+    // upstream: nested in a managed flyout (EuiFlyoutIsManagedProvider) it
+    // takes the session's z-index and is not tracked as unmanaged
+    assert.strictEqual(
+      Number(getComputedStyle($('[data-test-subj="never"]')).zIndex),
+      FLYOUT_LEVEL,
+      'a standard flyout nested in a managed one takes the session z-index'
     );
+    assert.strictEqual(manager.state.unmanagedFlyouts.length, 0);
   });
 
   test('focusTrapProps.returnFocus=false keeps focus where the app puts it', async function (assert) {

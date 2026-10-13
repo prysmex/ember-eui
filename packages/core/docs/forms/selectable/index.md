@@ -94,7 +94,7 @@ the same names win).
 | `@isLoading` | `boolean` |  | Shows a loading message instead of the list. |
 | `@isPreFiltered` | `boolean \| { highlightSearch?: boolean }` |  | The options are already filtered (e.g. by a server): the search does not filter. `{ highlightSearch: false }` also turns off highlighting the search in the labels. |
 | `@height` | `number \| 'full'` |  | Height of the list in px, or `'full'` to fill the container. |
-| `@listProps` |  |  | Options of the list: `{ bordered, paddingSize, showIcons, rowHeight, onFocusBadge, isVirtualized, textWrap, truncationProps, css, 'aria-label', 'aria-describedby' }` (`onFocusBadge` defaults to `false`, upstream). See `EuiSelectableList`. |
+| `@listProps` |  |  | Options of the list: `{ bordered, paddingSize, showIcons, rowHeight, onFocusBadge, isVirtualized, textWrap, truncationProps, css, windowProps, 'aria-label', 'aria-describedby' }` (`onFocusBadge` defaults to `false`, upstream). See `EuiSelectableList`. |
 | `@loadingMessage` | `string` | "Loading options" | Message while `@isLoading`. |
 | `@noMatchesMessage` | `string` |  | Message when the search matches nothing. |
 | `@emptyMessage` | `string` | "No options available" | Message when there are no options. |
@@ -108,10 +108,6 @@ the same names win).
 HTML attributes and modifiers (`class`, `data-test-*`, `{{on …}}`) are applied to its `<div>`.
 
 ### EuiSelectableList
-
-The list of an `EuiSelectable`: renders the options, checks and
-unchecks them on click, and scrolls the keyboard's current option into
-view. Usually rendered for you by `EuiSelectable`.
 
 | Argument | Type | Default | Description |
 | --- | --- | --- | --- |
@@ -133,6 +129,7 @@ view. Usually rendered for you by `EuiSelectable`.
 | `@truncationProps` | `EuiSelectableTruncationProps` |  | EuiTextTruncate arguments (`truncation`, `truncationOffset`, …) for truncated labels; an option's own `truncationProps` are merged over them. While searching, the match is kept visible instead. |
 | `@isPreFiltered` | `boolean \| { highlightSearch?: boolean }` |  | Every option matches the search (filtered elsewhere); `{ highlightSearch: false }` also turns off the search highlighting. |
 | `@css` | `EuiCss` |  | Styles composed last into the root's class (upstream `css`). |
+| `@windowProps` | `EuiSelectableListWindowProps` |  | Props of the scrolling list element while virtualized (upstream's react-window `windowProps`): `height` / `width` (px or a CSS length) override the computed size, `className` is added to it, `initialScrollOffset` scrolls it on render, and `onScroll` is called with `{ scrollDirection, scrollOffset, scrollUpdateWasRequested }`. The list renders every option (no row windowing), so `overscanCount`, `itemSize` and the like don't apply. |
 | `@height` | `number \| 'full'` |  | Height of the list in px, or `'full'` to fill its container. By default it shows up to 7 options (and half of the next one). |
 | `@listId` | `string` |  | `id` of the `<ul role="listbox">`. |
 | `@makeOptionId` | `(index: number) => string` |  | Id of each option's `<li>`, for `aria-activedescendant`. |

@@ -91,6 +91,19 @@ const GROUP_LABEL_RESET = {
  * unchecks them on click, and scrolls the keyboard's current option into
  * view. Usually rendered for you by `EuiSelectable`.
  */
+/** Supported keys of `@windowProps`. */
+export interface EuiSelectableListWindowProps {
+  height?: number | string;
+  width?: number | string;
+  className?: string;
+  initialScrollOffset?: number;
+  onScroll?: (props: {
+    scrollDirection: 'forward' | 'backward';
+    scrollOffset: number;
+    scrollUpdateWasRequested: boolean;
+  }) => void;
+}
+
 export interface EuiSelectableListSignature {
   Element: HTMLDivElement;
   Args: {
@@ -163,6 +176,16 @@ export interface EuiSelectableListSignature {
     isPreFiltered?: boolean | { highlightSearch?: boolean };
     /** Styles composed last into the root's class (upstream `css`). */
     css?: EuiCss;
+    /**
+     * Props of the scrolling list element while virtualized (upstream's
+     * react-window `windowProps`): `height` / `width` (px or a CSS length)
+     * override the computed size, `className` is added to it,
+     * `initialScrollOffset` scrolls it on render, and `onScroll` is called
+     * with `{ scrollDirection, scrollOffset, scrollUpdateWasRequested }`.
+     * The list renders every option (no row windowing), so
+     * `overscanCount`, `itemSize` and the like don't apply.
+     */
+    windowProps?: EuiSelectableListWindowProps;
     /**
      * Height of the list in px, or `'full'` to fill its container. By
      * default it shows up to 7 options (and half of the next one).
@@ -316,7 +339,18 @@ export default class EuiSelectableList extends Component<EuiSelectableListSignat
     return this.args.height === 'full';
   }
 
-  get listHeight(): number | undefined {
+  /** `@windowProps` apply to the virtualized list only (upstream). */
+  get windowProps(): EuiSelectableListWindowProps | undefined {
+    return this.isVirtualized ? this.args.windowProps : undefined;
+  }
+
+  get listWidth(): number | string | undefined {
+    return this.windowProps?.width;
+  }
+
+  get listHeight(): number | string | undefined {
+    const windowHeight = this.windowProps?.height;
+    if (windowHeight !== undefined) return windowHeight;
     if (this.isFullHeight) return undefined;
     if (typeof this.args.height === 'number') return this.args.height;
     // not virtualized: the list is as tall as its rows (upstream)
@@ -412,6 +446,40 @@ export default class EuiSelectableList extends Component<EuiSelectableListSignat
    * like upstream's `scrollToItem`: `scrollIntoView` would also scroll the
    * page, e.g. to a single-selection list's checked option on first render.
    */
+  private lastScrollOffset = 0;
+
+  /** react-window's `onScroll` and `initialScrollOffset`. */
+  windowScroll = modifier(
+    (
+      list: HTMLElement,
+      [windowProps]: [EuiSelectableListWindowProps | undefined]
+    ) => {
+      const offset = windowProps?.initialScrollOffset;
+      if (offset !== undefined && offset > 0 && list.scrollTop === 0) {
+        list.scrollTop = offset;
+      }
+      this.lastScrollOffset = list.scrollTop;
+
+      const onScroll = windowProps?.onScroll;
+      if (!onScroll) return;
+
+      const handler = () => {
+        const scrollOffset = list.scrollTop;
+        const scrollDirection =
+          scrollOffset < this.lastScrollOffset ? 'backward' : 'forward';
+        this.lastScrollOffset = scrollOffset;
+        onScroll({
+          scrollDirection,
+          scrollOffset,
+          scrollUpdateWasRequested: false
+        });
+      };
+
+      list.addEventListener('scroll', handler, { passive: true });
+      return () => list.removeEventListener('scroll', handler);
+    }
+  );
+
   scrollActiveIntoView = modifier((list: HTMLElement, [index]: [number | undefined]) => {
     if (index === undefined || index < 0) return;
 
@@ -440,10 +508,13 @@ export default class EuiSelectableList extends Component<EuiSelectableListSignat
       {{observeWidth this.mayTruncate this.onContainerResize}}
     >
       <div
-        class="euiSelectableList__list {{this.classes.list}}"
+        class="euiSelectableList__list
+          {{this.windowProps.className}}
+          {{this.classes.list}}"
         tabindex="-1"
-        style={{cssStyle (hash height=this.listHeight)}}
+        style={{cssStyle (hash height=this.listHeight width=this.listWidth)}}
         data-skip-axe="scrollable-region-focusable"
+        {{this.windowScroll this.windowProps}}
         {{this.scrollActiveIntoView @activeOptionIndex}}
       >
         <ul

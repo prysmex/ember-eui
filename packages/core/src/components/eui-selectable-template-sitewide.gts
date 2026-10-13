@@ -210,6 +210,12 @@ export interface EuiSelectableTemplateSitewideSignature {
     popoverTitle: [];
     /** Content below the results, e.g. keyboard shortcuts. */
     popoverFooter: [];
+    /**
+     * Custom content of each option (upstream `renderOption`), instead of
+     * the highlighted label and meta; yields the option and the search
+     * value. The icon / avatar stay around it.
+     */
+    option: [option: EuiSelectableTemplateSitewideOption, searchValue: string];
   };
 }
 
@@ -625,22 +631,26 @@ export default class EuiSelectableTemplateSitewide extends Component<EuiSelectab
                     @messageMinHeight={{300}}
                   >
                     <:option as |option searchValue|>
-                      <EuiHighlight
-                        class="euiSelectableTemplateSitewide__listItemTitle"
-                        @text={{option.label}}
-                        @search={{searchValue}}
-                      />
-                      {{#if (metaOf option)}}
-                        <span class={{this.styles.metasList}}>
-                          {{#each (metaOf option) as |meta|}}
-                            <EuiHighlight
-                              class={{this.styles.meta meta}}
-                              @text={{meta.text}}
-                              @search={{if meta.highlightSearchString searchValue ""}}
-                              data-test-subj={{get meta "data-test-subj"}}
-                            />
-                          {{/each}}
-                        </span>
+                      {{#if (has-block "option")}}
+                        {{yield (asSitewideOption option) searchValue to="option"}}
+                      {{else}}
+                        <EuiHighlight
+                          class="euiSelectableTemplateSitewide__listItemTitle"
+                          @text={{option.label}}
+                          @search={{searchValue}}
+                        />
+                        {{#if (metaOf option)}}
+                          <span class={{this.styles.metasList}}>
+                            {{#each (metaOf option) as |meta|}}
+                              <EuiHighlight
+                                class={{this.styles.meta meta}}
+                                @text={{meta.text}}
+                                @search={{if meta.highlightSearchString searchValue ""}}
+                                data-test-subj={{get meta "data-test-subj"}}
+                              />
+                            {{/each}}
+                          </span>
+                        {{/if}}
                       {{/if}}
                     </:option>
                     <:optionPrepend as |option|>
@@ -704,6 +714,10 @@ function orDefault<T>(value: T | undefined, fallback: T): T {
 
 function or2(a: unknown, b: unknown): boolean {
   return Boolean(a || b);
+}
+
+function asSitewideOption(option: EuiSelectableOption): EuiSelectableTemplateSitewideOption {
+  return option as EuiSelectableTemplateSitewideOption;
 }
 
 function metaOf(option: EuiSelectableOption): EuiSelectableTemplateSitewideMeta[] | undefined {

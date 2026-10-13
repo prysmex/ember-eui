@@ -110,6 +110,7 @@ chosen one `checked: 'on'`).
 | `<:popoverButton>` | A button opening the popover (the search moves into it), e.g. an icon in a narrow header; yields the function toggling it. See `@popoverButtonBreakpoints`. |
 | `<:popoverTitle>` | Content above the results, e.g. a title. |
 | `<:popoverFooter>` | Content below the results, e.g. keyboard shortcuts. |
+| `<:option>` | Custom content of each option (upstream `renderOption`), instead of the highlighted label and meta; yields the option and the search value. The icon / avatar stay around it. |
 
 HTML attributes and modifiers (`class`, `data-test-*`, `{{on …}}`) are applied to its `<div>`.
 

@@ -1,7 +1,7 @@
 import { module, test } from 'qunit';
 import { setupRenderingTest } from 'ember-qunit';
 import { tracked } from '@glimmer/tracking';
-import { array } from '@ember/helper';
+import { array, hash } from '@ember/helper';
 import didInsert from '@ember/render-modifiers/modifiers/did-insert';
 import { on } from '@ember/modifier';
 import {
@@ -685,11 +685,11 @@ module('Integration | Component | Borealis utilities', function (hooks) {
     const onFullScreen = (value: boolean) => calls.push(value);
     await render(
       <template>
-        <EuiImage @url={{url}} @alt="Small" @size="s" data-small />
-        <EuiImage @src={{url}} @alt="Custom" @size={{120}} @hasShadow={{true}} @margin="m" data-custom />
-        <EuiImage @url={{url}} @alt="Percent" @size="50%" data-percent />
-        <EuiImage @url={{url}} @alt="Original" @caption="A caption" data-original />
-        <EuiImage @url={{url}} @alt="Zoom" @caption="Zoomable" @allowFullScreen={{true}} @onFullScreen={{onFullScreen}} data-zoom />
+        <EuiImage @url={{url}} @alt="Small" @size="s" @wrapperProps={{hash data-small=true}} />
+        <EuiImage @src={{url}} @alt="Custom" @size={{120}} @hasShadow={{true}} @margin="m" @wrapperProps={{hash data-custom=true}} />
+        <EuiImage @url={{url}} @alt="Percent" @size="50%" @wrapperProps={{hash data-percent=true}} />
+        <EuiImage @url={{url}} @alt="Original" @caption="A caption" @wrapperProps={{hash data-original=true}} />
+        <EuiImage @url={{url}} @alt="Zoom" @caption="Zoomable" @allowFullScreen={{true}} @onFullScreen={{onFullScreen}} @wrapperProps={{hash data-zoom=true}} />
       </template>
     );
 

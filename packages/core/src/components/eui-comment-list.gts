@@ -5,7 +5,7 @@ import EuiRenderNode from '../-private/eui-render-node.gts';
 import { getEuiThemeContext } from '../utils/emotion/consume.ts';
 import { euiClass, useEuiBorealisStyles } from '../utils/eui/styles.ts';
 import { euiTimelineStyles } from '../utils/eui/styles.generated.ts';
-import { EuiCommentItem } from './eui-comment.gts';
+import { EuiCommentItem } from '../-private/eui-comment-item.gts';
 
 import type { EuiRenderNode as EuiRenderNodeType } from '../-private/eui-render-node.gts';
 import type { EuiCommentSignature } from './eui-comment.gts';
@@ -55,6 +55,7 @@ export interface EuiCommentListItem {
   eventColor?: EuiCommentSignature['Args']['eventColor'];
   eventIcon?: EuiCommentSignature['Args']['eventIcon'];
   eventIconAriaLabel?: EuiCommentSignature['Args']['eventIconAriaLabel'];
+  verticalAlign?: EuiCommentSignature['Args']['verticalAlign'];
 }
 
 /** Stacks EuiComments along a shared timeline (an ordered list). */
@@ -107,6 +108,7 @@ export default class EuiCommentList extends Component<EuiCommentListSignature> {
           @eventColor={{comment.eventColor}}
           @eventIcon={{comment.eventIcon}}
           @eventIconAriaLabel={{comment.eventIconAriaLabel}}
+          @verticalAlign={{comment.verticalAlign}}
           @hasBody={{truthy comment.body}}
           @hasEventElements={{eventElements comment}}
           @hasTimelineIcon={{customIcon comment.timelineIcon}}

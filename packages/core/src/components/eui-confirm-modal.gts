@@ -71,6 +71,11 @@ export interface EuiConfirmModalSignature {
      * Width cap, as `EuiModal`'s `@maxWidth`. Defaults to `true`.
      */
     maxWidth?: EuiModalSignature['Args']['maxWidth'];
+    /**
+     * Clicking the mask around the modal calls `@onCancel`. Defaults to
+     * `false`.
+     */
+    outsideClickCloses?: boolean;
     /** Called by the cancel and close buttons and Escape. Close the modal here. */
     onCancel: () => void;
     /** Called by the confirm button. */
@@ -132,6 +137,7 @@ export default class EuiConfirmModal extends Component<EuiConfirmModalSignature>
       role="alertdialog"
       @onClose={{@onCancel}}
       @maxWidth={{@maxWidth}}
+      @outsideClickCloses={{@outsideClickCloses}}
       @initialFocus={{this.initialFocus}}
       @focusTrapProps={{@focusTrapProps}}
       ...attributes

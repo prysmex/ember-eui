@@ -68,6 +68,11 @@ export interface EuiEmptyPromptSignature {
     color?: EuiPanelSignature['Args']['color'];
     /** Adds a border around the prompt. Defaults to `true` for `'plain'`, `false` otherwise. */
     hasBorder?: boolean;
+    /**
+     * Adds a shadow to the panel (upstream EuiPanel's `hasShadow`), only
+     * shown on a `'plain'` panel without a border. Defaults to `false`.
+     */
+    hasShadow?: boolean;
     /** Large icon above the title, e.g. `'magnify'` or `'logoKibana'`. */
     iconType?: EuiIconSignature['Args']['type'];
     /**
@@ -236,7 +241,7 @@ export default class EuiEmptyPrompt extends Component<EuiEmptyPromptSignature> {
       class="euiEmptyPrompt"
       @color={{this.panelColor}}
       @hasBorder={{this.hasBorder}}
-      @hasShadow={{false}}
+      @hasShadow={{if @hasShadow true false}}
       @paddingSize="none"
       @borderRadius="m"
       @grow={{false}}

@@ -69,6 +69,8 @@ export interface EuiDataGridCellValueElementProps {
   cellContext?: Record<string, unknown>;
   /** The row object, with `@rowTree` or `@grouping.rows` (Ember EUI extension). */
   row?: any;
+  /** The row's tree state, with `@rowTree` or `@grouping` (Ember EUI extension). */
+  rowTree?: EuiDataGridRowTreeRowInfo;
 }
 
 export interface EuiDataGridCellValueSignature {
@@ -147,7 +149,14 @@ export interface EuiDataGridControlColumn {
   rowCellRender?: ComponentLike<EuiDataGridCellValueSignature>;
   /** Footer cell component; or use the `<:controlFooterCell>` block. */
   footerCellRender?: ComponentLike<EuiDataGridCellValueSignature>;
-  footerCellProps?: Record<string, unknown> & { className?: string };
+  /**
+   * Props of the footer cell: `className` and `style` (an object of CSS
+   * properties, under the cell's own width and line height) apply to it.
+   */
+  footerCellProps?: Record<string, unknown> & {
+    className?: string;
+    style?: Record<string, string | number | undefined>;
+  };
 }
 
 export interface EuiDataGridColumnVisibility {
@@ -310,7 +319,20 @@ export interface EuiDataGridVirtualizationOptions {
   overscanRowCount?: number;
   /** Extra columns rendered before/after the viewport. Defaults to 1. */
   overscanColumnCount?: number;
+  /**
+   * Height in px assumed for rows the grid hasn't laid out yet (react-window
+   * `estimatedRowHeight`): rows past the last rendered one count with this
+   * height in the scrollable height, which then grows or shrinks as rows
+   * render. Without it the scrollable height is exact (Ember EUI default;
+   * react-window assumes 50).
+   */
+  estimatedRowHeight?: number;
   onItemsRendered?: (items: EuiDataGridItemsRendered) => void;
+  /**
+   * Called when the scroll position changes, from user scrolling or from
+   * scrolling requested by the grid (`scrollTo`, `scrollToItem`, keyboard
+   * focus), and once when the body first renders.
+   */
   onScroll?: (event: EuiDataGridScrollEvent) => void;
 }
 
@@ -326,6 +348,15 @@ export interface EuiDataGridItemsRendered {
 }
 
 export interface EuiDataGridScrollEvent {
+  /** react-window: `'forward'` when the scroll offset grew, else `'backward'`. */
+  horizontalScrollDirection: 'forward' | 'backward';
+  verticalScrollDirection: 'forward' | 'backward';
+  /**
+   * react-window: true when the grid scrolled itself (`scrollTo`,
+   * `scrollToItem`, a focused cell scrolled into view), false for user
+   * scrolling.
+   */
+  scrollUpdateWasRequested: boolean;
   scrollTop: number;
   scrollLeft: number;
   scrollHeight: number;
@@ -448,6 +479,31 @@ export interface EuiDataGridGroupCellProps {
   isExpanded: boolean;
   /** Nesting level, 0 for outermost groups. */
   depth: number;
+}
+
+/**
+ * Tree state of a data row, passed with `@rowTree`/`@grouping` to cell
+ * renderers (`@rowTree`, `rowTree` in the `<:cell>` block) and popovers.
+ */
+export interface EuiDataGridRowTreeRowInfo {
+  /** Row id (used in `expandedRowIds`). */
+  id: string;
+  /** Nesting level, 0 for top-level rows (rows inside groups count the groups). */
+  depth: number;
+  /** Whether the row has (or, lazily loaded, can have) child rows. */
+  hasChildren: boolean;
+  /** Whether the row's children are shown. */
+  isExpanded: boolean;
+  /** Parent row or group id, `null` for top-level rows. */
+  parentId: string | null;
+  /** 1-based position among its siblings. */
+  posInSet: number;
+  /** Number of siblings (the row included). */
+  setSize: number;
+  /** Whether this cell holds the indentation and toggle. */
+  isToggleCell: boolean;
+  /** Expands or collapses the row (calls `onExpandedChange`). */
+  toggle: () => void;
 }
 
 /** Options of `@grouping`. */

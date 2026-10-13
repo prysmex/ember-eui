@@ -63,6 +63,7 @@ import type {
   EuiDataGridRefProps,
   EuiDataGridRowHeightsOptions,
   EuiDataGridRowTree,
+  EuiDataGridRowTreeRowInfo,
   EuiDataGridSchema,
   EuiDataGridSchemaDetector,
   EuiDataGridSorting,
@@ -184,6 +185,9 @@ export interface EuiDataGridCellPopoverElementProps {
   // ember-eui extension (row-tree): the popover's row object
   /** The row object, with `@rowTree` or `@grouping.rows` (Ember EUI extension). */
   row?: any;
+  // ember-eui extension (row-tree): the popover's row tree state
+  /** The row's tree state, with `@rowTree` or `@grouping` (Ember EUI extension). */
+  rowTree?: EuiDataGridRowTreeRowInfo;
 }
 
 export interface EuiDataGridSignature {

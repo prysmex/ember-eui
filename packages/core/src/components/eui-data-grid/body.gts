@@ -25,6 +25,8 @@ import type {
   EuiDataGridScrollToProps
 } from '../../utils/data-grid/types.ts';
 
+const clampScrollOffset = (offset: number, max: number) => Math.max(0, Math.min(offset, max));
+
 const UNITLESS = new Set(['opacity', 'z-index', 'flex-grow', 'flex-shrink', 'line-height', 'order']);
 // Offset for the cell actions menu when scrolling a cell below the sticky header
 const ACTIONS_MENU_HEIGHT = 21;
@@ -197,6 +199,51 @@ export default class EuiDataGridBody extends EuiDataGridBodyBase<EuiDataGridBody
     return offsets ? offsets[this.visibleRowCount]! : this.visibleRowCount * this.defaultRowHeight;
   }
 
+  /**
+   * `virtualizationOptions.estimatedRowHeight` (react-window): rows past the
+   * furthest row laid out so far count with the estimated height.
+   */
+  get estimatedRowHeight(): number | undefined {
+    const estimate = this.grid.args.virtualizationOptions?.estimatedRowHeight;
+    return typeof estimate === 'number' && estimate >= 0 ? estimate : undefined;
+  }
+
+  /** react-window's `lastMeasuredRowIndex` + 1; reset when the row layout changes. */
+  private measuredRowCount = 0;
+  private measuredRowLayout: unknown = undefined;
+
+  /** Marks the rows up to `visibleRowIndex` as laid out (react-window `getItemMetadata`). */
+  private measureRowsThrough(visibleRowIndex: number): void {
+    this.syncMeasuredRowLayout();
+    this.measuredRowCount = Math.min(
+      this.visibleRowCount,
+      Math.max(this.measuredRowCount, visibleRowIndex + 1)
+    );
+  }
+
+  private syncMeasuredRowLayout(): void {
+    const layout = this.rowOffsets ?? this.defaultRowHeight;
+    if (layout !== this.measuredRowLayout) {
+      // react-window `resetAfterRowIndex(0)`
+      this.measuredRowLayout = layout;
+      this.measuredRowCount = 0;
+    }
+  }
+
+  /**
+   * Height of the rows in the scrollable area: exact, or with
+   * `estimatedRowHeight` react-window's estimate (rows laid out so far plus
+   * the estimate for the others).
+   */
+  get scrollableRowsHeight(): number {
+    const estimate = this.estimatedRowHeight;
+    if (estimate === undefined) return this.totalRowsHeight;
+    const count = this.visibleRowCount;
+    this.measureRowsThrough(this.rowWindow.stop - 1);
+    const measured = this.measuredRowCount;
+    return this.rowTop(measured) + (count - measured) * estimate;
+  }
+
   /** Index of the visible row at a vertical offset (row coordinates). */
   rowAt(offset: number): number {
     const count = this.visibleRowCount;
@@ -327,6 +374,10 @@ export default class EuiDataGridBody extends EuiDataGridBodyBase<EuiDataGridBody
     return this.computeRowWindow(this.scrollTop).visibleStart;
   }
 
+  /**
+   * The body's scroll element scrolled (a `scroll` event), or the grid
+   * moved it and needs the new window now.
+   */
   @action
   onScroll(): void {
     const outer = this.outerElement;
@@ -334,7 +385,14 @@ export default class EuiDataGridBody extends EuiDataGridBodyBase<EuiDataGridBody
     this.scrollTop = outer.scrollTop;
     this.scrollLeft = outer.scrollLeft;
     this.syncWindow();
-    this.notifyScroll();
+    // react-window `_onScroll`: positions clamped to the scroll range (elastic
+    // scrolling, fractional pixels); an unchanged position reports nothing
+    const { scrollTop, scrollLeft, scrollHeight, scrollWidth, clientHeight, clientWidth } = outer;
+    this.updateScrollState(
+      clampScrollOffset(scrollLeft, scrollWidth - clientWidth),
+      clampScrollOffset(scrollTop, scrollHeight - clientHeight),
+      false
+    );
   }
 
   /** Re-render only if the integer window bounds changed. */
@@ -352,6 +410,50 @@ export default class EuiDataGridBody extends EuiDataGridBodyBase<EuiDataGridBody
     }
   }
 
+  /**
+   * react-window's scroll state: the last reported offsets, directions and
+   * whether the grid requested the scroll. `onScroll` is called when it
+   * changes (react-window memoizes the callback on these values).
+   */
+  private scrollState: {
+    scrollLeft: number;
+    scrollTop: number;
+    horizontalScrollDirection: 'forward' | 'backward';
+    verticalScrollDirection: 'forward' | 'backward';
+    scrollUpdateWasRequested: boolean;
+  } = {
+    scrollLeft: 0,
+    scrollTop: 0,
+    horizontalScrollDirection: 'forward',
+    verticalScrollDirection: 'forward',
+    scrollUpdateWasRequested: false
+  };
+
+  private updateScrollState(scrollLeft: number, scrollTop: number, requested: boolean): void {
+    const previous = this.scrollState;
+    if (previous.scrollLeft === scrollLeft && previous.scrollTop === scrollTop) return;
+    this.scrollState = {
+      scrollLeft,
+      scrollTop,
+      horizontalScrollDirection: previous.scrollLeft < scrollLeft ? 'forward' : 'backward',
+      verticalScrollDirection: previous.scrollTop < scrollTop ? 'forward' : 'backward',
+      scrollUpdateWasRequested: requested
+    };
+    this.notifyScroll();
+  }
+
+  /** react-window calls `onScroll` once when the grid mounts. */
+  private notifyInitialScroll(): void {
+    const { initialScrollTop, initialScrollLeft } = this.grid.args.virtualizationOptions ?? {};
+    this.scrollState = {
+      ...this.scrollState,
+      scrollLeft: typeof initialScrollLeft === 'number' ? initialScrollLeft : 0,
+      scrollTop: typeof initialScrollTop === 'number' ? initialScrollTop : 0
+    };
+    this.notifyScroll();
+  }
+
+  /** Upstream's `onScroll` wrapper: react-window's arguments plus the DOM's. */
   private notifyScroll(): void {
     const onScroll = this.grid.args.virtualizationOptions?.onScroll;
     const outer = this.outerElement;
@@ -362,7 +464,12 @@ export default class EuiDataGridBody extends EuiDataGridBodyBase<EuiDataGridBody
     const isScrollableHorizontal = scrollWidth > clientWidth;
     const isScrolledToBlockStart = scrollTop === 0;
     const isScrolledToInlineStart = scrollLeft === 0;
+    const { horizontalScrollDirection, verticalScrollDirection, scrollUpdateWasRequested } =
+      this.scrollState;
     onScroll({
+      horizontalScrollDirection,
+      verticalScrollDirection,
+      scrollUpdateWasRequested,
       scrollTop,
       scrollLeft,
       scrollHeight,
@@ -464,13 +571,23 @@ export default class EuiDataGridBody extends EuiDataGridBodyBase<EuiDataGridBody
 
   private initialScrollApplied = false;
 
-  /** `virtualizationOptions.initialScrollTop/Left`, once rows can scroll. */
+  /**
+   * `virtualizationOptions.initialScrollTop/Left`, once rows can scroll, then
+   * the first `onScroll` (react-window's `componentDidMount`).
+   */
   private applyInitialScroll(): void {
     if (this.initialScrollApplied) return;
     this.initialScrollApplied = true;
+    const outer = this.outerElement;
     const { initialScrollTop, initialScrollLeft } = this.grid.args.virtualizationOptions ?? {};
-    if (initialScrollTop == null && initialScrollLeft == null) return;
-    this.scrollTo({ scrollTop: initialScrollTop, scrollLeft: initialScrollLeft });
+    if (outer && (typeof initialScrollTop === 'number' || typeof initialScrollLeft === 'number')) {
+      if (typeof initialScrollLeft === 'number') outer.scrollLeft = initialScrollLeft;
+      if (typeof initialScrollTop === 'number') outer.scrollTop = initialScrollTop;
+    }
+    this.notifyInitialScroll();
+    // render the window at the initial position (a requested position past
+    // the end reports the clamped one, like react-window's next scroll event)
+    this.onScroll();
   }
 
   setupInner = modifier((element: HTMLElement) => {
@@ -585,12 +702,12 @@ export default class EuiDataGridBody extends EuiDataGridBodyBase<EuiDataGridBody
     }
 
     if (adjustedScrollTop !== undefined || adjustedScrollLeft !== undefined) {
-      outer.scrollTo({
-        top: adjustedScrollTop ?? scrollTop,
-        left: adjustedScrollLeft ?? scrollLeft
+      // upstream calls react-window's `scrollTo` (a requested scroll); it
+      // renders the target cell now instead of waiting for the scroll event
+      this.scrollTo({
+        scrollTop: adjustedScrollTop ?? scrollTop,
+        scrollLeft: adjustedScrollLeft ?? scrollLeft
       });
-      // render the target cell now instead of waiting for the scroll event
-      this.onScroll();
     }
   }
 
@@ -647,10 +764,18 @@ export default class EuiDataGridBody extends EuiDataGridBodyBase<EuiDataGridBody
   scrollTo({ scrollLeft, scrollTop }: EuiDataGridScrollToProps = {}): void {
     const outer = this.outerElement;
     if (!outer) return;
+    // react-window reports the requested offsets (only floored at 0) with
+    // `scrollUpdateWasRequested: true`
+    const state = this.scrollState;
+    const left = scrollLeft !== undefined ? Math.max(0, scrollLeft) : state.scrollLeft;
+    const top = scrollTop !== undefined ? Math.max(0, scrollTop) : state.scrollTop;
     outer.scrollTo({
       left: scrollLeft ?? outer.scrollLeft,
       top: scrollTop ?? outer.scrollTop
     });
+    // reported after the DOM moved, like react-window's componentDidUpdate
+    this.updateScrollState(left, top, true);
+    // the new window now; a position past the end reports the clamped one
     this.onScroll();
   }
 
@@ -663,7 +788,12 @@ export default class EuiDataGridBody extends EuiDataGridBodyBase<EuiDataGridBody
     const rowCount = this.visibleRowCount;
     const height = this.finalHeight;
     const width = this.finalWidth;
-    const totalHeight = this.totalRowsHeight;
+    if (rowIndex !== undefined && rowCount > 0) {
+      // react-window lays out the rows up to the target first
+      if (this.estimatedRowHeight !== undefined)
+        this.measureRowsThrough(Math.max(0, Math.min(rowIndex, rowCount - 1)));
+    }
+    const totalHeight = this.scrollableRowsHeight;
     const totalWidth = this.totalWidth;
     // react-window adds the scrollbar of the other axis to the item's minimum offset
     const horizontalScrollbarSize = totalWidth > width ? this.scrollBarHeight : 0;
@@ -742,7 +872,7 @@ export default class EuiDataGridBody extends EuiDataGridBodyBase<EuiDataGridBody
 
   get innerStyle() {
     return htmlSafe(
-      `position:relative;height:${this.totalRowsHeight + this.headerOffset}px;width:${this.totalWidth}px`
+      `position:relative;height:${this.scrollableRowsHeight + this.headerOffset}px;width:${this.totalWidth}px`
     );
   }
 

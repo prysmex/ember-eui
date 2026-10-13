@@ -1,8 +1,8 @@
 ---
-order: 3
+order: 10
 ---
 
-# A toolbar plugin
+# A toolbar plugin (Ember EUI extra)
 
 <EuiText>
 

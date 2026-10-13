@@ -1,8 +1,8 @@
 ---
-order: 2
+order: 9
 ---
 
-# Rendering markdown
+# Interactive checkboxes in EuiMarkdownFormat (Ember EUI extra)
 
 <EuiText>
 

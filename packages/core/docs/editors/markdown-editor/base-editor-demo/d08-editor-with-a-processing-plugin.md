@@ -1,8 +1,8 @@
 ---
-order: 1
+order: 8
 ---
 
-# Editor with a processing plugin
+# Processing plugin (Ember EUI extra)
 
 <EuiText>
 

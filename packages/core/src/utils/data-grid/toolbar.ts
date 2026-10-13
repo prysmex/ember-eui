@@ -7,7 +7,12 @@
  */
 
 /** Ports of the toolbar option helpers in upstream `data_grid_toolbar.tsx`. */
-import type { EuiDataGridToolBarVisibilityOptions } from './types.ts';
+import type {
+  EuiDataGridToolBarAdditionalControlsLeftOptions,
+  EuiDataGridToolBarAdditionalControlsOptions,
+  EuiDataGridToolBarVisibilityOptions
+} from './types.ts';
+import type { ComponentLike } from '@glint/template';
 
 /** Whether a toolbar control is shown (missing options default to shown). */
 export function checkOrDefaultToolBarDisplayOptions(
@@ -31,4 +36,36 @@ export function getNestedObjectOptions<T extends object>(
   if (controlOption == null) return true;
   // Otherwise, dive into the object of boolean values
   return !!(controlOption[objectKey] ?? true);
+}
+
+function isAdditionalControlsOptions(
+  value: unknown
+): value is EuiDataGridToolBarAdditionalControlsOptions {
+  return typeof value === 'object' && value !== null && ('left' in value || 'right' in value);
+}
+
+function isLeftOptions(value: unknown): value is EuiDataGridToolBarAdditionalControlsLeftOptions {
+  return typeof value === 'object' && value !== null && ('prepend' in value || 'append' in value);
+}
+
+/**
+ * Port of upstream `renderAdditionalControls`: the `additionalControls`
+ * component for a toolbar position. A single component (or a single `left`
+ * component) goes to the left append position.
+ */
+export function getAdditionalControl(
+  toolbarVisibility: boolean | EuiDataGridToolBarVisibilityOptions | undefined,
+  position: 'left.prepend' | 'left.append' | 'right'
+): ComponentLike | undefined {
+  if (typeof toolbarVisibility !== 'object' || toolbarVisibility === null) return undefined;
+  const { additionalControls } = toolbarVisibility;
+  if (!additionalControls) return undefined;
+  if (!isAdditionalControlsOptions(additionalControls)) {
+    return position === 'left.append' ? additionalControls : undefined;
+  }
+  if (position === 'right') return additionalControls.right;
+  const left = additionalControls.left;
+  if (!left) return undefined;
+  if (!isLeftOptions(left)) return position === 'left.append' ? left : undefined;
+  return position === 'left.prepend' ? left.prepend : left.append;
 }

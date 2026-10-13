@@ -61,8 +61,10 @@ Generated from the components' TypeScript signatures by
 | `@rowCount` (required) | `number` |  | Number of rows in the data. |
 | `@renderCellValue` |  |  | Component rendering a cell's value; receives `@rowIndex`, `@colIndex`, `@columnId`, `@isDetails`, `@isExpanded`, `@isExpandable`, `@setCellProps`, `@schema` and `@cellContext`. Or use the `<:cell>` block. |
 | `@cellContext` | `Record<string, unknown>` |  | Extra data passed to every cell renderer as `@cellContext`. |
-| `@renderCellPopover` |  |  | Component rendering the expansion popover; or use the `<:cellPopover>` block. |
+| `@renderCellPopover` |  |  | Component rendering the expansion popover (its default block renders the cell value with `@isDetails`); or use the `<:cellPopover>` block. |
 | `@renderFooterCellValue` |  |  | Component rendering footer cells; or use the `<:footerCell>` block. |
+| `@renderCustomGridBody` |  |  | Escape hatch replacing the virtualized body: a component receiving `@Cell`, `@visibleColumns`, `@visibleRowData`, `@setCustomGridBodyProps`, `@gridWidth`, `@headerRow` and `@footerRow`; or use the `<:customGridBody>` block. Give cell content with `@renderCellValue` or the `Cell`'s own block. |
+| `@renderCustomToolbar` |  |  | Custom toolbar layout: a component receiving the toolbar controls (`@hasRoomForGridControls`, `@columnControl`, `@columnSortingControl`, `@keyboardShortcutsControl`, `@displayControl`, `@fullScreenControl`, `@additionalControls`); or use the `<:customToolbar>` block. |
 | `@leadingControlColumns` | `EuiDataGridControlColumn[]` |  | Columns before the data columns (e.g. row selection). |
 | `@trailingControlColumns` | `EuiDataGridControlColumn[]` |  | Columns after the data columns (e.g. row actions). |
 | `@schemaDetectors` | `EuiDataGridSchemaDetector[]` |  | Extra schema detectors, appended to the defaults. |
@@ -79,6 +81,7 @@ Generated from the components' TypeScript signatures by
 | `@width` | `string \| number` |  | Grid width (CSS length or px number). |
 | `@virtualizationOptions` | `EuiDataGridVirtualizationOptions` |  | Overscan counts and render/scroll callbacks of the virtualized body. |
 | `@onFullScreenChange` | `(isFullScreen: boolean) => void` |  | Called when fullscreen mode is entered or left. |
+| `@registerApi` | `(api: EuiDataGridRefProps) => void` |  | Called after render with the grid's imperative API (upstream's `ref`): `setIsFullScreen`, `setFocusedCell`, `openCellPopover`, `closeCellPopover`, `scrollTo` and `scrollToItem`. |
 | `@ariaLabel` | `string` |  | Accessible name of the grid (same as the `aria-label` attribute). |
 | `@ariaLabelledBy` | `string` |  | Id(s) labelling the grid (same as the `aria-labelledby` attribute). |
 | `@css` | `EuiCss` |  | Extra styles composed last into the grid class. |
@@ -94,6 +97,8 @@ Generated from the components' TypeScript signatures by
 | `<:leftControlsPrepend>` | Toolbar controls before the column/sort controls. |
 | `<:leftControlsAppend>` | Toolbar controls after the column/sort controls. |
 | `<:rightControls>` | Toolbar controls before the right icon buttons. |
+| `<:customToolbar>` | Custom toolbar (like `@renderCustomToolbar`), yielding the toolbar controls. |
+| `<:customGridBody>` | Custom grid body (like `@renderCustomGridBody`). |
 
 HTML attributes and modifiers (`class`, `data-test-*`, `{{on …}}`) are applied to its `<div>`.
 

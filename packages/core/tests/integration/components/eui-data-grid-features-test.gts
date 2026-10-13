@@ -114,7 +114,8 @@ module('Integration | Component | EuiDataGrid features', function (hooks) {
     assert.dom('.euiDataGrid__pagination').exists();
     assert.dom('[role=grid]').hasAttribute('aria-label', 'Rows; Page 1 of 4.');
     assert.dom('.euiDataGridRow').exists({ count: 10 });
-    assert.dom(cell(0, 0)).hasText('name 0').hasAttribute('aria-rowindex', '1');
+    assert.dom('[data-datagrid-cellcontent]', cell(0, 0)).hasText('name 0');
+    assert.dom(cell(0, 0)).hasAttribute('aria-rowindex', '1');
     assert.dom('.euiDataGrid__pagination [aria-label]').exists();
     assert.dom(`.euiDataGrid__pagination [aria-controls="${el('[role=grid]').id}"]`).exists();
 
@@ -122,7 +123,8 @@ module('Integration | Component | EuiDataGrid features', function (hooks) {
     await triggerKeyEvent(document.activeElement!, 'keydown', 'PageDown');
     assert.strictEqual(pagination.pageIndex, 1, 'PageDown goes to the next page');
     assert.dom('[role=grid]').hasAttribute('aria-label', 'Rows; Page 2 of 4.');
-    assert.dom(cell(0, 0)).hasText('name 10').hasAttribute('aria-rowindex', '11');
+    assert.dom('[data-datagrid-cellcontent]', cell(0, 0)).hasText('name 10');
+    assert.dom(cell(0, 0)).hasAttribute('aria-rowindex', '11');
     await waitUntil(() => document.activeElement === cell(0, 1));
     assert.strictEqual(document.activeElement, cell(0, 1), 'focus moves to the first row');
 
@@ -190,8 +192,8 @@ module('Integration | Component | EuiDataGrid features', function (hooks) {
     assert.strictEqual(el('[role=columnheader][data-gridcell-column-id=select]').style.width, '40px');
     assert.dom(cell(0, 0)).hasClass('euiDataGridRowCell--controlColumn');
     assert.strictEqual(cell(0, 0).offsetWidth, 40);
-    assert.dom(cell(1, 1)).hasText('name1');
-    assert.dom(cell(1, 3)).hasText('row 1');
+    assert.dom('[data-datagrid-cellcontent]', cell(1, 1)).hasText('name1');
+    assert.dom('[data-datagrid-cellcontent]', cell(1, 3)).hasText('row 1');
     assert.dom(cell(1, 3)).hasClass('euiDataGridRowCell--lastColumn');
     assert.strictEqual(cell(1, 1).offsetLeft, 40, 'data columns start after the control column');
 
@@ -204,7 +206,8 @@ module('Integration | Component | EuiDataGrid features', function (hooks) {
     assert.dom('.euiDataGridFooter[role=row]').exists();
     assert.dom('.euiDataGridFooter [role=gridcell]').exists({ count: 4 });
     assert.dom('[data-footer=amount]').hasText('total amount');
-    assert.dom('.euiDataGridFooter [data-gridcell-column-index="0"]').hasClass('euiDataGridRowCell--controlColumn').hasText('');
+    assert.dom('.euiDataGridFooter [data-gridcell-column-index="0"]').hasClass('euiDataGridRowCell--controlColumn');
+    assert.dom('.euiDataGridFooter [data-gridcell-column-index="0"] [data-datagrid-cellcontent]').hasText('');
     const footer = el('.euiDataGridFooter');
     assert.strictEqual(getComputedStyle(footer).position, 'sticky', 'sticky footer by default');
     assert.strictEqual(

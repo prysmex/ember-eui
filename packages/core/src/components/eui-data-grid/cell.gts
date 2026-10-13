@@ -28,11 +28,11 @@ import {
   enableAndFocusInteractives
 } from '../../utils/data-grid/focus.ts';
 import * as keys from '../../utils/keys.ts';
-import EuiCodeBlock from '../eui-code-block.gts';
 import EuiLiveAnnouncer from '../eui-live-announcer.gts';
 import EuiPopover from '../eui-popover.gts';
 import EuiScreenReaderOnly from '../eui-screen-reader-only.gts';
-import EuiText from '../eui-text.gts';
+import EuiDataGridCopyMarker from './copy-marker.gts';
+import EuiDataGridDefaultCellPopover from './default-cell-popover.gts';
 import {
   EuiDataGridCellActions,
   EuiDataGridCellPopoverActions
@@ -42,9 +42,11 @@ import type Owner from '@ember/owner';
 import type EuiI18n from '../../services/eui-i18n.ts';
 import type EuiDataGrid from '../eui-data-grid.gts';
 import type { EuiDataGridSignature } from '../eui-data-grid.gts';
-import type EuiDataGridBody from './body.gts';
+import type EuiDataGridBodyBase from './body-base.ts';
+import type { ComponentLike } from '@glint/template';
 import type {
   EuiDataGridCellValueElementProps,
+  EuiDataGridCellValueSignature,
   EuiDataGridColumn,
   EuiDataGridControlColumn,
   EuiDataGridSetCellProps
@@ -62,12 +64,15 @@ export interface EuiDataGridCellSignature {
   Element: HTMLDivElement;
   Args: {
     grid: EuiDataGrid;
-    body: EuiDataGridBody;
+    body: EuiDataGridBodyBase<any>;
     colIndex: number;
     visibleRowIndex: number;
     /** Footer cells sit in the flex footer row instead of being positioned. */
     isFooter?: boolean;
     hasCellPopoverBlock?: boolean;
+    /** Custom grid body overrides (upstream's `Cell` props). */
+    isExpandable?: boolean;
+    renderCellValue?: ComponentLike<EuiDataGridCellValueSignature>;
   };
   Blocks: Pick<
     EuiDataGridSignature['Blocks'],
@@ -236,6 +241,17 @@ export default class EuiDataGridCell extends Component<EuiDataGridCellSignature>
     return this.args.colIndex === this.grid.visibleColCount - 1;
   }
 
+  /** The last data column ends a copied row (tabular copy). */
+  get isLastCopyColumn(): boolean {
+    const columnCount = this.grid.columns.length;
+    return columnCount > 0 && this.args.colIndex === this.leadingCount + columnCount - 1;
+  }
+
+  get copyMarkerType(): 'no-copy' | 'newline' | 'tab' {
+    if (this.isControlColumn) return 'no-copy';
+    return this.isLastCopyColumn ? 'newline' : 'tab';
+  }
+
   /* -------------------------------------------------------------------- */
   /* setCellProps                                                          */
   /* -------------------------------------------------------------------- */
@@ -284,6 +300,7 @@ export default class EuiDataGridCell extends Component<EuiDataGridCellSignature>
   /* -------------------------------------------------------------------- */
 
   get defaultIsExpandable(): boolean {
+    if (this.args.isExpandable !== undefined && !this.args.isFooter) return this.args.isExpandable;
     if (this.isControlColumn) return false;
     if (this.args.isFooter) return true;
     return this.column?.isExpandable ?? true;
@@ -389,19 +406,6 @@ export default class EuiDataGridCell extends Component<EuiDataGridCellSignature>
     return this.contentElement?.innerText ?? '';
   }
 
-  get jsonPopoverText(): string {
-    let formatted = this.cellText;
-    try {
-      formatted = JSON.stringify(JSON.parse(formatted), null, 2);
-    } catch {
-      // not JSON: show as is
-    }
-    return formatted;
-  }
-
-  get isJsonSchema(): boolean {
-    return this.schema === 'json';
-  }
 
   @action
   setCellPopoverProps(props: Record<string, unknown>): void {
@@ -433,8 +437,26 @@ export default class EuiDataGridCell extends Component<EuiDataGridCellSignature>
 
   takeFocus(preventScroll: boolean): void {
     const cell = this.cellElement;
+    if (!cell) return;
+    const active = document.activeElement;
+    if (active && !cell.contains(active) && active.closest('.euiPopover__panel')) {
+      // focus is in a popover (e.g. this cell's expansion popover, closing):
+      // its focus trap keeps focus until it closes, so focus the cell after
+      let frames = 30; // the popover's closing transition
+      const focusWhenReleased = () => {
+        if (this.isDestroying || !this.isFocused) return;
+        const current = document.activeElement;
+        if (current?.closest('.euiPopover__panel') && frames-- > 0) {
+          requestAnimationFrame(focusWhenReleased);
+          return;
+        }
+        if (!this.cellElement?.contains(current)) this.cellElement?.focus({ preventScroll });
+      };
+      requestAnimationFrame(focusWhenReleased);
+      return;
+    }
     // Only focus the cell if not already focused on something in the cell
-    if (cell && !cell.contains(document.activeElement)) cell.focus({ preventScroll });
+    if (!cell.contains(active)) cell.focus({ preventScroll });
   }
 
   @action
@@ -706,7 +728,10 @@ export default class EuiDataGridCell extends Component<EuiDataGridCellSignature>
     const { body, colIndex, visibleRowIndex, isFooter } = this.args;
     const width = this.width;
     const parts: string[] = [];
-    if (!isFooter) {
+    if (!isFooter && !body.isVirtualized) {
+      // custom grid body: cells flow in the consumer's rows
+      parts.push(`height:${this.isAutoHeight ? 'auto' : `${body.rowHeight(visibleRowIndex)}px`}`);
+    } else if (!isFooter) {
       parts.push(
         'position:absolute',
         `left:${body.columnLeft(colIndex)}px`,
@@ -770,6 +795,7 @@ export default class EuiDataGridCell extends Component<EuiDataGridCellSignature>
   }
 
   get renderer() {
+    if (this.args.renderCellValue && !this.args.isFooter) return this.args.renderCellValue;
     switch (this.kind) {
       case 'data':
         return this.grid.args.renderCellValue;
@@ -856,7 +882,9 @@ export default class EuiDataGridCell extends Component<EuiDataGridCellSignature>
       {{this.cellPropsAttributes this.cellProps}}
       {{this.registerFocus @colIndex @visibleRowIndex}}
       {{this.setupCell}}
+      ...attributes
     >
+      {{#if this.isControlColumn}}<EuiDataGridCopyMarker @grid={{@grid}} @type="no-copy" />{{/if}}
       {{#if this.isExpandable}}
         {{! template-lint-disable no-duplicate-landmark-elements }}
         <div
@@ -952,8 +980,15 @@ export default class EuiDataGridCell extends Component<EuiDataGridCellSignature>
           {{/if}}
         </div>
       {{/if}}
+      <EuiDataGridCopyMarker @grid={{@grid}} @type={{this.copyMarkerType}} />
       {{#if this.isFocused}}
-        <EuiScreenReaderOnly><p>{{this.screenReaderDescription}}</p></EuiScreenReaderOnly>
+        <EuiScreenReaderOnly><p><EuiDataGridCopyMarker
+              @grid={{@grid}}
+              @type="no-copy"
+            />{{this.screenReaderDescription}}<EuiDataGridCopyMarker
+              @grid={{@grid}}
+              @type="no-copy"
+            /></p></EuiScreenReaderOnly>
       {{/if}}
       {{#if this.showCellActions}}
         <EuiDataGridCellActions
@@ -983,6 +1018,24 @@ export default class EuiDataGridCell extends Component<EuiDataGridCellSignature>
                 <div data-test-subject="cellPopoverAnchor"></div>
               </:button>
               <:content>
+                {{#let
+                  (component
+                    EuiDataGridCellPopoverActions
+                    column=this.column
+                    rowIndex=this.rowIndex
+                    colIndex=@colIndex
+                  )
+                  as |CellActions|
+                }}
+                {{#let
+                  (component
+                    EuiDataGridDefaultCellPopover
+                    schema=this.schema
+                    cellContentsElement=this.contentElement
+                    cellActions=CellActions
+                  )
+                  as |DefaultCellPopover|
+                }}
                 <div data-test-subj="euiDataGridExpansionPopover">
                   {{#if @grid.args.renderCellPopover}}
                     {{#let @grid.args.renderCellPopover as |PopoverRenderer|}}
@@ -993,6 +1046,8 @@ export default class EuiDataGridCell extends Component<EuiDataGridCellSignature>
                         @schema={{this.schema}}
                         @cellContentsElement={{this.contentElement}}
                         @setCellPopoverProps={{this.setCellPopoverProps}}
+                        @cellActions={{CellActions}}
+                        @DefaultCellPopover={{DefaultCellPopover}}
                       >
                         {{#if this.renderer}}
                           {{#let this.renderer as |Renderer|}}
@@ -1020,29 +1075,17 @@ export default class EuiDataGridCell extends Component<EuiDataGridCellSignature>
                         schema=this.schema
                         cellContentsElement=this.contentElement
                         setCellPopoverProps=this.setCellPopoverProps
-                        cellActions=(component
-                          EuiDataGridCellPopoverActions
-                          column=this.column
-                          rowIndex=this.rowIndex
-                          colIndex=@colIndex
-                        )
+                        cellActions=CellActions
+                        DefaultCellPopover=DefaultCellPopover
                       )
                       to="cellPopover"
                     }}
-                  {{else if this.isJsonSchema}}
-                    <EuiCodeBlock
-                      @isCopyable={{true}}
-                      @transparentBackground={{true}}
-                      @paddingSize="none"
-                      @language="json"
-                    >{{this.jsonPopoverText}}</EuiCodeBlock>
-                    <EuiDataGridCellPopoverActions
-                      @column={{this.column}}
-                      @rowIndex={{this.rowIndex}}
-                      @colIndex={{@colIndex}}
-                    />
                   {{else}}
-                    <EuiText>
+                    <EuiDataGridDefaultCellPopover
+                      @schema={{this.schema}}
+                      @cellContentsElement={{this.contentElement}}
+                      @cellActions={{CellActions}}
+                    >
                       {{#if this.renderer}}
                         {{#let this.renderer as |Renderer|}}
                           <Renderer
@@ -1062,14 +1105,11 @@ export default class EuiDataGridCell extends Component<EuiDataGridCellSignature>
                       {{else}}
                         {{yield this.detailsValueProps to="cell"}}
                       {{/if}}
-                    </EuiText>
-                    <EuiDataGridCellPopoverActions
-                      @column={{this.column}}
-                      @rowIndex={{this.rowIndex}}
-                      @colIndex={{@colIndex}}
-                    />
+                    </EuiDataGridDefaultCellPopover>
                   {{/if}}
                 </div>
+                {{/let}}
+                {{/let}}
               </:content>
             </EuiPopover>
           </:popover>

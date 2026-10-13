@@ -1,4 +1,3 @@
-import Component from '@glimmer/component';
 import { cached, tracked } from '@glimmer/tracking';
 import { action } from '@ember/object';
 import { on } from '@ember/modifier';
@@ -12,24 +11,21 @@ import {
   euiDataGridBodyStyles,
   euiDataGridScrollBarStyles
 } from '../../utils/eui/styles.generated.ts';
-import {
-  DEFAULT_ROW_HEIGHT,
-  RowHeightUtils
-} from '../../utils/data-grid/row-heights.ts';
 import { afterRender, observeResize } from '../../utils/data-grid/scheduling.ts';
+import EuiDataGridBodyBase from './body-base.ts';
 import EuiDataGridFooterRow from './footer-row.gts';
 import EuiDataGridHeaderRow from './header-row.gts';
 import EuiDataGridRow from './row.gts';
 
-import type Owner from '@ember/owner';
-import type EuiDataGrid from '../eui-data-grid.gts';
+import type { EuiDataGridBodyBaseArgs } from './body-base.ts';
 import type { EuiDataGridSignature } from '../eui-data-grid.gts';
 import type {
-  EuiDataGridColumn,
-  EuiDataGridFocusedCell
+  EuiDataGridFocusedCell,
+  EuiDataGridScrollToItemProps,
+  EuiDataGridScrollToProps
 } from '../../utils/data-grid/types.ts';
 
-const DEFAULT_COLUMN_WIDTH = 100;
+const UNITLESS = new Set(['opacity', 'z-index', 'flex-grow', 'flex-shrink', 'line-height', 'order']);
 // Offset for the cell actions menu when scrolling a cell below the sticky header
 const ACTIONS_MENU_HEIGHT = 21;
 
@@ -39,9 +35,7 @@ interface Window {
 }
 
 export interface EuiDataGridBodySignature {
-  Args: {
-    grid: EuiDataGrid;
-    hasFooterBlock?: boolean;
+  Args: EuiDataGridBodyBaseArgs & {
     hasCellPopoverBlock?: boolean;
   };
   Blocks: Pick<
@@ -55,8 +49,45 @@ export interface EuiDataGridBodySignature {
   >;
 }
 
-const doesColumnHaveAnInitialWidth = (column: EuiDataGridColumn) =>
-  column.initialWidth != null;
+/** Port of react-window's `getOffsetForIndexAndAlignment` (VariableSizeGrid). */
+function getOffsetForIndexAndAlignment({
+  align,
+  size,
+  totalSize,
+  offset,
+  itemSize,
+  scrollOffset,
+  scrollbarSize
+}: {
+  align: NonNullable<EuiDataGridScrollToItemProps['align']>;
+  size: number;
+  totalSize: number;
+  offset: number;
+  itemSize: number;
+  scrollOffset: number;
+  scrollbarSize: number;
+}): number {
+  const maxOffset = Math.max(0, Math.min(totalSize - size, offset));
+  const minOffset = Math.max(0, offset - size + scrollbarSize + itemSize);
+  if (align === 'smart') {
+    align =
+      scrollOffset >= minOffset - size && scrollOffset <= maxOffset + size ? 'auto' : 'center';
+  }
+  switch (align) {
+    case 'start':
+      return maxOffset;
+    case 'end':
+      return minOffset;
+    case 'center':
+      return Math.round(minOffset + (maxOffset - minOffset) / 2);
+    case 'auto':
+    default:
+      if (scrollOffset >= minOffset && scrollOffset <= maxOffset) return scrollOffset;
+      if (minOffset > maxOffset) return minOffset; // the item is larger than the viewport
+      if (scrollOffset < minOffset) return minOffset;
+      return maxOffset;
+  }
+}
 
 /** Binary search: index of the last offset `<= value`. */
 function findIndex(offsets: ArrayLike<number>, count: number, value: number): number {
@@ -77,7 +108,9 @@ function findIndex(offsets: ArrayLike<number>, count: number, value: number): nu
  * overscan) are rendered. The rendered window is recomputed on scroll but
  * only invalidates rendering when its integer bounds change.
  */
-export default class EuiDataGridBody extends Component<EuiDataGridBodySignature> {
+export default class EuiDataGridBody extends EuiDataGridBodyBase<EuiDataGridBodySignature> {
+  readonly isVirtualized = true;
+
   outerElement: HTMLElement | null = null;
   innerElement: HTMLElement | null = null;
   headerElement: HTMLElement | null = null;
@@ -102,96 +135,12 @@ export default class EuiDataGridBody extends Component<EuiDataGridBodySignature>
   /** Bumped only when the rendered window must change. */
   @tracked private scrollVersion = 0;
 
-  constructor(owner: Owner, args: EuiDataGridBodySignature['Args']) {
-    super(owner, args);
-    args.grid.body = this;
-  }
-
-  willDestroy(): void {
-    super.willDestroy();
-    if (this.args.grid.body === this) this.args.grid.body = null;
-    clearTimeout(this.resetTimer);
-  }
-
-  get grid(): EuiDataGrid {
-    return this.args.grid;
-  }
-
-  get hasFooter(): boolean {
-    return !!this.grid.args.renderFooterCellValue || !!this.args.hasFooterBlock;
-  }
-
   /* -------------------------------------------------------------------- */
   /* Column widths                                                        */
   /* -------------------------------------------------------------------- */
 
-  // user resizes, reset whenever the visible columns change (like upstream)
-  @tracked private columnWidthsState: {
-    columns: EuiDataGridColumn[];
-    widths: Record<string, number>;
-  } | null = null;
-
-  get columnWidths(): Record<string, number> {
-    const columns = this.grid.columns;
-    const state = this.columnWidthsState;
-    if (state && state.columns === columns) return state.widths;
-    return this.initialColumnWidths;
-  }
-
-  @cached
-  get initialColumnWidths(): Record<string, number> {
-    const widths: Record<string, number> = {};
-    for (const column of this.grid.columns.filter(doesColumnHaveAnInitialWidth)) {
-      widths[column.id] = column.initialWidth!;
-    }
-    return widths;
-  }
-
-  @action
-  setColumnWidth(columnId: string, width: number): void {
-    this.columnWidthsState = {
-      columns: this.grid.columns,
-      widths: { ...this.columnWidths, [columnId]: width }
-    };
-    this.grid.args.onColumnResize?.({ columnId, width });
-  }
-
-  /** Default width for columns without `initialWidth`, filling the container. */
-  get defaultColumnWidth(): number | null {
-    const gridWidth = this.outerClientWidth || this.wrapperWidth;
-    if (gridWidth === 0) return null; // we can't tell what size to compute yet
-    const { leadingControlColumns, trailingControlColumns, columns } = this.grid;
-    const controlColumnWidths = [
-      ...leadingControlColumns,
-      ...trailingControlColumns
-    ].reduce((claimed, column) => claimed + column.width, 0);
-    const columnsWithWidths = columns.filter(doesColumnHaveAnInitialWidth);
-    const definedColumnsWidth = columnsWithWidths.reduce(
-      (claimed, column) => claimed + column.initialWidth!,
-      0
-    );
-    const widthToFill = gridWidth - controlColumnWidths - definedColumnsWidth;
-    const unsizedColumnCount = columns.length - columnsWithWidths.length;
-    if (unsizedColumnCount === 0) return DEFAULT_COLUMN_WIDTH;
-    return Math.max(widthToFill / unsizedColumnCount, DEFAULT_COLUMN_WIDTH);
-  }
-
-  /** Width of a data column by id (undefined until the grid is measured). */
-  widthForColumn(columnId: string): number | undefined {
-    return this.columnWidths[columnId] || this.defaultColumnWidth || undefined;
-  }
-
-  /** Every visible column's width, by visible column index. */
-  @cached
-  get columnWidthList(): number[] {
-    const { leadingControlColumns, trailingControlColumns, columns } = this.grid;
-    const widths = this.columnWidths;
-    const fallback = this.defaultColumnWidth || DEFAULT_COLUMN_WIDTH;
-    return [
-      ...leadingControlColumns.map((column) => column.width),
-      ...columns.map((column) => widths[column.id] || fallback),
-      ...trailingControlColumns.map((column) => column.width)
-    ];
+  get availableWidth(): number {
+    return this.outerClientWidth || this.wrapperWidth;
   }
 
   @cached
@@ -215,65 +164,6 @@ export default class EuiDataGridBody extends Component<EuiDataGridBodySignature>
   /* -------------------------------------------------------------------- */
   /* Row heights                                                          */
   /* -------------------------------------------------------------------- */
-
-  @tracked private rowHeightsVersion = 0;
-  private resetTimer: ReturnType<typeof setTimeout> | undefined;
-
-  readonly rowHeightUtils = new RowHeightUtils(() => {
-    // batch measured height changes into one offsets recomputation
-    clearTimeout(this.resetTimer);
-    this.resetTimer = setTimeout(() => {
-      if (!this.isDestroying) this.rowHeightsVersion++;
-    }, 0);
-  });
-
-  /** `minRowHeight` upstream: measured single-line height of a cell. */
-  @tracked minRowHeight = DEFAULT_ROW_HEIGHT;
-
-  @action
-  setMinRowHeight(height: number): void {
-    if (this.minRowHeight !== height) this.minRowHeight = height;
-  }
-
-  get rowHeightsOptions() {
-    return this.grid.rowHeightsOptions;
-  }
-
-  get defaultRowHeight(): number {
-    const options = this.rowHeightsOptions;
-    return options?.defaultHeight
-      ? this.rowHeightUtils.getCalculatedHeight(options.defaultHeight, this.minRowHeight)
-      : this.minRowHeight;
-  }
-
-  /** Whether every row has the default height (no per-row or measured heights). */
-  get hasUniformRowHeights(): boolean {
-    const options = this.rowHeightsOptions;
-    if (options.rowHeights && Object.keys(options.rowHeights).length > 0) return false;
-    if (options.defaultHeight === 'auto') return false;
-    if (this.rowHeightUtils.isAutoBelowLineCount(options, options.defaultHeight))
-      return false;
-    return true;
-  }
-
-  /** Height of a visible (page-relative) row. */
-  getRowHeight(visibleRowIndex: number): number {
-    const defaultRowHeight = this.defaultRowHeight;
-    if (this.hasUniformRowHeights) return defaultRowHeight;
-    const options = this.rowHeightsOptions;
-    const rowIndex = this.grid.getCorrectRowIndex(visibleRowIndex);
-    const option = this.rowHeightUtils.getRowHeightOption(rowIndex, options);
-    let rowHeight: number | undefined;
-    if (option) {
-      rowHeight = this.rowHeightUtils.getCalculatedHeight(
-        option,
-        this.minRowHeight,
-        rowIndex,
-        options
-      );
-    }
-    return rowHeight || defaultRowHeight;
-  }
 
   get visibleRowCount(): number {
     return this.grid.visibleRows.visibleRowCount;
@@ -572,8 +462,20 @@ export default class EuiDataGridBody extends Component<EuiDataGridBodySignature>
     };
   });
 
+  private initialScrollApplied = false;
+
+  /** `virtualizationOptions.initialScrollTop/Left`, once rows can scroll. */
+  private applyInitialScroll(): void {
+    if (this.initialScrollApplied) return;
+    this.initialScrollApplied = true;
+    const { initialScrollTop, initialScrollLeft } = this.grid.args.virtualizationOptions ?? {};
+    if (initialScrollTop == null && initialScrollLeft == null) return;
+    this.scrollTo({ scrollTop: initialScrollTop, scrollLeft: initialScrollLeft });
+  }
+
   setupInner = modifier((element: HTMLElement) => {
     this.innerElement = element;
+    afterRender(this, () => this.applyInitialScroll());
     // horizontal scrollbars appear/disappear when the inner width changes
     const stop = observeResize([element], this.measure);
     return () => {
@@ -693,6 +595,109 @@ export default class EuiDataGridBody extends Component<EuiDataGridBodySignature>
   }
 
   /* -------------------------------------------------------------------- */
+  /* Layout shift compensation (`rowHeightsOptions.scrollAnchorRow`)      */
+  /* -------------------------------------------------------------------- */
+
+  /** The row layout the grid last rendered with. */
+  private layoutSnapshot: {
+    offsets: Float64Array | null;
+    defaultHeight: number;
+    count: number;
+  } | null = null;
+
+  /**
+   * Port of upstream `compensateForLayoutShift`: when rows above the anchor
+   * row (the first or the middle visible row) change height, scroll by the
+   * anchor row's vertical shift so the content in view stays put. Upstream
+   * runs this from the first cell of each row; here it runs once per row
+   * layout change, comparing the anchor row's top before and after.
+   */
+  compensateLayoutShift = modifier(
+    (element: HTMLElement, [offsets, defaultHeight]: [Float64Array | null, number]) => {
+      const count = this.visibleRowCount;
+      const previous = this.layoutSnapshot;
+      this.layoutSnapshot = { offsets, defaultHeight, count };
+      const anchor = this.rowHeightsOptions.scrollAnchorRow;
+      if (!anchor || !previous || previous.count !== count || count === 0) return;
+      const topOf = (snapshot: NonNullable<typeof previous>, index: number) =>
+        snapshot.offsets ? snapshot.offsets[index]! : index * snapshot.defaultHeight;
+      // the visible rows of the previous layout at the current scroll position
+      const scrollTop = element.scrollTop;
+      const viewportBottom = scrollTop + Math.max(this.finalHeight - this.headerOffset, 0);
+      let start = 0;
+      while (start < count - 1 && topOf(previous, start + 1) <= scrollTop) start++;
+      let stop = start;
+      while (stop < count - 1 && topOf(previous, stop + 1) < viewportBottom) stop++;
+      // upstream compares the center offset with the row index itself, which
+      // only finds the center row when scrolled to the top; use the real center row
+      const anchorRow = anchor === 'start' ? start : start + Math.floor((stop - start) / 2);
+      const shift = topOf(this.layoutSnapshot, anchorRow) - topOf(previous, anchorRow);
+      if (!shift || !Number.isFinite(shift)) return;
+      element.scrollTop = scrollTop + shift;
+      afterRender(this, this.onScroll);
+    }
+  );
+
+  /* -------------------------------------------------------------------- */
+  /* Imperative scrolling (react-window's grid API)                       */
+  /* -------------------------------------------------------------------- */
+
+  /** react-window `scrollTo`: offsets in px; a missing offset is kept. */
+  @action
+  scrollTo({ scrollLeft, scrollTop }: EuiDataGridScrollToProps = {}): void {
+    const outer = this.outerElement;
+    if (!outer) return;
+    outer.scrollTo({
+      left: scrollLeft ?? outer.scrollLeft,
+      top: scrollTop ?? outer.scrollTop
+    });
+    this.onScroll();
+  }
+
+  /** react-window `scrollToItem`: brings a row and/or column into view. */
+  @action
+  scrollToItem({ align = 'auto', columnIndex, rowIndex }: EuiDataGridScrollToItemProps = {}): void {
+    const outer = this.outerElement;
+    if (!outer) return;
+    const columnCount = this.grid.visibleColCount;
+    const rowCount = this.visibleRowCount;
+    const height = this.finalHeight;
+    const width = this.finalWidth;
+    const totalHeight = this.totalRowsHeight;
+    const totalWidth = this.totalWidth;
+    // react-window adds the scrollbar of the other axis to the item's minimum offset
+    const horizontalScrollbarSize = totalWidth > width ? this.scrollBarHeight : 0;
+    const verticalScrollbarSize = totalHeight > height ? this.scrollBarWidth : 0;
+    let scrollLeft: number | undefined;
+    let scrollTop: number | undefined;
+    if (columnIndex !== undefined && columnCount > 0) {
+      const index = Math.max(0, Math.min(columnIndex, columnCount - 1));
+      scrollLeft = getOffsetForIndexAndAlignment({
+        align,
+        size: width,
+        totalSize: totalWidth,
+        offset: this.columnLeft(index),
+        itemSize: this.columnWidthList[index] ?? 0,
+        scrollOffset: outer.scrollLeft,
+        scrollbarSize: verticalScrollbarSize
+      });
+    }
+    if (rowIndex !== undefined && rowCount > 0) {
+      const index = Math.max(0, Math.min(rowIndex, rowCount - 1));
+      scrollTop = getOffsetForIndexAndAlignment({
+        align,
+        size: height,
+        totalSize: totalHeight,
+        offset: this.rowTop(index),
+        itemSize: this.rowHeight(index),
+        scrollOffset: outer.scrollTop,
+        scrollbarSize: horizontalScrollbarSize
+      });
+    }
+    this.scrollTo({ scrollLeft, scrollTop });
+  }
+
+  /* -------------------------------------------------------------------- */
   /* Styles                                                               */
   /* -------------------------------------------------------------------- */
 
@@ -709,14 +714,29 @@ export default class EuiDataGridBody extends Component<EuiDataGridBodySignature>
   @cached
   get outerClass(): string {
     const { context, body } = this.styles;
-    return `euiDataGrid__virtualized ${euiClass(context, body.euiDataGridBody, body.virtualized)}`;
+    const className = this.grid.args.virtualizationOptions?.className;
+    return `euiDataGrid__virtualized ${euiClass(context, body.euiDataGridBody, body.virtualized)}${className ? ` ${className}` : ''}`;
+  }
+
+  /** `virtualizationOptions.style`, merged over the body's own styles (like react-window). */
+  @cached
+  get extraOuterStyle(): string {
+    const style = this.grid.args.virtualizationOptions?.style;
+    if (!style) return '';
+    return Object.entries(style)
+      .map(([key, value]) => {
+        const property = key.startsWith('--') ? key : key.replace(/[A-Z]/g, (m) => `-${m.toLowerCase()}`);
+        const unitless = typeof value !== 'number' || UNITLESS.has(property);
+        return `;${property}:${unitless ? value : `${value}px`}`;
+      })
+      .join('');
   }
 
   get outerStyle() {
     const height = this.finalHeight;
     const width = this.finalWidth;
     return htmlSafe(
-      `position:relative;height:${height}px;width:${width ? `${width}px` : '100%'};overflow:auto;will-change:transform;direction:ltr`
+      `position:relative;height:${height}px;width:${width ? `${width}px` : '100%'};overflow:auto;will-change:transform;direction:ltr${this.extraOuterStyle}`
     );
   }
 
@@ -759,6 +779,7 @@ export default class EuiDataGridBody extends Component<EuiDataGridBodySignature>
       {{on "pointerdown" this.onPointerDown}}
       {{this.setupOuter}}
       {{this.itemsRendered this.rowWindow this.columnWindow}}
+      {{this.compensateLayoutShift this.rowOffsets this.defaultRowHeight}}
     >
       {{#if this.isMeasured}}
         <div style={{this.innerStyle}} {{this.setupInner}}>

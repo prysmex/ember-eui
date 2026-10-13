@@ -38,6 +38,11 @@ export interface EuiDataGridRowHeightsOptions {
   rowHeights?: Record<number, EuiDataGridRowHeightOption>;
   lineHeight?: string;
   autoBelowLineCount?: boolean;
+  /**
+   * The row anchoring vertical layout shifts: with `'start'` or `'center'`
+   * the first or middle visible row keeps its position when rows above it
+   * change height, by adjusting the grid's scroll position.
+   */
   scrollAnchorRow?: 'start' | 'center';
   onChange?: (options: EuiDataGridRowHeightsOptions) => void;
 }
@@ -207,6 +212,39 @@ export interface EuiDataGridToolBarVisibilityDisplaySelectorOptions {
   allowDensity?: boolean;
   allowRowHeight?: boolean;
   allowResetButton?: boolean;
+  /** A component appended to the bottom of the display settings popover. */
+  additionalDisplaySettings?: ComponentLike;
+  /**
+   * Completely custom layout of the display settings popover: a component
+   * receiving the default controls (undefined when disabled).
+   */
+  customRender?: ComponentLike<{ Args: EuiDataGridDisplaySelectorCustomRenderProps }>;
+}
+
+/** Arguments of `showDisplaySelector.customRender`. */
+export interface EuiDataGridDisplaySelectorCustomRenderProps {
+  densityControl?: ComponentLike;
+  rowHeightControl?: ComponentLike;
+  additionalDisplaySettings?: ComponentLike;
+  resetButton?: ComponentLike;
+}
+
+/** Where `toolbarVisibility.additionalControls.left` components go. */
+export interface EuiDataGridToolBarAdditionalControlsLeftOptions {
+  /** Before the column & sort controls. */
+  prepend?: ComponentLike;
+  /** After the column & sort controls. */
+  append?: ComponentLike;
+}
+
+export interface EuiDataGridToolBarAdditionalControlsOptions {
+  /**
+   * A component appended to the left side (after the column & sort
+   * controls), or `{ prepend, append }` components.
+   */
+  left?: ComponentLike | EuiDataGridToolBarAdditionalControlsLeftOptions;
+  /** A component prepended to the right side (before the display & fullscreen controls). */
+  right?: ComponentLike;
 }
 
 export interface EuiDataGridToolBarVisibilityOptions {
@@ -218,10 +256,54 @@ export interface EuiDataGridToolBarVisibilityOptions {
     | EuiDataGridToolBarVisibilityDisplaySelectorOptions;
   showSortSelector?: boolean;
   showFullScreenSelector?: boolean;
+  /**
+   * Shows the keyboard shortcuts popover button. When `false`, it is
+   * visually hidden but still reachable by keyboard and screen readers.
+   */
   showKeyboardShortcuts?: boolean;
+  /**
+   * Extra toolbar controls as components: one component (appended to the
+   * left side) or `{ left, right }` (see also the grid's
+   * `<:leftControlsPrepend>`, `<:leftControlsAppend>` and `<:rightControls>`
+   * blocks).
+   */
+  additionalControls?: ComponentLike | EuiDataGridToolBarAdditionalControlsOptions;
+}
+
+/** Controls handed to `@renderCustomToolbar` / the `<:customToolbar>` block (undefined when hidden). */
+export interface EuiDataGridCustomToolbarProps {
+  /** Whether the grid is wide enough (or fullscreen) for the left controls. */
+  hasRoomForGridControls: boolean;
+  /** The column selector button. */
+  columnControl?: ComponentLike;
+  /** The sort popover button (undefined without `@sorting`). */
+  columnSortingControl?: ComponentLike;
+  /** The keyboard shortcuts button (screen reader only when `showKeyboardShortcuts` is false). */
+  keyboardShortcutsControl: ComponentLike;
+  /** The display options button. */
+  displayControl?: ComponentLike;
+  /** The fullscreen toggle. */
+  fullScreenControl?: ComponentLike;
+  /**
+   * Ember addition: `toolbarVisibility.additionalControls` components by
+   * position (the grid's control blocks can't be passed on).
+   */
+  additionalControls: {
+    leftPrepend?: ComponentLike;
+    leftAppend?: ComponentLike;
+    right?: ComponentLike;
+  };
 }
 
 export interface EuiDataGridVirtualizationOptions {
+  /** Extra class of the scrolling body element. */
+  className?: string;
+  /** Extra inline styles of the scrolling body element. */
+  style?: Record<string, string | number>;
+  /** Initial vertical scroll offset in px. */
+  initialScrollTop?: number;
+  /** Initial horizontal scroll offset in px. */
+  initialScrollLeft?: number;
   /** Extra rows rendered above/below the viewport. Defaults to 1. */
   overscanRowCount?: number;
   /** Extra columns rendered before/after the viewport. Defaults to 1. */
@@ -256,3 +338,43 @@ export interface EuiDataGridScrollEvent {
 
 /** `[colIndex, visibleRowIndex]`; the header row is `-1`. */
 export type EuiDataGridFocusedCell = [number, number];
+
+/** Cell location used by the imperative API (`rowIndex` is the data row index). */
+export interface EuiDataGridCellLocationProps {
+  rowIndex: number;
+  colIndex: number;
+}
+
+/** react-window `scrollTo` arguments: offsets in px, missing ones are kept. */
+export interface EuiDataGridScrollToProps {
+  scrollLeft?: number;
+  scrollTop?: number;
+}
+
+/** react-window `scrollToItem` arguments (`rowIndex` is the visible row index). */
+export interface EuiDataGridScrollToItemProps {
+  align?: 'auto' | 'smart' | 'center' | 'end' | 'start';
+  columnIndex?: number;
+  rowIndex?: number;
+}
+
+/**
+ * The grid's imperative API (upstream's `ref`), passed to `@registerApi`.
+ */
+export interface EuiDataGridRefProps {
+  /** Allows manually controlling the fullscreen state of the grid. */
+  setIsFullScreen: (isFullScreen: boolean) => void;
+  /**
+   * Focuses the specified cell, changing page if needed. Restore focus to
+   * the grid with it after closing a modal or flyout the grid opened.
+   */
+  setFocusedCell: (cell: EuiDataGridCellLocationProps) => void;
+  /** Opens the expansion popover of the specified cell, changing page if needed. */
+  openCellPopover: (cell: EuiDataGridCellLocationProps) => void;
+  /** Closes any open cell popover. */
+  closeCellPopover: () => void;
+  /** Scrolls the grid body to a top/left offset (not available with a custom grid body). */
+  scrollTo?: (params: EuiDataGridScrollToProps) => void;
+  /** Scrolls a row and/or column into view (not available with a custom grid body). */
+  scrollToItem?: (params: EuiDataGridScrollToItemProps) => void;
+}

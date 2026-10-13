@@ -89,7 +89,7 @@ module('Integration | Component | EuiDataGrid virtualization', function (hooks) 
     assert.true(scrolled.includes(5000), 'rows at the scroll position render');
     assert.false(scrolled.includes(0), 'rows scrolled away are removed');
     assert.ok(scrolled.length < 15);
-    assert.dom(cell(5000, 0)!).hasText('row 5000');
+    assert.dom('[data-datagrid-cellcontent]', cell(5000, 0)!).hasText('row 5000');
     assert.dom(cell(5000, 0)!).hasAttribute('aria-rowindex', '5001');
 
     const header = el('.euiDataGridHeader');

@@ -13,6 +13,7 @@ import { modifier } from 'ember-modifier';
 import { getEuiThemeContext } from '../../utils/emotion/consume.ts';
 import { euiClass, useEuiBorealisStyles } from '../../utils/eui/styles.ts';
 import {
+  euiDataGridDraggableHeaderStyles,
   euiDataGridHeaderCellStyles,
   euiDataGridHeaderCellWrapperStyles
 } from '../../utils/eui/styles.generated.ts';
@@ -26,11 +27,13 @@ import EuiIcon from '../eui-icon.gts';
 import EuiLiveAnnouncer from '../eui-live-announcer.gts';
 import EuiDataGridColumnActions, { hasColumnActions } from './column-actions.gts';
 import EuiDataGridColumnResizer from './column-resizer.gts';
+import EuiDataGridCopyMarker from './copy-marker.gts';
 
 import type Owner from '@ember/owner';
 import type EuiI18n from '../../services/eui-i18n.ts';
 import type EuiDataGrid from '../eui-data-grid.gts';
-import type EuiDataGridBody from './body.gts';
+import type { EuiDataGridHeaderBody } from './header-row.gts';
+import type { ModifierLike } from '@glint/template';
 import type {
   EuiDataGridColumn,
   EuiDataGridControlColumn
@@ -40,11 +43,19 @@ export interface EuiDataGridHeaderCellSignature {
   Element: HTMLDivElement;
   Args: {
     grid: EuiDataGrid;
-    body: EuiDataGridBody;
+    body: EuiDataGridHeaderBody;
     /** Visible column index (including leading control columns). */
     index: number;
     column?: EuiDataGridColumn;
     controlColumn?: EuiDataGridControlColumn;
+    /** Drag and drop columns: the `EuiDraggable` handle modifier for the cell. */
+    dragHandle?: ModifierLike<{ Element: HTMLElement }>;
+    /** Drag and drop columns: this column is being dragged. */
+    isDragging?: boolean;
+    /** Drag and drop columns: this column is being dragged with the keyboard. */
+    isKeyboardDragging?: boolean;
+    /** Drag and drop columns: id of the drag instructions text. */
+    dragInstructionsId?: string;
   };
   Blocks: {
     controlHeaderCell: [{ columnId: string }];
@@ -69,18 +80,20 @@ export default class EuiDataGridHeaderCell extends Component<EuiDataGridHeaderCe
   headerElement: HTMLElement | null = null;
   readonly sortingAriaId = `euiDataGridCellHeader-${guidFor(this)}-sorting`;
   readonly focusTrapHintId = `euiDataGridCellHeader-${guidFor(this)}-focusTrapHint`;
-  private unsubscribe: () => void;
-
   constructor(owner: Owner, args: EuiDataGridHeaderCellSignature['Args']) {
     super(owner, args);
-    this.unsubscribe = args.grid.onFocusUpdate([args.index, -1], this.onFocusUpdate);
     this.isFocused = args.grid.isFocusedCell(args.index, -1);
   }
 
-  willDestroy(): void {
-    super.willDestroy();
-    this.unsubscribe();
-  }
+  /** Subscribes to focus changes of this header's column index (re-run when columns move). */
+  registerFocus = modifier((_element: HTMLElement, [index]: [number]) => {
+    const { grid } = this.args;
+    afterRender(this, () => {
+      const isFocused = grid.isFocusedCell(index, -1);
+      if (isFocused !== this.isFocused) this.isFocused = isFocused;
+    });
+    return grid.onFocusUpdate([index, -1], this.onFocusUpdate);
+  });
 
   onFocusUpdate = (isFocused: boolean): void => {
     if (this.isDestroying) return;
@@ -121,6 +134,15 @@ export default class EuiDataGridHeaderCell extends Component<EuiDataGridHeaderCe
     return this.args.index === this.args.grid.visibleColCount - 1;
   }
 
+  /** The last data column ends a copied row (tabular copy). */
+  get copyMarkerType(): 'no-copy' | 'newline' | 'tab' {
+    if (this.isControlColumn) return 'no-copy';
+    const columns = this.args.grid.columns;
+    const isLastCopyColumn =
+      columns.length > 0 ? columns[columns.length - 1]!.id === this.id : this.isLastColumn;
+    return isLastCopyColumn ? 'newline' : 'tab';
+  }
+
   get hasColumnActions(): boolean {
     return !this.isControlColumn && hasColumnActions(this.args.column?.actions);
   }
@@ -137,8 +159,19 @@ export default class EuiDataGridHeaderCell extends Component<EuiDataGridHeaderCe
     return this.args.column!;
   }
 
+  get isDraggable(): boolean {
+    return !this.isControlColumn && !!this.args.dragHandle;
+  }
+
   get showResizer(): boolean {
+    // draggable columns render their resizer outside the drag handle
+    if (this.isDraggable) return false;
     return !this.isControlColumn && this.args.column?.isResizable !== false && this.width != null;
+  }
+
+  /** The `EuiDraggable` handle modifier, or a no-op for static columns. */
+  get dragHandleModifier(): ModifierLike<{ Element: HTMLElement }> {
+    return this.args.dragHandle ?? noopModifier;
   }
 
   /* -------------------------------------------------------------------- */
@@ -217,6 +250,15 @@ export default class EuiDataGridHeaderCell extends Component<EuiDataGridHeaderCe
 
   @action
   onKeyDown(event: KeyboardEvent): void {
+    if (this.isDraggable) {
+      // while dragging, keys belong to the drag (the header row stops them)
+      if (this.args.isDragging) return;
+      // only Space on the cell itself lifts the column (like upstream): Enter
+      // keeps opening the column actions, keys in interactive children are theirs
+      if (event.key === keys.ENTER || (event.key === keys.SPACE && event.target !== event.currentTarget)) {
+        event.stopPropagation();
+      }
+    }
     // Ignore keys that conflict with the focus trap being entered/exited
     if (this.renderFocusTrap && (event.key === keys.ENTER || event.key === keys.ESCAPE)) return;
     // Enter on the cell itself (not bubbled from the actions button) opens the actions
@@ -306,14 +348,30 @@ export default class EuiDataGridHeaderCell extends Component<EuiDataGridHeaderCe
     return {
       context,
       wrapper: useEuiBorealisStyles(context, euiDataGridHeaderCellWrapperStyles),
-      cell: useEuiBorealisStyles(context, euiDataGridHeaderCellStyles)
+      cell: useEuiBorealisStyles(context, euiDataGridHeaderCellStyles),
+      draggable: useEuiBorealisStyles(context, euiDataGridDraggableHeaderStyles)
     };
   }
 
   @cached
   get wrapperClass(): string {
-    const { context, wrapper } = this.themeStyles;
-    return euiClass(context, wrapper.euiDataGridHeaderCell);
+    const { context, wrapper, draggable } = this.themeStyles;
+    if (!this.isDraggable) return euiClass(context, wrapper.euiDataGridHeaderCell);
+    return euiClass(
+      context,
+      wrapper.euiDataGridHeaderCell,
+      // re-apply the background and border, since the droppable zone sets
+      // its own and confuses :first-of-type CSS
+      draggable[this.args.grid.gridStyles.header],
+      this.args.index !== 0 && draggable.noLeadingBorder,
+      this.args.isKeyboardDragging && draggable.isKeyboardDragging
+    );
+  }
+
+  @cached
+  get draggableIconCss() {
+    const { cell } = this.themeStyles;
+    return [cell.euiDataGridHeaderCell__actions.action, cell.euiDataGridHeaderCell__actions.start];
   }
 
   get classes(): string {
@@ -352,7 +410,8 @@ export default class EuiDataGridHeaderCell extends Component<EuiDataGridHeaderCe
   get ariaDescribedBy(): string | undefined {
     const ids = [
       this.sortingScreenReaderText ? this.sortingAriaId : null,
-      this.renderFocusTrap ? this.focusTrapHintId : null
+      this.renderFocusTrap ? this.focusTrapHintId : null,
+      this.isDraggable ? this.args.dragInstructionsId : null
     ].filter(Boolean);
     return ids.length ? ids.join(' ') : undefined;
   }
@@ -390,13 +449,16 @@ export default class EuiDataGridHeaderCell extends Component<EuiDataGridHeaderCe
       data-gridcell-column-index={{@index}}
       data-gridcell-row-index="-1"
       data-gridcell-visible-row-index="-1"
-      data-column-moving={{if this.isColumnMoving "true"}}
+      data-column-moving={{if this.isColumnMoving "true" (if @isKeyboardDragging "true")}}
       {{on "keydown" this.onKeyDown}}
       {{on "keyup" this.onKeyUp}}
       {{on "blur" this.onBlur}}
       {{this.extraAttributes this.extraProps}}
+      {{this.registerFocus @index}}
       {{this.setupHeader}}
+      {{this.dragHandleModifier}}
     >
+      {{#if this.isControlColumn}}<EuiDataGridCopyMarker @grid={{@grid}} @type="no-copy" />{{/if}}
       <div
         data-focus-lock-disabled={{if this.isCellEntered "false" "disabled"}}
         {{focusTrap isActive=this.isCellEntered focusTrapOptions=this.focusTrapOptions}}
@@ -417,6 +479,11 @@ export default class EuiDataGridHeaderCell extends Component<EuiDataGridHeaderCe
               @setColumnWidth={{@body.setColumnWidth}}
               @isLastColumn={{this.isLastColumn}}
             />
+          {{/if}}
+          {{#if this.isDraggable}}
+            <span class="euiDataGridHeaderCell__draggableIcon">
+              <EuiIcon @type="drag" @size="s" @css={{this.draggableIconCss}} />
+            </span>
           {{/if}}
           <div
             class={{this.contentClass}}
@@ -464,6 +531,7 @@ export default class EuiDataGridHeaderCell extends Component<EuiDataGridHeaderCe
           </EuiLiveAnnouncer>
         {{/if}}
       </div>
+      <EuiDataGridCopyMarker @grid={{@grid}} @type={{this.copyMarkerType}} />
     </div>
   </template>
 
@@ -476,3 +544,5 @@ export default class EuiDataGridHeaderCell extends Component<EuiDataGridHeaderCe
 function eqDirection(a: unknown, b: unknown): boolean {
   return a === b;
 }
+
+const noopModifier = modifier(() => {}) as unknown as ModifierLike<{ Element: HTMLElement }>;

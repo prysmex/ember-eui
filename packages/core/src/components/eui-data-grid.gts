@@ -9,6 +9,7 @@ import { htmlSafe } from '@ember/template';
 
 import { focusTrap } from 'ember-focus-trap';
 import { modifier } from 'ember-modifier';
+import { or } from 'ember-truth-helpers';
 
 import { getEuiThemeContext } from '../utils/emotion/consume.ts';
 import { euiClass, useEuiBorealisStyles } from '../utils/eui/styles.ts';
@@ -28,6 +29,11 @@ import { computeSortedRowMap } from '../utils/data-grid/sorting.ts';
 import { afterRender, observeResize } from '../utils/data-grid/scheduling.ts';
 import * as keys from '../utils/keys.ts';
 import EuiDataGridBody from './eui-data-grid/body.gts';
+import EuiDataGridCopyMarker from './eui-data-grid/copy-marker.gts';
+import { euiScreenReaderOnlyClass } from './eui-screen-reader-only.gts';
+import { onTabularCopy } from '../utils/data-grid/tabular-copy.ts';
+import EuiDataGridCustomBody from './eui-data-grid/custom-body.gts';
+import type EuiDataGridBodyBase from './eui-data-grid/body-base.ts';
 import EuiDataGridInMemoryRenderer from './eui-data-grid/in-memory-renderer.gts';
 import EuiDataGridPagination, {
   shouldRenderPagination
@@ -43,10 +49,13 @@ import type {
   EuiDataGridColumn,
   EuiDataGridColumnVisibility,
   EuiDataGridControlColumn,
+  EuiDataGridCustomToolbarProps,
   EuiDataGridFocusedCell,
   EuiDataGridInMemory,
   EuiDataGridInMemoryValues,
+  EuiDataGridCellLocationProps,
   EuiDataGridPaginationProps,
+  EuiDataGridRefProps,
   EuiDataGridRowHeightsOptions,
   EuiDataGridSchema,
   EuiDataGridSchemaDetector,
@@ -56,8 +65,16 @@ import type {
   EuiDataGridVirtualizationOptions
 } from '../utils/data-grid/types.ts';
 import type { ComponentLike } from '@glint/template';
+import type { EuiDataGridCustomBodyProps } from './eui-data-grid/custom-body.gts';
+import type { EuiDataGridDefaultCellPopoverSignature } from './eui-data-grid/default-cell-popover.gts';
 
 export type * from '../utils/data-grid/types.ts';
+export type {
+  EuiDataGridCustomBodyCellSignature,
+  EuiDataGridCustomBodyProps,
+  EuiDataGridCustomFooterRowSignature,
+  EuiDataGridSetCustomGridBodyProps
+} from './eui-data-grid/custom-body.gts';
 
 /** Upstream `startingStyles` (display_selector.tsx). */
 export const startingStyles: Required<
@@ -150,6 +167,14 @@ export interface EuiDataGridCellPopoverElementProps {
   schema?: string | null;
   cellContentsElement: HTMLElement | null;
   setCellPopoverProps: (props: Record<string, unknown>) => void;
+  /** The column's cell actions, as rendered in the default popover footer. */
+  cellActions: ComponentLike;
+  /**
+   * The standard popover display (`EuiText` around its block, or the cell's
+   * JSON in a code block for the `json` schema, then the cell actions), to
+   * fall back to it for some columns: `<@DefaultCellPopover>{{yield}}</@DefaultCellPopover>`.
+   */
+  DefaultCellPopover: ComponentLike<EuiDataGridDefaultCellPopoverSignature>;
 }
 
 export interface EuiDataGridSignature {
@@ -172,13 +197,31 @@ export interface EuiDataGridSignature {
     renderCellValue?: ComponentLike<EuiDataGridCellValueSignature>;
     /** Extra data passed to every cell renderer as `@cellContext`. */
     cellContext?: Record<string, unknown>;
-    /** Component rendering the expansion popover; or use the `<:cellPopover>` block. */
+    /**
+     * Component rendering the expansion popover (its default block renders
+     * the cell value with `@isDetails`); or use the `<:cellPopover>` block.
+     */
     renderCellPopover?: ComponentLike<{
       Args: EuiDataGridCellPopoverElementProps;
       Blocks: { default: [] };
     }>;
     /** Component rendering footer cells; or use the `<:footerCell>` block. */
     renderFooterCellValue?: ComponentLike<EuiDataGridCellValueSignature>;
+    /**
+     * Escape hatch replacing the virtualized body: a component receiving
+     * `@Cell`, `@visibleColumns`, `@visibleRowData`, `@setCustomGridBodyProps`,
+     * `@gridWidth`, `@headerRow` and `@footerRow`; or use the
+     * `<:customGridBody>` block. Give cell content with `@renderCellValue`
+     * or the `Cell`'s own block.
+     */
+    renderCustomGridBody?: ComponentLike<{ Args: EuiDataGridCustomBodyProps }>;
+    /**
+     * Custom toolbar layout: a component receiving the toolbar controls
+     * (`@hasRoomForGridControls`, `@columnControl`, `@columnSortingControl`,
+     * `@keyboardShortcutsControl`, `@displayControl`, `@fullScreenControl`,
+     * `@additionalControls`); or use the `<:customToolbar>` block.
+     */
+    renderCustomToolbar?: ComponentLike<{ Args: EuiDataGridCustomToolbarProps }>;
     /** Columns before the data columns (e.g. row selection). */
     leadingControlColumns?: EuiDataGridControlColumn[];
     /** Columns after the data columns (e.g. row actions). */
@@ -211,6 +254,12 @@ export interface EuiDataGridSignature {
     virtualizationOptions?: EuiDataGridVirtualizationOptions;
     /** Called when fullscreen mode is entered or left. */
     onFullScreenChange?: (isFullScreen: boolean) => void;
+    /**
+     * Called after render with the grid's imperative API (upstream's `ref`):
+     * `setIsFullScreen`, `setFocusedCell`, `openCellPopover`,
+     * `closeCellPopover`, `scrollTo` and `scrollToItem`.
+     */
+    registerApi?: (api: EuiDataGridRefProps) => void;
     /** Accessible name of the grid (same as the `aria-label` attribute). */
     ariaLabel?: string;
     /** Id(s) labelling the grid (same as the `aria-labelledby` attribute). */
@@ -222,12 +271,7 @@ export interface EuiDataGridSignature {
     /** Cell content when `@renderCellValue` is not given. */
     cell: [EuiDataGridCellValueElementProps];
     /** Expansion popover content when `@renderCellPopover` is not given. */
-    cellPopover: [
-      EuiDataGridCellPopoverElementProps & {
-        /** The column's cell actions, as rendered in the default popover footer. */
-        cellActions: ComponentLike;
-      }
-    ];
+    cellPopover: [EuiDataGridCellPopoverElementProps];
     /** Footer cell content when `@renderFooterCellValue` is not given. */
     footerCell: [EuiDataGridCellValueElementProps];
     /** Header of a control column without `headerCellRender`. */
@@ -242,6 +286,10 @@ export interface EuiDataGridSignature {
     leftControlsAppend: [];
     /** Toolbar controls before the right icon buttons. */
     rightControls: [];
+    /** Custom toolbar (like `@renderCustomToolbar`), yielding the toolbar controls. */
+    customToolbar: [EuiDataGridCustomToolbarProps];
+    /** Custom grid body (like `@renderCustomGridBody`). */
+    customGridBody: [EuiDataGridCustomBodyProps];
   };
 }
 
@@ -264,7 +312,7 @@ export default class EuiDataGrid extends Component<EuiDataGridSignature> {
   readonly ariaLabelledById = `${this.gridId}-labelledby`;
 
   /** The grid body; registers itself to scroll focused cells into view. */
-  body: EuiDataGridBody | null = null;
+  body: EuiDataGridBodyBase<any> | null = null;
   contentElement: HTMLElement | null = null;
 
   /**
@@ -610,6 +658,9 @@ export default class EuiDataGrid extends Component<EuiDataGridSignature> {
     this.initialRowHeightsOptions = args.rowHeightsOptions ?? {};
     // copies the focused cell's text on Ctrl/Cmd+C (static handler: deduped)
     document.addEventListener('copy', copyFocusedDataGridCell);
+    // tabs/newlines for selections copied across cells (upstream
+    // OverrideCopiedTabularContent; static handler: deduped)
+    document.addEventListener('copy', onTabularCopy);
   }
 
   /* ---------------------------------------------------------------------- */
@@ -802,6 +853,12 @@ export default class EuiDataGrid extends Component<EuiDataGridSignature> {
       .join(' ');
   }
 
+  /** Class of the hidden tabular copy marker characters. */
+  @cached
+  get copyMarkerClass(): string {
+    return euiScreenReaderOnlyClass(this.styles.context);
+  }
+
   @cached
   get contentClass(): string {
     const { context, grid } = this.styles;
@@ -923,6 +980,9 @@ export default class EuiDataGrid extends Component<EuiDataGridSignature> {
 
   @action
   onContentKeyDown(event: KeyboardEvent): void {
+    // Popovers attached inside cells (expansion, column actions) own their
+    // keys: upstream renders them outside the grid content
+    if ((event.target as Element | null)?.closest?.('.euiPopover__panel')) return;
     handleGridKeyDown(event, {
       gridElement: this.contentElement,
       visibleColCount: this.visibleColCount,
@@ -956,6 +1016,73 @@ export default class EuiDataGrid extends Component<EuiDataGridSignature> {
     this.body = null;
   }
 
+  /* ---------------------------------------------------------------------- */
+  /* Imperative API (upstream `useImperativeGridRef`)                       */
+  /* ---------------------------------------------------------------------- */
+
+  /**
+   * Throws a digestible error if the consumer targets an invalid cell, which
+   * also stops the API from continuing.
+   */
+  private checkCellExists({ rowIndex, colIndex }: EuiDataGridCellLocationProps): void {
+    const rowCount = this.args.rowCount;
+    const colCount = this.visibleColCount;
+    if (rowIndex >= rowCount || rowIndex < 0) {
+      throw new Error(
+        `Row ${rowIndex} is not a valid row. The maximum visible row index is ${rowCount - 1}.`
+      );
+    }
+    if (colIndex >= colCount) {
+      throw new Error(
+        `Column ${colIndex} is not a valid column. The maximum visible column index is ${colCount - 1}.`
+      );
+    }
+  }
+
+  /**
+   * The consumer's (unsorted, unpaginated) row index to the visible row
+   * index the cells use, changing page when the row is on another one.
+   */
+  private findVisibleRowIndex(rowIndex: number): number {
+    const sortedRowMap = this.sortedRowMap;
+    const visibleRowIndex = sortedRowMap.length
+      ? sortedRowMap.findIndex((mappedIndex) => mappedIndex === rowIndex)
+      : rowIndex;
+    const pagination = this.pagination;
+    if (pagination && pagination.pageSize > 0) {
+      const pageIndex = Math.floor(visibleRowIndex / pagination.pageSize);
+      if (pageIndex !== pagination.pageIndex) pagination.onChangePage(pageIndex);
+      return visibleRowIndex % pagination.pageSize;
+    }
+    return visibleRowIndex;
+  }
+
+  /** The API passed to `@registerApi`. */
+  readonly api: EuiDataGridRefProps = {
+    setIsFullScreen: (isFullScreen: boolean) => this.setIsFullScreen(isFullScreen),
+    setFocusedCell: (cell: EuiDataGridCellLocationProps) => {
+      this.checkCellExists(cell);
+      const visibleRowIndex = this.findVisibleRowIndex(cell.rowIndex);
+      // forced, unlike upstream: re-focuses the cell even when it is
+      // already the grid's focused cell (e.g. after a modal or popover)
+      this.setFocusedCell([cell.colIndex, visibleRowIndex], true);
+    },
+    openCellPopover: (cell: EuiDataGridCellLocationProps) => {
+      this.checkCellExists(cell);
+      const visibleRowIndex = this.findVisibleRowIndex(cell.rowIndex);
+      this.openCellPopover({ rowIndex: visibleRowIndex, colIndex: cell.colIndex });
+    },
+    closeCellPopover: () => this.closeCellPopover(),
+    scrollTo: (params) => this.body?.scrollTo?.(params),
+    scrollToItem: (params) => this.body?.scrollToItem?.(params)
+  };
+
+  registerApi = modifier(
+    (_element: HTMLElement, [registerApi]: [EuiDataGridSignature['Args']['registerApi']]) => {
+      if (registerApi) afterRender(this, () => registerApi(this.api));
+    }
+  );
+
   <template>
     <div
       class={{this.focusWrapClass}}
@@ -972,14 +1099,16 @@ export default class EuiDataGrid extends Component<EuiDataGridSignature> {
         {{on "keydown" this.onGridRootKeyDown}}
         {{this.observeWidth}}
         {{this.restrictBody this.isFullScreen this.restrictBodyClass}}
+        {{this.registerApi @registerApi}}
         ...attributes
         {{this.moveAriaAttributes}}
       >
         {{#if this.showToolbar}}
-          <EuiDataGridToolbar @grid={{this}}>
+          <EuiDataGridToolbar @grid={{this}} @hasCustomToolbarBlock={{has-block "customToolbar"}}>
             <:leftControlsPrepend>{{yield to="leftControlsPrepend"}}</:leftControlsPrepend>
             <:leftControlsAppend>{{yield to="leftControlsAppend"}}</:leftControlsAppend>
             <:rightControls>{{yield to="rightControls"}}</:rightControls>
+            <:customToolbar as |toolbar|>{{yield toolbar to="customToolbar"}}</:customToolbar>
           </EuiDataGridToolbar>
         {{/if}}
         {{#if @inMemory}}
@@ -1006,18 +1135,30 @@ export default class EuiDataGrid extends Component<EuiDataGridSignature> {
           {{on "keyup" this.onContentKeyUp}}
           {{this.setupContent}}
         >
-          <EuiDataGridBody
-            @grid={{this}}
-            @hasFooterBlock={{has-block "footerCell"}}
-            @hasCellPopoverBlock={{has-block "cellPopover"}}
-          >
-            <:cell as |cell|>{{yield cell to="cell"}}</:cell>
-            <:cellPopover as |popover|>{{yield popover to="cellPopover"}}</:cellPopover>
-            <:footerCell as |cell|>{{yield cell to="footerCell"}}</:footerCell>
-            <:controlHeaderCell as |cell|>{{yield cell to="controlHeaderCell"}}</:controlHeaderCell>
-            <:controlCell as |cell|>{{yield cell to="controlCell"}}</:controlCell>
-            <:controlFooterCell as |cell|>{{yield cell to="controlFooterCell"}}</:controlFooterCell>
-          </EuiDataGridBody>
+          <EuiDataGridCopyMarker @grid={{this}} @type="boundary" />
+          {{#if (or @renderCustomGridBody (has-block "customGridBody"))}}
+            <EuiDataGridCustomBody
+              @grid={{this}}
+              @hasFooterBlock={{has-block "footerCell"}}
+              @renderCustomGridBody={{@renderCustomGridBody}}
+            >
+              <:customGridBody as |body|>{{yield body to="customGridBody"}}</:customGridBody>
+            </EuiDataGridCustomBody>
+          {{else}}
+            <EuiDataGridBody
+              @grid={{this}}
+              @hasFooterBlock={{has-block "footerCell"}}
+              @hasCellPopoverBlock={{has-block "cellPopover"}}
+            >
+              <:cell as |cell|>{{yield cell to="cell"}}</:cell>
+              <:cellPopover as |popover|>{{yield popover to="cellPopover"}}</:cellPopover>
+              <:footerCell as |cell|>{{yield cell to="footerCell"}}</:footerCell>
+              <:controlHeaderCell as |cell|>{{yield cell to="controlHeaderCell"}}</:controlHeaderCell>
+              <:controlCell as |cell|>{{yield cell to="controlCell"}}</:controlCell>
+              <:controlFooterCell as |cell|>{{yield cell to="controlFooterCell"}}</:controlFooterCell>
+            </EuiDataGridBody>
+          {{/if}}
+          <EuiDataGridCopyMarker @grid={{this}} @type="boundary" />
         </div>
         {{#if this.showPagination}}
           {{#if this.rawAriaLabelledBy}}

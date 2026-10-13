@@ -97,7 +97,15 @@ const files = [];
     else if (p.endsWith('.d.ts')) files.push(p);
   }
 })(declDir);
-const ourProgram = ts.createProgram(files, { noEmit: true, skipLibCheck: true, types: [] });
+const ourOptions = { noEmit: true, skipLibCheck: true, types: [] };
+// declarations keep `./eui-popover.gts` specifiers: resolve them to the .d.ts
+const ourHost = ts.createCompilerHost(ourOptions);
+ourHost.resolveModuleNames = (names, containingFile) =>
+  names.map((name) => {
+    const spec = name.replace(/\.g?ts$/, '');
+    return ts.resolveModuleName(spec, containingFile, ourOptions, ourHost).resolvedModule;
+  });
+const ourProgram = ts.createProgram(files, ourOptions, ourHost);
 const ourChecker = ourProgram.getTypeChecker();
 // barrel export name -> declaration file (classes are often named differently)
 import { readFileSync } from 'node:fs';

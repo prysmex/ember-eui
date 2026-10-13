@@ -33,25 +33,36 @@ Found by checking the migration guide's Known gaps against the code
 
 | Component | Missing |
 | --- | --- |
-| EuiComboBox | `inputPopoverProps` keys that only exist on EuiPopover: `closeOnScroll` (upstream's combo box sets it by default), `repositionOnScroll`, `buffer`, `offset`, `container`, `panelRef`, `popoverRef`, `onPanelResize`, `isLoading`, and attributes for the popover root; the list is an ember-basic-dropdown panel |
+| EuiComboBox | `inputPopoverProps`: `panelRef` / `popoverRef` (ref props). The list is an ember-basic-dropdown panel, so `repositionOnScroll` is always on and `buffer` / `container` only bound it horizontally (props-popovers-handoff.md) |
 
 ## Automated prop audit (2026-10-13)
 
 `node scripts/upstream-prop-audit.mjs . out.json` compares the props upstream
 EUI declares for each component with our Args/Blocks (it skips React-only
-and HTML-level props). 74 components have candidate gaps (249 props). This is
-a candidate list: some entries are covered differently in Ember (blocks
-instead of render props, `...attributes`), so check each before porting.
+and HTML-level props). Rebuild `packages/core/declarations` first
+(`npx ember-tsc` in packages/core), or it reads stale types.
 
-| Group | Components | Props |
+The first run found 249 candidate props in 74 components. Four waves closed
+them (see props-buttons-, props-popovers-, props-forms- and
+props-display-handoff.md). The audit now lists 16 components, all decided:
+
+| Component | Prop | Why it stays |
 | --- | --- | --- |
-| Button-like components that inherit EuiButton / EuiButtonEmpty props upstream | EuiSkipLink, EuiHeaderSectionItemButton, EuiPaginationButton, EuiDataGridToolbarControl, EuiFacetButton, EuiSuperUpdateButton, EuiFilterButton, EuiAutoRefreshButton, EuiFormControlButton, EuiHeaderLink, EuiButton, EuiButtonEmpty | `contentProps`, `textProps`, `iconSide`, `iconSize`, `iconType`, `isLoading`, `isSelected`, `isDisabled`, `hasAriaDisabled`, `color`, `size`, `flush`, `fill`, `fullWidth`, `minWidth`, `element` (varies per component) |
-| Popover-based props | EuiTourStep (all EuiPopover props), EuiIconTip / EuiToolTip / EuiBetaBadge `anchorProps`, EuiIconTip `offset` / `repositionOnScroll` / `disableScreenReaderOutput`, EuiColorPalettePicker `popoverProps` / `isOpen` / `itemClassName`, EuiHeaderLinks `popoverProps` / `popoverButtonProps`, EuiRange / EuiDualRange `inputPopoverProps`, EuiColorPicker `popoverZIndex`, EuiCopy `tooltipProps`, EuiKeyPadMenuItem `betaBadgeTooltipProps` | as listed |
-| Flyout-based props | EuiCollapsibleNav (EuiFlyout's props, incl. session and menu props), EuiFlyout `includeFixedHeadersInFocusTrap`, `includeSelectorInFocusTrap`, `pushAnimation` | as listed |
-| Element/tag choice | EuiFlexGroup, EuiFlexGrid, EuiFlexItem, EuiForm, EuiMarkdownFormat, EuiModalHeaderTitle, EuiQuickSelectPanel, EuiTextColor / EuiTextAlign (`component`, `cloneElement`), EuiPanel / EuiCollapsibleNavGroup (`element`) | `component` / `element` |
-| Data-driven alternatives to blocks | EuiSteps / EuiStepsHorizontal `steps`, EuiGlobalToastList `toasts`, EuiContextMenuPanel `items` / `height`, EuiToast `text`, EuiKeyPadMenu `checkable`, EuiFilePicker `files`, EuiSkeletonLoading `loadingContent` / `loadedContent` / announce props | as listed |
-| Component-specific | EuiMarkdownEditor (`autoExpandPreview`, `dropHandlers`, `editorId`, `errors`, `height`, `maxHeight`, `initialViewMode`, `onParse`, `parsingPluginList`, `processingPluginList`, `readOnly`, `showFooter`, …), EuiCollapsibleNavGroup (`arrowProps`, `borders`, `buttonProps`, `forceState`, `isLoading`, …), EuiDatePickerRange (`startDateControl`, `endDateControl`, `isCustom`, `prepend`, `append`, `iconSide`), EuiFormControlLayoutDelimited (`iconsPosition`, `isDropdown`, `wrapperProps`), EuiAutoRefresh (`append`, `isInvalid`, `isLoading`), EuiListGroupItem (`icon` node, `iconProps`), EuiComment (`timelineAvatar`, `verticalAlign`), EuiExpression (`descriptionProps`, `valueProps`), EuiFilterSelectItem (tooltips), EuiPinnableListGroup / EuiListGroup (`ariaLabelledby`, `showToolTips`), EuiSelectableTemplateSitewide (`searchable`), EuiSideNav (`isOpenOnMobile`, `truncate`), EuiBadgeGroup `gutterSize`, EuiCallOut `dismissButtonProps`, EuiCheckableCard `labelProps`, EuiComboBoxPill `onClickAriaLabel`, EuiContextMenu `onPanelChange`, EuiContextMenuItem `external`, EuiDatePopoverButton `buttonProps`, EuiDraggable `usePortal`, EuiEmptyPrompt `hasShadow`, EuiFlyoutMenu `iconType`, EuiFieldPassword `dualToggleProps`, EuiFormControlLayout `wrapperProps`, EuiFormRow `describedByIds`, EuiConfirmModal `outsideClickCloses`, EuiProgress `labelProps`, EuiSelectableList `windowProps` | as listed |
-| Probably covered by blocks (verify) | EuiComboBox / EuiSelectableTemplateSitewide `renderOption`, EuiDelayHide `render` | - |
+| EuiFlexGroup, EuiFlexGrid, EuiFlexItem, EuiForm, EuiModalHeaderTitle, EuiTextColor, EuiTextAlign | `component` | Ember EUI's `@tagName` |
+| EuiTextColor, EuiTextAlign | `cloneElement` | no Ember equivalent for applying classes to a child |
+| EuiFacetButton | `iconSide`, `iconSize`, `iconType`, `textProps` | our facet button is not built on EuiButtonContent |
+| EuiComboBox, EuiDelayHide | `renderOption`, `render` | the default block |
+| EuiComment | `timelineAvatar` | `@timelineIcon` and `<:timelineIcon>` |
+| EuiDatePickerRange | `startDateControl`, `endDateControl` | the `<:start>` / `<:end>` blocks |
+| EuiSelectableTemplateSitewide | `searchable` | upstream forces it on |
+| EuiCollapsibleNav | `hideCloseButton`, `pushMinBreakpoint` | no effect upstream either |
+| EuiContextMenuPanel | `height` | upstream only sets a meaningless `height` attribute |
+| EuiDraggable | `usePortal` | the native drag image needs no portal |
+
+The remaining "missing components" are React plumbing (providers, context,
+observers, error boundary), internals (combo box input/list, date tabs,
+checkbox control, resizable flyout, help button, toast list item,
+validatable control) and the EuiDatePicker decision.
 
 ## Decisions
 

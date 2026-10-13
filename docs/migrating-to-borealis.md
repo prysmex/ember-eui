@@ -281,7 +281,8 @@ means the previous value was not recorded.
 | `EuiCard` | Image `alt` | `"card-top"` | `""` |
 | `EuiCardSelect` | Button | `xs` `EuiButtonEmpty` | Full-width `m` `EuiButton` |
 | `EuiCodeBlock` | `<pre>` `tabindex` | `1` | `-1`, or `0` when it overflows |
-| `EuiCodeBlock` | Copy | Rendered `innerText`, blank lines collapsed; `copyClipboard` icon | The trimmed source with blank lines; `copy` icon; button only when there is text |
+| `EuiCodeBlock` | Copy | Rendered `innerText`, blank lines collapsed; `copyClipboard` icon | The trimmed source with blank lines (rich content: the rendered `innerText`, blank lines collapsed); `copy` icon; button only when there is text |
+| `EuiCodeBlock` | Markup in the block | Flattened to its text and highlighted | Rendered as-is, without highlighting, line numbers or virtualization; only text, or one `<pre>`/`<code>` wrapper around text, is highlighted |
 | `EuiTreeView` | `aria-expanded` | On every node | Only on nodes with children |
 | `EuiTabbedContent` | Unknown keys of a tab object | Ignored | Set as attributes of the tab (e.g. `data-test-subj`, `aria-label`) |
 | `EuiExpression` | `@isInvalid` | Whole expression danger | Only the description turns danger |
@@ -554,7 +555,6 @@ as before):
   callout shows only when there are errors.
 - **Header**: `EuiHeaderLogo` `logoType="horizontal"` and
   `EuiCollapsibleNavBeta`.
-- **Code block**: annotations are not rendered with `@isVirtualized`.
 
 Other things to know:
 

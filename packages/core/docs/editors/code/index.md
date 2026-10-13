@@ -22,7 +22,12 @@ text).
 ```
 
 Pass the code as text (e.g. a string property); it is highlighted as the
-content changes. `EuiCodeBlock` can add a copy button (`@isCopyable`),
+content changes. Text wrapped in a single `<pre>`, `<code>` or
+`<pre><code>` (as markdown and docs tooling render fenced code) counts as
+text too. Any other markup, such as a component, an icon or a `<span>`, is
+rich content and is rendered as-is, without highlighting, line numbers or
+virtualization, as upstream renders non-string children; copy then copies
+the rendered text. `EuiCodeBlock` can add a copy button (`@isCopyable`),
 line numbers (optionally highlighted or annotated), a max height with a
 full screen button (`@overflowHeight`) and virtualized rendering for very
 long code (`@isVirtualized`).
@@ -69,6 +74,33 @@ numbers and full screen view:
 `<EuiCodeBlock @language="js" @isCopyable={{true}}>{{this.code}}</EuiCodeBlock>`.
 `...attributes` go on the `<code>` element.
 
+Text or rich content. Upstream highlights `children` when it is a string
+and renders anything else as-is. Glimmer blocks have no such type, so the
+block is rendered into a detached element first and its DOM decides:
+
+- **Text**: only text nodes, or a single `<pre>`, `<code>` or
+  `<pre><code>` wrapper around text (whitespace-only text and comments
+  beside the wrapper are ignored). The wrapper's attributes, such as
+  `class="language-js"`, are ignored. This is the shape of docfy's fenced
+  code and demo snippets and of markdown code. The text is highlighted,
+  gets line numbers and can be virtualized. Copy copies that source text.
+- **Rich**: any other element (a component such as EuiTitle or EuiLink, an
+  icon, a `<span>` or `<b>`, two wrappers, or text beside a wrapper). The
+  block is rendered as-is in the visible `<code>`, with no highlighting,
+  line numbers, annotations or virtualization. Copy copies the rendered
+  text (`innerText`, consecutive blank lines collapsed, as upstream).
+  With `@isVirtualized` upstream renders an empty list for non-string
+  children; ours renders the content instead.
+
+Edge cases: markup that has already been highlighted (`<code>` with
+`<span class="token">` inside) counts as rich and is shown as given.
+Whitespace between tags in your template is rendered too (JSX drops it),
+so keep rich blocks tight: `<EuiCodeBlock><b>a</b> b</EuiCodeBlock>`. A
+rich block is rendered twice when it first appears (once to detect it,
+once visibly), and again in the full screen view, as upstream renders
+`children` there too. Content switching between text and rich updates in
+place.
+
 | Argument | Type | Default | Description |
 | --- | --- | --- | --- |
 | `@paddingSize` | `PaddingSize` | `'l'` | Padding around the code: `'none'`, `'s'`, `'m'` or `'l'`. |
@@ -85,7 +117,7 @@ Also takes the args of `EuiCodeSharedProps`.
 
 | Block | Description |
 | --- | --- |
-| default block | The code, as text (e.g. a string from your component). |
+| default block | The code as text (e.g. a string from your component), or rich content rendered as-is (see above). |
 
 </EuiText>
 <!-- api:end -->

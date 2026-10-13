@@ -39,7 +39,6 @@ Found by checking the migration guide's Known gaps against the code
 | EuiTextArea | icons, loading state, clear button |
 | EuiHeaderLogo | `logoType="horizontal"` |
 | EuiCollapsibleNavBeta | not ported |
-| EuiCodeBlock | annotations with `@isVirtualized`; rich (non-text) content is flattened to text where upstream renders it as-is |
 
 ## Decisions
 

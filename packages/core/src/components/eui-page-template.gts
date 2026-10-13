@@ -161,32 +161,20 @@ export type EuiPageTemplateProps = {
   /** Composable API. Styles composed last into the page's class (upstream's `css`). */
   css?: EuiCss;
 
-  /**
-   * Legacy API. Layout: `'default'` (header and content),
-   * `'centeredBody'` (content panel centered in the page),
-   * `'centeredContent'` (content centered in the body, e.g. an empty
-   * prompt) or `'empty'` (no panels). Defaults to `'default'`.
-   */
+  /** @deprecated Legacy API (removed upstream). Use the composable API: `<EuiPageTemplate as |T|>` with `T.Header`, `T.Section`, `T.EmptyPrompt` and `@panelled`. */
   template?: (typeof TEMPLATES)[number];
 
-  /** Legacy API. Props for the `EuiPageBody`, overriding layout defaults. */
+  /** @deprecated Legacy API (removed upstream). Use `@mainProps`. */
   pageBodyProps?: NormalProps & EuiPageBodySignature['Args'];
-  /**
-   * Legacy API. Props for the `EuiPageContent`: `{ className, hasBorder,
-   * hasShadow, color, borderRadius, grow, role }`.
-   */
+  /** @deprecated Legacy API (removed upstream). Pass the panel args to `T.Section`. */
   pageContentProps?: NormalProps & EuiPageContentSignature['Args'];
-  /** Legacy API. Props for the `EuiPageContentBody`, overriding layout defaults. */
+  /** @deprecated Legacy API (removed upstream). Pass the args to `T.Section`. */
   pageContentBodyProps?: NormalProps & EuiPageContentBodySignature['Args'];
 
-  /**
-   * Legacy API. The page header, as EuiPageHeader args: `{ pageTitle,
-   * iconType, description, tabs, responsive, bottomBorder }`. Use the
-   * `<:pageHeader…>` blocks for its title, description and actions.
-   */
+  /** @deprecated Legacy API (removed upstream). Use `T.Header`. */
   pageHeader?: NormalProps & EuiPageHeaderSignature['Args'];
 
-  /** Legacy API. Props for the side bar, including `sticky` and `paddingSize`. */
+  /** @deprecated Legacy API (removed upstream). Pass the args to `T.Sidebar` in the `<:sidebar as |T|>` block. */
   pageSideBarProps?: NormalProps & EuiPageSideBarSignature['Args'];
 
   /** @deprecated Has no effect, use the `<:bottomBar>` block. */
@@ -195,14 +183,9 @@ export type EuiPageTemplateProps = {
   /** @private Render the `<:bottomBar>` block. Defaults to `true`. */
   hasBottomBarBlock?: boolean;
 
-  /** Legacy API. Props for the bottom bar; override the layout defaults. */
+  /** @deprecated Legacy API (removed upstream). Use `T.BottomBar`. */
   bottomBarProps?: NormalProps & EuiButtomBarArgs;
-  /**
-   * Legacy API. Stretches the page to the window's height and scrolls the
-   * content instead of the page (templates `'default'` and `'empty'`, on
-   * medium screens and up). Use `'noscroll'` to fill the height without
-   * adding a scrolling wrapper around the content. Defaults to `false`.
-   */
+  /** @deprecated Legacy API (removed upstream). Use `@grow` and `@minHeight`. */
   fullHeight?: boolean | 'noscroll';
   /** @private Render the `<:pageSideBar>` block. Defaults to `true`. */
   hasPageSideBarBlock?: boolean;
@@ -289,17 +272,17 @@ export interface EuiPageTemplateSignature {
      * the content, like upstream.
      */
     sidebar: [Pick<EuiPageTemplateParts, 'Sidebar'>];
-    /** Legacy API. A side bar, e.g. an `EuiSideNav`. */
+    /** @deprecated Legacy API (removed upstream). Use the `<:sidebar as |T|>` block with `T.Sidebar`. */
     pageSideBar: [];
-    /** Legacy API. The header's title, instead of `pageHeader.pageTitle`. */
+    /** @deprecated Legacy API (removed upstream). Use `T.Header`'s `@pageTitle` or its blocks. */
     pageHeaderPageTitle: [];
-    /** Legacy API. Extra header content. */
+    /** @deprecated Legacy API (removed upstream). Use `T.Header`'s default block. */
     pageHeaderDefault: [];
-    /** Legacy API. The header's description. */
+    /** @deprecated Legacy API (removed upstream). Use `T.Header`'s `@description` or its blocks. */
     pageHeaderDescription: [];
-    /** Legacy API. Header actions; yields an item to wrap each in, see EuiPageHeader. */
+    /** @deprecated Legacy API (removed upstream). Use `T.Header`'s `<:rightSideItems>` block. */
     pageHeaderRightSideItems: EuiPageHeaderSignature['Blocks']['rightSideItems'];
-    /** Legacy API. Content of a bottom bar (EuiBottomBar), e.g. save/cancel buttons. */
+    /** @deprecated Legacy API (removed upstream). Use `T.BottomBar`. */
     bottomBar: [];
   };
 }

@@ -72,13 +72,15 @@ don't want the settings to apply.
   actions, icon and footer are named blocks (`<:title>`, `<:actions as
   |Item|>`, `<:icon>`, `<:footer>`).
 
-### Legacy API
+### Deprecated: the `@template` API
 
-The older `@template` API (with `@pageHeader`, `@pageSideBarProps`,
-`@pageBodyProps`, `@pageContentProps`, `@pageContentBodyProps`,
-`@bottomBarProps`, `@fullHeight` and the `<:pageSideBar>`,
-`<:pageHeader…>` and `<:bottomBar>` blocks) was removed upstream. It still
-works and is deprecated until 16.0.0; see the last example.
+The older `@template` API (`@pageHeader`, `@page…Props`, `@bottomBarProps`,
+`@fullHeight` and the `<:pageSideBar>`, `<:pageHeader…>` and `<:bottomBar>`
+blocks) was removed upstream. It still works in 15.x but logs a
+deprecation (`ember-eui.eui-page-template-legacy.removed-upstream`) and will
+be removed in 16.0.0. Use the composable API above; the
+[page template guidelines](/docs/core/docs/templates/page-template-guidelines)
+show how to convert a legacy layout.
 
 </EuiText>
 
@@ -128,27 +130,15 @@ deprecated: upstream removed it.
 | `@component` | `string` | `'main'` | Composable API. Tag of the main content wrapper. |
 | `@mainProps` | `EuiPageTemplateMainProps` |  | Composable API. Attributes of the main content wrapper: `{ id, className, css, style, role, 'aria-label', 'aria-labelledby', 'data-test-subj' }`. |
 | `@css` | `EuiCss` |  | Composable API. Styles composed last into the page's class (upstream's `css`). |
-| `@template` |  | `'default'` | Legacy API. Layout: `'default'` (header and content), `'centeredBody'` (content panel centered in the page), `'centeredContent'` (content centered in the body, e.g. an empty prompt) or `'empty'` (no panels). |
-| `@pageBodyProps` |  |  | Legacy API. Props for the `EuiPageBody`, overriding layout defaults. |
-| `@pageContentProps` |  |  | Legacy API. Props for the `EuiPageContent`: `{ className, hasBorder, hasShadow, color, borderRadius, grow, role }`. |
-| `@pageContentBodyProps` |  |  | Legacy API. Props for the `EuiPageContentBody`, overriding layout defaults. |
-| `@pageHeader` |  |  | Legacy API. The page header, as EuiPageHeader args: `{ pageTitle, iconType, description, tabs, responsive, bottomBorder }`. Use the `<:pageHeader…>` blocks for its title, description and actions. |
-| `@pageSideBarProps` |  |  | Legacy API. Props for the side bar, including `sticky` and `paddingSize`. |
-| `@bottomBarProps` | `NormalProps & EuiButtomBarArgs` |  | Legacy API. Props for the bottom bar; override the layout defaults. |
-| `@fullHeight` | `boolean \| 'noscroll'` | `false` | Legacy API. Stretches the page to the window's height and scrolls the content instead of the page (templates `'default'` and `'empty'`, on medium screens and up). Use `'noscroll'` to fill the height without adding a scrolling wrapper around the content. |
 
-Deprecated: `@bottomBar` (Has no effect, use the `<:bottomBar>` block.); `@hasPageHeader` (Has no effect.); `@hasPageContent` (Has no effect.); `@hasPageContentBody` (Has no effect.).
+Deprecated: `@template` (Legacy API (removed upstream). Use the composable API: `<EuiPageTemplate as \|T\|>` with `T.Header`, `T.Section`, `T.EmptyPrompt` and `@panelled`.); `@pageBodyProps` (Legacy API (removed upstream). Use `@mainProps`.); `@pageContentProps` (Legacy API (removed upstream). Pass the panel args to `T.Section`.); `@pageContentBodyProps` (Legacy API (removed upstream). Pass the args to `T.Section`.); `@pageHeader` (Legacy API (removed upstream). Use `T.Header`.); `@pageSideBarProps` (Legacy API (removed upstream). Pass the args to `T.Sidebar` in the `<:sidebar as \|T\|>` block.); `@bottomBar` (Has no effect, use the `<:bottomBar>` block.); `@bottomBarProps` (Legacy API (removed upstream). Use `T.BottomBar`.); `@fullHeight` (Legacy API (removed upstream). Use `@grow` and `@minHeight`.); `@hasPageHeader` (Has no effect.); `@hasPageContent` (Has no effect.); `@hasPageContentBody` (Has no effect.).
 
 | Block | Description |
 | --- | --- |
 | default block | The page's content. Composable API: yields the parts (`as \|T\|`), to stack `T.Header`, `T.Section`, `T.EmptyPrompt`, `T.BottomBar` or any content in the main element, in order. |
 | `<:sidebar>` | Composable API. Sidebars (`T.Sidebar`, may be conditional), rendered beside the main element. Any rendered `T.Sidebar` panels and borders the content, like upstream. |
-| `<:pageSideBar>` | Legacy API. A side bar, e.g. an `EuiSideNav`. |
-| `<:pageHeaderPageTitle>` | Legacy API. The header's title, instead of `pageHeader.pageTitle`. |
-| `<:pageHeaderDefault>` | Legacy API. Extra header content. |
-| `<:pageHeaderDescription>` | Legacy API. The header's description. |
-| `<:pageHeaderRightSideItems>` | Legacy API. Header actions; yields an item to wrap each in, see EuiPageHeader. |
-| `<:bottomBar>` | Legacy API. Content of a bottom bar (EuiBottomBar), e.g. save/cancel buttons. |
+
+Deprecated blocks: `<:pageSideBar>` (Legacy API (removed upstream). Use the `<:sidebar as \|T\|>` block with `T.Sidebar`.); `<:pageHeaderPageTitle>` (Legacy API (removed upstream). Use `T.Header`'s `@pageTitle` or its blocks.); `<:pageHeaderDefault>` (Legacy API (removed upstream). Use `T.Header`'s default block.); `<:pageHeaderDescription>` (Legacy API (removed upstream). Use `T.Header`'s `@description` or its blocks.); `<:pageHeaderRightSideItems>` (Legacy API (removed upstream). Use `T.Header`'s `<:rightSideItems>` block.); `<:bottomBar>` (Legacy API (removed upstream). Use `T.BottomBar`.)
 
 ### EuiPageTemplateSidebar
 

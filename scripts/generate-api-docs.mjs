@@ -433,13 +433,28 @@ function renderBlocks(blocks) {
 
   if (visible.length === 0) return '';
 
-  const rows = visible.map((block) => {
-    const name = block.name === 'default' ? 'default block' : `\`<:${block.name}>\``;
+  const blockName = (block) =>
+    block.name === 'default' ? 'default block' : `\`<:${block.name}>\``;
+  const current = visible.filter((block) => !/@deprecated\b/.test(block.doc));
+  const deprecated = visible.filter((block) => /@deprecated\b/.test(block.doc));
 
-    return `| ${name} | ${escapeCell(block.doc)} |`;
-  });
-
-  return `| Block | Description |\n| --- | --- |\n${rows.join('\n')}\n`;
+  let out = '';
+  if (current.length) {
+    const rows = current.map(
+      (block) => `| ${blockName(block)} | ${escapeCell(block.doc)} |`
+    );
+    out += `| Block | Description |\n| --- | --- |\n${rows.join('\n')}\n`;
+  }
+  // like deprecated args: listed after the table, with the replacement
+  if (deprecated.length) {
+    out += `\nDeprecated blocks: ${deprecated
+      .map(
+        (block) =>
+          `${blockName(block)} (${escapeCell(block.doc.replace(/@deprecated\s*/, ''))})`
+      )
+      .join('; ')}\n`;
+  }
+  return out;
 }
 
 function renderComponent(component) {

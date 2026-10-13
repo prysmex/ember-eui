@@ -346,6 +346,7 @@
       "./components/eui-emotion-button.js": "./dist/_app_/components/eui-emotion-button.js",
       "./components/eui-emotion-provider.js": "./dist/_app_/components/eui-emotion-provider.js",
       "./components/eui-empty-prompt.js": "./dist/_app_/components/eui-empty-prompt.js",
+      "./components/eui-error-message.js": "./dist/_app_/components/eui-error-message.js",
       "./components/eui-expression.js": "./dist/_app_/components/eui-expression.js",
       "./components/eui-facet-button.js": "./dist/_app_/components/eui-facet-button.js",
       "./components/eui-facet-group.js": "./dist/_app_/components/eui-facet-group.js",

@@ -270,6 +270,7 @@ const entries = {
   'components/code/code_block.styles.js': ['euiCodeBlockStyles', 'euiCodeBlockPreStyles', 'euiCodeBlockCodeStyles'],
   'components/code/code_block_controls.styles.js': ['euiCodeBlockControlsStyles'],
   'components/code/code_block_annotations.style.js': ['euiCodeBlockAnnotationsStyles'],
+  'components/error_boundary/error_boundary.styles.js': ['euiErrorBoundaryStyles'],
   'components/form/range/dual_range.styles.js': ['euiDualRangeStyles'],
   'components/form/range/range_draggable.styles.js': ['euiRangeDraggableStyles', 'euiRangeDraggableInnerStyles'],
   'components/form/range/range_input.styles.js': ['euiRangeInputStyles'],

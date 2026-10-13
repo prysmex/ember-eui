@@ -363,6 +363,10 @@
       "sha256": "8b31630b3bd4ae626b81475f5a1181d809bb42cecd2968114158e55b2d76ad23"
     },
     {
+      "path": "@elastic/eui/es/components/error_boundary/error_boundary.styles.js",
+      "sha256": "27059535015782a49663644e87f1879f406d53a04093bb528f46514b8d8a3b5e"
+    },
+    {
       "path": "@elastic/eui/es/components/expression/expression.styles.js",
       "sha256": "cef50689a0d48fa0a0c8038a0e7c5d2b9abdc0f7ad5b7bdf1ca27f937e95d73a"
     },

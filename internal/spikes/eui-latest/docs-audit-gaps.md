@@ -35,3 +35,4 @@ This is the list of those gaps. Effort: S/M/L.
 
 - EuiDatePicker: calendars live in `@ember-eui/flatpickr` and `@ember-eui/pikaday`, not in core.
 - EuiBasicTable / EuiDataGrid: tabular copy markers stay as upstream (always on); no Ember-only switch to turn them off.
+- EuiErrorBoundary: Glimmer has no render error boundaries. Ember EUI ships its fallback, `EuiErrorMessage` (`@error` / `@errorMessage`), for route `error` templates and caught errors.

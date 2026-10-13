@@ -9274,6 +9274,23 @@ var euiCodeBlockAnnotationsStyles = function euiCodeBlockAnnotationsStyles2(euiT
   };
 };
 
+// @elastic/eui/es/components/error_boundary/error_boundary.styles.js
+var euiErrorBoundaryStyles = function euiErrorBoundaryStyles2(euiThemeContext) {
+  var euiTheme = euiThemeContext.euiTheme, highContrastMode = euiThemeContext.highContrastMode;
+  var color1 = transparentize(euiTheme.colors.danger, highContrastMode ? 1 : 0.25);
+  var color2 = transparentize(euiTheme.colors.danger, highContrastMode ? 0.25 : 0.05);
+  return {
+    euiErrorBoundary: /* @__PURE__ */ css(logicalCSS("padding-horizontal", euiTheme.size.base), " ", logicalCSS("padding-vertical", euiTheme.size.base), " ", highContrastModeStyles(euiThemeContext, {
+      none: "\n          background-image: repeating-linear-gradient(\n            45deg,\n            ".concat(color1, ",\n            ").concat(color1, " 1px,\n            ").concat(color2, " 1px,\n            ").concat(color2, " 19px\n          );\n          background-size: 54px 54px; /* Fix for Safari 15.4+ */\n        "),
+      // Windows high contrast themes ignore background-images that aren't url()s.
+      // We can fake a basic danger-colored "border" with a little inline SVG trickery
+      forced: `
+          background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg'%3E%3Crect width='100%25' height='100%25' fill='`.concat(encodeURIComponent(euiTheme.colors.textDanger), `' /%3E%3C/svg%3E");
+        `)
+    }), ";;label:euiErrorBoundary;")
+  };
+};
+
 // @elastic/eui/es/components/form/range/dual_range.styles.js
 var euiDualRangeStyles = function euiDualRangeStyles2() {
   return {
@@ -11701,6 +11718,7 @@ export {
   euiDroppableStyles,
   euiDualRangeStyles,
   euiEmptyPromptStyles,
+  euiErrorBoundaryStyles,
   euiExpressionDescriptionStyles,
   euiExpressionIconStyles,
   euiExpressionStyles,

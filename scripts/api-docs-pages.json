@@ -462,6 +462,9 @@
   "packages/validated-form/docs/validated-form.md": [
     "ValidatedForm"
   ],
+  "packages/core/docs/utilities/error-boundary/index.md": [
+    "EuiErrorMessage"
+  ],
   "packages/core/docs/utilities/focus-trap/index.md": [
     "EuiFocusTrap"
   ],

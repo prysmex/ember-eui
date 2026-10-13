@@ -205,6 +205,7 @@ import type EuiLoadingElastic from './components/eui-loading-elastic';
 import type EuiMark from './components/eui-mark';
 import type EuiHighlight from './components/eui-highlight';
 import type EuiToken from './components/eui-token';
+import type EuiErrorMessage from './components/eui-error-message';
 import type EuiExpression from './components/eui-expression';
 import type EuiFacetButton from './components/eui-facet-button';
 import type EuiFacetGroup from './components/eui-facet-group';
@@ -679,6 +680,8 @@ export default interface EmberEuiRegistry {
   'eui-highlight': typeof EuiHighlight;
   EuiToken: typeof EuiToken;
   'eui-token': typeof EuiToken;
+  EuiErrorMessage: typeof EuiErrorMessage;
+  'eui-error-message': typeof EuiErrorMessage;
   EuiExpression: typeof EuiExpression;
   'eui-expression': typeof EuiExpression;
   EuiFacetButton: typeof EuiFacetButton;

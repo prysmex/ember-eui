@@ -57,6 +57,7 @@ import EuiDroppable from './components/eui-droppable.gts';
 import EuiDualRange from './components/eui-dual-range.gts';
 import EuiEmotionProvider from './components/eui-emotion-provider.gts';
 import EuiEmptyPrompt from './components/eui-empty-prompt.gts';
+import EuiErrorMessage from './components/eui-error-message.gts';
 import EuiExpression from './components/eui-expression.gts';
 import EuiFacetButton from './components/eui-facet-button.gts';
 import EuiFacetGroup from './components/eui-facet-group.gts';
@@ -322,6 +323,7 @@ export {
   EuiDualRange,
   EuiEmotionProvider,
   EuiEmptyPrompt,
+  EuiErrorMessage,
   EuiExpression,
   EuiFacetButton,
   EuiFacetGroup,

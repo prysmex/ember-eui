@@ -260,10 +260,6 @@ export default class ApplicationController extends Controller {
     }
   };
 
-  get isLatestShowcase() {
-    return this.selectedItem === '/docs/eui-latest';
-  }
-
   get currentVersion() {
     if (config.environment === 'development') return 'Local';
     else return `v${config['version'] as string}`;

@@ -2,9 +2,6 @@
   @colorMode={{this.themeManager.currentTheme.key}}
   @highContrastMode={{this.themeManager.highContrast}}
 >
-{{#if this.isLatestShowcase}}
-  <main>{{outlet}}</main>
-{{else}}
   <div id="guide">
     <EuiHeader @theme="dark" @position="fixed">
       <EuiHeaderSection @side="left">
@@ -113,5 +110,4 @@
       </:default>
     </EuiPageTemplate>
   </div>
-{{/if}}
 </BorealisRoot>

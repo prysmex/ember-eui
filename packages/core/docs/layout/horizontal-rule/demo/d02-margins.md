@@ -4,6 +4,12 @@ order: 2
 
 # Margins
 
+<EuiText>
+
+The spacing added before and after `EuiHorizontalRule` can be adjusted using the `@margin` arg. Don’t forget that margins will collapse against items that proceed and/or follow.
+
+</EuiText>
+
 ```hbs template
 <div class="horizontal-rule-demo">
   <EuiCode>none</EuiCode>

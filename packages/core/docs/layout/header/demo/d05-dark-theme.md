@@ -5,16 +5,16 @@ order: 5
 # Dark theme
 
 <EuiText>
-  <p>
-  To make site-wide navigation more prominent, <strong>EuiHeader</strong> supports reversing the colors to dark theme with <EuiCode>@theme="dark"</EuiCode>. However, it only supports a <strong>limited set of children</strong> that will also shift their theme. These components include <strong>EuiHeaderLogo</strong>, <strong>EuiHeaderLink(s)</strong>, <strong>EuiHeaderSectionItemButton</strong> and <strong>EuiSelectableTemplateSitewide</strong>. Any other content may not render correctly without custom configurations.
-  </p>
+
+To make site-wide navigation more prominent, `EuiHeader` supports reversing the colors to dark theme with `@theme="dark"`. However, it only supports a **limited set of children** that will also shift their theme. These components include `EuiHeaderLogo`, `EuiHeaderLink(s)`, `EuiHeaderSectionItemButton` and `EuiSelectableTemplateSitewide`. Any other content may not render correctly without custom configurations.
+
 </EuiText>
 
 ```hbs template
 <EuiHeader @theme='dark'>
   <EuiHeaderSection @side='left'>
-    <EuiHeaderSectionItem @border='right'>
-      <EuiHeaderLogo>Elastic</EuiHeaderLogo>
+    <EuiHeaderSectionItem>
+      <EuiHeaderLogo @iconType="logoElastic">Elastic</EuiHeaderLogo>
     </EuiHeaderSectionItem>
     <EuiHeaderSectionItem>
       <EuiHeaderLinks aria-label='App navigation dark theme example'>
@@ -26,8 +26,8 @@ order: 5
 
   </EuiHeaderSection>
   <EuiHeaderSection @side='right'>
-    <EuiHeaderSectionItem @border='left'>
-      <EuiBadge @iconType='arrowDown' @iconSide='right'>
+    <EuiHeaderSectionItem>
+      <EuiBadge @iconType='chevronSingleDown' @iconSide='right'>
         Production logs
       </EuiBadge>
     </EuiHeaderSectionItem>
@@ -36,7 +36,7 @@ order: 5
         @notification='2'
         aria-label='2 Notifications'
       >
-        <EuiIcon @type='cheer' @size='m' />
+        <EuiIcon @type='popper' @size='m' />
       </EuiHeaderSectionItemButton>
     </EuiHeaderSectionItem>
 
@@ -53,5 +53,5 @@ order: 5
 ```js component
 import Component from '@glimmer/component';
 
-export default class DemoHeaderComponent extends Component {}
+export default class DarkHeaderDemo extends Component {}
 ```

@@ -5,9 +5,11 @@ order: 6
 # Portal content in the header
 
 <EuiText>
-  <p>
-    Use an <strong>EuiHeaderSectionItemButton</strong> to display additional information in <EuiLink @href="/docs/core/docs/layout/popover">popovers</EuiLink> or <EuiLink @href="/docs/core/docs/layout/flyout">flyouts</EuiLink>, such as a user profile or news feed. When using <EuiLink @href="/docs/core/docs/layout/flyout">EuiFlyout</EuiLink>, be sure to wrap it in a <EuiLink @href="/docs/core/docs/utilities/portal">EuiPortal</EuiLink>. When using an <EuiLink @href="">EuiPopover</EuiLink> in conjunction with a <strong>fixed</strong> header, be sure to add the <EuiCode>repositionOnScroll</EuiCode> argument to the popover.
-  </p>
+
+Use an `EuiHeaderSectionItemButton` to display additional information in [popovers](/docs/core/docs/layout/popover) or [flyouts](/docs/core/docs/layout/flyout), such as a user profile or news feed. When using [EuiFlyout](/docs/core/docs/layout/flyout), be sure to wrap it in an [EuiPortal](/docs/core/docs/utilities/portal). When using an [EuiPopover](/docs/core/docs/layout/popover) in conjunction with a **fixed** header, be sure to add the `@repositionOnScroll` argument to the popover.
+
+The example below shows how to incorporate `EuiHeaderAlert` components to show a list of updates inside an `EuiFlyout` and an `EuiPopover`.
+
 </EuiText>
 
 ```hbs template
@@ -32,8 +34,8 @@ order: 6
 <EuiSpacer />
 <EuiHeader @position={{this.position}} @theme={{this.theme}}>
   <EuiHeaderSection @side='left'>
-    <EuiHeaderSectionItem @border='right'>
-      <EuiHeaderLogo>Elastic</EuiHeaderLogo>
+    <EuiHeaderSectionItem>
+      <EuiHeaderLogo @iconType="logoElastic">Elastic</EuiHeaderLogo>
     </EuiHeaderSectionItem>
   </EuiHeaderSection>
   <EuiHeaderSection @side='right'>
@@ -55,6 +57,7 @@ order: 6
         @closePopover={{set this 'popover' false}}
         @anchorPosition='leftCenter'
         @panelPaddingSize='none'
+        @repositionOnScroll={{true}}
       >
         <:button>
           <EuiHeaderSectionItemButton
@@ -65,7 +68,7 @@ order: 6
             aria-label='News feed: Updates available'
             {{on 'click' (set this 'popover' (not this.popover))}}
           >
-            <EuiIcon @type='cheer' />
+            <EuiIcon @type='popper' />
           </EuiHeaderSectionItemButton>
         </:button>
         <:content>

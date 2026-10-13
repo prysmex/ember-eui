@@ -5,7 +5,9 @@ order: 8
 # Stacked headers
 
 <EuiText>
-  Stacking multiple headers provides a great way to separate global navigation concerns. However, the <EuiCode>@position="fixed"</EuiCode> option will not be aware of the number of headers. If you do need fixed <strong>and</strong> stacked headers, you will need to apply the SASS helper mixin and pass in the correct height to afford for.
+
+Stacking multiple headers provides a great way to separate global navigation concerns. Fixed headers stack automatically: each one sits below the previous ones and `--euiFixedHeadersOffset` always holds their combined height.
+
 </EuiText>
 
 ```hbs template
@@ -24,8 +26,8 @@ order: 8
 <!-- header 1 -->
 <EuiHeader @position={{this.position}} @theme='dark'>
   <EuiHeaderSection @side='left'>
-    <EuiHeaderSectionItem @border='right'>
-      <EuiHeaderLogo>Elastic</EuiHeaderLogo>
+    <EuiHeaderSectionItem>
+      <EuiHeaderLogo @iconType="logoElastic">Elastic</EuiHeaderLogo>
     </EuiHeaderSectionItem>
   </EuiHeaderSection>
   <EuiHeaderSection @side='right'>
@@ -49,7 +51,7 @@ order: 8
   <EuiHeaderSection @side='left'>
     <EuiHeaderSectionItem>
       <EuiHeaderSectionItemButton
-        @border='right'
+       
         aria-label='Account menu'
       >
         <EuiAvatar
@@ -74,7 +76,7 @@ order: 8
         @notificationColor='accent'
         @ref={{set this 'cheerRef'}}
       >
-        <EuiIcon @type='cheer' />
+        <EuiIcon @type='popper' />
       </EuiHeaderSectionItemButton>
     </EuiHeaderSectionItem>
   </EuiHeaderSection>
@@ -86,7 +88,7 @@ import Component from '@glimmer/component';
 import { tracked } from '@glimmer/tracking';
 import { action } from '@ember/object';
 
-export default class DemoHeaderComponent extends Component {
+export default class StackedHeadersDemo extends Component {
   @tracked position = 'static';
 
   breadcrumbs = [

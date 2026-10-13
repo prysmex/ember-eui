@@ -1,8 +1,8 @@
 ---
-order: 2
+order: 6
 ---
 
-# Schema and hint
+# Schema and hint block (Ember EUI extra)
 
 <EuiText>
 

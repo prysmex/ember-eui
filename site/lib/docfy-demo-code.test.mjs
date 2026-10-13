@@ -38,6 +38,7 @@ test('all generated demo snippets contain source without nested code-block contr
     }
   }
   assert.ok(snippets > 300, 'checked the complete docs corpus');
-  assert.ok(templates > 0 && components > 0, 'checked both source tabs');
+  assert.strictEqual(templates, 0, 'demos are gjs: no separate template tab');
+  assert.ok(components > 300, 'every demo has its gjs component tab');
   assert.ok(proseBlocks > 0, 'prose code blocks retain their controls');
 });

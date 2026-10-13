@@ -1,5 +1,5 @@
 ---
-order: 8
+order: 11
 ---
 
 # Rendering the options
@@ -16,13 +16,19 @@ You can choose not to display the check and cross icons indicating selection by 
 
 An option is allowed to be passed that is just a header for the options that follow it. It takes no mouse handlers and renders similar to a title. Add one of these by setting `option.isGroupLabel` to true.
 
-### Row height
+### Row height and virtualization
 
-Every row must be the same height in order for the list to know how to scroll to the selected or highlighted option. It applies `@listProps.rowHeight` (in pixels) directly to each option, hiding any overflow.
+When virtualization is on, **every row must be the same height** in order for the list to know how to scroll to the selected or highlighted option. It applies `@listProps.rowHeight` (in pixels) directly to each option, hiding any overflow.
+
+If `@listProps.isVirtualized` is set to `false`, each row will fit its content. You can also remove truncation by setting `textWrap: 'wrap'` when virtualization is off. Ember EUI renders every option either way (it has no react-window); "virtualized" means fixed row heights and a computed list height.
 
 ### Custom content
 
-While it is best to stick to `option.label`, `option.append`, `option.prepend` and `@listProps.showIcons`, you can pass an `<:option>` block, which is called with the option and the search value for highlighting. Store extra data on the option object for use in the block. Also, if your custom content is taller than the default `@listProps.rowHeight` of 32px, you will need to pass in a custom value to this argument.
+While it is best to stick to `option.label`, `option.append`, `option.prepend` and `@listProps.showIcons`, you can pass an `<:option>` block, which is called with the option and the search value for highlighting.
+
+To provide data that can be used by the `<:option>` block that does not match the standard option API, use `option.data`, which is available on the yielded option. See the `secondaryContent` configuration in the following example; `searchableLabel` makes it searchable too.
+
+Also, if your custom content is taller than the default `@listProps.rowHeight` of 32px, you will need to pass in a custom value to this argument.
 
 </EuiText>
 
@@ -31,7 +37,6 @@ import Component from '@glimmer/component';
 import { tracked } from '@glimmer/tracking';
 import { action } from '@ember/object';
 import { EuiBadge, EuiHighlight, EuiSelectable, EuiSpacer, EuiSwitch, EuiText } from '@ember-eui/core/components';
-import { hash } from '@ember/helper';
 
 const countryData = [
   { code: 'NL', name: 'Netherlands', flag: '🇳🇱' },
@@ -63,18 +68,29 @@ const countryData = [
 
 export default class SelectableRenderingDemo extends Component {
   @tracked useCustomContent = true;
+  @tracked isVirtualized = true;
   @tracked options = [
     { label: 'Country options', isGroupLabel: true },
     ...countryData.map((country) => ({
       label: country.name,
+      searchableLabel: `${country.name} I am secondary content, I am!`,
       prepend: country.flag,
       code: country.code,
-      secondaryContent: 'I am secondary content, I am!',
+      data: { secondaryContent: 'I am secondary content, I am!' },
     })),
   ];
 
-  get rowHeight() {
-    return this.useCustomContent ? 57 : undefined;
+  get listProps() {
+    return {
+      isVirtualized: this.isVirtualized,
+      rowHeight: this.useCustomContent ? 57 : undefined,
+      showIcons: false,
+    };
+  }
+
+  @action
+  setIsVirtualized(event) {
+    this.isVirtualized = event.target.checked;
   }
 
   @action
@@ -89,6 +105,12 @@ export default class SelectableRenderingDemo extends Component {
 
   <template>
     <EuiSwitch
+      @label="Virtualized"
+      @checked={{this.isVirtualized}}
+      @onChange={{this.setIsVirtualized}}
+    />
+    &emsp;&emsp;
+    <EuiSwitch
       @label="Custom content"
       @checked={{this.useCustomContent}}
       @onChange={{this.setUseCustomContent}}
@@ -99,7 +121,7 @@ export default class SelectableRenderingDemo extends Component {
       @searchable={{true}}
       @options={{this.options}}
       @onChange={{this.setOptions}}
-      @listProps={{hash rowHeight=this.rowHeight showIcons=false}}
+      @listProps={{this.listProps}}
       @height={{240}}
     >
       <:optionAppend as |option|>
@@ -108,11 +130,9 @@ export default class SelectableRenderingDemo extends Component {
       <:option as |option search|>
         <EuiHighlight @text={{option.label}} @search={{search}} />
         {{#if this.useCustomContent}}
-          {{#if option.secondaryContent}}
-            <EuiText @size="xs" @color="subdued" class="eui-displayBlock">
-              <small>{{option.secondaryContent}}</small>
-            </EuiText>
-          {{/if}}
+          <EuiText @size="xs" @color="subdued" class="eui-displayBlock">
+            <small><EuiHighlight @text={{option.data.secondaryContent}} @search={{search}} /></small>
+          </EuiText>
         {{/if}}
       </:option>
     </EuiSelectable>

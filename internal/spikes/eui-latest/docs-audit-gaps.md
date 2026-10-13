@@ -34,7 +34,7 @@ This is the list of those gaps. Effort: S/M/L.
 | --- | --- |
 | EuiCheckbox | `readOnly` (+ styling) |
 | EuiColorPalettePicker | per-palette `append`; palettes `euiPaletteRed/Green/SkyBlue/Yellow/Orange` |
-| EuiSelectable | `errorMessage`, `toolTipContent`, `hasAriaDisabled`, `searchableLabel`, `listProps.textWrap`, `truncationProps`, `isVirtualized`, `optionMatcher`, `searchProps` value/onChange/onKeyDown |
+| EuiInputPopover | `closeOnScroll` (selectable input popover demo leaves it out) |
 | EuiInlineEdit* | `readModeProps` color/iconSide, `inputProps` prepend/readOnly |
 | EuiSearchBar | `box` prepend/append/onClick/onFocus/onBlur; filter option `view` as markup |
 | EuiSuperDatePicker | `updateButtonProps`, `customQuickSelectPanels`, `customQuickSelectRender`, `refreshIntervalUnits`, `showTimeWindowButtons`, `timeZoneDisplayProps`, `minDate`/`maxDate` |

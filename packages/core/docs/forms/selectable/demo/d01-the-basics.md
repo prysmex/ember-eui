@@ -26,7 +26,7 @@ import { EuiSelectable } from '@ember-eui/core/components';
 
 export default class SelectableBasicsDemo extends Component {
   @tracked options = [
-    { label: 'Titan' },
+    { label: 'Titan', 'data-test-subj': 'titanOption' },
     { label: 'Enceladus is disabled', disabled: true },
     { label: 'Mimas', checked: 'on' },
     { label: 'Dione' },

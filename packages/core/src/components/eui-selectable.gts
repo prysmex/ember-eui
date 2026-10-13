@@ -3,15 +3,23 @@ import { cached, tracked } from '@glimmer/tracking';
 import { hash } from '@ember/helper';
 import { on } from '@ember/modifier';
 import { action } from '@ember/object';
+import { schedule } from '@ember/runloop';
 import { service } from '@ember/service';
+import { isDestroying, isDestroyed } from '@ember/destroyable';
 
 import cssStyle from '../-private/css-style.ts';
 import { randomId } from '../-private/random-id.ts';
-import { getMatchingOptions, toggleOption } from '../-private/selectable-options.ts';
+import {
+  createPartialStringEqualityOptionMatcher,
+  getMatchingOptions,
+  isNavigable,
+  toggleOptionWithChange
+} from '../-private/selectable-options.ts';
 import { getEuiThemeContext } from '../utils/emotion/consume.ts';
 import { euiSelectableStyles } from '../utils/eui/styles.generated.ts';
 import { euiClass } from '../utils/eui/styles.ts';
 import EuiLoadingSpinner from './eui-loading-spinner.gts';
+import EuiScreenReaderLive from './eui-screen-reader-live.gts';
 import EuiSelectableList from './eui-selectable-list.gts';
 import EuiSelectableMessage from './eui-selectable-message.gts';
 import EuiSelectableSearch from './eui-selectable-search.gts';
@@ -19,11 +27,27 @@ import EuiSpacer from './eui-spacer.gts';
 
 import type EuiI18n from '../services/eui-i18n';
 import type { EuiCss } from '../utils/eui/styles.ts';
-import type { EuiSelectableOption } from '../-private/selectable-options.ts';
+import type {
+  EuiSelectableOption,
+  EuiSelectableOptionMatcher,
+  EuiSelectableOptionMatcherArgs,
+  EuiSelectableToolTipProps,
+  EuiSelectableTruncationProps
+} from '../-private/selectable-options.ts';
 import type Owner from '@ember/owner';
 import type { ComponentLike } from '@glint/template';
 
-export type { EuiSelectableOption };
+export type {
+  EuiSelectableOption,
+  EuiSelectableOptionMatcher,
+  EuiSelectableOptionMatcherArgs,
+  EuiSelectableToolTipProps,
+  EuiSelectableTruncationProps
+};
+export { createPartialStringEqualityOptionMatcher };
+
+/** Upstream default matcher (module scope: one instance). */
+const DEFAULT_OPTION_MATCHER = createPartialStringEqualityOptionMatcher();
 
 interface OptionBlocks {
   /** Renders an option's label yourself; yields the option and the search. */
@@ -46,20 +70,58 @@ export interface EuiSelectableSignature {
   Args: {
     /** The options: `{ label, checked, disabled, isGroupLabel, prepend, append }`. */
     options: EuiSelectableOption[];
-    /** Called with all options after one is checked or unchecked. */
-    onChange?: (options: EuiSelectableOption[]) => void;
+    /**
+     * Called with all options after one is checked or unchecked (new
+     * objects; the given ones are not mutated), the click or keyboard
+     * event, and the changed option.
+     */
+    onChange?: (
+      options: EuiSelectableOption[],
+      event: Event | undefined,
+      changedOption: EuiSelectableOption
+    ) => void;
+    /**
+     * Called with the current option (or `null`) whenever it changes
+     * through the keyboard, focus or searching.
+     */
+    onActiveOptionChange?: (option: EuiSelectableOption | null) => void;
     /** Adds a search field that filters the options. */
     searchable?: boolean;
     /**
-     * Options of the search field: `{ placeholder, compressed,
-     * defaultValue, onSearch(searchValue, matchingOptions) }`.
+     * Options of the search field: `{ placeholder, compressed, isLoading,
+     * isClearable, value, defaultValue, onChange(searchValue,
+     * matchingOptions), onSearch (same as onChange, not called on render),
+     * onKeyDown, onClick, onFocus, onBlur, inputRef, 'data-test-subj' }`.
+     * With `value` the search is controlled: update it from `onChange`.
+     * `onChange` is also called once after the first render.
      */
     searchProps?: {
       placeholder?: string;
       compressed?: boolean;
+      isLoading?: boolean;
+      isClearable?: boolean;
+      value?: string;
       defaultValue?: string;
+      onChange?: (searchValue: string, matchingOptions: EuiSelectableOption[]) => void;
       onSearch?: (searchValue: string, matchingOptions: EuiSelectableOption[]) => void;
+      onKeyDown?: (event: KeyboardEvent) => void;
+      onClick?: (event: MouseEvent) => void;
+      onFocus?: (event: FocusEvent) => void;
+      onBlur?: (event: FocusEvent) => void;
+      inputRef?: (input: HTMLInputElement) => void;
+      'data-test-subj'?: string;
     };
+    /**
+     * Decides whether an option matches the search: `({ option,
+     * searchValue, normalizedSearchValue }) => boolean`. Defaults to the
+     * label (or `searchableLabel`) containing the search, ignoring case.
+     */
+    optionMatcher?: EuiSelectableOptionMatcher;
+    /**
+     * Screen reader text read before the keyboard instructions of the
+     * search field.
+     */
+    selectableScreenReaderText?: string;
     /**
      * `true`: one option at most; `'always'`: exactly one (clicking the
      * checked option keeps it); `false`: several, shown with check boxes
@@ -70,13 +132,19 @@ export interface EuiSelectableSignature {
     allowExclusions?: boolean;
     /** Shows a loading message instead of the list. */
     isLoading?: boolean;
-    /** The options are already filtered (e.g. by a server): the search does not filter. */
-    isPreFiltered?: boolean;
+    /**
+     * The options are already filtered (e.g. by a server): the search does
+     * not filter. `{ highlightSearch: false }` also turns off highlighting
+     * the search in the labels.
+     */
+    isPreFiltered?: boolean | { highlightSearch?: boolean };
     /** Height of the list in px, or `'full'` to fill the container. */
     height?: number | 'full';
     /**
      * Options of the list: `{ bordered, paddingSize, showIcons, rowHeight,
-     * onFocusBadge }` (`onFocusBadge` defaults to `false`, upstream).
+     * onFocusBadge, isVirtualized, textWrap, truncationProps, css }`
+     * (`onFocusBadge` defaults to `false`, upstream). See
+     * `EuiSelectableList`.
      */
     listProps?: {
       bordered?: boolean;
@@ -84,6 +152,10 @@ export interface EuiSelectableSignature {
       showIcons?: boolean;
       rowHeight?: number;
       onFocusBadge?: boolean | { text?: string; iconSide?: 'left' | 'right' };
+      isVirtualized?: boolean;
+      textWrap?: 'truncate' | 'wrap';
+      truncationProps?: EuiSelectableTruncationProps;
+      css?: EuiCss;
     };
     /** Message while `@isLoading`. Defaults to "Loading options". */
     loadingMessage?: string;
@@ -91,6 +163,11 @@ export interface EuiSelectableSignature {
     noMatchesMessage?: string;
     /** Message when there are no options. Defaults to "No options available". */
     emptyMessage?: string;
+    /**
+     * Error message shown instead of the list (before any other message)
+     * when not `null` / `undefined`.
+     */
+    errorMessage?: string | null;
     /**
      * Styles composed last into the root's class (upstream's `css` prop),
      * e.g. from a template built on EuiSelectable.
@@ -122,8 +199,10 @@ export interface EuiSelectableSignature {
 export default class EuiSelectable extends Component<EuiSelectableSignature> {
   @service declare euiI18n: EuiI18n;
 
-  @tracked searchValue = '';
-  @tracked activeOptionIndex?: number;
+  /** The uncontrolled search (UI state); `searchProps.value` wins. */
+  @tracked internalSearchValue = '';
+  /** The keyboard's current option (UI state), see `activeOptionIndex`. */
+  @tracked internalActiveOptionIndex?: number;
   @tracked isFocused = false;
 
   rootId = `euiSelectable_${randomId()}`;
@@ -131,7 +210,10 @@ export default class EuiSelectable extends Component<EuiSelectableSignature> {
 
   constructor(owner: Owner, args: EuiSelectableSignature['Args']) {
     super(owner, args);
-    this.searchValue = args.searchProps?.defaultValue ?? '';
+    const { searchProps } = args;
+
+    this.internalSearchValue =
+      searchProps?.value || String(searchProps?.defaultValue || '');
 
     // a single selected option starts as the current one
     const checked = args.options.filter((option) => option.checked);
@@ -139,12 +221,62 @@ export default class EuiSelectable extends Component<EuiSelectableSignature> {
     if (args.singleSelection && checked.length === 1) {
       const index = this.visibleOptions.indexOf(checked[0]!);
 
-      if (index !== -1) this.activeOptionIndex = index;
+      if (index !== -1) this.internalActiveOptionIndex = index;
+    }
+
+    // upstream reports the initial search on mount; after render so the
+    // callback may update state that was already rendered
+    if (searchProps?.onChange) {
+      schedule('afterRender', () => {
+        if (isDestroying(this) || isDestroyed(this)) return;
+        this.args.searchProps?.onChange?.(this.searchValue, this.visibleOptions);
+      });
     }
   }
 
+  /** `searchProps.value` (controlled) or the typed search. */
+  get searchValue(): string {
+    return this.args.searchProps?.value ?? this.internalSearchValue;
+  }
+
+  get optionMatcher(): EuiSelectableOptionMatcher {
+    return this.args.optionMatcher ?? DEFAULT_OPTION_MATCHER;
+  }
+
+  /** Derived from `@options` and the search on every change (no copy kept). */
+  @cached
   get visibleOptions(): EuiSelectableOption[] {
-    return getMatchingOptions(this.args.options, this.searchValue, this.args.isPreFiltered);
+    return getMatchingOptions(
+      this.args.options,
+      this.searchValue,
+      this.args.isPreFiltered,
+      this.optionMatcher
+    );
+  }
+
+  /**
+   * The current option's index in the visible options; dropped when the
+   * options change and it is out of range (upstream).
+   */
+  get activeOptionIndex(): number | undefined {
+    const index = this.internalActiveOptionIndex;
+
+    return index !== undefined && index >= this.visibleOptions.length ? undefined : index;
+  }
+
+  /** Sets the current option and reports it (upstream `onActiveOptionChange`). */
+  setActive(index: number | undefined): void {
+    if (index === this.internalActiveOptionIndex) return;
+
+    const previous = this.activeOptionIndex;
+
+    this.internalActiveOptionIndex = index;
+
+    if (this.activeOptionIndex !== previous) {
+      const option = index !== undefined && index >= 0 ? this.visibleOptions[index] : undefined;
+
+      this.args.onActiveOptionChange?.(option ?? null);
+    }
   }
 
   get listId(): string {
@@ -165,9 +297,26 @@ export default class EuiSelectable extends Component<EuiSelectableSignature> {
   }
 
   get screenReaderInstructions(): string {
-    return this.euiI18n.lookupToken(
+    const instructions = this.euiI18n.lookupToken(
       'euiSelectable.screenReaderInstructions',
       'Use the Up and Down arrow keys to move focus over options. Press Enter to select. Press Escape to collapse options.'
+    );
+    const custom = this.args.selectableScreenReaderText;
+
+    return custom ? `${custom} ${instructions}` : instructions;
+  }
+
+  /** Upstream live region text: "N results available". */
+  get searchResultsText(): string {
+    const resultsLength = this.visibleOptions.filter(
+      (option) => !option.disabled || option.hasAriaDisabled
+    ).length;
+
+    return this.euiI18n.lookupToken(
+      'euiSelectable.searchResults',
+      ({ resultsLength }) =>
+        `${resultsLength as number} result${resultsLength === 1 ? '' : 's'} available`,
+      { resultsLength }
     );
   }
 
@@ -195,6 +344,10 @@ export default class EuiSelectable extends Component<EuiSelectableSignature> {
   }
 
   get message(): { text?: string; isLoading?: boolean; searchValue?: string } | undefined {
+    if (this.args.errorMessage != null) {
+      return { text: this.args.errorMessage };
+    }
+
     if (this.args.isLoading) {
       return {
         isLoading: true,
@@ -239,8 +392,26 @@ export default class EuiSelectable extends Component<EuiSelectableSignature> {
       .split('\u0000')[0]!;
   }
 
+  /** Upstream: `hasAriaDisabled` options can be the current one. */
   isSelectable = (option: EuiSelectableOption | undefined): boolean =>
-    Boolean(option && !option.disabled && !option.isGroupLabel);
+    isNavigable(option);
+
+  /**
+   * Upstream `isFocusOnSearchOrListBox`: keys pressed on other content
+   * laid out inside (e.g. a footer button) are not list navigation. The
+   * root itself also counts (Ember EUI: keydown dispatched on it).
+   */
+  isFromSearchOrList(event: Event): boolean {
+    const target = event.target;
+
+    if (target === event.currentTarget) return true;
+    if (!(target instanceof Element)) return false;
+
+    return (
+      (this.args.searchable && target.classList.contains('euiSelectableSearch')) ||
+      Boolean(target.closest('.euiSelectableList'))
+    );
+  }
 
   @action
   onMouseDown(): void {
@@ -262,8 +433,9 @@ export default class EuiSelectable extends Component<EuiSelectableSignature> {
       (option) => option.checked && this.isSelectable(option)
     );
 
-    this.activeOptionIndex =
-      firstChecked > -1 ? firstChecked : this.visibleOptions.findIndex(this.isSelectable);
+    this.setActive(
+      firstChecked > -1 ? firstChecked : this.visibleOptions.findIndex(this.isSelectable)
+    );
     this.isFocused = true;
   }
 
@@ -273,12 +445,26 @@ export default class EuiSelectable extends Component<EuiSelectableSignature> {
 
     if (event.relatedTarget && container.contains(event.relatedTarget as Node)) return;
 
-    this.activeOptionIndex = undefined;
-    this.isFocused = false;
+    // Focus also leaves when rendering removes the focused list (e.g. the
+    // options become empty): reset after that render, unless focus is back.
+    schedule('actions', () => {
+      if (isDestroying(this) || isDestroyed(this)) return;
+      if (container.isConnected && container.contains(document.activeElement)) return;
+
+      this.setActive(undefined);
+      this.isFocused = false;
+    });
   }
 
   @action
   onKeyDown(event: KeyboardEvent): void {
+    if (!this.isFromSearchOrList(event)) {
+      this.setActive(undefined);
+      this.isFocused = false;
+
+      return;
+    }
+
     switch (event.key) {
       case 'Alt':
       case 'Shift':
@@ -313,19 +499,19 @@ export default class EuiSelectable extends Component<EuiSelectableSignature> {
             ? this.visibleOptions[this.activeOptionIndex]
             : undefined;
 
-        const options = option
-          ? toggleOption(this.args.options, option, {
+        const result = option
+          ? toggleOptionWithChange(this.args.options, option, {
               allowExclusions: this.args.allowExclusions,
               singleSelection: this.singleSelection
             })
           : undefined;
 
-        if (options) this.args.onChange?.(options);
+        if (result) this.args.onChange?.(result.options, event, result.changedOption);
         break;
       }
       default:
         // typing in the search: the current option is picked again
-        this.activeOptionIndex = undefined;
+        this.setActive(undefined);
         break;
     }
   }
@@ -348,13 +534,14 @@ export default class EuiSelectable extends Component<EuiSelectableSignature> {
       next = (next + (amount > 0 ? 1 : -1) + options.length) % options.length;
     }
 
-    this.activeOptionIndex = next;
+    this.setActive(next);
   }
 
   @action
   onSearchChange(matchingOptions: EuiSelectableOption[], searchValue: string): void {
-    this.searchValue = searchValue;
-    this.activeOptionIndex = undefined;
+    this.internalSearchValue = searchValue;
+    this.setActive(undefined);
+    this.args.searchProps?.onChange?.(searchValue, matchingOptions);
     this.args.searchProps?.onSearch?.(searchValue, matchingOptions);
 
     if (this.isFocused) this.onFocus();
@@ -362,12 +549,16 @@ export default class EuiSelectable extends Component<EuiSelectableSignature> {
 
   @action
   setActiveOptionIndex(index: number): void {
-    this.activeOptionIndex = index;
+    this.setActive(index);
   }
 
   @action
-  onOptionClick(options: EuiSelectableOption[]): void {
-    this.args.onChange?.(options);
+  onOptionClick(
+    options: EuiSelectableOption[],
+    event: Event | undefined,
+    changedOption: EuiSelectableOption
+  ): void {
+    this.args.onChange?.(options, event, changedOption);
   }
 
   <template>
@@ -387,12 +578,23 @@ export default class EuiSelectable extends Component<EuiSelectableSignature> {
             options=@options
             onChange=this.onSearchChange
             placeholder=this.placeholder
-            defaultValue=@searchProps.defaultValue
+            value=this.searchValue
             compressed=@searchProps.compressed
+            isLoading=@searchProps.isLoading
+            isClearable=@searchProps.isClearable
             isPreFiltered=@isPreFiltered
+            optionMatcher=this.optionMatcher
             listId=(if this.message undefined this.listId)
             ariaDescribedby=this.instructionsId
+            ariaLabel=this.placeholder
+            activeDescendant=this.activeDescendant
             instructions=this.screenReaderInstructions
+            onKeyDown=@searchProps.onKeyDown
+            onClick=@searchProps.onClick
+            onFocus=@searchProps.onFocus
+            onBlur=@searchProps.onBlur
+            inputRef=@searchProps.inputRef
+            dataTestSubj=(searchTestSubj @searchProps)
           )
         )
         (component
@@ -407,6 +609,8 @@ export default class EuiSelectable extends Component<EuiSelectableSignature> {
           searchValue=this.searchValue
           activeOptionIndex=this.activeOptionIndex
           message=this.message
+          searchResultsText=this.searchResultsText
+          isPreFiltered=@isPreFiltered
         )
         as |Search List|
       }}
@@ -414,10 +618,7 @@ export default class EuiSelectable extends Component<EuiSelectableSignature> {
           {{yield (hash list=List search=Search)}}
         {{else}}
           {{#if Search}}
-            <Search
-              aria-activedescendant={{this.activeDescendant}}
-              aria-label={{this.placeholder}}
-            />
+            <Search />
           {{/if}}
           <List
             @hasOption={{has-block "option"}}
@@ -440,6 +641,12 @@ function flag(explicit: boolean | undefined, hasBlock: boolean): boolean {
   return explicit ?? hasBlock;
 }
 
+function searchTestSubj(
+  searchProps: EuiSelectableSignature['Args']['searchProps']
+): string | undefined {
+  return searchProps?.['data-test-subj'];
+}
+
 interface SelectableBodySignature {
   Element: HTMLDivElement;
   Args: {
@@ -453,6 +660,9 @@ interface SelectableBodySignature {
     searchValue: string;
     activeOptionIndex?: number;
     message?: EuiSelectable['message'];
+    /** "N results available", announced while searching. */
+    searchResultsText?: string;
+    isPreFiltered?: EuiSelectableSignature['Args']['isPreFiltered'];
     hasOption?: boolean;
     hasOptionPrepend?: boolean;
     hasOptionAppend?: boolean;
@@ -468,7 +678,25 @@ class SelectableBody extends Component<SelectableBodySignature> {
     return this.args.selectable;
   }
 
+  /** Upstream: announces while a message shows or an option is current. */
+  get isLiveActive(): boolean {
+    return this.args.message !== undefined || this.args.activeOptionIndex !== undefined;
+  }
+
   <template>
+    {{#if @searchable}}
+      <EuiScreenReaderLive @isActive={{this.isLiveActive}}>
+        {{#if @message}}
+          {{#if @message.searchValue}}
+            {{this.selectable.noMatchesPrefix}}{{@message.searchValue}}{{this.selectable.noMatchesSuffix}}
+          {{else}}
+            {{@message.text}}
+          {{/if}}
+        {{else}}
+          {{@searchResultsText}}
+        {{/if}}
+      </EuiScreenReaderLive>
+    {{/if}}
     {{#if @message}}
       <EuiSelectableMessage
         id={{this.selectable.messageId}}
@@ -505,6 +733,11 @@ class SelectableBody extends Component<SelectableBodySignature> {
         @showIcons={{@listProps.showIcons}}
         @rowHeight={{@listProps.rowHeight}}
         @onFocusBadge={{@listProps.onFocusBadge}}
+        @isVirtualized={{@listProps.isVirtualized}}
+        @textWrap={{@listProps.textWrap}}
+        @truncationProps={{@listProps.truncationProps}}
+        @isPreFiltered={{@isPreFiltered}}
+        @css={{@listProps.css}}
         @listId={{this.selectable.listId}}
         @makeOptionId={{this.selectable.makeOptionId}}
         @hasOption={{flag @hasOption (has-block "option")}}

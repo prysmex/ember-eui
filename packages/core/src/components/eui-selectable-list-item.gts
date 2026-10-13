@@ -11,11 +11,15 @@ import {
 import EuiBadge from './eui-badge.gts';
 import EuiIcon from './eui-icon.gts';
 import EuiScreenReaderOnly from './eui-screen-reader-only.gts';
+import EuiToolTip from './eui-tool-tip.gts';
+import { randomId } from '../-private/random-id.ts';
 
 import type EuiI18n from '../services/eui-i18n';
 import type { EuiCss } from '../utils/eui/styles.ts';
 import type { EuiIconSignature } from './eui-icon';
+import type { EuiSelectableToolTipProps } from '../-private/selectable-options.ts';
 import type { CSSInterpolation } from '@emotion/css/create-instance';
+import type { TOC } from '@ember/component/template-only';
 
 export type EuiSelectableOptionCheckedType = 'on' | 'off' | 'mixed' | undefined;
 
@@ -50,6 +54,20 @@ export interface EuiSelectableListItemSignature {
     isFocused?: boolean;
     /** Disables the option. */
     disabled?: boolean;
+    /**
+     * With `@disabled`: keeps focus styles, the focus badge and the tooltip
+     * (upstream `hasAriaDisabled`); the option still cannot be selected.
+     */
+    hasAriaDisabled?: boolean;
+    /**
+     * `'truncate'` (default, CSS ellipsis) or `'wrap'` the label (upstream
+     * `textWrap`; EuiSelectable only wraps when not virtualized).
+     */
+    textWrap?: 'truncate' | 'wrap';
+    /** Tooltip text, shown on hover and while `@isFocused` (upstream). */
+    toolTipContent?: string;
+    /** EuiToolTip arguments of that tooltip; `position` defaults to `'left'`. */
+    toolTipProps?: EuiSelectableToolTipProps;
     /**
      * `'on'` (checked), `'off'` (excluded), `'mixed'` (checked for some) or
      * nothing. `true` is treated as `'on'`.
@@ -114,6 +132,43 @@ const ITEM_RESET = {
 } as const;
 
 const HIDDEN_ICON = { display: 'none' } as const;
+/** Upstream `anchorClassName="eui-fullWidth"` of the option tooltip. */
+const TOOLTIP_ANCHOR = { display: 'block', inlineSize: '100%' } as const;
+
+/**
+ * @private Upstream EuiListItemLayout's internal tooltip: wraps the
+ * option's content in an EuiToolTip (position `left` by default), shown on
+ * hover and while the option is the current one.
+ */
+const MaybeToolTip: TOC<{
+  Args: {
+    show: boolean;
+    id: string;
+    content?: string;
+    props?: EuiSelectableToolTipProps;
+    anchorCss: EuiCss;
+    isShown: boolean;
+  };
+  Blocks: { default: [] };
+}> = <template>
+  {{#if @show}}
+    <EuiToolTip
+      @id={{@id}}
+      @content={{@content}}
+      @position={{if @props.position @props.position "left"}}
+      @title={{@props.title}}
+      @delay={{@props.delay}}
+      @offset={{@props.offset}}
+      @className={{@props.className}}
+      @css={{@props.css}}
+      @anchorClassName={{@props.anchorClassName}}
+      @anchorCss={{@anchorCss}}
+      @isShown={{@isShown}}
+    >{{yield}}</EuiToolTip>
+  {{else}}
+    {{yield}}
+  {{/if}}
+</template>;
 
 export default class EuiSelectableListItem extends Component<EuiSelectableListItemSignature> {
   @service declare euiI18n: EuiI18n;
@@ -149,8 +204,25 @@ export default class EuiSelectableListItem extends Component<EuiSelectableListIt
     return Boolean(this.args.disabled);
   }
 
+  /** Disabled without `@hasAriaDisabled`: no interactive states. */
+  get isInert(): boolean {
+    return this.isDisabled && !this.args.hasAriaDisabled;
+  }
+
   get isFocused(): boolean {
-    return Boolean(this.args.isFocused) && !this.isDisabled;
+    return Boolean(this.args.isFocused) && !this.isInert;
+  }
+
+  toolTipId = `euiSelectableListItem_${randomId()}_tooltip`;
+
+  /** Upstream: no tooltip on (natively) disabled options. */
+  get hasToolTip(): boolean {
+    return Boolean(this.args.toolTipContent) && !this.isInert;
+  }
+
+  @cached
+  get toolTipAnchorCss(): EuiCss {
+    return [TOOLTIP_ANCHOR, this.isDisabled && this.layout.tooltip.isDisabled];
   }
 
   /** Upstream `selectionMode`: `'checked'` uses `aria-checked`. */
@@ -297,7 +369,7 @@ export default class EuiSelectableListItem extends Component<EuiSelectableListIt
   @cached
   get itemClass(): string {
     const layout = this.layout;
-    const interactive: CSSInterpolation[] = this.isDisabled
+    const interactive: CSSInterpolation[] = this.isInert
       ? []
       : [
           this.args.isInteractive && layout.isInteractive,
@@ -331,7 +403,9 @@ export default class EuiSelectableListItem extends Component<EuiSelectableListIt
       text: euiClass(
         context,
         layout.euiListItemLayout__text,
-        layout.textWrap.truncate
+        this.args.textWrap === 'wrap'
+          ? layout.textWrap.wrap
+          : layout.textWrap.truncate
       )
     };
   }
@@ -393,9 +467,18 @@ export default class EuiSelectableListItem extends Component<EuiSelectableListIt
       aria-selected={{this.ariaSelected}}
       aria-current={{this.ariaCurrent}}
       aria-disabled={{if this.isDisabled "true"}}
+      aria-describedby={{if this.hasToolTip this.toolTipId}}
       data-test-subj="euiListItemLayout"
       ...attributes
     >
+      <MaybeToolTip
+        @show={{this.hasToolTip}}
+        @id={{this.toolTipId}}
+        @content={{@toolTipContent}}
+        @props={{@toolTipProps}}
+        @anchorCss={{this.toolTipAnchorCss}}
+        @isShown={{this.isFocused}}
+      >
       <span
         class="euiListItemLayout__content euiSelectableListItem__content
           {{this.partClasses.content}}"
@@ -471,6 +554,7 @@ export default class EuiSelectableListItem extends Component<EuiSelectableListIt
           </span>
         {{/if}}
       </span>
+      </MaybeToolTip>
     </li>
   </template>
 }

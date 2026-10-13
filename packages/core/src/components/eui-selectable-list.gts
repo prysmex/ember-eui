@@ -1,23 +1,29 @@
 import Component from '@glimmer/component';
-import { cached } from '@glimmer/tracking';
+import { cached, tracked } from '@glimmer/tracking';
 import { fn, hash } from '@ember/helper';
 import { on } from '@ember/modifier';
 import { action } from '@ember/object';
 
+import { buildWaiter } from '@ember/test-waiters';
+
 import { modifier } from 'ember-modifier';
 
 import cssStyle from '../-private/css-style.ts';
-import { toggleOption } from '../-private/selectable-options.ts';
+import { toggleOptionWithChange } from '../-private/selectable-options.ts';
 import { getEuiThemeContext } from '../utils/emotion/consume.ts';
 import {
   euiSelectableListGroupLabelStyles,
   euiSelectableListStyles
 } from '../utils/eui/selectable.ts';
 import { euiClass, useEuiBorealisStyles } from '../utils/eui/styles.ts';
-import EuiHighlight from './eui-highlight.gts';
 import EuiSelectableListItem from './eui-selectable-list-item.gts';
+import EuiSelectableOptionText from './eui-selectable-list/option-text.gts';
 
-import type { EuiSelectableOption } from '../-private/selectable-options.ts';
+import type {
+  EuiSelectableOption,
+  EuiSelectableTruncationProps
+} from '../-private/selectable-options.ts';
+import type { EuiCss } from '../utils/eui/styles.ts';
 
 export type { EuiSelectableOption };
 
@@ -34,6 +40,39 @@ const LIST_RESET = {
     listStyle: 'none'
   }
 } as const;
+// upstream `calculateDefaultOptionWidth` offsets
+const OPTION_PADDING_OFFSET = 24; // 2 × item padding (8px) + 2 × text padding (4px)
+const CHECKED_ICON_OFFSET = 24; // icon (16px) + gap (8px)
+const FOCUS_BADGE_OFFSET = 28; // badge (20px) + gap (8px)
+
+const waiter = buildWaiter('@ember-eui/core:eui-selectable-list');
+
+/**
+ * Reports the list's width (upstream EuiAutoSizer) while `observe` is set;
+ * settled-aware until the first observation.
+ */
+const observeWidth = modifier(
+  (element: HTMLElement, [observe, onResize]: [boolean, (width: number) => void]) => {
+    if (!observe || typeof ResizeObserver === 'undefined') return;
+    let token: unknown = waiter.beginAsync();
+    const settle = () => {
+      if (token === undefined) return;
+      waiter.endAsync(token);
+      token = undefined;
+    };
+    const observer = new ResizeObserver(([entry]) => {
+      const width = entry?.borderBoxSize?.[0]?.inlineSize;
+      if (width !== undefined) onResize(width);
+      settle();
+    });
+    observer.observe(element);
+    return () => {
+      observer.disconnect();
+      settle();
+    };
+  }
+);
+
 const GROUP_LABEL_RESET = {
   ':where(&)': { boxSizing: 'border-box', margin: 0, listStyle: 'none' }
 } as const;
@@ -56,8 +95,15 @@ export interface EuiSelectableListSignature {
     activeOptionIndex?: number;
     /** Called when an option is pressed, to make it the current one. */
     setActiveOptionIndex?: (index: number) => void;
-    /** Called with all options after one is checked or unchecked. */
-    onOptionClick: (options: EuiSelectableOption[]) => void;
+    /**
+     * Called with all options after one is checked or unchecked, the
+     * click or keyboard event, and the changed option.
+     */
+    onOptionClick: (
+      options: EuiSelectableOption[],
+      event: Event | undefined,
+      changedOption: EuiSelectableOption
+    ) => void;
     /**
      * `true`: one option at most; `'always'`: exactly one (it cannot be
      * unchecked); `false`: several, with check box indicators. Left
@@ -78,8 +124,36 @@ export interface EuiSelectableListSignature {
     bordered?: boolean;
     /** `'s'` pads the list. Defaults to `'none'`. */
     paddingSize?: 'none' | 's';
-    /** Height of each option in px. Defaults to `32`. */
+    /**
+     * Height of each option in px. Defaults to `32`. Has no effect when
+     * `@isVirtualized` is `false`.
+     */
     rowHeight?: number;
+    /**
+     * `true` (default): every row is `@rowHeight` tall and the list height
+     * is computed from it (upstream renders with react-window). `false`:
+     * rows fit their content and the list is only as tall as `@height`
+     * (when a number), so text can wrap.
+     */
+    isVirtualized?: boolean;
+    /**
+     * `'truncate'` (default) or `'wrap'` the labels; an option's own
+     * `textWrap` wins. Wrapping only works with `@isVirtualized={{false}}`.
+     */
+    textWrap?: 'truncate' | 'wrap';
+    /**
+     * EuiTextTruncate arguments (`truncation`, `truncationOffset`, …) for
+     * truncated labels; an option's own `truncationProps` are merged over
+     * them. While searching, the match is kept visible instead.
+     */
+    truncationProps?: EuiSelectableTruncationProps;
+    /**
+     * Every option matches the search (filtered elsewhere); `{
+     * highlightSearch: false }` also turns off the search highlighting.
+     */
+    isPreFiltered?: boolean | { highlightSearch?: boolean };
+    /** Styles composed last into the root's class (upstream `css`). */
+    css?: EuiCss;
     /**
      * Height of the list in px, or `'full'` to fill its container. By
      * default it shows up to 7 options (and half of the next one).
@@ -125,6 +199,110 @@ export default class EuiSelectableList extends Component<EuiSelectableListSignat
     return this.args.rowHeight ?? 32;
   }
 
+  get isVirtualized(): boolean {
+    return this.args.isVirtualized !== false;
+  }
+
+  /** Row height style: only when virtualized (upstream react-window). */
+  get rowHeightStyle(): number | undefined {
+    return this.isVirtualized ? this.rowHeight : undefined;
+  }
+
+  /** Upstream `highlightSearch`. */
+  get highlightSearch(): boolean {
+    const { searchValue, isPreFiltered } = this.args;
+
+    return Boolean(searchValue) &&
+      (typeof isPreFiltered === 'object' && isPreFiltered !== null
+        ? isPreFiltered.highlightSearch !== false
+        : true);
+  }
+
+  /** The list's width (upstream EuiAutoSizer), when truncation may need it. */
+  @tracked containerWidth = 0;
+  listBox: HTMLElement | null = null;
+
+  /** Upstream `mayTruncate`: measure only when EuiTextTruncate may render. */
+  get mayTruncate(): boolean {
+    return this.isVirtualized && Boolean(this.args.searchable || this.args.truncationProps);
+  }
+
+  /** Upstream `defaultOptionWidth`, shared by options without prepend/append. */
+  get defaultOptionWidth(): number {
+    if (!this.containerWidth) return 0;
+
+    const scrollbar = this.listBox ? this.containerWidth - this.listBox.offsetWidth : 0;
+    const icons = this.args.showIcons === false ? 0 : CHECKED_ICON_OFFSET;
+
+    return this.containerWidth - scrollbar - OPTION_PADDING_OFFSET - icons;
+  }
+
+  onContainerResize = (width: number): void => {
+    this.containerWidth = width;
+  };
+
+  setListBox = modifier((element: HTMLElement) => {
+    this.listBox = element;
+    return () => {
+      this.listBox = null;
+    };
+  });
+
+  /** Upstream: an option's `textWrap` wins; wrapping needs no virtualization. */
+  textWrapFor = (option: EuiSelectableOption): 'truncate' | 'wrap' => {
+    const textWrap = option.textWrap ?? this.args.textWrap;
+
+    return this.isVirtualized ? 'truncate' : (textWrap ?? 'truncate');
+  };
+
+  /** Upstream `getTruncationProps` (undefined: CSS truncation or wrap). */
+  truncationFor = (
+    option: EuiSelectableOption,
+    index: number,
+    customPrepend: boolean,
+    customAppend: boolean
+  ): EuiSelectableTruncationProps | undefined => {
+    if (this.textWrapFor(option) !== 'truncate') return undefined;
+
+    const truncationProps = { ...this.args.truncationProps, ...option.truncationProps };
+    const highlight = this.highlightSearch;
+
+    if (!highlight && Object.keys(truncationProps).length === 0) return undefined;
+
+    const useDefaultWidth =
+      !option.append && !option.prepend && !customPrepend && !customAppend;
+    const defaultOptionWidth = this.defaultOptionWidth;
+    const focusBadge = this.args.onFocusBadge ? FOCUS_BADGE_OFFSET : 0;
+    const width =
+      useDefaultWidth && defaultOptionWidth
+        ? this.isFocused(index)
+          ? defaultOptionWidth - focusBadge
+          : defaultOptionWidth
+        : undefined;
+
+    return highlight
+      ? { width, ...truncationProps }
+      : { calculationDelayMs: 2, width, ...truncationProps };
+  };
+
+  /** Upstream: no text `title` with EuiTextTruncate or a tooltip. */
+  titleFor = (
+    option: EuiSelectableOption,
+    truncationProps: EuiSelectableTruncationProps | undefined
+  ): string | undefined => {
+    if (truncationProps || option.toolTipContent) return undefined;
+
+    return titleOf(option);
+  };
+
+  get activeDescendant(): string | undefined {
+    const index = this.args.activeOptionIndex;
+
+    if (this.args.searchable || index === undefined || index < 0) return undefined;
+
+    return this.optionId(index);
+  }
+
   get isFullHeight(): boolean {
     return this.args.height === 'full';
   }
@@ -132,6 +310,8 @@ export default class EuiSelectableList extends Component<EuiSelectableListSignat
   get listHeight(): number | undefined {
     if (this.isFullHeight) return undefined;
     if (typeof this.args.height === 'number') return this.args.height;
+    // not virtualized: the list is as tall as its rows (upstream)
+    if (!this.isVirtualized) return undefined;
 
     const count = this.optionArray.length;
 
@@ -173,7 +353,8 @@ export default class EuiSelectableList extends Component<EuiSelectableListSignat
         styles.euiSelectableList,
         this.isFullHeight && styles.fullHeight,
         this.args.bordered && styles.bordered,
-        this.args.paddingSize === 's' && styles.paddingSize.s
+        this.args.paddingSize === 's' && styles.paddingSize.s,
+        this.args.css
       ),
       list: euiClass(
         context,
@@ -193,8 +374,10 @@ export default class EuiSelectableList extends Component<EuiSelectableListSignat
     this.optionArray.slice(0, index + 1).filter((option) => !option.isGroupLabel)
       .length;
 
-  groupLabelHeight = (index: number): number =>
-    this.rowHeight + (index > 0 ? GROUP_LABEL_DIVIDER : 0);
+  groupLabelHeight = (index: number): number | undefined =>
+    this.isVirtualized
+      ? this.rowHeight + (index > 0 ? GROUP_LABEL_DIVIDER : 0)
+      : undefined;
 
   @action
   onOptionMouseDown(index: number): void {
@@ -202,17 +385,17 @@ export default class EuiSelectableList extends Component<EuiSelectableListSignat
   }
 
   @action
-  onOptionClick(option: EuiSelectableOption): void {
-    this.toggleOption(option);
+  onOptionClick(option: EuiSelectableOption, event: Event): void {
+    this.toggleOption(option, event);
   }
 
-  toggleOption(option: EuiSelectableOption): void {
-    const options = toggleOption(this.args.options, option, {
+  toggleOption(option: EuiSelectableOption, event?: Event): void {
+    const result = toggleOptionWithChange(this.args.options, option, {
       allowExclusions: this.args.allowExclusions,
       singleSelection: this.args.singleSelection
     });
 
-    if (options) this.args.onOptionClick(options);
+    if (result) this.args.onOptionClick(result.options, event, result.changedOption);
   }
 
   /**
@@ -242,7 +425,11 @@ export default class EuiSelectableList extends Component<EuiSelectableListSignat
   });
 
   <template>
-    <div class="euiSelectableList {{this.classes.root}}" ...attributes>
+    <div
+      class="euiSelectableList {{this.classes.root}}"
+      ...attributes
+      {{observeWidth this.mayTruncate this.onContainerResize}}
+    >
       <div
         class="euiSelectableList__list {{this.classes.list}}"
         tabindex="-1"
@@ -256,8 +443,10 @@ export default class EuiSelectableList extends Component<EuiSelectableListSignat
           role="listbox"
           tabindex={{unless @searchable "0"}}
           aria-multiselectable={{if this.isMultiSelectable "true"}}
+          aria-activedescendant={{this.activeDescendant}}
           aria-label={{@ariaLabel}}
           aria-describedby={{@ariaDescribedby}}
+          {{this.setListBox}}
         >
           {{#let
             (flag @hasOption (has-block "option"))
@@ -273,16 +462,22 @@ export default class EuiSelectableList extends Component<EuiSelectableListSignat
                 style={{cssStyle (hash height=(this.groupLabelHeight index))}}
               >{{option.prepend}}{{option.label}}{{option.append}}</li>
             {{else}}
+              {{#let (this.truncationFor option index customPrepend customAppend) as |truncationProps|}}
               <EuiSelectableListItem
                 id={{this.optionId index}}
                 class={{option.className}}
-                style={{cssStyle (hash height=this.rowHeight)}}
+                style={{cssStyle (hash height=this.rowHeightStyle)}}
+                data-test-subj={{dataTestSubj option}}
                 aria-posinset={{this.posInSet index}}
                 aria-setsize={{sub this.optionArray.length this.groupLabelCount}}
-                @title={{titleOf option}}
+                @title={{this.titleFor option truncationProps}}
                 @isFocused={{this.isFocused index}}
                 @checked={{option.checked}}
                 @disabled={{option.disabled}}
+                @hasAriaDisabled={{option.hasAriaDisabled}}
+                @textWrap={{this.textWrapFor option}}
+                @toolTipContent={{option.toolTipContent}}
+                @toolTipProps={{option.toolTipProps}}
                 @hasPrepend={{or2 customPrepend option.prepend}}
                 @hasAppend={{or2 customAppend option.append}}
                 @showIcons={{@showIcons}}
@@ -298,7 +493,12 @@ export default class EuiSelectableList extends Component<EuiSelectableListSignat
                   {{#if customOption}}
                     {{yield option (if @searchValue @searchValue "") to="option"}}
                   {{else}}
-                    <EuiHighlight @text={{option.label}} @search={{@searchValue}} />
+                    <EuiSelectableOptionText
+                      @text={{option.label}}
+                      @search={{if @searchValue @searchValue ""}}
+                      @highlight={{this.highlightSearch}}
+                      @truncationProps={{truncationProps}}
+                    />
                   {{/if}}
                 </:default>
                 <:prepend>
@@ -308,6 +508,7 @@ export default class EuiSelectableList extends Component<EuiSelectableListSignat
                   {{~#if customAppend}}{{yield option to="optionAppend"}}{{else}}{{option.append}}{{/if~}}
                 </:append>
               </EuiSelectableListItem>
+              {{/let}}
             {{/if}}
           {{/each}}
           {{/let}}
@@ -331,6 +532,11 @@ function titleOf(option: EuiSelectableOption): string {
   return typeof option['title'] === 'string'
     ? option['title']
     : (option.searchableLabel ?? option.label);
+}
+
+// an option's own `data-test-subj` (upstream spreads the option's rest)
+function dataTestSubj(option: EuiSelectableOption): string {
+  return option['data-test-subj'] ?? 'euiListItemLayout';
 }
 
 function sub(a: number, b: number): number {

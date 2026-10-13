@@ -16,15 +16,13 @@ The width has been made to always be 100% of its container, including stretching
 
 Be aware that `display: flex` with column layout is applied to the wrapping container. This is so that you can opt in to allow the height of the list stretch to fill its container. See the flyout example.
 
-**Ember EUI difference:** upstream's input popover example (`EuiInputPopover` driven by `searchProps.value`/`onChange`) has no counterpart, so it is left out.
-
 </EuiText>
 
 ```gjs component
 import Component from '@glimmer/component';
 import { tracked } from '@glimmer/tracking';
 import { action } from '@ember/object';
-import { EuiButton, EuiCode, EuiFlyout, EuiFlyoutFooter, EuiFlyoutHeader, EuiPopover, EuiPopoverFooter, EuiPopoverTitle, EuiSelectable, EuiSpacer, EuiTitle } from '@ember-eui/core/components';
+import { EuiButton, EuiCode, EuiFlyout, EuiFlyoutFooter, EuiFlyoutHeader, EuiInputPopover, EuiPopover, EuiPopoverFooter, EuiPopoverTitle, EuiSelectable, EuiSpacer, EuiTitle } from '@ember-eui/core/components';
 import { on } from '@ember/modifier';
 import { hash } from '@ember/helper';
 
@@ -76,6 +74,53 @@ export default class SelectableSizingDemo extends Component {
   @tracked options = OPTIONS;
   @tracked isPopoverOpen = false;
   @tracked isFlyoutVisible = false;
+
+  // In an input popover: the search is controlled by `searchProps.value`
+  @tracked inputOptions = OPTIONS;
+  @tracked isInputPopoverOpen = false;
+  @tracked inputValue = '';
+  @tracked isSearching = true;
+
+  listProps = { css: { '.euiSelectableList__list': { maxBlockSize: 200 } } };
+
+  get searchProps() {
+    return {
+      value: this.inputValue,
+      onChange: (value) => {
+        this.inputValue = value;
+        this.isSearching = true;
+      },
+      onKeyDown: (event) => {
+        if (event.key === 'Tab') return (this.isInputPopoverOpen = false);
+        if (event.key !== 'Escape') return (this.isInputPopoverOpen = true);
+      },
+      onClick: () => (this.isInputPopoverOpen = true),
+      onFocus: () => (this.isInputPopoverOpen = true),
+    };
+  }
+
+  // Shows the full list when not actively typing to search
+  get isPreFiltered() {
+    return this.isSearching ? false : { highlightSearch: false };
+  }
+
+  @action
+  setInputOptions(newOptions, event, changedOption) {
+    this.inputOptions = newOptions;
+    this.isInputPopoverOpen = false;
+
+    if (changedOption.checked === 'on') {
+      this.inputValue = changedOption.label;
+      this.isSearching = false;
+    } else {
+      this.inputValue = '';
+    }
+  }
+
+  @action
+  closeInputPopover() {
+    this.isInputPopoverOpen = false;
+  }
 
   @action
   setOptions(options) {
@@ -162,6 +207,30 @@ export default class SelectableSizingDemo extends Component {
         </EuiFlyoutFooter>
       </EuiFlyout>
     {{/if}}
+    <EuiSpacer />
+    <EuiTitle @size="xxs"><h4>In an input popover</h4></EuiTitle>
+    <EuiSpacer @size="s" />
+    <EuiSelectable
+      aria-label="Selectable + input popover example"
+      @options={{this.inputOptions}}
+      @onChange={{this.setInputOptions}}
+      @singleSelection={{true}}
+      @searchable={{true}}
+      @searchProps={{this.searchProps}}
+      @isPreFiltered={{this.isPreFiltered}}
+      @listProps={{this.listProps}}
+      as |parts|
+    >
+      <EuiInputPopover
+        @closePopover={{this.closeInputPopover}}
+        @disableFocusTrap={{true}}
+        @isOpen={{this.isInputPopoverOpen}}
+        @panelPaddingSize="none"
+      >
+        <:input><parts.search /></:input>
+        <:content><parts.list /></:content>
+      </EuiInputPopover>
+    </EuiSelectable>
     <EuiSpacer />
     <EuiTitle @size="xxs">
       <h4>

@@ -108,3 +108,37 @@ in-memory sorting + pagination. API table on the basics page regenerated.
   and `eui-data-grid/tree-cell.js` only (rollup also reordered
   `eui-in-memory-table.js`; that hunk was dropped).
 - `components.md`: one new row (`eui-data-grid/tree-cell.gts`).
+
+## Follow-up round (docs, keyboard, upgrade-friendliness)
+
+- **Keyboard** (toggle cell only, WAI-ARIA treegrid): ArrowRight expands a
+  collapsed row, otherwise moves right; ArrowLeft collapses an expanded
+  row, otherwise moves to the parent's toggle cell (changing page if
+  needed), or keeps grid behavior on top-level rows. Space toggles. Enter
+  toggles only when the cell has no popover and no interactive content.
+  Ignored while the popover is open or focus is inside the cell content.
+  Arrow keys stop propagation only when handled.
+- **Hooks**: logic moved to `row-tree-hooks.ts` / `row-model.ts`. The 46
+  marked lines in 5 ported files are listed in
+  [data-grid-extensions.md](data-grid-extensions.md), with the re-porting
+  checklist.
+- **Fixes the docs exposed**: `hasChildren` (lazy loading: toggle before
+  children load), automatic `pageIndex` clamping after collapsing, `row`
+  for `@renderCellPopover` / `<:cellPopover>`.
+- **Tests** (contract, `filter=grouping` + `filter=row-tree`): 35 =
+  unit 14 + `eui-data-grid-grouping-test` 11 +
+  `-grouping-keyboard-test` 8 + `-grouping-virtualization-test` 2
+  (5,550-row tree: windowing, end of list, toggling mid-scroll,
+  `scrollToItem`, auto heights). Data grid integration 76/76; full core
+  1302/1302; parity 349/349.
+- **Timings** (Chromium, all expanded, 3 levels): 9,990 rows: build
+  1.0 ms, rebuild visible list 0.7 ms, sort 1.5 ms, group 1.4 ms. 49,950
+  rows: 5.5 / 1.3 / 2.7 / 5.2 ms.
+- **Docs**: 5 pages under `docs/tabular/data-grid/` (`grouping` overview
+  and API reference, `tree-expansion`, `group-by`, `tree-features`,
+  `tree-recipes`), 23 demos, each rendered by a temporary strict-mode
+  test (not committed), with interaction checks on the filtering,
+  lazy-loading, pagination, aggregates and API demos.
+- **Not done**: renderers don't get the tree state (depth/expanded), so
+  the file explorer recipe controls the ids; no group selection; no
+  built-in aggregates.

@@ -40,6 +40,17 @@ export interface EuiDatePickerRangeSignature {
      * hides it, or any `EuiIcon` type.
      */
     iconType?: boolean | string;
+    /**
+     * Side of `@iconType`: `'left'` (default) or `'right'`. Applies only
+     * to an icon type, not to the default `calendar` (`@iconType={{true}}`).
+     */
+    iconSide?: 'left' | 'right';
+    /**
+     * Custom controls: the `<:start>` / `<:end>` blocks yield only the
+     * delimited input class, without the date picker range classes
+     * (upstream doesn't add its props to the controls).
+     */
+    isCustom?: boolean;
     /** Text between the inputs. Defaults to an arrow icon labelled "to". */
     delimiter?: string;
     /**
@@ -66,6 +77,16 @@ export interface EuiDatePickerRangeSignature {
     start: [className: string];
     /** The end input; yields the classes to give it. */
     end: [className: string];
+    /**
+     * Content before the inputs, e.g. an `EuiFormLabel` (upstream
+     * `prepend`); yields the class to put on it. Not rendered `@inline`.
+     */
+    prepend: [className: string];
+    /**
+     * Content after the inputs (upstream `append`); yields the class to put
+     * on it. Not rendered `@inline`.
+     */
+    append: [className: string];
     /** Anything else, instead of the start and end blocks. */
     default: [];
   };
@@ -132,8 +153,19 @@ export default class EuiDatePickerRange extends Component<EuiDatePickerRangeSign
     return iconType;
   }
 
-  startClass = (inputClass: string) => `${START} ${inputClass}`;
-  endClass = (inputClass: string) => `${END} ${inputClass}`;
+  /** Upstream passes `icon.side` only for an icon type, not the default calendar. */
+  get iconSide(): 'left' | 'right' | undefined {
+    const { iconType } = this.args;
+    return typeof iconType === 'string' ? this.args.iconSide : undefined;
+  }
+
+  startClass = (inputClass: string) =>
+    this.args.isCustom ? inputClass : `${START} ${inputClass}`;
+  endClass = (inputClass: string) =>
+    this.args.isCustom ? inputClass : `${END} ${inputClass}`;
+
+  /** Upstream drops `prepend` and `append` from inline pickers. */
+  sideProvided = (hasBlock: boolean) => hasBlock && !this.args.inline;
 
   <template>
     <div class={{this.classes}} ...attributes>
@@ -142,6 +174,7 @@ export default class EuiDatePickerRange extends Component<EuiDatePickerRangeSign
       {{else}}
         <EuiFormControlLayoutDelimited
           @icon={{this.icon}}
+          @iconSide={{this.iconSide}}
           @delimiter={{@delimiter}}
           @fullWidth={{this.fullWidth}}
           @compressed={{this.compressed}}
@@ -149,13 +182,21 @@ export default class EuiDatePickerRange extends Component<EuiDatePickerRangeSign
           @isDisabled={{@disabled}}
           @isInvalid={{@isInvalid}}
           @isLoading={{@isLoading}}
+          @isPrependProvided={{this.sideProvided (has-block "prepend")}}
+          @isAppendProvided={{this.sideProvided (has-block "append")}}
         >
+          <:prepend as |prependClass|>
+            {{yield prependClass to="prepend"}}
+          </:prepend>
           <:startControl as |inputClass|>
             {{yield (this.startClass inputClass) to="start"}}
           </:startControl>
           <:endControl as |inputClass|>
             {{yield (this.endClass inputClass) to="end"}}
           </:endControl>
+          <:append as |appendClass|>
+            {{yield appendClass to="append"}}
+          </:append>
         </EuiFormControlLayoutDelimited>
       {{/if}}
     </div>

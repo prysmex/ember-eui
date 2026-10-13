@@ -19,6 +19,7 @@ import EuiRefreshInterval from './eui-refresh-interval.gts';
 import { prettyInterval } from './eui-super-date-picker/utils/pretty-interval.ts';
 
 import type EuiI18n from '../services/eui-i18n.ts';
+import type { EuiFieldTextSignature } from './eui-field-text.gts';
 import type { EuiRefreshIntervalSignature } from './eui-refresh-interval.gts';
 
 type OnRefreshChange = NonNullable<
@@ -61,6 +62,17 @@ export interface EuiAutoRefreshSignature {
     fullWidth?: boolean;
     /** Compressed input, for dense forms. */
     compressed?: boolean;
+    /** Invalid state: danger border, warning icon and `aria-invalid`. */
+    isInvalid?: boolean;
+    /** Shows a spinner in the input. */
+    isLoading?: boolean;
+  };
+  Blocks: {
+    /**
+     * Content after the input (upstream `append`), e.g. an
+     * `EuiFormAppend`; yields the class to put on it and the input id.
+     */
+    append: EuiFieldTextSignature['Blocks']['append'];
   };
 }
 
@@ -138,6 +150,8 @@ export default class EuiAutoRefresh extends Component<EuiAutoRefreshSignature> {
     )}`;
   }
 
+  hasNoAppend = (hasBlock: boolean) => !hasBlock;
+
   @action
   toggle(): void {
     this.isOpen = !this.isOpen;
@@ -163,6 +177,9 @@ export default class EuiAutoRefresh extends Component<EuiAutoRefreshSignature> {
           @disabled={{@isDisabled}}
           @fullWidth={{@fullWidth}}
           @compressed={{@compressed}}
+          @isInvalid={{@isInvalid}}
+          @isLoading={{@isLoading}}
+          @isFakeAppendBlock={{this.hasNoAppend (has-block "append")}}
           {{on "click" this.toggle}}
           ...attributes
         >
@@ -179,6 +196,9 @@ export default class EuiAutoRefresh extends Component<EuiAutoRefreshSignature> {
               </button>
             </div>
           </:prepend>
+          <:append as |appendClasses inputId|>
+            {{yield appendClasses inputId to="append"}}
+          </:append>
         </EuiFieldText>
       </:input>
       <:content>

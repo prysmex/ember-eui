@@ -43,8 +43,16 @@ export interface EuiAutoRefreshButtonSignature {
      * changes the refresh settings.
      */
     onRefreshChange: OnRefreshChange;
-    /** Disables the button (it stays focusable, as `aria-disabled`). */
+    /**
+     * Disables the button. It stays focusable (`aria-disabled`) so that its
+     * tooltip still shows, unless `@hasAriaDisabled={{false}}`.
+     */
     isDisabled?: boolean;
+    /**
+     * With `@isDisabled`, renders `aria-disabled="true"` instead of the
+     * native `disabled` attribute. Defaults to `@isDisabled` (upstream).
+     */
+    hasAriaDisabled?: boolean;
     /** Reduces the time unit to a single letter. Defaults to `false`. */
     shortHand?: boolean;
     /** `EuiButtonEmpty` color. Defaults to `'text'`. */
@@ -71,6 +79,11 @@ export default class EuiAutoRefreshButton extends Component<EuiAutoRefreshButton
 
   get refreshInterval(): number {
     return this.args.refreshInterval ?? 1000;
+  }
+
+  /** Upstream passes `hasAriaDisabled={isDisabled}` before the rest props. */
+  get hasAriaDisabled(): boolean {
+    return this.args.hasAriaDisabled ?? Boolean(this.args.isDisabled);
   }
 
   get label(): string {
@@ -130,6 +143,7 @@ export default class EuiAutoRefreshButton extends Component<EuiAutoRefreshButton
             @flush={{@flush}}
             @isLoading={{@isLoading}}
             @isDisabled={{@isDisabled}}
+            @hasAriaDisabled={{this.hasAriaDisabled}}
             @css={{@css}}
             {{on "click" this.toggle}}
             ...attributes

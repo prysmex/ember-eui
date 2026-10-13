@@ -22,7 +22,9 @@ export interface EuiQuickSelectPanelSignature {
   // passes attributes to).
   Element: HTMLFieldSetElement;
   Args: {
-    /** `'div'` (default) or `'fieldset'`. */
+    /** `'div'` (default) or `'fieldset'` (upstream `component`). */
+    component?: 'div' | 'fieldset';
+    /** Same as `@component`, which wins. */
     tagName?: 'div' | 'fieldset';
     /** Panel title; the content then goes in a scrollable section. */
     title?: string;
@@ -42,7 +44,7 @@ export default class EuiQuickSelectPanel extends Component<EuiQuickSelectPanelSi
   }
 
   get tagName() {
-    return this.args.tagName ?? 'div';
+    return this.args.component ?? this.args.tagName ?? 'div';
   }
 
   get isFieldset() {

@@ -972,6 +972,12 @@ export default class EuiSuperDatePicker extends Component<EuiSuperDatePickerSign
             @className={{this.updateButtonProps.className}}
             @toolTipProps={{this.updateButtonProps.toolTipProps}}
             @responsive={{this.updateButtonProps.responsive}}
+            @element={{this.updateButtonProps.element}}
+            @fullWidth={{this.updateButtonProps.fullWidth}}
+            @hasAriaDisabled={{this.updateButtonProps.hasAriaDisabled}}
+            @iconSide={{this.updateButtonProps.iconSide}}
+            @iconSize={{this.updateButtonProps.iconSize}}
+            @isSelected={{this.updateButtonProps.isSelected}}
             data-test-subj={{this.updateButtonTestSubj}}
           />
         {{/if}}

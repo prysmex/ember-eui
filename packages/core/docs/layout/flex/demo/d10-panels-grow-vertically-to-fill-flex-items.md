@@ -1,12 +1,12 @@
 ---
-order: 4
+order: 10
 ---
 
-# Panels grow to fill flex items
+# Panels grow vertically to fill flex items
 
 <EuiText>
 
-An `EuiPanel` inside a flex item grows to the item's height, so panels in a row line up.
+The `EuiPanel` component will naturally grow to fill the `EuiFlexItem` which contains it.
 
 </EuiText>
 
@@ -31,7 +31,7 @@ An `EuiPanel` inside a flex item grows to the item's height, so panels in a row 
   <EuiFlexItem>
     <EuiPanel @grow={{false}}>
       Another <strong>EuiPanel</strong>, with
-      <EuiCode>grow=&#123;false&#125;</EuiCode>.
+      <EuiCode>@grow=&#123;&#123;false&#125;&#125;</EuiCode>.
     </EuiPanel>
   </EuiFlexItem>
 </EuiFlexGroup>

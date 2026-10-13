@@ -1,39 +1,35 @@
 ---
-order: 8
+order: 5
 ---
 
-# Allowing flex items to wrap
+# Justify and align
 
 <EuiText>
 
-`@wrap={{true}}` lets items move to the next line when they don't fit, e.g. items with a minimum width.
+`EuiFlexGroup` has the args `@justifyContent` and `@alignItems` that accept [normal flexbox parameters](https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_Flexible_Box_Layout/Aligning_Items_in_a_Flex_Container). Below are some common scenarios, where you need to separate two items, center justify a single one, or center an item vertically. Note the usage of `EuiFlexItem`s with `@grow={{false}}` so that they do not stretch.
 
 </EuiText>
 
 ```hbs template
-<EuiFlexGroup class="flex-demo" @wrap={{true}}>
-  <EuiFlexItem style="min-width: 300px">Min-width 300px</EuiFlexItem>
-
-  <EuiFlexItem style="min-width: 300px">Min-width 300px</EuiFlexItem>
-
-  <EuiFlexItem style="min-width: 300px">Min-width 300px</EuiFlexItem>
+<EuiFlexGroup class="flex-demo" @justifyContent="spaceAround">
+  <EuiFlexItem @grow={{false}}>I&rsquo;m a single centered item!</EuiFlexItem>
 </EuiFlexGroup>
 
-<EuiHorizontalRule/>
+<EuiHorizontalRule />
 
 <EuiFlexGroup class="flex-demo" @justifyContent="spaceBetween">
   <EuiFlexItem @grow={{false}}>One here on the left.</EuiFlexItem>
   <EuiFlexItem @grow={{false}}>The other over here on the right.</EuiFlexItem>
 </EuiFlexGroup>
 
-<EuiHorizontalRule/>
+<EuiHorizontalRule />
 
 <EuiFlexGroup class="flex-demo" @justifyContent="spaceEvenly">
   <EuiFlexItem @grow={{false}}>Spaced evenly between this one.</EuiFlexItem>
   <EuiFlexItem @grow={{false}}>And this one here on the right.</EuiFlexItem>
 </EuiFlexGroup>
 
-<EuiHorizontalRule/>
+<EuiHorizontalRule />
 
 <EuiFlexGroup class="flex-demo" @alignItems="center">
   <EuiFlexItem @grow={{false}}>

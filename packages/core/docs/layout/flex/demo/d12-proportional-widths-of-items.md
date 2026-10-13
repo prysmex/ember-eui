@@ -1,12 +1,12 @@
 ---
-order: 6
+order: 12
 ---
 
 # Proportional widths of items
 
 <EuiText>
 
-A number from 1 to 10 in `@grow` sets the item's share of the width.
+Alternatively, you can specify a `@grow` number between 1 and 10 for each `EuiFlexItem` to take up a proportional percentage of the `EuiFlexGroup` it is in.
 
 </EuiText>
 

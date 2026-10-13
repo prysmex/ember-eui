@@ -9,17 +9,35 @@ order: 2
 
 <EuiText>
 
-Pass `@sorting` (`{ columns, onSort }`) to show the "Sort fields" toolbar
-popover, sorting arrows in the headers and the sort actions in each header's
-column actions. The grid does not sort your data by itself: either sort it
-in `onSort`, or let the grid read the rendered values with
-`@inMemory={{hash level="sorting"}}`.
+## Schemas
 
-With `@inMemory`, the grid also detects each column's schema (`boolean`,
-`currency`, `datetime`, `numeric`, `json`) from the rendered text. A schema
-picks the sort comparator, the sort labels ("Low-High"), the alignment and
-the expansion popover (JSON is pretty printed). `@schemaDetectors` adds your
-own types. Explicit `schema` values on columns always win.
+Schemas are data types you pass to grid columns to affect how the columns
+and expansion popovers render. Schemas also allow you to define individual
+sorting comparators so that sorts can do more than just A-Z comparisons. By
+default, **EuiDataGrid** ships with a few built-in schemas for `numeric`,
+`currency`, `datetime`, `boolean` and `json` data. When the `@inMemory`
+argument is in use it will automatically try to figure out the best schema
+based on the `@inMemory={{hash level=…}}` you set, but this will come with
+the caveat that you will need to provide and manage sorting outside the
+component. In general we recommend passing schema information to your
+columns instead of using auto-detection when you have that knowledge of
+your data available during ingestion.
+
+A schema picks the sort comparator, the sort labels ("Low-High"), the
+alignment (`numeric` and `currency` cells are right aligned) and the
+expansion popover (JSON is pretty printed). Explicit `schema` values on
+columns always win over detection. See
+[in-memory](/docs/core/docs/tabular/data-grid/in-memory) for schema
+detection and sorting.
+
+## Columns
+
+Columns are **EuiDataGridColumn** objects: an `id`, plus optional
+`displayAsText` (the header text), `display` (a component rendered as the
+header), `schema`, `initialWidth`, `isResizable`, `isExpandable`,
+`isSortable`, `defaultSortDirection`, `actions`, `cellActions` and
+`visibleCellActions`. The examples below show column widths, column
+actions, draggable columns, control columns and the footer row.
 
 </EuiText>
 

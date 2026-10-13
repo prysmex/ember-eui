@@ -2,64 +2,99 @@
 order: 4
 ---
 
-# Drag and drop header columns
+# Draggable columns
 
 <EuiText>
 
-Drag a column header to reorder the columns, or focus a header (click it,
-or move to it with the arrow keys), press Space, move it with the arrow
-keys and press Space again.
+To reorder columns directly instead of via the actions menu popover, you
+can enable draggable **EuiDataGrid** header columns via the
+`columnVisibility.canDragAndDropColumns` option. This will allow you to
+reorder the column by dragging them.
+
+From the keyboard, focus a header cell, press **Space** to lift it, move it
+with the **Left/Right arrow** keys and press **Space** again to drop it
+(**Escape** cancels). Focus follows the dropped column; Enter still opens
+the column actions.
 
 </EuiText>
 
-```hbs template
-<EuiText @size="s"><p>Order: {{this.order}}</p></EuiText>
-<EuiSpacer @size="s" />
-<EuiDataGrid
-  aria-label="Draggable columns demo"
-  @columns={{this.columns}}
-  @columnVisibility={{hash
-    visibleColumns=this.visibleColumns
-    setVisibleColumns=this.setVisibleColumns
-    canDragAndDropColumns=true
-  }}
-  @rowCount={{this.rows.length}}
-  @height={{260}}
->
-  <:cell as |cell|>{{get (get this.rows cell.rowIndex) cell.columnId}}</:cell>
-</EuiDataGrid>
-```
-
-```js component
+```gjs component
 import Component from '@glimmer/component';
 import { tracked } from '@glimmer/tracking';
 import { action } from '@ember/object';
+import { get, hash } from '@ember/helper';
+import { eq } from 'ember-truth-helpers';
+import { EuiAvatar, EuiDataGrid } from '@ember-eui/core/components';
 
-export default class DragColumnsDemo extends Component {
-  columns = [
-    { id: 'name', displayAsText: 'Name' },
-    { id: 'city', displayAsText: 'City' },
-    { id: 'country', displayAsText: 'Country' },
-    { id: 'population', displayAsText: 'Population', schema: 'numeric' }
-  ];
+const LAST = ['Schmidt', 'Okafor', 'Lindqvist', 'Moreau', 'Tanaka', 'Novak', 'Ferreira', 'Kowalski', 'Haddad'];
+const FIRST = ['Amara', 'Bruno', 'Chloe', 'Dmitri', 'Elena', 'Felix', 'Grace', 'Hiro', 'Ines', 'Jonas', 'Keira'];
+const SUFFIXES = ['Jr.', 'Sr.', 'II', 'III', 'MD', 'PhD', 'DVM'];
+const CITIES = ['Lake Ottoport', 'North Kaleigh', 'East Damian', 'Port Ellis', 'New Brayden', 'West Coraline'];
+const COUNTRIES = ['Portugal', 'Norway', 'Japan', 'Peru', 'Kenya', 'Canada', 'Iceland', 'Chile'];
 
-  @tracked visibleColumns = ['name', 'city', 'country', 'population'];
+const data = Array.from({ length: 4 }, (_, i) => ({
+  avatar: `${LAST[(i * 4 + 2) % LAST.length]}, ${FIRST[(i * 5 + 1) % FIRST.length]}`,
+  name: `${LAST[i % LAST.length]}, ${FIRST[(i * 7) % FIRST.length]} ${SUFFIXES[i % SUFFIXES.length]}`,
+  email: `${FIRST[(i * 7) % FIRST.length]}.${LAST[i % LAST.length]}${i}@example.com`.toLowerCase(),
+  city: CITIES[(i * 5) % CITIES.length],
+  country: COUNTRIES[(i * 3) % COUNTRIES.length],
+  account: String(10000000 + ((i * 7919 * 104729) % 89999999))
+}));
 
-  rows = [
-    ['Tokyo', 'Japan', '37400068'],
-    ['Delhi', 'India', '28514000'],
-    ['Shanghai', 'China', '25582000'],
-    ['São Paulo', 'Brazil', '21650000'],
-    ['Mexico City', 'Mexico', '21581000'],
-    ['Cairo', 'Egypt', '20076000']
-  ].map(([city, country, population], i) => ({ name: `#${i + 1}`, city, country, population }));
+const columns = [
+  { id: 'avatar', initialWidth: 40, isResizable: false },
+  { id: 'name', initialWidth: 100 },
+  { id: 'email' },
+  { id: 'city' },
+  { id: 'country' },
+  { id: 'account' }
+];
 
-  get order() {
-    return this.visibleColumns.join(', ');
+export default class ColumnsDemo extends Component {
+  data = data;
+  columns = columns;
+  @tracked visibleColumns = columns.map(({ id }) => id);
+  @tracked pageIndex = 0;
+  @tracked pageSize;
+
+  @action setVisibleColumns(visibleColumns) {
+    this.visibleColumns = visibleColumns;
   }
 
-  @action setVisibleColumns(columns) {
-    this.visibleColumns = columns;
+  @action setPageIndex(pageIndex) {
+    this.pageIndex = pageIndex;
   }
+
+  @action setPageSize(pageSize) {
+    this.pageSize = pageSize;
+    this.pageIndex = 0;
+  }
+
+  <template>
+    <EuiDataGrid
+      aria-label="DataGrid demonstrating draggable column headers"
+      @columns={{this.columns}}
+      @columnVisibility={{hash
+        visibleColumns=this.visibleColumns
+        setVisibleColumns=this.setVisibleColumns
+        canDragAndDropColumns=true
+      }}
+      @rowCount={{this.data.length}}
+      @pagination={{hash
+        pageIndex=this.pageIndex
+        pageSize=this.pageSize
+        onChangeItemsPerPage=this.setPageSize
+        onChangePage=this.setPageIndex
+      }}
+    >
+      <:cell as |cell|>
+        {{#if (eq cell.columnId "avatar")}}
+          <EuiAvatar @size="s" @name={{get (get this.data cell.rowIndex) "avatar"}} />
+        {{else}}
+          {{get (get this.data cell.rowIndex) cell.columnId}}
+        {{/if}}
+      </:cell>
+    </EuiDataGrid>
+  </template>
 }
 ```

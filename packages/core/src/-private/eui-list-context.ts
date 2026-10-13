@@ -10,6 +10,7 @@ import type { SerializedStyles } from '@emotion/serialize';
 export interface EuiListGroupContext {
   readonly color: string | undefined;
   readonly wrapText: boolean | undefined;
+  readonly showToolTips: boolean | undefined;
 }
 
 /** What an EuiDescriptionList shares with its titles and descriptions. */

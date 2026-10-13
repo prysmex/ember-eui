@@ -1,5 +1,6 @@
 ---
 title: In-memory table
+order: 2
 ---
 
 <EuiSpacer/>
@@ -8,9 +9,11 @@ title: In-memory table
 
 <EuiText>
 
-`EuiInMemoryTable` is an [EuiBasicTable](../basic-table) that owns its
-state: give it all the `@items` and it searches, sorts and pages them in
-memory. It takes the basic table's arguments plus:
+`EuiInMemoryTable` is a higher level wrapper around
+[EuiBasicTable](../basic-table) that handles selection, search, sorting and
+pagination in memory for you, within certain preset configurations. It
+takes the full set of data, which must include all possible items, and the
+basic table's arguments plus:
 
 - `@search`: `true`, or `EuiSearchBar` options (`box`, `filters`,
   `defaultQuery`, a controlled `query`, `onChange`). `box: { schema: true }`
@@ -25,13 +28,20 @@ memory. It takes the basic table's arguments plus:
 - `@onTableChange`: informational `{ page, sort }` callback.
 - `@executeQueryOptions`: `{ defaultFields, isClauseMatcher, enabled }`.
 
-New `@items` (e.g. from a server search) go back to the first page.
+New `@items` (e.g. from a server search) go back to the first page unless
+the pagination is controlled.
+
+The table sorts a column by its `field`, or by its `name` for computed
+columns, so keep computed column names stable.
 
 ### Ember differences
 
 The search bar's tools and hint, and content between the search bar and
 the table (upstream `childrenBetween`), are the `<:toolsLeft>`,
-`<:toolsRight>`, `<:hint>` and `<:childrenBetween>` blocks.
+`<:toolsRight>`, `<:hint>` and `<:childrenBetween>` blocks; a custom
+"no items" message is the `<:noItemsMessage>` block. Upstream's
+`useEuiBasicTablePanelProps` hook (custom panels for `childrenBetween`) is
+not available yet.
 
 </EuiText>
 

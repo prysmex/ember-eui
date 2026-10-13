@@ -13,24 +13,12 @@ reverse the group order.
 
 </EuiText>
 
-```hbs template
-<EuiDataGrid
-  aria-label="Sorting"
-  @columns={{this.columns}}
-  @rowTree={{hash rows=this.projects defaultExpandedRowIds="all"}}
-  @grouping={{hash groupBy=(array "team") defaultExpandedGroupIds="all"}}
-  @inMemory={{hash level="sorting"}}
-  @sorting={{hash columns=this.sortingColumns onSort=this.onSort}}
-  @height={{380}}
->
-  <:cell as |cell|>{{get cell.row cell.columnId}}</:cell>
-</EuiDataGrid>
-```
-
-```js component
+```gjs component
 import Component from '@glimmer/component';
 import { tracked } from '@glimmer/tracking';
 import { action } from '@ember/object';
+import { array, get, hash } from '@ember/helper';
+import { EuiDataGrid } from '@ember-eui/core/components';
 
 export default class SortingDemo extends Component {
   @tracked sortingColumns = [{ id: 'points', direction: 'desc' }];
@@ -69,5 +57,19 @@ export default class SortingDemo extends Component {
   @action onSort(columns) {
     this.sortingColumns = columns;
   }
+
+  <template>
+    <EuiDataGrid
+      aria-label="Sorting"
+      @columns={{this.columns}}
+      @rowTree={{hash rows=this.projects defaultExpandedRowIds="all"}}
+      @grouping={{hash groupBy=(array "team") defaultExpandedGroupIds="all"}}
+      @inMemory={{hash level="sorting"}}
+      @sorting={{hash columns=this.sortingColumns onSort=this.onSort}}
+      @height={{380}}
+    >
+      <:cell as |cell|>{{get cell.row cell.columnId}}</:cell>
+    </EuiDataGrid>
+  </template>
 }
 ```

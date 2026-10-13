@@ -12,35 +12,19 @@ consumer's state.
 
 </EuiText>
 
-```hbs template
-<EuiText @size="s"><p>{{this.selectedCount}} selected</p></EuiText>
-<EuiSpacer @size="s" />
-<EuiDataGrid
-  aria-label="Selection"
-  @columns={{this.columns}}
-  @rowTree={{hash rows=this.files defaultExpandedRowIds="all"}}
-  @leadingControlColumns={{this.leading}}
-  @toolbarVisibility={{false}}
-  @height={{300}}
->
-  <:cell as |cell|>{{get cell.row cell.columnId}}</:cell>
-  <:controlHeaderCell>
-    <EuiScreenReaderOnly><span>Select</span></EuiScreenReaderOnly>
-  </:controlHeaderCell>
-  <:controlCell as |cell|>
-    <EuiCheckbox
-      aria-label="Select {{cell.row.name}}"
-      @checked={{this.isSelected cell.row}}
-      {{on "change" (fn this.toggle cell.row)}}
-    />
-  </:controlCell>
-</EuiDataGrid>
-```
-
-```js component
+```gjs component
 import Component from '@glimmer/component';
 import { tracked } from '@glimmer/tracking';
 import { action } from '@ember/object';
+import { fn, get, hash } from '@ember/helper';
+import { on } from '@ember/modifier';
+import {
+  EuiCheckbox,
+  EuiDataGrid,
+  EuiScreenReaderOnly,
+  EuiSpacer,
+  EuiText,
+} from '@ember-eui/core/components';
 
 const descendants = (row) => [row, ...(row.children ?? []).flatMap(descendants)];
 
@@ -82,5 +66,30 @@ export default class SelectionDemo extends Component {
     }
     this.selected = next;
   }
+
+  <template>
+    <EuiText @size="s"><p>{{this.selectedCount}} selected</p></EuiText>
+    <EuiSpacer @size="s" />
+    <EuiDataGrid
+      aria-label="Selection"
+      @columns={{this.columns}}
+      @rowTree={{hash rows=this.files defaultExpandedRowIds="all"}}
+      @leadingControlColumns={{this.leading}}
+      @toolbarVisibility={{false}}
+      @height={{300}}
+    >
+      <:cell as |cell|>{{get cell.row cell.columnId}}</:cell>
+      <:controlHeaderCell>
+        <EuiScreenReaderOnly><span>Select</span></EuiScreenReaderOnly>
+      </:controlHeaderCell>
+      <:controlCell as |cell|>
+        <EuiCheckbox
+          aria-label="Select {{cell.row.name}}"
+          @checked={{this.isSelected cell.row}}
+          {{on "change" (fn this.toggle cell.row)}}
+        />
+      </:controlCell>
+    </EuiDataGrid>
+  </template>
 }
 ```

@@ -11,20 +11,10 @@ root rows are grouped and keep their subtasks.
 
 </EuiText>
 
-```hbs template
-<EuiDataGrid
-  aria-label="Grouped tree"
-  @columns={{this.columns}}
-  @rowTree={{hash rows=this.projects defaultExpandedRowIds="all"}}
-  @grouping={{hash groupBy=(array "team") defaultExpandedGroupIds="all"}}
-  @height={{340}}
->
-  <:cell as |cell|>{{get cell.row cell.columnId}}</:cell>
-</EuiDataGrid>
-```
-
-```js component
+```gjs component
 import Component from '@glimmer/component';
+import { array, get, hash } from '@ember/helper';
+import { EuiDataGrid } from '@ember-eui/core/components';
 
 export default class GroupedTreeDemo extends Component {
   columns = [
@@ -53,5 +43,17 @@ export default class GroupedTreeDemo extends Component {
     },
     { id: 'p3', title: 'Dark mode', team: 'Web', points: 3 }
   ];
+
+  <template>
+    <EuiDataGrid
+      aria-label="Grouped tree"
+      @columns={{this.columns}}
+      @rowTree={{hash rows=this.projects defaultExpandedRowIds="all"}}
+      @grouping={{hash groupBy=(array "team") defaultExpandedGroupIds="all"}}
+      @height={{340}}
+    >
+      <:cell as |cell|>{{get cell.row cell.columnId}}</:cell>
+    </EuiDataGrid>
+  </template>
 }
 ```

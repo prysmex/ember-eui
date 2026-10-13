@@ -13,19 +13,10 @@ about a millisecond.
 
 </EuiText>
 
-```hbs template
-<EuiDataGrid
-  aria-label="Large tree"
-  @columns={{this.columns}}
-  @rowTree={{hash rows=this.regions defaultExpandedRowIds="all"}}
-  @height={{400}}
->
-  <:cell as |cell|>{{get cell.row cell.columnId}}</:cell>
-</EuiDataGrid>
-```
-
-```js component
+```gjs component
 import Component from '@glimmer/component';
+import { get, hash } from '@ember/helper';
+import { EuiDataGrid } from '@ember-eui/core/components';
 
 export default class VirtualizationDemo extends Component {
   columns = [
@@ -48,5 +39,16 @@ export default class VirtualizationDemo extends Component {
       }))
     }))
   }));
+
+  <template>
+    <EuiDataGrid
+      aria-label="Large tree"
+      @columns={{this.columns}}
+      @rowTree={{hash rows=this.regions defaultExpandedRowIds="all"}}
+      @height={{400}}
+    >
+      <:cell as |cell|>{{get cell.row cell.columnId}}</:cell>
+    </EuiDataGrid>
+  </template>
 }
 ```

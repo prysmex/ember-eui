@@ -13,29 +13,11 @@ popover.)
 
 </EuiText>
 
-```hbs template
-<EuiText @size="s"><p>Last action: {{if this.lastAction this.lastAction "none"}}</p></EuiText>
-<EuiSpacer @size="s" />
-<EuiDataGrid
-  aria-label="Popovers"
-  @columns={{this.columns}}
-  @rowTree={{hash rows=this.tasks defaultExpandedRowIds="all"}}
-  @height={{260}}
->
-  <:cell as |cell|>{{get cell.row cell.columnId}}</:cell>
-  <:cellPopover as |popover|>
-    <EuiText @size="s">
-      <p><strong>{{popover.row.title}}</strong></p>
-      <p>Owner: {{popover.row.owner}} · Estimate: {{popover.row.estimate}}h</p>
-    </EuiText>
-    <popover.cellActions />
-  </:cellPopover>
-</EuiDataGrid>
-```
-
-```js component
+```gjs component
 import Component from '@glimmer/component';
 import { tracked } from '@glimmer/tracking';
+import { get, hash } from '@ember/helper';
+import { EuiDataGrid, EuiSpacer, EuiText } from '@ember-eui/core/components';
 
 export default class PopoversDemo extends Component {
   @tracked lastAction = null;
@@ -70,5 +52,25 @@ export default class PopoversDemo extends Component {
     },
     { id: 'blog', title: 'Blog post', owner: 'Grace', estimate: 4 }
   ];
+
+  <template>
+    <EuiText @size="s"><p>Last action: {{if this.lastAction this.lastAction "none"}}</p></EuiText>
+    <EuiSpacer @size="s" />
+    <EuiDataGrid
+      aria-label="Popovers"
+      @columns={{this.columns}}
+      @rowTree={{hash rows=this.tasks defaultExpandedRowIds="all"}}
+      @height={{260}}
+    >
+      <:cell as |cell|>{{get cell.row cell.columnId}}</:cell>
+      <:cellPopover as |popover|>
+        <EuiText @size="s">
+          <p><strong>{{popover.row.title}}</strong></p>
+          <p>Owner: {{popover.row.owner}} · Estimate: {{popover.row.estimate}}h</p>
+        </EuiText>
+        <popover.cellActions />
+      </:cellPopover>
+    </EuiDataGrid>
+  </template>
 }
 ```

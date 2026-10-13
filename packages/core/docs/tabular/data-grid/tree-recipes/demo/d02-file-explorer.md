@@ -11,35 +11,13 @@ open folder for expanded folders.
 
 </EuiText>
 
-```hbs template
-<EuiDataGrid
-  aria-label="File explorer"
-  @columns={{this.columns}}
-  @rowTree={{hash
-    rows=this.files
-    expandedRowIds=this.expandedRowIds
-    onExpandedChange=this.onExpandedChange
-  }}
-  @gridStyle={{hash border="horizontal" header="underline" rowHover="highlight"}}
-  @height={{360}}
->
-  <:cell as |cell|>
-    {{#if (eq cell.columnId "name")}}
-      <EuiIcon @type={{this.iconFor cell.row}} @color={{if cell.row.children "warning" "subdued"}} />
-      {{cell.row.name}}
-    {{else if (eq cell.columnId "size")}}
-      {{this.formatSize cell.row}}
-    {{else}}
-      {{get cell.row cell.columnId}}
-    {{/if}}
-  </:cell>
-</EuiDataGrid>
-```
-
-```js component
+```gjs component
 import Component from '@glimmer/component';
 import { tracked } from '@glimmer/tracking';
 import { action } from '@ember/object';
+import { get, hash } from '@ember/helper';
+import { eq } from 'ember-truth-helpers';
+import { EuiDataGrid, EuiIcon } from '@ember-eui/core/components';
 
 const ICONS = { ts: 'tokenClass', md: 'document', json: 'tokenObject', png: 'image', svg: 'image' };
 
@@ -100,5 +78,30 @@ export default class FileExplorerDemo extends Component {
   @action onExpandedChange(ids) {
     this.expandedRowIds = ids;
   }
+
+  <template>
+    <EuiDataGrid
+      aria-label="File explorer"
+      @columns={{this.columns}}
+      @rowTree={{hash
+        rows=this.files
+        expandedRowIds=this.expandedRowIds
+        onExpandedChange=this.onExpandedChange
+      }}
+      @gridStyle={{hash border="horizontal" header="underline" rowHover="highlight"}}
+      @height={{360}}
+    >
+      <:cell as |cell|>
+        {{#if (eq cell.columnId "name")}}
+          <EuiIcon @type={{this.iconFor cell.row}} @color={{if cell.row.children "warning" "subdued"}} />
+          {{cell.row.name}}
+        {{else if (eq cell.columnId "size")}}
+          {{this.formatSize cell.row}}
+        {{else}}
+          {{get cell.row cell.columnId}}
+        {{/if}}
+      </:cell>
+    </EuiDataGrid>
+  </template>
 }
 ```

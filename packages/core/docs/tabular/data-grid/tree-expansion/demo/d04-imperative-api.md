@@ -12,37 +12,18 @@ expands its ancestors first.
 
 </EuiText>
 
-```hbs template
-<EuiFlexGroup @gutterSize="s" @responsive={{false}} @wrap={{true}}>
-  <EuiFlexItem @grow={{false}}>
-    <EuiButton @size="s" {{on "click" this.expandAll}}>Expand all</EuiButton>
-  </EuiFlexItem>
-  <EuiFlexItem @grow={{false}}>
-    <EuiButton @size="s" {{on "click" this.collapseAll}}>Collapse all</EuiButton>
-  </EuiFlexItem>
-  <EuiFlexItem @grow={{false}}>
-    <EuiButton @size="s" {{on "click" this.expandSrc}}>Expand "src"</EuiButton>
-  </EuiFlexItem>
-  <EuiFlexItem @grow={{false}}>
-    <EuiButton @size="s" {{on "click" this.focusKeys}}>Focus keys.ts</EuiButton>
-  </EuiFlexItem>
-</EuiFlexGroup>
-<EuiSpacer @size="s" />
-<EuiDataGrid
-  aria-label="Imperative API"
-  @columns={{this.columns}}
-  @rowTree={{this.files}}
-  @registerApi={{this.registerApi}}
-  @toolbarVisibility={{false}}
-  @height={{260}}
->
-  <:cell as |cell|>{{get cell.row cell.columnId}}</:cell>
-</EuiDataGrid>
-```
-
-```js component
+```gjs component
 import Component from '@glimmer/component';
 import { action } from '@ember/object';
+import { get } from '@ember/helper';
+import { on } from '@ember/modifier';
+import {
+  EuiButton,
+  EuiDataGrid,
+  EuiFlexGroup,
+  EuiFlexItem,
+  EuiSpacer,
+} from '@ember-eui/core/components';
 
 export default class ImperativeApiDemo extends Component {
   api = null;
@@ -85,5 +66,33 @@ export default class ImperativeApiDemo extends Component {
   @action focusKeys() {
     this.api?.setFocusedCell({ rowIndex: 3, colIndex: 0 });
   }
+
+  <template>
+    <EuiFlexGroup @gutterSize="s" @responsive={{false}} @wrap={{true}}>
+      <EuiFlexItem @grow={{false}}>
+        <EuiButton @size="s" {{on "click" this.expandAll}}>Expand all</EuiButton>
+      </EuiFlexItem>
+      <EuiFlexItem @grow={{false}}>
+        <EuiButton @size="s" {{on "click" this.collapseAll}}>Collapse all</EuiButton>
+      </EuiFlexItem>
+      <EuiFlexItem @grow={{false}}>
+        <EuiButton @size="s" {{on "click" this.expandSrc}}>Expand "src"</EuiButton>
+      </EuiFlexItem>
+      <EuiFlexItem @grow={{false}}>
+        <EuiButton @size="s" {{on "click" this.focusKeys}}>Focus keys.ts</EuiButton>
+      </EuiFlexItem>
+    </EuiFlexGroup>
+    <EuiSpacer @size="s" />
+    <EuiDataGrid
+      aria-label="Imperative API"
+      @columns={{this.columns}}
+      @rowTree={{this.files}}
+      @registerApi={{this.registerApi}}
+      @toolbarVisibility={{false}}
+      @height={{260}}
+    >
+      <:cell as |cell|>{{get cell.row cell.columnId}}</:cell>
+    </EuiDataGrid>
+  </template>
 }
 ```

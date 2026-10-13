@@ -12,38 +12,19 @@ still exists.
 
 </EuiText>
 
-```hbs template
-<EuiFlexGroup @gutterSize="s" @responsive={{false}}>
-  <EuiFlexItem @grow={{false}}>
-    <EuiButton @size="s" {{on "click" this.expandAll}}>Expand all</EuiButton>
-  </EuiFlexItem>
-  <EuiFlexItem @grow={{false}}>
-    <EuiButton @size="s" {{on "click" this.collapseAll}}>Collapse all</EuiButton>
-  </EuiFlexItem>
-</EuiFlexGroup>
-<EuiSpacer @size="s" />
-<EuiDataGrid
-  aria-label="Pagination"
-  @columns={{this.columns}}
-  @rowTree={{this.folders}}
-  @registerApi={{this.registerApi}}
-  @pagination={{hash
-    pageIndex=this.pageIndex
-    pageSize=this.pageSize
-    pageSizeOptions=(array 5 10)
-    onChangePage=this.onChangePage
-    onChangeItemsPerPage=this.onChangeItemsPerPage
-  }}
-  @toolbarVisibility={{false}}
->
-  <:cell as |cell|>{{get cell.row cell.columnId}}</:cell>
-</EuiDataGrid>
-```
-
-```js component
+```gjs component
 import Component from '@glimmer/component';
 import { tracked } from '@glimmer/tracking';
 import { action } from '@ember/object';
+import { array, get, hash } from '@ember/helper';
+import { on } from '@ember/modifier';
+import {
+  EuiButton,
+  EuiDataGrid,
+  EuiFlexGroup,
+  EuiFlexItem,
+  EuiSpacer,
+} from '@ember-eui/core/components';
 
 export default class PaginationDemo extends Component {
   @tracked pageIndex = 0;
@@ -82,5 +63,33 @@ export default class PaginationDemo extends Component {
     this.pageSize = pageSize;
     this.pageIndex = 0;
   }
+
+  <template>
+    <EuiFlexGroup @gutterSize="s" @responsive={{false}}>
+      <EuiFlexItem @grow={{false}}>
+        <EuiButton @size="s" {{on "click" this.expandAll}}>Expand all</EuiButton>
+      </EuiFlexItem>
+      <EuiFlexItem @grow={{false}}>
+        <EuiButton @size="s" {{on "click" this.collapseAll}}>Collapse all</EuiButton>
+      </EuiFlexItem>
+    </EuiFlexGroup>
+    <EuiSpacer @size="s" />
+    <EuiDataGrid
+      aria-label="Pagination"
+      @columns={{this.columns}}
+      @rowTree={{this.folders}}
+      @registerApi={{this.registerApi}}
+      @pagination={{hash
+        pageIndex=this.pageIndex
+        pageSize=this.pageSize
+        pageSizeOptions=(array 5 10)
+        onChangePage=this.onChangePage
+        onChangeItemsPerPage=this.onChangeItemsPerPage
+      }}
+      @toolbarVisibility={{false}}
+    >
+      <:cell as |cell|>{{get cell.row cell.columnId}}</:cell>
+    </EuiDataGrid>
+  </template>
 }
 ```

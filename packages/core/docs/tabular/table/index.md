@@ -1,5 +1,6 @@
 ---
 title: Table
+order: 3
 ---
 
 <EuiSpacer/>
@@ -8,10 +9,24 @@ title: Table
 
 <EuiText>
 
-`EuiTable` and its parts render EUI's table markup and styles: they only
-produce HTML. Sorting, selection, filtering and pagination are yours to
-compute, in the component or with a headless table library; these
-components show the result.
+If you need more custom behavior than either
+[EuiBasicTable](../basic-table) or [EuiInMemoryTable](../in-memory-table)
+allow, you can construct your own table from EUI's low-level building
+blocks, like `EuiTableHeader` and `EuiTableRowCell`. They render EUI's
+table markup and styles; there are several important caveats to keep in
+mind:
+
+- **Selection and filtering**: custom tables must completely handle their
+  own selection and filtering (and sorting and pagination), in the
+  component or with a headless table library.
+- **Mobile headers**: pass a `mobileOptions.header` equivalent to the
+  column header to each `EuiTableRowCell`, so the mobile (cards) layout
+  uses it to label each cell. To add mobile support for selection and
+  sorting, wrap them in `EuiTableHeaderMobile` and use `EuiTableSortMobile`
+  for sorting. See the demo below.
+- **Cell text behavior**: set `@truncateText={{true}}` on cells to enforce
+  a single line and truncate their contents, or `@textOnly={{false}}` when
+  the contents must be a direct descendant of the cell (components).
 
 ```hbs
 <EuiTable>
@@ -22,8 +37,8 @@ components show the result.
   <EuiTableBody>
     {{#each this.rows as |row|}}
       <EuiTableRow>
-        <EuiTableRowCell>{{row.name}}</EuiTableRowCell>
-        <EuiTableRowCell @align="right">{{row.size}}</EuiTableRowCell>
+        <EuiTableRowCell @mobileOptions={{hash header="Name"}}>{{row.name}}</EuiTableRowCell>
+        <EuiTableRowCell @align="right" @mobileOptions={{hash header="Size"}}>{{row.size}}</EuiTableRowCell>
       </EuiTableRow>
     {{/each}}
   </EuiTableBody>
@@ -33,16 +48,20 @@ components show the result.
 - **Header**: `EuiTableHeaderCell` sorts with `@onSort`, `@isSorted` and
   `@isSortAscending`; `EuiTableHeaderCellCheckbox` holds a "select all"
   checkbox; `EuiTableHeaderButton` is a plain button for a header.
-- **Rows**: `EuiTableRow` (`@isSelected`, `@onClick`, `@hasActions`),
-  `EuiTableRowCell` (`@align`, `@truncateText`, `@textOnly={{false}}` for
-  components, `@showOnHover` for actions) and `EuiTableRowCellCheckbox`.
+- **Rows**: `EuiTableRow` (`@isSelected`, `@hasSelection`, `@onClick`,
+  `@hasActions`, `@isExpandedRow`), `EuiTableRowCell` (`@align`,
+  `@valign`, `@truncateText`, `@textOnly`, `@showOnHover`,
+  `@mobileOptions`) and `EuiTableRowCellCheckbox`.
 - **Footer**: `EuiTableFooter` with `EuiTableFooterCell`s.
 - **Pagination**: `EuiTablePagination` shows the pages and a "Rows per
   page" menu.
-- **Small screens**: a responsive table turns rows into cards; cells take
-  `@mobileOptions` (`{ header, show, only, enlarge }`), and
-  `EuiTableHeaderMobile` with `EuiTableSortMobile` replaces the header
-  row there.
+- **Layout**: `EuiTable` takes `@tableLayout`, `@compressed`,
+  `@responsiveBreakpoint` and `@scrollableInline`.
+
+### Ember differences
+
+Upstream's beta `stickyHeader` and `stickyScrollbar` props of `EuiTable`
+are not supported yet.
 
 </EuiText>
 

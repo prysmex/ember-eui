@@ -12,24 +12,10 @@ demo passes `getChildren` and `getRowId`. The flat form works the same with
 
 </EuiText>
 
-```hbs template
-<EuiDataGrid
-  aria-label="Custom accessors"
-  @columns={{this.columns}}
-  @rowTree={{hash
-    rows=this.projects
-    getChildren=this.getChildren
-    getRowId=this.getRowId
-    defaultExpandedRowIds=(array "web")
-  }}
-  @height={{280}}
->
-  <:cell as |cell|>{{get cell.row cell.columnId}}</:cell>
-</EuiDataGrid>
-```
-
-```js component
+```gjs component
 import Component from '@glimmer/component';
+import { array, get, hash } from '@ember/helper';
+import { EuiDataGrid } from '@ember-eui/core/components';
 
 export default class CustomAccessorsDemo extends Component {
   columns = [
@@ -52,5 +38,21 @@ export default class CustomAccessorsDemo extends Component {
 
   getChildren = (project) => project.subtasks;
   getRowId = (project) => project.key;
+
+  <template>
+    <EuiDataGrid
+      aria-label="Custom accessors"
+      @columns={{this.columns}}
+      @rowTree={{hash
+        rows=this.projects
+        getChildren=this.getChildren
+        getRowId=this.getRowId
+        defaultExpandedRowIds=(array "web")
+      }}
+      @height={{280}}
+    >
+      <:cell as |cell|>{{get cell.row cell.columnId}}</:cell>
+    </EuiDataGrid>
+  </template>
 }
 ```

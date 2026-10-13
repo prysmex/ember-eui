@@ -1,6 +1,6 @@
 ---
 title: Data grid tree recipes
-order: 12
+order: 14
 ---
 
 <EuiSpacer/>

@@ -11,19 +11,10 @@ its toggle, ArrowRight or Space.
 
 </EuiText>
 
-```hbs template
-<EuiDataGrid
-  aria-label="Group by department"
-  @columns={{this.columns}}
-  @grouping={{hash groupBy=(array "department") rows=this.people}}
-  @height={{320}}
->
-  <:cell as |cell|>{{get cell.row cell.columnId}}</:cell>
-</EuiDataGrid>
-```
-
-```js component
+```gjs component
 import Component from '@glimmer/component';
+import { array, get, hash } from '@ember/helper';
+import { EuiDataGrid } from '@ember-eui/core/components';
 
 export default class OneLevelDemo extends Component {
   columns = [
@@ -41,5 +32,16 @@ export default class OneLevelDemo extends Component {
     { name: 'Alan', department: 'Finance', role: 'Controller' },
     { name: 'Hedy', department: 'Design', role: 'Lead' }
   ];
+
+  <template>
+    <EuiDataGrid
+      aria-label="Group by department"
+      @columns={{this.columns}}
+      @grouping={{hash groupBy=(array "department") rows=this.people}}
+      @height={{320}}
+    >
+      <:cell as |cell|>{{get cell.row cell.columnId}}</:cell>
+    </EuiDataGrid>
+  </template>
 }
 ```

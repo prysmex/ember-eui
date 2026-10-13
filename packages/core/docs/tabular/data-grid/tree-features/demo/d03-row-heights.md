@@ -11,20 +11,10 @@ descriptions keep their height wherever their row moves.
 
 </EuiText>
 
-```hbs template
-<EuiDataGrid
-  aria-label="Row heights"
-  @columns={{this.columns}}
-  @rowTree={{hash rows=this.topics defaultExpandedRowIds=(array "grid")}}
-  @rowHeightsOptions={{hash defaultHeight="auto"}}
-  @height={{380}}
->
-  <:cell as |cell|>{{get cell.row cell.columnId}}</:cell>
-</EuiDataGrid>
-```
-
-```js component
+```gjs component
 import Component from '@glimmer/component';
+import { array, get, hash } from '@ember/helper';
+import { EuiDataGrid } from '@ember-eui/core/components';
 
 export default class RowHeightsDemo extends Component {
   columns = [
@@ -55,5 +45,17 @@ export default class RowHeightsDemo extends Component {
       children: [{ id: 'memory', title: 'In-memory table', summary: 'Search, sort and page in the browser.' }]
     }
   ];
+
+  <template>
+    <EuiDataGrid
+      aria-label="Row heights"
+      @columns={{this.columns}}
+      @rowTree={{hash rows=this.topics defaultExpandedRowIds=(array "grid")}}
+      @rowHeightsOptions={{hash defaultHeight="auto"}}
+      @height={{380}}
+    >
+      <:cell as |cell|>{{get cell.row cell.columnId}}</:cell>
+    </EuiDataGrid>
+  </template>
 }
 ```

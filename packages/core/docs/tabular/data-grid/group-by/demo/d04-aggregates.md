@@ -14,27 +14,10 @@ totals.
 
 </EuiText>
 
-```hbs template
-<EuiDataGrid
-  aria-label="Aggregates"
-  @columns={{this.columns}}
-  @grouping={{hash
-    groupBy=(array "region" "quarter")
-    rows=this.orders
-    renderGroupCell=this.GroupCell
-    defaultExpandedGroupIds=(array 'group:["North"]')
-  }}
-  @height={{380}}
->
-  <:cell as |cell|>{{this.format cell.row cell.columnId}}</:cell>
-</EuiDataGrid>
-```
-
-```js component
+```gjs component
 import Component from '@glimmer/component';
-import { setComponentTemplate } from '@ember/component';
-import templateOnly from '@ember/component/template-only';
-import { precompileTemplate } from '@ember/template-compilation';
+import { array, hash } from '@ember/helper';
+import { EuiDataGrid } from '@ember-eui/core/components';
 
 const ORDERS = [
   ['North', 'Q1', 'Acme', 1200, 5],
@@ -72,13 +55,13 @@ const aggregate = (rowIndices, columnId) => {
   }
 };
 
-const GroupCell = setComponentTemplate(
-  precompileTemplate(
-    `{{#if @isToggleCell}}<strong>{{@group.value}}</strong> · {{@group.count}} orders{{else}}<em>{{aggregate @group.rowIndices @columnId}}</em>{{/if}}`,
-    { strictMode: true, scope: () => ({ aggregate }) }
-  ),
-  templateOnly()
-);
+const GroupCell = <template>
+  {{#if @isToggleCell}}
+    <strong>{{@group.value}}</strong> · {{@group.count}} orders
+  {{else}}
+    <em>{{aggregate @group.rowIndices @columnId}}</em>
+  {{/if}}
+</template>;
 
 export default class AggregatesDemo extends Component {
   GroupCell = GroupCell;
@@ -96,5 +79,21 @@ export default class AggregatesDemo extends Component {
     if (columnId === 'discount') return `${row.discount}%`;
     return row[columnId];
   };
+
+  <template>
+    <EuiDataGrid
+      aria-label="Aggregates"
+      @columns={{this.columns}}
+      @grouping={{hash
+        groupBy=(array "region" "quarter")
+        rows=this.orders
+        renderGroupCell=this.GroupCell
+        defaultExpandedGroupIds=(array 'group:["North"]')
+      }}
+      @height={{380}}
+    >
+      <:cell as |cell|>{{this.format cell.row cell.columnId}}</:cell>
+    </EuiDataGrid>
+  </template>
 }
 ```

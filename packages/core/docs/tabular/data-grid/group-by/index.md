@@ -1,6 +1,6 @@
 ---
 title: Data grid row grouping
-order: 10
+order: 12
 ---
 
 <EuiSpacer/>

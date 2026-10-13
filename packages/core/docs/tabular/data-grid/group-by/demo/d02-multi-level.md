@@ -12,30 +12,12 @@ grouping with the buttons.
 
 </EuiText>
 
-```hbs template
-<EuiButtonGroup
-  @legend="Group by"
-  @options={{this.groupOptions}}
-  @idSelected={{this.groupById}}
-  @onChange={{this.setGroupBy}}
-  @buttonSize="compressed"
-/>
-<EuiSpacer @size="s" />
-<EuiDataGrid
-  aria-label="Multi-level groups"
-  @columns={{this.columns}}
-  @rowCount={{this.data.product.length}}
-  @grouping={{hash groupBy=this.groupBy getValue=this.getValue defaultExpandedGroupIds="all"}}
-  @height={{360}}
->
-  <:cell as |cell|>{{this.display cell.rowIndex cell.columnId}}</:cell>
-</EuiDataGrid>
-```
-
-```js component
+```gjs component
 import Component from '@glimmer/component';
 import { tracked } from '@glimmer/tracking';
 import { action } from '@ember/object';
+import { hash } from '@ember/helper';
+import { EuiButtonGroup, EuiDataGrid, EuiSpacer } from '@ember-eui/core/components';
 
 const GROUPINGS = {
   none: [],
@@ -83,5 +65,25 @@ export default class MultiLevelDemo extends Component {
   @action setGroupBy(id) {
     this.groupById = id;
   }
+
+  <template>
+    <EuiButtonGroup
+      @legend="Group by"
+      @options={{this.groupOptions}}
+      @idSelected={{this.groupById}}
+      @onChange={{this.setGroupBy}}
+      @buttonSize="compressed"
+    />
+    <EuiSpacer @size="s" />
+    <EuiDataGrid
+      aria-label="Multi-level groups"
+      @columns={{this.columns}}
+      @rowCount={{this.data.product.length}}
+      @grouping={{hash groupBy=this.groupBy getValue=this.getValue defaultExpandedGroupIds="all"}}
+      @height={{360}}
+    >
+      <:cell as |cell|>{{this.display cell.rowIndex cell.columnId}}</:cell>
+    </EuiDataGrid>
+  </template>
 }
 ```

@@ -320,6 +320,25 @@ module('Integration | Component | Borealis code block family', function (hooks) 
     assert.notOk(inDocument('[data-test-subj="euiCodeBlockAnnotationPopover"]'), 'Escape closes the popover');
   });
 
+  test('line annotations accept component nodes for rich content', async function (assert) {
+    const Note = <template>Defines <strong class="rich-note">f</strong>, see <a href="#docs">docs</a></template>;
+    const lineNumbers = { annotations: { 2: Note, 3: 'Plain note' } };
+    await render(
+      <template>
+        <EuiCodeBlock @language="js" @lineNumbers={{lineNumbers}}>{{JS}}</EuiCodeBlock>
+      </template>
+    );
+    await waitFor('[data-test-subj="euiCodeBlockAnnotationIcon"]');
+    const buttons = document.querySelectorAll<HTMLElement>('[data-test-subj="euiCodeBlockAnnotationIcon"]');
+    assert.strictEqual(buttons.length, 2);
+
+    await click(buttons[0]!);
+    await waitUntil(() => inDocument('[data-test-subj="euiCodeBlockAnnotationPopover"]'));
+    const popover = inDocument('[data-test-subj="euiCodeBlockAnnotationPopover"]')!;
+    assert.dom('.rich-note', popover).hasText('f');
+    assert.dom('a', popover).hasAttribute('href', '#docs');
+  });
+
   test('overflow height: scroll region, focusability and control offsets', async function (assert) {
     await render(
       <template>

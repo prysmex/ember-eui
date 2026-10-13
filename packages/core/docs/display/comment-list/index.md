@@ -36,6 +36,7 @@ Stacks EuiComments along a shared timeline (an ordered list).
 | Argument | Type | Default | Description |
 | --- | --- | --- | --- |
 | `@gutterSize` | `'m' \| 'l' \| 'xl'` | `'l'` | Vertical space between comments: `'m'`, `'l'` or `'xl'`. |
+| `@comments` | `EuiCommentListItem[]` |  | Comments to render from data (see `EuiCommentListItem`), before the block's content. Give the list an `aria-label` or `aria-labelledby` attribute. |
 
 | Block | Description |
 | --- | --- |

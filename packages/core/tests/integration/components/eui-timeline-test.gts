@@ -183,6 +183,27 @@ module('Integration | Component | Borealis timeline', function (hooks) {
     assert.dom('.euiTimelineItem:nth-child(3)').hasText('Merged');
   });
 
+  test('@items accept component nodes as children and as a custom icon', async function (assert) {
+    const Rich = <template><p class="rich">Deployed <strong>v2</strong></p></template>;
+    const Avatar = <template><span class="custom-icon">J</span></template>;
+    const items: EuiTimelineItemData[] = [
+      { children: Rich, icon: 'rocket' },
+      { children: 'Text node', icon: Avatar, verticalAlign: 'top' },
+      { content: 'Legacy content', icon: 'check' },
+      { content: 'Ignored', children: 'Children win' }
+    ];
+
+    await render(<template><EuiTimeline @items={{items}} /></template>);
+
+    assert.dom('.euiTimelineItem').exists({ count: 4 });
+    assert.dom('.euiTimelineItem:nth-child(1) .euiTimelineItemEvent .rich strong').hasText('v2');
+    assert.dom('.euiTimelineItem:nth-child(1) .euiTimelineItemIcon svg').exists();
+    assert.dom('.euiTimelineItem:nth-child(2) .euiTimelineItemIcon .custom-icon').hasText('J');
+    assert.dom('.euiTimelineItem:nth-child(2) .euiTimelineItemEvent').hasText('Text node');
+    assert.dom('.euiTimelineItem:nth-child(3) .euiTimelineItemEvent').hasText('Legacy content');
+    assert.dom('.euiTimelineItem:nth-child(4) .euiTimelineItemEvent').hasText('Children win');
+  });
+
   test('theme overrides, contrast, sibling isolation and RTL use the nearest provider', async function (assert) {
     class State {
       @tracked overrides: EuiBorealisOverrides = {};

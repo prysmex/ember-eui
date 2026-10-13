@@ -97,7 +97,7 @@ interface CommentItemSignature {
  * @private The timeline item (upstream `EuiTimelineItem` + `EuiCommentEvent`)
  * behind EuiComment, which passes which blocks it was given.
  */
-class EuiCommentItem extends Component<CommentItemSignature> {
+export class EuiCommentItem extends Component<CommentItemSignature> {
   get context() {
     return getEuiThemeContext(this);
   }

@@ -27,6 +27,8 @@ export interface EuiWrappingPopoverSignature {
   Blocks: {
     /** The popover's content. */
     default: [];
+    /** Content on the popover's arrow (e.g. a beacon). */
+    arrowChildren: [];
   };
 }
 
@@ -103,6 +105,10 @@ export default class EuiWrappingPopover extends Component<EuiWrappingPopoverSign
         <:button>
           <div {{this.setAnchorRef}} class="euiWrappingPopover__anchor" />
         </:button>
+
+        <:arrowChildren>
+          {{yield to="arrowChildren"}}
+        </:arrowChildren>
 
         <:content>
           {{yield}}

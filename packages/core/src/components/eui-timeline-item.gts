@@ -7,6 +7,7 @@ import { euiTimelineItemStyles } from '../utils/eui/styles.generated.ts';
 import EuiTimelineItemEvent from './eui-timeline-item-event.gts';
 import EuiTimelineItemIcon from './eui-timeline-item-icon.gts';
 
+import type { EuiRenderNode as EuiRenderNodeType } from '../-private/eui-render-node.gts';
 import type { EuiIconSignature } from './eui-icon.gts';
 import type { EuiCss } from '../utils/eui/styles.ts';
 
@@ -14,8 +15,17 @@ export type EuiTimelineVerticalAlign = 'top' | 'center';
 export type EuiTimelineIconType = EuiIconSignature['Args']['type'];
 
 export interface EuiTimelineItemData {
-  content: string;
-  icon?: EuiTimelineIconType;
+  /** The event's text. Same as `children`, which wins when both are set. */
+  content?: string;
+  /**
+   * The event's content (upstream's `children`): text, or a component for
+   * rich content (a template-only component or `(component …)`).
+   */
+  children?: EuiRenderNodeType;
+  /**
+   * An icon type, or a component for a custom icon (upstream's `icon` node).
+   */
+  icon?: EuiTimelineIconType | EuiRenderNodeType;
   iconAriaLabel?: string;
   verticalAlign?: EuiTimelineVerticalAlign;
 }

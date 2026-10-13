@@ -48,6 +48,7 @@ export default class extends Component {
         @title='Title of the current step'
         @subtitle='Title of the full tour (optional)'
         @anchorPosition='rightCenter'
+        @zIndex={{1}}
       >
         <:default>
           <EuiFieldText @placeholder='Placeholder text' />

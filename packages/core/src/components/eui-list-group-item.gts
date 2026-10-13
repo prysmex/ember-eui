@@ -5,12 +5,14 @@ import { on } from '@ember/modifier';
 
 import optional from '@nullvoxpopuli/ember-composable-helpers/helpers/optional';
 
+import EuiMaybeToolTip from '../-private/eui-maybe-tool-tip.gts';
 import { listGroupContext } from '../-private/eui-list-context.ts';
 import { getEuiThemeContext } from '../utils/emotion/consume.ts';
 import { euiClass, useEuiBorealisStyles } from '../utils/eui/styles.ts';
 import type { EuiCss } from '../utils/eui/styles.ts';
 import {
   euiListGroupItemExtraActionStyles,
+  euiListGroupItemTooltipStyles,
   euiListGroupItemStyles,
   euiListItemLayoutStyles,
   euiListItemLayoutWrapperStyles,
@@ -22,6 +24,7 @@ import { getSecureRelForTarget, isValidHref } from './eui-link.gts';
 
 import type { EuiButtonIconSignature } from './eui-button-icon';
 import type { EuiIconSignature } from './eui-icon';
+import type { EuiTooltipArgs } from './eui-tool-tip.gts';
 import type { CSSInterpolation } from '@emotion/css/create-instance';
 import type { TemplateOnlyComponent } from '@ember/component/template-only';
 import type { ComponentLike } from '@glint/template';
@@ -95,6 +98,18 @@ export interface EuiListGroupItemSignature {
      * or any component (use `(component …)`).
      */
     extraAction?: ComponentLike | EuiListGroupItemExtraActionProps;
+    /**
+     * Shows a tooltip with the label (or `@toolTipText`) on hover and focus.
+     * Defaults to the list's `@showToolTips`, else `false`.
+     */
+    showToolTip?: boolean;
+    /** Text of the tooltip shown by `@showToolTip`. Defaults to `@label`. */
+    toolTipText?: string;
+    /**
+     * Customizes the tooltip shown by `@showToolTip`: the args of
+     * `EuiToolTip` as an object (`position` defaults to `'right'`).
+     */
+    toolTipProps?: Partial<EuiTooltipArgs>;
     /** @deprecated Has no effect: latest EUI list items have one size. */
     size?: 'xs' | 's' | 'm' | 'l';
     /**
@@ -263,8 +278,44 @@ export default class EuiListGroupItem extends Component<EuiListGroupItemSignatur
     return this.isActive ? 'true' : undefined;
   }
 
+  get showToolTip(): boolean {
+    return Boolean(
+      this.args.showToolTip ?? listGroupContext(this)?.showToolTips
+    );
+  }
+
   get title(): string | undefined {
-    return this.wrapText ? undefined : this.args.label;
+    // upstream: no native title when wrapping or when a tooltip shows it
+    return this.wrapText || this.showToolTip ? undefined : this.args.label;
+  }
+
+  /** Upstream `_tooltipProps`: label as content, shown to the right. */
+  @cached
+  get toolTipProps(): Partial<EuiTooltipArgs> | undefined {
+    if (!this.showToolTip) return undefined;
+    return {
+      content: this.args.toolTipText ?? this.args.label,
+      position: 'right',
+      ...this.args.toolTipProps
+    };
+  }
+
+  @cached
+  get toolTipAnchorClass(): string {
+    return `euiListGroupItem__tooltip${
+      this.args.toolTipProps?.anchorClassName
+        ? ` ${this.args.toolTipProps.anchorClassName}`
+        : ''
+    }`;
+  }
+
+  @cached
+  get toolTipAnchorCss(): EuiCss {
+    return [
+      euiListGroupItemTooltipStyles.euiListGroupItem__tooltip,
+      this.isDisabled && this.layout.tooltip.isDisabled,
+      this.args.toolTipProps?.anchorCss
+    ];
   }
 
   get extraActionComponent(): ComponentLike | undefined {
@@ -436,6 +487,11 @@ export default class EuiListGroupItem extends Component<EuiListGroupItemSignatur
   <template>
     {{#if this.isInteractive}}
       <li class={{this.wrapperClass}}>
+        <EuiMaybeToolTip
+          @props={{this.toolTipProps}}
+          @anchorClass={{this.toolTipAnchorClass}}
+          @anchorCss={{this.toolTipAnchorCss}}
+        >
         {{#if this.isLink}}
           <a
             class={{this.elementClass}}
@@ -484,6 +540,7 @@ export default class EuiListGroupItem extends Component<EuiListGroupItemSignatur
             </Content>
           </button>
         {{/if}}
+        </EuiMaybeToolTip>
         {{#if this.hasExtraAction}}
           <ExtraAction
             @component={{this.extraActionComponent}}
@@ -501,6 +558,11 @@ export default class EuiListGroupItem extends Component<EuiListGroupItemSignatur
         aria-disabled={{if this.isDisabled "true"}}
         ...attributes
       >
+        <EuiMaybeToolTip
+          @props={{this.toolTipProps}}
+          @anchorClass={{this.toolTipAnchorClass}}
+          @anchorCss={{this.toolTipAnchorCss}}
+        >
         <Content
           @contentClass={{this.contentClass}}
           @prependClass={{this.prependClass}}
@@ -527,6 +589,7 @@ export default class EuiListGroupItem extends Component<EuiListGroupItemSignatur
             {{/if}}
           </:after>
         </Content>
+        </EuiMaybeToolTip>
       </li>
     {{/if}}
   </template>

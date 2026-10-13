@@ -1,6 +1,7 @@
 import Component from '@glimmer/component';
 import { cached } from '@glimmer/tracking';
 
+import EuiRenderNode, { isTextNode } from '../-private/eui-render-node.gts';
 import { getEuiThemeContext } from '../utils/emotion/consume.ts';
 import { euiClass, useEuiBorealisStyles } from '../utils/eui/styles.ts';
 import { euiTimelineStyles } from '../utils/eui/styles.generated.ts';
@@ -10,6 +11,14 @@ import type { EuiCss } from '../utils/eui/styles.ts';
 import type { EuiTimelineItemData } from './eui-timeline-item.gts';
 
 export type EuiTimelineGutterSize = 'm' | 'l' | 'xl';
+
+/** Icons given as a component render through the `<:icon>` block. */
+const isCustomIcon = (icon: unknown) => Boolean(icon) && !isTextNode(icon);
+/** Upstream `children`, falling back to the simple `content` text. */
+const eventContent = (item: EuiTimelineItemData) => item.children ?? item.content;
+/** A string icon is an icon type. */
+const iconType = (icon: unknown) =>
+  isTextNode(icon) ? (icon as string) : undefined;
 
 const LIST_RESET = {
   boxSizing: 'border-box',
@@ -53,11 +62,18 @@ export default class EuiTimeline extends Component<EuiTimelineSignature> {
     {{! template-lint-disable no-redundant-role }}
     <ol class="euiTimeline {{this.classes}}" role="list" ...attributes>
       {{#each @items as |item|}}
-        <EuiTimelineItem
-          @icon={{item.icon}}
-          @iconAriaLabel={{item.iconAriaLabel}}
-          @verticalAlign={{item.verticalAlign}}
-        >{{item.content}}</EuiTimelineItem>
+        {{#if (isCustomIcon item.icon)}}
+          <EuiTimelineItem @verticalAlign={{item.verticalAlign}}>
+            <:icon><EuiRenderNode @value={{item.icon}} /></:icon>
+            <:default><EuiRenderNode @value={{eventContent item}} /></:default>
+          </EuiTimelineItem>
+        {{else}}
+          <EuiTimelineItem
+            @icon={{iconType item.icon}}
+            @iconAriaLabel={{item.iconAriaLabel}}
+            @verticalAlign={{item.verticalAlign}}
+          ><EuiRenderNode @value={{eventContent item}} /></EuiTimelineItem>
+        {{/if}}
       {{/each}}
       {{yield}}
     </ol>

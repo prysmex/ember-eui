@@ -1,14 +1,41 @@
 import Component from '@glimmer/component';
 import { cached } from '@glimmer/tracking';
+import { get } from '@ember/helper';
 
 import { provide } from 'ember-provide-consume-context';
 
 import { EUI_LIST_GROUP_CONTEXT } from '../-private/eui-list-context.ts';
+import EuiListGroupItem from './eui-list-group-item.gts';
 import { getEuiThemeContext } from '../utils/emotion/consume.ts';
 import { euiClass, useEuiBorealisStyles } from '../utils/eui/styles.ts';
 import { euiListGroupStyles } from '../utils/eui/styles.generated.ts';
 
+import type { EuiListGroupItemSignature } from './eui-list-group-item.gts';
 import type { EuiListGroupContext } from '../-private/eui-list-context.ts';
+
+/**
+ * One entry of `@listItems`: the args of `EuiListGroupItem` as an object
+ * (`label`, `href`, `iconType`, `onClick`, `isActive`, `extraAction`,
+ * `showToolTip`, `toolTipText`, `toolTipProps`, …).
+ */
+export interface EuiListGroupListItem {
+  label?: EuiListGroupItemSignature['Args']['label'];
+  href?: EuiListGroupItemSignature['Args']['href'];
+  target?: EuiListGroupItemSignature['Args']['target'];
+  rel?: EuiListGroupItemSignature['Args']['rel'];
+  external?: EuiListGroupItemSignature['Args']['external'];
+  onClick?: EuiListGroupItemSignature['Args']['onClick'];
+  iconType?: EuiListGroupItemSignature['Args']['iconType'];
+  isActive?: EuiListGroupItemSignature['Args']['isActive'];
+  isDisabled?: EuiListGroupItemSignature['Args']['isDisabled'];
+  wrapText?: EuiListGroupItemSignature['Args']['wrapText'];
+  extraAction?: EuiListGroupItemSignature['Args']['extraAction'];
+  color?: EuiListGroupItemSignature['Args']['color'];
+  showToolTip?: EuiListGroupItemSignature['Args']['showToolTip'];
+  toolTipText?: EuiListGroupItemSignature['Args']['toolTipText'];
+  toolTipProps?: EuiListGroupItemSignature['Args']['toolTipProps'];
+  'data-test-subj'?: string;
+}
 
 /** A list of `EuiListGroupItem`s, e.g. navigation links in a side bar. */
 export interface EuiListGroupSignature {
@@ -20,6 +47,13 @@ export interface EuiListGroupSignature {
      * pixels). Defaults to `true`.
      */
     maxWidth?: boolean | string | number;
+    /**
+     * Items to display, as objects of `EuiListGroupItem` args. When there
+     * are any, they are rendered instead of the block's content.
+     */
+    listItems?: EuiListGroupListItem[];
+    /** Shows a tooltip on all items (an item's own `showToolTip` wins). */
+    showToolTips?: boolean;
     /** Adds a rounded border around the list. */
     bordered?: boolean;
     /**
@@ -66,6 +100,10 @@ export default class EuiListGroup
     return this.args.wrapText;
   }
 
+  get showToolTips(): boolean | undefined {
+    return this.args.showToolTips;
+  }
+
   @cached
   get classes(): string {
     const context = getEuiThemeContext(this);
@@ -85,7 +123,30 @@ export default class EuiListGroup
 
   <template>
     <ul class={{this.classes}} ...attributes>
-      {{yield}}
+      {{#if @listItems.length}}
+        {{#each @listItems as |item|}}
+          <EuiListGroupItem
+            @label={{item.label}}
+            @href={{item.href}}
+            @target={{item.target}}
+            @rel={{item.rel}}
+            @external={{item.external}}
+            @onClick={{item.onClick}}
+            @iconType={{item.iconType}}
+            @isActive={{item.isActive}}
+            @isDisabled={{item.isDisabled}}
+            @wrapText={{item.wrapText}}
+            @extraAction={{item.extraAction}}
+            @color={{item.color}}
+            @showToolTip={{item.showToolTip}}
+            @toolTipText={{item.toolTipText}}
+            @toolTipProps={{item.toolTipProps}}
+            data-test-subj={{get item "data-test-subj"}}
+          />
+        {{/each}}
+      {{else}}
+        {{yield}}
+      {{/if}}
     </ul>
   </template>
 }

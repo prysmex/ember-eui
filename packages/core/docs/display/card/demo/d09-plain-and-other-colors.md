@@ -6,7 +6,7 @@ order: 9
 
 <EuiText>
 
-If you need a card with no borders or shadows pass `@display="plain"`. This is a good option to avoid nested panels. Adding an interaction to the card will provide the clickable styling on hover. The `@display` argument also accepts all other **EuiPanel** colors like `'transparent'`.
+If you need a card with no borders or shadows pass `@display="plain"`. This is a good option to avoid nested panels. Adding an interaction to the card will provide the clickable styling on hover. The `@display` argument also accepts all other **EuiPanel** colors like `'transparent'`. Use `@hasBorder` to draw a border instead of a shadow.
 
 For non-interactive cards, reduce or eliminate the padding as needed to suit your layout with the `@paddingSize` argument.
 
@@ -55,6 +55,17 @@ export default class CardColorsDemo extends Component {
             label="Beta"
             tooltipContent="This module is not GA. Please help us by reporting any bugs."
           }}
+          @onClick={{this.noop}}
+        />
+      </EuiFlexItem>
+      <EuiFlexItem>
+        <EuiCard
+          @icon="logoLogging"
+          @iconSize="xl"
+          @title="Bordered"
+          @display="plain"
+          @hasBorder={{true}}
+          @description="This one has a plain background color and border."
           @onClick={{this.noop}}
         />
       </EuiFlexItem>

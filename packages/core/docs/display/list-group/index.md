@@ -43,6 +43,8 @@ A list of `EuiListGroupItem`s, e.g. navigation links in a side bar.
 | Argument | Type | Default | Description |
 | --- | --- | --- | --- |
 | `@maxWidth` | `boolean \| string \| number` | `true` | Limits the list's width: `true` for upstream's default (the form max width, 400px), `false` for none, or any CSS width (numbers are pixels). |
+| `@listItems` | `EuiListGroupListItem[]` |  | Items to display, as objects of `EuiListGroupItem` args. When there are any, they are rendered instead of the block's content. |
+| `@showToolTips` | `boolean` |  | Shows a tooltip on all items (an item's own `showToolTip` wins). |
 | `@bordered` | `boolean` |  | Adds a rounded border around the list. |
 | `@color` | `string` | `'text'` | Default `@color` of the items in the block: `'text'`, `'primary'` or `'subdued'`. An item's own `@color` wins. |
 | `@wrapText` | `boolean` |  | Default `@wrapText` of the items in the block. |

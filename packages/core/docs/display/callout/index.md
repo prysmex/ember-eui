@@ -53,6 +53,7 @@ A colored box drawing attention to a message, e.g. a warning or a success notice
 | `@onDismiss` | `(event: MouseEvent) => void` |  | Renders a dismiss (cross) button in the top end corner; called when it is clicked. |
 | `@dismissButtonAriaLabel` | `string` | "Dismiss this callout" (i18n token `euiCallOut.dismissAriaLabel`) | Accessible label of the dismiss button. |
 | `@announceOnMount` | `boolean` | `false` | Announces the title, text and body to screen readers when the callout is inserted (through `EuiLiveAnnouncer`). Use it only when the callout is feedback to a user action, not on page load. |
+| `@actionProps` |  |  | Up to two actions after the content: `primary` renders as an `EuiButton` and `secondary` as an `EuiButtonEmpty`, both small and in the callout's color. Rendered before the `<:actions>` block. |
 
 | Block | Description |
 | --- | --- |

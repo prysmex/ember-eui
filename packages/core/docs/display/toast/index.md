@@ -33,8 +33,8 @@ save() {
 }
 ```
 
-A toast takes a `title`, an optional `body` (markdown with
-`useMarkdownFormat: true`), a `color` (`primary`, `success`, `warning`,
+A toast takes a `title`, an optional `body` (text, markdown with
+`useMarkdownFormat: true`, or a component for rich content), a `color` (`primary`, `success`, `warning`,
 `danger`) and an `iconType`; `toastLifeTimeMs` overrides how long it
 stays. Hovering the list pauses the timers. Keep toasts for information
 that can be missed; for errors the user must act on, use a callout.
@@ -94,7 +94,7 @@ EuiGlobalToastList rather than rendered directly.
 | Argument | Type | Default | Description |
 | --- | --- | --- | --- |
 | `@title` | `string` |  | The title of the toast. |
-| `@body` | `string` |  | The body text of the toast (markdown with `useMarkdownFormat`); upstream calls it `text`. |
+| `@body` | `string \| EuiRenderNodeType` |  | The body of the toast (markdown with `useMarkdownFormat`); upstream calls it `text`. Text, or a component for rich content (a template-only component or `(component Foo arg=…)`), e.g. from the `euiToaster` service, which cannot pass blocks. Markdown needs text. |
 | `@color` | `EuiToastColor \| 'none'` | `'primary'` | `'primary'`, `'success'`, `'warning'` or `'danger'`: the highlight bar and default icon. `'none'` (Ember only) renders a neutral toast without a highlight or default icon. |
 | `@iconType` |  |  | Icon before the content, e.g. `'check'` or `'warning'`, colored like the highlight. Without it, a notification icon matching `@color` is shown. |
 | `@onClose` | `() => void` |  | Shows a dismiss (cross) button calling this function. |

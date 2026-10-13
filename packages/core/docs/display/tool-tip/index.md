@@ -72,6 +72,7 @@ short and non-essential; it is not reachable on touch screens.
 | `@id` | `string` |  | Unless you provide one, this will be randomly generated. |
 | `@position` | `ToolTipPositions` | `'top'` | Suggested position: `'top'`, `'right'`, `'bottom'` or `'left'`. If there is not enough room for it this will be changed. |
 | `@attachTo` | `undefined \| HTMLElement \| string \| null` |  | Shows the tooltip for another element (or selector) instead of the `<:anchor>` block's content. |
+| `@repositionOnScroll` | `boolean` | `false` | Repositions the tooltip when any scrollable ancestor (or the window) scrolls. Needed for fixed-position anchors or a tooltip inside a scrollable container. |
 | `@isShown` | `boolean \| undefined` |  | Shows (`true`) or hides (`false`) the tooltip from outside. |
 | `@onMouseOut` | `(event: MouseEvent) => void` |  | If supplied, called when mouse movement causes the tool tip to be hidden. |
 | `@onFocus` | `() => void` |  | Called when the anchor gets focus. |

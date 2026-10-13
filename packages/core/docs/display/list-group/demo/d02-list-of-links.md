@@ -10,13 +10,13 @@ Display **EuiListGroupItems** as links by providing an `@href` value and change 
 
 If your link is external or will open in a new tab, you can manually set the `@external` argument. However, just like with the [EuiLink](/docs/navigation/link) component, setting `@target="_blank"` defaults to `@external={{true}}`.
 
-Unlike upstream, **EuiListGroup** does not take a `listItems` array: render one **EuiListGroupItem** per entry, for example with `{{#each}}` as in this example.
+As in this example, **EuiListGroup** can also take an array of items through `@listItems`: objects with the arguments of **EuiListGroupItem** (`label`, `href`, `iconType`, `isActive`, `target`, `extraAction`, …). The list's `@color`, `@wrapText` and `@showToolTips` are passed down to each item, and the block is ignored while there are `@listItems`.
 
 </EuiText>
 
 ```gjs component
 import Component from '@glimmer/component';
-import { EuiListGroup, EuiListGroupItem } from '@ember-eui/core/components';
+import { EuiListGroup } from '@ember-eui/core/components';
 
 export default class ListOfLinksDemo extends Component {
   links = [
@@ -51,18 +51,7 @@ export default class ListOfLinksDemo extends Component {
   ];
 
   <template>
-    <EuiListGroup @color="primary">
-      {{#each this.links as |link|}}
-        <EuiListGroupItem
-          @label={{link.label}}
-          @href={{link.href}}
-          @iconType={{link.iconType}}
-          @isActive={{link.isActive}}
-          @isDisabled={{link.isDisabled}}
-          @target={{link.target}}
-        />
-      {{/each}}
-    </EuiListGroup>
+    <EuiListGroup @listItems={{this.links}} @color="primary" />
   </template>
 }
 ```

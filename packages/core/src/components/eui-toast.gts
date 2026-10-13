@@ -6,6 +6,7 @@ import { service } from '@ember/service';
 import { getTokenName } from '@elastic/eui-theme-common';
 import { and, or } from 'ember-truth-helpers';
 
+import EuiRenderNode, { isTextNode } from '../-private/eui-render-node.gts';
 import { getEuiThemeContext } from '../utils/emotion/consume.ts';
 import { euiClass, useEuiBorealisStyles } from '../utils/eui/styles.ts';
 import {
@@ -22,6 +23,7 @@ import EuiMarkdownFormat from './eui-markdown-format.gts';
 import { euiScreenReaderOnlyClass } from './eui-screen-reader-only.gts';
 import EuiText from './eui-text.gts';
 
+import type { EuiRenderNode as EuiRenderNodeType } from '../-private/eui-render-node.gts';
 import type EuiI18n from '../services/eui-i18n';
 import type { EuiCss } from '../utils/eui/styles.ts';
 import type { EuiIconSignature } from './eui-icon';
@@ -44,10 +46,12 @@ export interface IEuiToast {
   /** The title of the toast. */
   title?: string;
   /**
-   * The body text of the toast (markdown with `useMarkdownFormat`); upstream
-   * calls it `text`.
+   * The body of the toast (markdown with `useMarkdownFormat`); upstream
+   * calls it `text`. Text, or a component for rich content (a template-only
+   * component or `(component Foo arg=…)`), e.g. from the `euiToaster`
+   * service, which cannot pass blocks. Markdown needs text.
    */
-  body?: string;
+  body?: string | EuiRenderNodeType;
   /**
    * `'primary'`, `'success'`, `'warning'` or `'danger'`: the highlight bar
    * and default icon. `'none'` (Ember only) renders a neutral toast without
@@ -106,6 +110,8 @@ const DEFAULT_ICONS: Record<EuiToastColor, { type: string; color?: string }> =
     warning: { type: 'warningStatic' },
     danger: { type: 'errorFill', color: 'danger' }
   };
+
+const isText = isTextNode;
 
 /** Native Ember toast on the upstream EUI 123 / Borealis factories. */
 export default class EuiToast extends Component<EuiToastSignature> {
@@ -237,6 +243,11 @@ export default class EuiToast extends Component<EuiToastSignature> {
     return this.color === 'none' ? 'text' : this.color;
   }
 
+  /** `@body` as text, for markdown. */
+  get bodyText(): string {
+    return isTextNode(this.args.body) ? String(this.args.body) : '';
+  }
+
   get dismissLabel(): string {
     return this.euiI18n.lookupToken('euiToast.dismissToast', 'Dismiss toast');
   }
@@ -298,9 +309,9 @@ export default class EuiToast extends Component<EuiToastSignature> {
             {{#if (or @body (has-block))}}
               <div class={{this.textClass}} data-test-subj="euiToastBody">
                 {{#if @body}}
-                  {{#if @useMarkdownFormat}}
+                  {{#if (and @useMarkdownFormat (isText @body))}}
                     <div class="euiToast__text" data-test-subj="euiToastText">
-                      <EuiMarkdownFormat @textSize="s" @value={{@body}} />
+                      <EuiMarkdownFormat @textSize="s" @value={{this.bodyText}} />
                     </div>
                   {{else}}
                     <EuiText
@@ -308,7 +319,7 @@ export default class EuiToast extends Component<EuiToastSignature> {
                       @size="s"
                       @color="default"
                       data-test-subj="euiToastText"
-                    >{{@body}}</EuiText>
+                    ><EuiRenderNode @value={{@body}} /></EuiText>
                   {{/if}}
                 {{/if}}
                 {{#if (has-block)}}

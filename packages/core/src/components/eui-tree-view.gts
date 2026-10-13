@@ -5,6 +5,7 @@ import { on } from '@ember/modifier';
 import { action } from '@ember/object';
 import { service } from '@ember/service';
 
+import EuiRenderNode from '../-private/eui-render-node.gts';
 import { randomId } from '../-private/random-id.ts';
 import { getEuiThemeContext } from '../utils/emotion/consume.ts';
 import { euiClass, useEuiBorealisStyles } from '../utils/eui/styles.ts';
@@ -16,6 +17,7 @@ import {
 import EuiIcon from './eui-icon.gts';
 import EuiScreenReaderOnly from './eui-screen-reader-only.gts';
 
+import type { EuiRenderNode as EuiRenderNodeType } from '../-private/eui-render-node.gts';
 import type EuiI18n from '../services/eui-i18n';
 import type { EuiIconSignature } from './eui-icon';
 
@@ -24,10 +26,14 @@ export interface EuiTreeViewNode {
   id: string;
   /** The node's text. Use the `<:label>` block for markup. */
   label: string;
-  /** Icon before the label, any `EuiIcon` type, e.g. `'folder'`. */
-  icon?: EuiIconSignature['Args']['type'];
-  /** Icon while the node is open, e.g. `'folderOpen'`. */
-  iconWhenExpanded?: EuiIconSignature['Args']['type'];
+  /**
+   * Icon before the label: any `EuiIcon` type, e.g. `'folder'`, or a
+   * component for a custom icon (upstream's element), e.g.
+   * `(component EuiToken iconType="tokenString")`.
+   */
+  icon?: EuiIconSignature['Args']['type'] | EuiRenderNodeType;
+  /** Icon while the node is open, e.g. `'folderOpen'`; or a component. */
+  iconWhenExpanded?: EuiIconSignature['Args']['type'] | EuiRenderNodeType;
   /** Keeps the icon's space without an icon, to align with siblings. */
   useEmptyIcon?: boolean;
   /** Child nodes: the node opens and closes them. */
@@ -208,8 +214,19 @@ export default class EuiTreeView extends Component<EuiTreeViewSignature> {
   hasIcon = (node: EuiTreeViewNode): boolean =>
     Boolean(node.icon || (node.iconWhenExpanded && this.isOpen(node)));
 
-  iconOf = (node: EuiTreeViewNode): EuiIconSignature['Args']['type'] =>
+  iconOf = (node: EuiTreeViewNode): NonNullable<EuiTreeViewNode['icon']> =>
     (this.isOpen(node) && node.iconWhenExpanded) || node.icon || 'empty';
+
+  /** Icon types render through `EuiIcon`; components as they are. */
+  iconType = (node: EuiTreeViewNode): EuiIconSignature['Args']['type'] | undefined => {
+    const icon = this.iconOf(node);
+    return typeof icon === 'string' ? icon : undefined;
+  };
+
+  iconNode = (node: EuiTreeViewNode): EuiRenderNodeType | undefined => {
+    const icon = this.iconOf(node);
+    return typeof icon === 'string' ? undefined : (icon as EuiRenderNodeType);
+  };
 
   childrenId = (node: EuiTreeViewNode): string => `${this.treeId}_${node.id}_children`;
 
@@ -320,7 +337,13 @@ export default class EuiTreeView extends Component<EuiTreeViewSignature> {
             {{/if}}
             {{#if (this.hasIcon node)}}
               <span class="euiTreeView__iconWrapper {{this.iconWrapperStyles}}">
-                <EuiIcon @type={{this.iconOf node}} />
+                {{#let (this.iconType node) as |type|}}
+                  {{#if type}}
+                    <EuiIcon @type={{type}} />
+                  {{else}}
+                    <EuiRenderNode @value={{this.iconNode node}} />
+                  {{/if}}
+                {{/let}}
               </span>
             {{else if node.useEmptyIcon}}
               <span

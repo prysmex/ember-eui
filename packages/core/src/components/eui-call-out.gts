@@ -1,10 +1,12 @@
 import Component from '@glimmer/component';
 import { cached } from '@glimmer/tracking';
+import { get } from '@ember/helper';
 import { on } from '@ember/modifier';
 import { service } from '@ember/service';
 
 import { getTokenName } from '@elastic/eui-theme-common';
 import { modifier } from 'ember-modifier';
+import optional from '@nullvoxpopuli/ember-composable-helpers/helpers/optional';
 import { and, eq, or } from 'ember-truth-helpers';
 
 import { getEuiThemeContext } from '../utils/emotion/consume.ts';
@@ -15,20 +17,50 @@ import {
   euiCallOutHeaderStyles,
   euiCallOutStyles
 } from '../utils/eui/styles.generated.ts';
+import EuiButton from './eui-button.gts';
+import EuiButtonEmpty from './eui-button-empty.gts';
 import EuiButtonIcon from './eui-button-icon.gts';
 import EuiIcon from './eui-icon.gts';
 import EuiLiveAnnouncer from './eui-live-announcer.gts';
 import EuiPanel from './eui-panel.gts';
 import EuiText from './eui-text.gts';
 import EuiTitle from './eui-title.gts';
+import EuiMaybeToolTip from '../-private/eui-maybe-tool-tip.gts';
+import EuiRenderNode from '../-private/eui-render-node.gts';
 
 import type EuiI18n from '../services/eui-i18n';
 import type { EuiIconSignature } from './eui-icon';
 import type { EuiTextSignature } from './eui-text';
 import type { EuiTitleSignature } from './eui-title';
+import type { EuiTooltipArgs } from './eui-tool-tip.gts';
+import type { EuiRenderNode as EuiRenderNodeType } from '../-private/eui-render-node.gts';
 
 export type EuiCallOutColor = 'primary' | 'success' | 'warning' | 'danger';
 export type EuiCallOutSize = 's' | 'm';
+
+/**
+ * An action of `@actionProps`: upstream's props for the `EuiButton`
+ * (primary) or `EuiButtonEmpty` (secondary). Color and size always match
+ * the callout and cannot be changed.
+ */
+export interface EuiCallOutActionProps {
+  /** The button's text (upstream's `children`): text or a component. */
+  children?: EuiRenderNodeType;
+  onClick?: (event: MouseEvent) => void;
+  /** Makes the action a link. */
+  href?: string;
+  target?: string;
+  rel?: string;
+  iconType?: EuiIconSignature['Args']['type'];
+  iconSide?: 'left' | 'right';
+  isDisabled?: boolean;
+  isLoading?: boolean;
+  'aria-label'?: string;
+  className?: string;
+  'data-test-subj'?: string;
+  /** Shows a tooltip on the action: the args of `EuiToolTip`. */
+  tooltipProps?: Partial<EuiTooltipArgs>;
+}
 
 /**
  * Upstream's default notification icons (EuiNotificationIcon) and colors;
@@ -129,6 +161,15 @@ export interface EuiCallOutSignature {
      * is feedback to a user action, not on page load. Defaults to `false`.
      */
     announceOnMount?: boolean;
+    /**
+     * Up to two actions after the content: `primary` renders as an
+     * `EuiButton` and `secondary` as an `EuiButtonEmpty`, both small and in
+     * the callout's color. Rendered before the `<:actions>` block.
+     */
+    actionProps?: {
+      primary?: EuiCallOutActionProps;
+      secondary?: EuiCallOutActionProps;
+    };
   };
   Blocks: {
     /** The title, instead of `@title`. */
@@ -356,8 +397,46 @@ export default class EuiCallOut extends Component<EuiCallOutSignature> {
             {{/unless}}
           </div>
         </div>
-        {{#if (has-block "actions")}}
+        {{#if (or @actionProps.primary @actionProps.secondary (has-block "actions"))}}
           <div class={{this.actionsClass}}>
+            {{#if @actionProps.primary}}
+              <EuiMaybeToolTip @props={{@actionProps.primary.tooltipProps}}>
+                <EuiButton
+                  class="euiCallOutAction {{@actionProps.primary.className}}"
+                  @size="s"
+                  @color={{this.color}}
+                  @iconType={{@actionProps.primary.iconType}}
+                  @iconSide={{@actionProps.primary.iconSide}}
+                  @isDisabled={{@actionProps.primary.isDisabled}}
+                  @isLoading={{@actionProps.primary.isLoading}}
+                  @href={{@actionProps.primary.href}}
+                  @target={{@actionProps.primary.target}}
+                  rel={{@actionProps.primary.rel}}
+                  aria-label={{get @actionProps.primary "aria-label"}}
+                  data-test-subj={{get @actionProps.primary "data-test-subj"}}
+                  {{on "click" (optional @actionProps.primary.onClick)}}
+                ><EuiRenderNode @value={{@actionProps.primary.children}} /></EuiButton>
+              </EuiMaybeToolTip>
+            {{/if}}
+            {{#if @actionProps.secondary}}
+              <EuiMaybeToolTip @props={{@actionProps.secondary.tooltipProps}}>
+                <EuiButtonEmpty
+                  class="euiCallOutAction {{@actionProps.secondary.className}}"
+                  @size="s"
+                  @color={{this.color}}
+                  @iconType={{@actionProps.secondary.iconType}}
+                  @iconSide={{@actionProps.secondary.iconSide}}
+                  @isDisabled={{@actionProps.secondary.isDisabled}}
+                  @isLoading={{@actionProps.secondary.isLoading}}
+                  @href={{@actionProps.secondary.href}}
+                  @target={{@actionProps.secondary.target}}
+                  rel={{@actionProps.secondary.rel}}
+                  aria-label={{get @actionProps.secondary "aria-label"}}
+                  data-test-subj={{get @actionProps.secondary "data-test-subj"}}
+                  {{on "click" (optional @actionProps.secondary.onClick)}}
+                ><EuiRenderNode @value={{@actionProps.secondary.children}} /></EuiButtonEmpty>
+              </EuiMaybeToolTip>
+            {{/if}}
             {{yield to="actions"}}
           </div>
         {{/if}}

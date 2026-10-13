@@ -37,7 +37,7 @@ import { EuiCode, EuiPanel, EuiResizableContainer, EuiText } from '@ember-eui/co
     >
       <EuiText @size='s'>
         <p>
-          This <strong>Panel</strong> resets most of the <strong>EuiPanel</strong> args back to default with <EuiCode>@color="plain" @hasShadow=&#123;&#123;true&#125;&#125; @borderRadius="m"</EuiCode>.
+          This <strong>Panel</strong> resets most of the <strong>EuiPanel</strong> args back to default with <EuiCode>@color="plain" @hasShadow=\{{true}} @borderRadius="m"</EuiCode>.
         </p>
         <p>
           It also adds padding to the wrapping div with <EuiCode>@wrapperPadding="m"</EuiCode> to maintain the scroll <strong>inside</strong> the panel.

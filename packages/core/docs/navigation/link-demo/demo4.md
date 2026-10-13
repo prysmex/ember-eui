@@ -6,7 +6,7 @@ order: 4
 
 <EuiText>
 	<p>
-		When an <strong>EuiLink</strong> is given a click handler (<EuiCode>&#123;&#123;on "click"&#125;&#125;</EuiCode>), and is not passed an <EuiCode>@href</EuiCode>, it can optionally be set to <EuiCode>@disabled</EuiCode> which disables the click behavior, and removes the link styling.
+		When an <strong>EuiLink</strong> is given a click handler (<EuiCode>\{{on "click"}}</EuiCode>), and is not passed an <EuiCode>@href</EuiCode>, it can optionally be set to <EuiCode>@disabled</EuiCode> which disables the click behavior, and removes the link styling.
   </p>
 </EuiText>
 

@@ -6,7 +6,7 @@ order: 7
 
 <EuiText>
   <p>
-    For cases where collections of <strong>EuiDraggable</strong> elements are static or can be used in multiple places set <EuiCode>@cloneDraggables=&#123;&#123;true&#125;&#125;</EuiCode> on the parent <strong>EuiDroppable</strong>. The <strong>EuiDroppable</strong> becomes disabled (does not accept new <strong>EuiDraggable</strong> elements) in this scenario to avoid mixed content intentions.
+    For cases where collections of <strong>EuiDraggable</strong> elements are static or can be used in multiple places set <EuiCode>@cloneDraggables=\{{true}}</EuiCode> on the parent <strong>EuiDroppable</strong>. The <strong>EuiDroppable</strong> becomes disabled (does not accept new <strong>EuiDraggable</strong> elements) in this scenario to avoid mixed content intentions.
   </p>
   <p>
     The EUI <EuiCode>euiDragDropCopy</EuiCode> method is available and demonstrated in the example below. Note that the data point used as <EuiCode>@draggableId</EuiCode> in <strong>EuiDraggable</strong> must change to allow for real duplication.

@@ -13,7 +13,7 @@ order: 9
   </p>
   <h3>Custom collapse button</h3>
   <p>
-    You can also provide an external collapse button for custom placement and look within your panel with <EuiCode>@mode=&#123;&#123;array 'custom'&#125;&#125;</EuiCode>. When collapsed, however, the default collapsed button will be used for users to expand the panel.
+    You can also provide an external collapse button for custom placement and look within your panel with <EuiCode>@mode=\{{array 'custom'}}</EuiCode>. When collapsed, however, the default collapsed button will be used for users to expand the panel.
   </p>
   <p>
     For consistency, we recommend the usage of the <EuiCode>transition*</EuiCode> icon types.

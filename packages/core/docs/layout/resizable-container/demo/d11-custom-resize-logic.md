@@ -6,7 +6,7 @@ order: 11
 
 <EuiText>
   <p>
-    If you want to break out of <strong>EuiResizableContainer</strong> usage completely, you may use the standalone <strong>EuiResizableButton</strong> component. Pass <EuiCode>@isHorizontal</EuiCode> for an x-axis resizer (it is a y-axis one by default). You will need to attach your own mouse, touch, and keyboard events and logic to the button with <EuiCode>&#123;&#123;on&#125;&#125;</EuiCode> modifiers (upstream's <EuiCode>onMouseDown</EuiCode>, <EuiCode>onTouchStart</EuiCode> and <EuiCode>onKeyDown</EuiCode> props) - see the example below.
+    If you want to break out of <strong>EuiResizableContainer</strong> usage completely, you may use the standalone <strong>EuiResizableButton</strong> component. Pass <EuiCode>@isHorizontal</EuiCode> for an x-axis resizer (it is a y-axis one by default). You will need to attach your own mouse, touch, and keyboard events and logic to the button with <EuiCode>\{{on}}</EuiCode> modifiers (upstream's <EuiCode>onMouseDown</EuiCode>, <EuiCode>onTouchStart</EuiCode> and <EuiCode>onKeyDown</EuiCode> props) - see the example below.
   </p>
 </EuiText>
 

@@ -93,7 +93,7 @@ export default class DemoComponent extends Component {
         <p>
           The <EuiCode>button</EuiCode> gets hidden by default when the nav is
           docked unless you set
-          <EuiCode @language="js">@showButtonIfDocked=&#123;&#123;true&#125;&#125;</EuiCode>.
+          <EuiCode @language="js">@showButtonIfDocked=\{{true}}</EuiCode>.
         </p>
       </EuiText>
     {{/if}}

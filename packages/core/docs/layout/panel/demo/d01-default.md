@@ -6,7 +6,7 @@ order: 1
 
 <EuiText>
   <p>
-Panels default to a flat bordered look (<EuiCode>@hasBorder=&#123;&#123;true&#125;&#125;</EuiCode>, <EuiCode>@hasShadow=&#123;&#123;false&#125;&#125;</EuiCode>). Use shadow only when you need elevation.
+Panels default to a flat bordered look (<EuiCode>@hasBorder=\{{true}}</EuiCode>, <EuiCode>@hasShadow=\{{false}}</EuiCode>). Use shadow only when you need elevation.
   </p>
 </EuiText>
 

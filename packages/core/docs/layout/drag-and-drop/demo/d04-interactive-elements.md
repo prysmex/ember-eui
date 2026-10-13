@@ -6,7 +6,7 @@ order: 4
 
 <EuiText>
   <p>
-    <strong>EuiDraggable</strong> can contain interactive elements such as buttons and form fields. Interactive elements require <EuiCode>@customDragHandle=&#123;&#123;true&#125;&#125;</EuiCode> and <EuiCode>@hasInteractiveChildren=&#123;&#123;true&#125;&#125;</EuiCode> on the <strong>Draggable</strong>. These args will maintain drag functionality and accessibility, while enabling click, keypress, etc., events on the interactive child elements.
+    <strong>EuiDraggable</strong> can contain interactive elements such as buttons and form fields. Interactive elements require <EuiCode>@customDragHandle=\{{true}}</EuiCode> and <EuiCode>@hasInteractiveChildren=\{{true}}</EuiCode> on the <strong>Draggable</strong>. These args will maintain drag functionality and accessibility, while enabling click, keypress, etc., events on the interactive child elements.
   </p>
 </EuiText>
 

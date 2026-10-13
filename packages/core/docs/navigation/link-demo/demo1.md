@@ -45,7 +45,7 @@ export default class DemoComponent extends Component {
         with both an
         <EuiCode>@href</EuiCode>
         and a
-        <EuiCode>&#123;&#123;on "click"&#125;&#125;</EuiCode>
+        <EuiCode>\{{on "click"}}</EuiCode>
         handler.
       </p>
     </EuiText>

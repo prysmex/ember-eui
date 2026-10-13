@@ -6,7 +6,7 @@ order: 2
 
 <EuiText>
 	<p>
-		An <strong>EuiCollapsibleNavGroup</strong> adds some basic borders and <EuiCode>@background</EuiCode> color of <EuiCode>none</EuiCode>, <EuiCode>light</EuiCode>, or <EuiCode>dark</EuiCode>. Give each section a heading by providing an optional <EuiCode>&lt;:title&gt;</EuiCode> block and <EuiCode>@iconType</EuiCode>. Make the section collapsible (accordion style) with <EuiCode>@isCollapsible=&#123;&#123;true&#125;&#125;</EuiCode>.
+		An <strong>EuiCollapsibleNavGroup</strong> adds some basic borders and <EuiCode>@background</EuiCode> color of <EuiCode>none</EuiCode>, <EuiCode>light</EuiCode>, or <EuiCode>dark</EuiCode>. Give each section a heading by providing an optional <EuiCode>&lt;:title&gt;</EuiCode> block and <EuiCode>@iconType</EuiCode>. Make the section collapsible (accordion style) with <EuiCode>@isCollapsible=\{{true}}</EuiCode>.
 	</p>
 	<p>
     	When in <EuiCode>@isCollapsible</EuiCode> mode, a <EuiCode>&lt;:title&gt;</EuiCode> block and <EuiCode>@initialIsOpen</EuiCode> are required.

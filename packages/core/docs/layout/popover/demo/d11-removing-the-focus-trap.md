@@ -6,7 +6,7 @@ order: 11
 
 <EuiText>
   <p>
-    If the popover should not trap focus within itself, then you can remove it with <EuiCode>@ownFocus=&#123;&#123;false&#125;&#125;</EuiCode>.
+    If the popover should not trap focus within itself, then you can remove it with <EuiCode>@ownFocus=\{{false}}</EuiCode>.
   </p>
 </EuiText>
 

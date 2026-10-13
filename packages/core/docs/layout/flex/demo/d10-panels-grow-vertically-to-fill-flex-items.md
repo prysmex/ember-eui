@@ -34,7 +34,7 @@ import { EuiFlexGroup, EuiFlexItem, EuiText, EuiCode, EuiPanel } from '@ember-eu
     <EuiFlexItem>
       <EuiPanel @grow={{false}}>
         Another <strong>EuiPanel</strong>, with
-        <EuiCode>@grow=&#123;&#123;false&#125;&#125;</EuiCode>.
+        <EuiCode>@grow=\{{false}}</EuiCode>.
       </EuiPanel>
     </EuiFlexItem>
   </EuiFlexGroup>

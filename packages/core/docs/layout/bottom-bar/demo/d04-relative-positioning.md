@@ -9,7 +9,7 @@ order: 4
     When <EuiCode>@affordForDisplacement</EuiCode> is enabled and the bottom bar is positioned as <EuiCode>fixed</EuiCode>, <strong>EuiBottomBar</strong> automatically sets a global CSS variable that you can use to position other fixed elements in your application relative to the bottom bar's height:
   </p>
   <ul>
-    <li><EuiCode>--euiBottomBarOffset</EuiCode> (Set when <EuiCode>@affordForDisplacement=&#123;&#123;true&#125;&#125;</EuiCode> and <EuiCode>@position="fixed"</EuiCode>)</li>
+    <li><EuiCode>--euiBottomBarOffset</EuiCode> (Set when <EuiCode>@affordForDisplacement=\{{true}}</EuiCode> and <EuiCode>@position="fixed"</EuiCode>)</li>
   </ul>
   <p>
     This variable is automatically updated when the bottom bar resizes and is removed when the bottom bar is closed. Use it in your own CSS, for example <EuiCode>padding-bottom: var(--euiBottomBarOffset, 0);</EuiCode> on a fixed footer. In the example below, the custom fixed footer (bottom right of the window) moves up while the bottom bar is shown.

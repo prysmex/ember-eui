@@ -6,7 +6,7 @@ order: 3
 
 <EuiText>
   <p>
-    By default the entire element surface can initiate a drag. To specify an element within as the handle and create a containing group, set <EuiCode>@customDragHandle=&#123;&#123;true&#125;&#125;</EuiCode> and <EuiCode>@hasInteractiveChildren=&#123;&#123;true&#125;&#125;</EuiCode> on the <strong>Draggable</strong>.
+    By default the entire element surface can initiate a drag. To specify an element within as the handle and create a containing group, set <EuiCode>@customDragHandle=\{{true}}</EuiCode> and <EuiCode>@hasInteractiveChildren=\{{true}}</EuiCode> on the <strong>Draggable</strong>.
   </p>
   <p>
     The object yielded by the <strong>Draggable</strong> block provides what is needed for functionality. Along with the <EuiCode>@customDragHandle</EuiCode> flag, the yielded <EuiCode>dragHandle</EuiCode> modifier needs to be added to the intended handle element.

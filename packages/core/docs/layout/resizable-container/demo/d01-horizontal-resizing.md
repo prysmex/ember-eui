@@ -13,7 +13,7 @@ order: 1
   </p>
   <ul>
     <li>add <EuiCode>@initialSize</EuiCode> in percents to each panel to specify the initial size of it. Other calculations will be encapsulated, you don't worry about it.</li>
-    <li>add <EuiCode>@scrollable=&#123;&#123;false&#125;&#125;</EuiCode> to a panel to eliminate overflow scrolling</li>
+    <li>add <EuiCode>@scrollable=\{{false}}</EuiCode> to a panel to eliminate overflow scrolling</li>
   </ul>
   <p>
     <strong>Accessibility recommendation:</strong> consider adding <EuiCode>tabindex="0"</EuiCode> to the panels (or the <strong>EuiResizableContainer</strong>) if it is a fixed height or has a lot of content. This ensures keyboard users can set focus on the container and scroll to the bottom using arrow keys.

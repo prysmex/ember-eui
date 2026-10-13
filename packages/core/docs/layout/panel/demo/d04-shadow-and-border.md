@@ -6,7 +6,7 @@ order: 4
 
 <EuiText>
   <p>
-By default, <strong>EuiPanel</strong> is flat with <EuiCode>@hasBorder=&#123;&#123;true&#125;&#125;</EuiCode> on and <EuiCode>@hasShadow=&#123;&#123;false&#125;&#125;</EuiCode>. Use <EuiCode>@hasShadow</EuiCode> when you need elevation. Be mindful of not using too many nested panels with these settings.
+By default, <strong>EuiPanel</strong> is flat with <EuiCode>@hasBorder=\{{true}}</EuiCode> on and <EuiCode>@hasShadow=\{{false}}</EuiCode>. Use <EuiCode>@hasShadow</EuiCode> when you need elevation. Be mindful of not using too many nested panels with these settings.
   </p>
 </EuiText>
 
@@ -30,7 +30,7 @@ import { EuiCode, EuiPanel, EuiSpacer } from '@ember-eui/core/components';
   <EuiSpacer />
 
   <EuiPanel @hasBorder={{false}} @hasShadow={{true}}>
-    <EuiCode>@hasBorder=&#123;&#123;false&#125;&#125; @hasShadow</EuiCode>
+    <EuiCode>@hasBorder=\{{false}} @hasShadow</EuiCode>
   </EuiPanel>
 </template>
 ```

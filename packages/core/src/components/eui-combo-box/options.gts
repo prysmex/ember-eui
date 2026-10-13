@@ -7,7 +7,7 @@ import { VerticalCollection } from '@html-next/vertical-collection';
 import EmberPowerSelectOptions from 'ember-power-select/components/power-select/options';
 import emberPowerSelectIsEqual from 'ember-power-select/helpers/ember-power-select-is-equal';
 import emberPowerSelectIsGroup from 'ember-power-select/helpers/ember-power-select-is-group';
-import { and, eq, not } from 'ember-truth-helpers';
+import { and, eq, not, or } from 'ember-truth-helpers';
 
 import { getEuiThemeContext } from '../../utils/emotion/consume.ts';
 import {
@@ -25,8 +25,49 @@ import EuiFlexItem from '../eui-flex-item.gts';
 import EuiIcon from '../eui-icon.gts';
 import EuiLoadingSpinner from '../eui-loading-spinner.gts';
 import EuiText from '../eui-text.gts';
+import EuiToolTip from '../eui-tool-tip.gts';
+import EuiComboBoxNode from './node.gts';
+
+import type { TOC } from '@ember/component/template-only';
+import type { EuiTooltipArgs } from '../eui-tool-tip';
 
 import type EuiConfigService from '../../services/eui-config';
+
+/** Upstream `anchorClassName="eui-fullWidth"` of option tooltips. */
+const TOOLTIP_ANCHOR_CSS = { inlineSize: '100%' };
+
+/**
+ * @private Upstream EuiListItemLayout's internal tooltip: wraps the row
+ * content in an EuiToolTip when the option has `toolTipContent`, shown on
+ * hover and while the option is highlighted (keyboard).
+ */
+const MaybeToolTip: TOC<{
+  Args: {
+    content?: string;
+    props?: Partial<EuiTooltipArgs>;
+    id: string;
+    isShown: boolean;
+  };
+  Blocks: { default: [] };
+}> = <template>
+  {{#if @content}}
+    <EuiToolTip
+      @id={{@id}}
+      @content={{@content}}
+      @title={{@props.title}}
+      @position={{@props.position}}
+      @delay={{@props.delay}}
+      @offset={{@props.offset}}
+      @className={{@props.className}}
+      @css={{@props.css}}
+      @anchorClassName={{@props.anchorClassName}}
+      @anchorCss={{TOOLTIP_ANCHOR_CSS}}
+      @isShown={{@isShown}}
+    >{{yield}}</EuiToolTip>
+  {{else}}
+    {{yield}}
+  {{/if}}
+</template>;
 
 interface Row {
   /** ember-power-select's index path (`2`, `1.0`): option ids use it. */
@@ -100,13 +141,27 @@ export default class EuiComboBoxOptionsComponent extends EmberPowerSelectOptions
     );
   }
 
+  /** `@rowHeight="auto"`: rows wrap their text, nothing is virtualized. */
+  get isAuto(): boolean {
+    //@ts-expect-error `rowHeight` is curried by EuiComboBox
+    return this.args.rowHeight === 'auto';
+  }
+
   get rowHeight(): number {
-    //@ts-expect-error
-    return this.args.rowHeight ?? this.configRowHeight;
+    //@ts-expect-error `rowHeight` is curried by EuiComboBox
+    const rowHeight = this.args.rowHeight as number | 'auto' | undefined;
+
+    return rowHeight === 'auto' || rowHeight == null
+      ? this.configRowHeight
+      : rowHeight;
   }
 
   get rowHeightString() {
-    return htmlSafe(`height:${this.rowHeight}px;`);
+    return this.isAuto ? undefined : htmlSafe(`height:${this.rowHeight}px;`);
+  }
+
+  get staticHeight(): boolean {
+    return !this.hasGroups && !this.isAuto;
   }
 
   get singleSelection(): boolean {
@@ -116,28 +171,60 @@ export default class EuiComboBoxOptionsComponent extends EmberPowerSelectOptions
 
   /** Upstream `getListItemSize`: group labels after the first get 16px more. */
   groupStyle = (index: number) =>
-    htmlSafe(
-      `height:${index > 0 ? this.rowHeight + 16 : this.rowHeight}px;`
-    );
+    this.isAuto
+      ? undefined
+      : htmlSafe(
+          `height:${index > 0 ? this.rowHeight + 16 : this.rowHeight}px;`
+        );
 
   optionId = (index: number) =>
     `${(this.args.select as { uniqueId: string }).uniqueId}-${this.flattened.rows[index]?.path ?? index}`;
 
   position = (index: number) => this.flattened.rows[index]?.position;
 
-  /** Upstream text `title`: the option's own, else its label while not searching. */
+  /**
+   * Upstream text `title`: the option's own, else its label while it is
+   * truncated by CSS (not searching, no `truncationProps`, no
+   * `rowHeight="auto"`) and has no tooltip.
+   */
   titleFor = (option: unknown) => {
-    if (option && typeof option === 'object' && 'title' in option) {
-      return (option as { title?: string }).title;
+    const record =
+      option && typeof option === 'object'
+        ? (option as {
+            title?: string;
+            truncationProps?: unknown;
+            toolTipContent?: unknown;
+          })
+        : undefined;
+
+    if (record && 'title' in record) {
+      return record.title;
     }
 
-    if ((this.args.select as { searchText?: string }).searchText) {
+    if (
+      (this.args.select as { searchText?: string }).searchText ||
+      //@ts-expect-error `truncationProps` is curried by EuiComboBox
+      this.args.truncationProps ||
+      record?.truncationProps ||
+      record?.toolTipContent ||
+      this.isAuto
+    ) {
       return undefined;
     }
 
     //@ts-expect-error `searchField` is curried by EuiComboBox
     return comboBoxOptionLabel(option, this.args.searchField) || undefined;
   };
+
+  /** Upstream: no tooltip on disabled options. */
+  toolTipFor = (option: unknown): string | undefined => {
+    if (this.isDisabled(option)) return undefined;
+
+    return (option as { toolTipContent?: string } | undefined)
+      ?.toolTipContent;
+  };
+
+  toolTipId = (index: number) => `${this.optionId(index)}-tooltip`;
 
   isDisabled = (option: unknown) =>
     Boolean(
@@ -168,7 +255,9 @@ export default class EuiComboBoxOptionsComponent extends EmberPowerSelectOptions
       context,
       comboBoxBoxReset,
       styles.euiComboBoxOptionList,
-      styles.euiComboBoxOptionList__virtualization,
+      this.isAuto
+        ? styles.hasRowHeightAuto
+        : styles.euiComboBoxOptionList__virtualization,
       { position: 'relative', outline: 'none' }
     );
   }
@@ -260,7 +349,15 @@ export default class EuiComboBoxOptionsComponent extends EmberPowerSelectOptions
     return euiClass(
       getEuiThemeContext(this),
       s.euiListItemLayout__text,
-      s.textWrap.truncate
+      this.isAuto ? s.textWrap.wrap : s.textWrap.truncate
+    );
+  }
+
+  @cached
+  get prependClass(): string {
+    return euiClass(
+      getEuiThemeContext(this),
+      this.layoutStyles.euiListItemLayout__prepend
     );
   }
 
@@ -304,7 +401,8 @@ export default class EuiComboBoxOptionsComponent extends EmberPowerSelectOptions
           @items={{this.flattedOptions}}
           @tagName="div"
           @estimateHeight={{this.rowHeight}}
-          @staticHeight={{not this.hasGroups}}
+          @staticHeight={{this.staticHeight}}
+          @renderAll={{this.isAuto}}
           @bufferSize={{3}}
           role="listbox"
           data-combo-box-list={{@select.uniqueId}}
@@ -341,10 +439,20 @@ export default class EuiComboBoxOptionsComponent extends EmberPowerSelectOptions
                 aria-current="{{eq opt @select.highlighted}}"
                 aria-setsize={{this.flattened.count}}
                 aria-posinset={{this.position index}}
+                aria-describedby={{if
+                  (this.toolTipFor opt)
+                  (this.toolTipId index)
+                }}
                 data-option-index="{{index}}"
                 data-test-subj="euiListItemLayout"
                 role="option"
               >
+                <MaybeToolTip
+                  @content={{this.toolTipFor opt}}
+                  @props={{opt.toolTipProps}}
+                  @id={{this.toolTipId index}}
+                  @isShown={{eq opt @select.highlighted}}
+                >
                 <span
                   class="euiListItemLayout__content {{this.contentClass}}"
                 >
@@ -360,6 +468,14 @@ export default class EuiComboBoxOptionsComponent extends EmberPowerSelectOptions
                       @css={{this.indicatorCss}}
                     />
                   {{/if}}
+                  {{#if opt.prepend}}
+                    <span
+                      class="euiListItemLayout__prepend {{this.prependClass}}"
+                    ><EuiComboBoxNode
+                        @node={{opt.prepend}}
+                        @option={{opt}}
+                      /></span>
+                  {{/if}}
                   <span
                     class="euiListItemLayout__text euiComboBoxOption__content
                       {{this.textClass}}"
@@ -367,20 +483,29 @@ export default class EuiComboBoxOptionsComponent extends EmberPowerSelectOptions
                   >
                     {{yield opt index @select}}
                   </span>
-                  {{#if showEnter}}
+                  {{#if (or opt.append showEnter)}}
                     <span
                       class="euiListItemLayout__append {{this.appendClass}}"
                     >
-                      {{!template-lint-disable require-presentational-children}}
-                      <EuiBadge
-                        class="euiComboBoxOption__enterBadge"
-                        @color="hollow"
-                        @iconType="return"
-                        aria-hidden="true"
-                      />
+                      {{#if opt.append}}
+                        <EuiComboBoxNode
+                          @node={{opt.append}}
+                          @option={{opt}}
+                        />
+                      {{/if}}
+                      {{#if showEnter}}
+                        {{!template-lint-disable require-presentational-children}}
+                        <EuiBadge
+                          class="euiComboBoxOption__enterBadge"
+                          @color="hollow"
+                          @iconType="return"
+                          aria-hidden="true"
+                        />
+                      {{/if}}
                     </span>
                   {{/if}}
                 </span>
+                </MaybeToolTip>
               </div>
             {{/let}}
           {{/if}}

@@ -9,16 +9,61 @@ import optional from '@nullvoxpopuli/ember-composable-helpers/helpers/optional';
 import { getEuiThemeContext } from '../utils/emotion/consume.ts';
 import {
   euiComboBoxPillStyles,
+  euiTextTruncate,
   euiFontSize,
   euiFormVariables
 } from '../utils/eui/styles.generated.ts';
-import { comboBoxOptionLabel } from '../utils/eui/combo-box.ts';
+import {
+  comboBoxAppendPrependStyles,
+  comboBoxOptionLabel
+} from '../utils/eui/combo-box.ts';
 import { euiClass, useEuiBorealisStyles } from '../utils/eui/styles.ts';
 import EuiBadge from './eui-badge.gts';
+import EuiComboBoxNode from './eui-combo-box/node.gts';
 
 import type EuiI18n from '../services/eui-i18n';
+import type { TOC } from '@ember/component/template-only';
 import type { EuiCss } from '../utils/eui/styles.ts';
 import type { EuiBadgeSignature } from './eui-badge';
+
+/** Upstream `.eui-textTruncate` around the pill text. */
+const TEXT_TRUNCATE = euiTextTruncate();
+
+/** Plain text with a prepend/append: lay them out on the text's line. */
+const PLAIN_TEXT_SIDES = { display: 'flex', alignItems: 'center' };
+
+const optionNode = (option: unknown, key: 'prepend' | 'append') =>
+  option && typeof option === 'object'
+    ? (option as Record<string, unknown>)[key]
+    : undefined;
+
+const hasSides = (option: unknown) =>
+  Boolean(optionNode(option, 'prepend') || optionNode(option, 'append'));
+
+/**
+ * Upstream `EuiComboBoxOptionAppendPrepend`: the option's `prepend` and
+ * `append` around the text.
+ */
+const PillContent: TOC<{
+  Args: {
+    option?: unknown;
+    prefix: string;
+    prependClass: string;
+    appendClass: string;
+    textClass?: string;
+  };
+  Blocks: { default: [] };
+}> = <template>{{#let
+    (optionNode @option "prepend") (optionNode @option "append")
+    as |prepend append|
+  }}{{#if prepend}}<span class="{{@prefix}}__prepend {{@prependClass}}"><EuiComboBoxNode
+          @node={{prepend}}
+          @option={{@option}}
+        /></span>{{/if}}{{#if @textClass}}<span
+        class="eui-textTruncate {{@textClass}}"
+      >{{yield}}</span>{{else}}{{yield}}{{/if}}{{#if append}}<span
+        class="{{@prefix}}__append {{@appendClass}}"
+      ><EuiComboBoxNode @node={{append}} @option={{@option}} /></span>{{/if}}{{/let}}</template>;
 
 /** A selected option in EuiComboBox's input, as a badge or plain text. */
 export interface EuiComboBoxPill {
@@ -109,6 +154,44 @@ export default class EuiComboBoxPillComponent extends Component<EuiComboBoxPill>
     });
   }
 
+  /** Pill prepend/append spacing (upstream `xs`). */
+  @cached
+  get sideClasses(): { prepend: string; append: string } {
+    const context = getEuiThemeContext(this);
+    const styles = comboBoxAppendPrependStyles(
+      String(context.upstream.euiTheme.size.xs)
+    );
+
+    return {
+      prepend: euiClass(context, styles.prepend),
+      append: euiClass(context, styles.append)
+    };
+  }
+
+  @cached
+  get textClass(): string {
+    return euiClass(getEuiThemeContext(this), TEXT_TRUNCATE);
+  }
+
+  /** Plain text selection: upstream's `xxs` spacing around the input. */
+  @cached
+  get plainTextSideClasses(): {
+    prepend: string;
+    append: string;
+    root: string;
+  } {
+    const context = getEuiThemeContext(this);
+    const styles = comboBoxAppendPrependStyles(
+      String(context.upstream.euiTheme.size.xxs)
+    );
+
+    return {
+      prepend: euiClass(context, styles.prepend),
+      append: euiClass(context, styles.append),
+      root: euiClass(context, PLAIN_TEXT_SIDES)
+    };
+  }
+
   <template>
     {{#if @onClose}}
       <EuiBadge
@@ -126,13 +209,26 @@ export default class EuiComboBoxPillComponent extends Component<EuiComboBoxPill>
         @iconType="cross"
         ...attributes
       >
-        {{yield}}
+        <PillContent
+          @option={{@option}}
+          @prefix="euiComboBoxPill"
+          @prependClass={{this.sideClasses.prepend}}
+          @appendClass={{this.sideClasses.append}}
+          @textClass={{this.textClass}}
+        >{{yield}}</PillContent>
       </EuiBadge>
     {{else if @asPlainText}}
       <span
-        class="euiComboBoxPill euiComboBoxPill--plainText {{this.plainTextClass}}"
+        class="euiComboBoxPill euiComboBoxPill--plainText {{this.plainTextClass}}
+          {{if (hasSides @option) this.plainTextSideClasses.root}}"
       >
-        {{yield}}
+        <PillContent
+          @option={{@option}}
+          @prefix="euiComboBoxPlainTextSelection"
+          @prependClass={{this.plainTextSideClasses.prepend}}
+          @appendClass={{this.plainTextSideClasses.append}}
+          @textClass={{if (hasSides @option) this.textClass}}
+        >{{yield}}</PillContent>
       </span>
     {{else}}
       <EuiBadge
@@ -143,7 +239,13 @@ export default class EuiComboBoxPillComponent extends Component<EuiComboBoxPill>
         @closeButtonProps={{hash dataSelectedIconIndex=@dataSelectedIconIndex}}
         ...attributes
       >
-        {{yield}}
+        <PillContent
+          @option={{@option}}
+          @prefix="euiComboBoxPill"
+          @prependClass={{this.sideClasses.prepend}}
+          @appendClass={{this.sideClasses.append}}
+          @textClass={{this.textClass}}
+        >{{yield}}</PillContent>
       </EuiBadge>
     {{/if}}
   </template>

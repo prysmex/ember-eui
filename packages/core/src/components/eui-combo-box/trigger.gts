@@ -7,7 +7,6 @@ import optional from '@nullvoxpopuli/ember-composable-helpers/helpers/optional';
 import PowerSelectTrigger from 'ember-power-select/components/power-select/trigger';
 import { and, not, or } from 'ember-truth-helpers';
 
-import argOrDefault from '../../helpers/arg-or-default.ts';
 import { getEuiThemeContext } from '../../utils/emotion/consume.ts';
 import {
   euiComboBoxInputStyles,
@@ -17,7 +16,12 @@ import {
 import { euiClass, useEuiBorealisStyles } from '../../utils/eui/styles.ts';
 import EuiComboBoxPill from '../eui-combo-box-pill.gts';
 import EuiFormControlLayout from '../eui-form-control-layout.gts';
+import EuiFormLabel from '../eui-form-label.gts';
+import EuiFormAppend from '../eui-form-append.gts';
+import EuiFormPrepend from '../eui-form-prepend.gts';
+import EuiComboBoxNode from './node.gts';
 import EuiComboBoxTriggerInput from './trigger/input.gts';
+import { isTextNode } from '../../utils/eui/combo-box.ts';
 
 import type { CSSInterpolation } from '@emotion/css/create-instance';
 
@@ -37,7 +41,16 @@ interface TriggerArgs {
   placeholder?: string;
   searchEnabled?: boolean;
   singleSelection?: boolean | { asPlainText?: boolean };
+  prepend?: unknown;
+  append?: unknown;
+  noSuggestions?: boolean;
 }
+
+/** Upstream side nodes: one string is an EuiFormPrepend/Append label. */
+const isSingleText = (node: unknown) => !Array.isArray(node) && isTextNode(node);
+
+const nodeList = (node: unknown): unknown[] =>
+  Array.isArray(node) ? node : [node];
 
 /**
  * @private EuiComboBox's input with the selected pills. Extends
@@ -56,6 +69,32 @@ export default class EuiComboBoxTriggerComponent extends PowerSelectTrigger {
 
   get hasSelection(): boolean {
     return Boolean(this.comboArgs.select.selected?.length);
+  }
+
+  /**
+   * Upstream: `@prepend` / `@append` only show with single selection, so
+   * pills never wrap onto rows taller than them.
+   */
+  get prepend(): unknown {
+    return this.comboArgs.singleSelection ? this.comboArgs.prepend : undefined;
+  }
+
+  get append(): unknown {
+    return this.comboArgs.singleSelection ? this.comboArgs.append : undefined;
+  }
+
+  get inputId(): string {
+    return `ember-power-select-trigger-multiple-input-${this.comboArgs.select.uniqueId}`;
+  }
+
+  /** Upstream `noIcon={!!noSuggestions}`: no list, no chevron. */
+  get icon(): unknown {
+    if (this.comboArgs.select.disabled || this.comboArgs.noSuggestions) {
+      return undefined;
+    }
+
+    // @ts-expect-error `icon` is curried by EuiComboBox
+    return this.args.icon ?? 'chevronSingleDown';
   }
 
   /** Upstream `showPlaceholder`: a placeholder, no selection, no search. */
@@ -111,7 +150,8 @@ export default class EuiComboBoxTriggerComponent extends PowerSelectTrigger {
               : styles.plainText.uncompressed
           ]
         : []),
-      select.disabled ? styles.disabled : stateCss
+      select.disabled ? styles.disabled : stateCss,
+      Boolean(this.prepend || this.append) && styles.inGroup
     );
   }
 
@@ -148,7 +188,10 @@ export default class EuiComboBoxTriggerComponent extends PowerSelectTrigger {
   <template>
     {{! @glint-nocheck: not typesafe yet }}
     <EuiFormControlLayout
-      @icon={{unless @select.disabled (argOrDefault @icon "chevronSingleDown")}}
+      @icon={{this.icon}}
+      @inputId={{this.inputId}}
+      @isPrependProvided={{if this.prepend true false}}
+      @isAppendProvided={{if this.append true false}}
       @iconSide="right"
       @fullWidth={{@fullWidth}}
       @compressed={{@compressed}}
@@ -162,6 +205,23 @@ export default class EuiComboBoxTriggerComponent extends PowerSelectTrigger {
       @disabled={{@select.disabled}}
       @css={{this.layoutCss}}
     >
+      <:prepend>
+        {{#if (isSingleText this.prepend)}}
+          <EuiFormPrepend
+            @label={{this.prepend}}
+            @inputId={{this.inputId}}
+            @compressed={{@compressed}}
+          />
+        {{else}}
+          {{#each (nodeList this.prepend) as |node|}}
+            {{#if (isTextNode node)}}
+              <EuiFormLabel @for={{this.inputId}}>{{node}}</EuiFormLabel>
+            {{else}}
+              <EuiComboBoxNode @node={{node}} />
+            {{/if}}
+          {{/each}}
+        {{/if}}
+      </:prepend>
       <:field>
         {{! template-lint-disable }}
         <div
@@ -246,6 +306,7 @@ export default class EuiComboBoxTriggerComponent extends PowerSelectTrigger {
                 onKeydown=@onKeydown
                 onInput=@onInput
                 onCreateOption=@onCreateOption
+                noSuggestions=@noSuggestions
               )
               as |InputComponent|
             }}
@@ -270,6 +331,23 @@ export default class EuiComboBoxTriggerComponent extends PowerSelectTrigger {
           {{/if}}
         </div>
       </:field>
+      <:append>
+        {{#if (isSingleText this.append)}}
+          <EuiFormAppend
+            @label={{this.append}}
+            @inputId={{this.inputId}}
+            @compressed={{@compressed}}
+          />
+        {{else}}
+          {{#each (nodeList this.append) as |node|}}
+            {{#if (isTextNode node)}}
+              <EuiFormLabel @for={{this.inputId}}>{{node}}</EuiFormLabel>
+            {{else}}
+              <EuiComboBoxNode @node={{node}} />
+            {{/if}}
+          {{/each}}
+        {{/if}}
+      </:append>
     </EuiFormControlLayout>
   </template>
 }

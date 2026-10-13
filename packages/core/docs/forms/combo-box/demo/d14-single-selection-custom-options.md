@@ -1,5 +1,5 @@
 ---
-order: 10
+order: 14
 ---
 
 # Single selection with custom options
@@ -8,7 +8,7 @@ order: 10
 
 You can allow the user to select a single option and also allow the creation of custom options. To do that, use `@singleSelection` in conjunction with `@onCreateOption`.
 
-**Note:** Creating custom options might not be obvious to the user, so provide help text explaining that this option is available. You can also customize the custom option text by passing a text to `@customOptionText`; `{searchText}` is replaced by what the user typed.
+**Note:** Creating custom options might not be obvious to the user, so provide help text explaining that this option is available. You can also customize the custom option text by passing a text to `@customOptionText`; `{searchValue}` is replaced by what the user typed, in bold.
 
 </EuiText>
 
@@ -66,7 +66,7 @@ export default class ComboBoxSingleCustomDemo extends Component {
         @searchField="label"
         @onChange={{this.onChange}}
         @onCreateOption={{this.onCreateOption}}
-        @customOptionText="Add {searchText} as your occupation"
+        @customOptionText="Add {searchValue} as your occupation"
         as |option|
       >
         {{option.label}}

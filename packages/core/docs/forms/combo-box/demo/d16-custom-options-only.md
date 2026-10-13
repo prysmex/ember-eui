@@ -1,14 +1,12 @@
 ---
-order: 12
+order: 16
 ---
 
 # Custom options only, with validation
 
 <EuiText>
 
-Alternatively, provide no `@options` to _only_ allow the creation of custom options. Return `false` from `@onCreateOption` to explicitly reject the user's input.
-
-**Ember EUI difference:** the options list still opens to offer the "Add ... as custom option" row; upstream's `noSuggestions` hides the list entirely.
+Alternatively, provide the `@noSuggestions` argument to hide the suggestions list and _only_ allow the creation of custom options (with Enter, or by leaving the combo box). Return `false` from `@onCreateOption` to explicitly reject the user's input.
 
 </EuiText>
 
@@ -61,6 +59,7 @@ export default class ComboBoxCustomOnlyDemo extends Component {
       @error={{if this.isInvalid "Only letters are allowed"}}
     >
       <EuiComboBox
+        @noSuggestions={{true}}
         @placeholder="Create some tags (letters only)"
         @options={{this.options}}
         @selectedOptions={{this.selectedOptions}}

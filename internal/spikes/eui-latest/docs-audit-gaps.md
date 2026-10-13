@@ -34,7 +34,6 @@ This is the list of those gaps. Effort: S/M/L.
 | --- | --- |
 | EuiCheckbox | `readOnly` (+ styling) |
 | EuiColorPalettePicker | per-palette `append`; palettes `euiPaletteRed/Green/SkyBlue/Yellow/Orange` |
-| EuiComboBox | option `prepend`/`append`, `toolTipContent`/`toolTipProps`, `truncationProps`, `rowHeight="auto"`, `delimiter`, `isCaseSensitive`, `sortMatchesBy`, `noSuggestions`, `prepend`; search text in the option block (no EuiHighlight) |
 | EuiSelectable | `errorMessage`, `toolTipContent`, `hasAriaDisabled`, `searchableLabel`, `listProps.textWrap`, `truncationProps`, `isVirtualized`, `optionMatcher`, `searchProps` value/onChange/onKeyDown |
 | EuiInlineEdit* | `readModeProps` color/iconSide, `inputProps` prepend/readOnly |
 | EuiSearchBar | `box` prepend/append/onClick/onFocus/onBlur; filter option `view` as markup |

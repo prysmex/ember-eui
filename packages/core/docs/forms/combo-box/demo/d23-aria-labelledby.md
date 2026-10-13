@@ -1,12 +1,12 @@
 ---
-order: 13
+order: 23
 ---
 
-# Async
+# Accessible label with aria-labelledby
 
 <EuiText>
 
-Use `@search` to handle searches asynchronously: it receives the typed text and returns the matching options, or a promise of them. Use `@isLoading` to let the user know that something async is happening.
+Sometimes it's preferable to label a combo box with a heading or paragraph. Give a text element an `id`, then pass it to `@ariaLabelledBy`.
 
 </EuiText>
 
@@ -14,7 +14,7 @@ Use `@search` to handle searches asynchronously: it receives the typed text and 
 import Component from '@glimmer/component';
 import { tracked } from '@glimmer/tracking';
 import { action } from '@ember/object';
-import { EuiComboBox } from '@ember-eui/core/components';
+import { EuiText, EuiSpacer, EuiComboBox } from '@ember-eui/core/components';
 
 const MOONS = [
   { label: 'Titan' },
@@ -32,22 +32,18 @@ const MOONS = [
   { label: 'Hyperion' },
 ];
 
-export default class ComboBoxAsyncDemo extends Component {
-  @tracked allOptions = MOONS;
-  @tracked selectedOptions = [];
+export default class ComboBoxAriaLabelledByDemo extends Component {
+  @tracked options = MOONS;
+  @tracked selectedOptions = [MOONS[2], MOONS[4]];
 
-  // Simulate a remotely-executed search.
   @action
-  onSearch(searchValue) {
-    return new Promise((resolve) => {
-      setTimeout(() => {
-        resolve(
-          this.allOptions.filter((option) =>
-            option.label.toLowerCase().includes(searchValue.toLowerCase())
-          )
-        );
-      }, 1200);
-    });
+  onChange(selectedOptions) {
+    this.selectedOptions = selectedOptions;
+  }
+
+  @action
+  removeTag(option) {
+    this.selectedOptions = this.selectedOptions.filter((o) => o !== option);
   }
 
   @action
@@ -62,38 +58,32 @@ export default class ComboBoxAsyncDemo extends Component {
 
     // Create the option if it doesn't exist.
     if (
-      !this.allOptions.some(
+      !this.options.some(
         (option) => option.label.trim().toLowerCase() === normalizedSearchValue
       )
     ) {
-      // Simulate creating this option on the server.
-      this.allOptions = [...this.allOptions, newOption];
+      this.options = [...this.options, newOption];
     }
 
     // Select the option.
     this.selectedOptions = [...this.selectedOptions, newOption];
   }
 
-  @action
-  onChange(selectedOptions) {
-    this.selectedOptions = selectedOptions;
-  }
-
-  @action
-  removeTag(option) {
-    this.selectedOptions = this.selectedOptions.filter((o) => o !== option);
-  }
-
   <template>
+    <EuiText>
+      <h3 id="combo-box-generated-heading">Heading as a label</h3>
+    </EuiText>
+    <EuiSpacer @size="s" />
     <EuiComboBox
-      @ariaLabel="Accessible screen reader label"
-      @placeholder="Search asynchronously"
-      @search={{this.onSearch}}
+      @ariaLabelledBy="combo-box-generated-heading"
+      @placeholder="Select or create options"
+      @options={{this.options}}
       @selectedOptions={{this.selectedOptions}}
       @searchField="label"
       @onChange={{this.onChange}}
       @removeTag={{this.removeTag}}
       @onCreateOption={{this.onCreateOption}}
+      @isClearable={{true}}
       as |option|
     >
       {{option.label}}

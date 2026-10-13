@@ -1,12 +1,12 @@
 ---
-order: 16
+order: 19
 ---
 
-# Accessible label with aria-labelledby
+# Case-sensitive matching
 
 <EuiText>
 
-Sometimes it's preferable to label a combo box with a heading or paragraph. Give a text element an `id`, then pass it to `@ariaLabelledBy`.
+Set the argument `@isCaseSensitive` to make the combo box option matching case sensitive.
 
 </EuiText>
 
@@ -14,11 +14,11 @@ Sometimes it's preferable to label a combo box with a heading or paragraph. Give
 import Component from '@glimmer/component';
 import { tracked } from '@glimmer/tracking';
 import { action } from '@ember/object';
-import { EuiText, EuiSpacer, EuiComboBox } from '@ember-eui/core/components';
+import { EuiComboBox } from '@ember-eui/core/components';
 
-const MOONS = [
-  { label: 'Titan' },
-  { label: 'Enceladus' },
+const staticOptions = [
+  { label: 'Titan', 'data-test-subj': 'titanOption' },
+  { label: 'Enceladus is disabled', disabled: true },
   { label: 'Mimas' },
   { label: 'Dione' },
   { label: 'Iapetus' },
@@ -32,9 +32,9 @@ const MOONS = [
   { label: 'Hyperion' },
 ];
 
-export default class ComboBoxAriaLabelledByDemo extends Component {
-  @tracked options = MOONS;
-  @tracked selectedOptions = [MOONS[2], MOONS[4]];
+export default class ComboBoxCaseSensitiveDemo extends Component {
+  @tracked options = staticOptions;
+  @tracked selectedOptions = [];
 
   @action
   onChange(selectedOptions) {
@@ -47,35 +47,34 @@ export default class ComboBoxAriaLabelledByDemo extends Component {
   }
 
   @action
-  onCreateOption(searchValue) {
+  onCreateOption(searchValue, flattenedOptions = []) {
     const normalizedSearchValue = searchValue.trim().toLowerCase();
 
     if (!normalizedSearchValue) {
       return;
     }
 
-    const newOption = { label: searchValue };
+    const newOption = {
+      label: searchValue,
+    };
 
     // Create the option if it doesn't exist.
     if (
-      !this.options.some(
+      flattenedOptions.findIndex(
         (option) => option.label.trim().toLowerCase() === normalizedSearchValue
-      )
+      ) === -1
     ) {
       this.options = [...this.options, newOption];
     }
 
-    // Select the option.
+    // Select the option. Reading `this.selectedOptions` again keeps the
+    // options added before it, when a pasted list adds several in a row
     this.selectedOptions = [...this.selectedOptions, newOption];
   }
 
   <template>
-    <EuiText>
-      <h3 id="combo-box-generated-heading">Heading as a label</h3>
-    </EuiText>
-    <EuiSpacer @size="s" />
     <EuiComboBox
-      @ariaLabelledBy="combo-box-generated-heading"
+      @ariaLabel="Accessible screen reader label"
       @placeholder="Select or create options"
       @options={{this.options}}
       @selectedOptions={{this.selectedOptions}}
@@ -84,10 +83,8 @@ export default class ComboBoxAriaLabelledByDemo extends Component {
       @removeTag={{this.removeTag}}
       @onCreateOption={{this.onCreateOption}}
       @isClearable={{true}}
-      as |option|
-    >
-      {{option.label}}
-    </EuiComboBox>
+      @isCaseSensitive={{true}}
+    />
   </template>
 }
 ```

@@ -6,7 +6,9 @@ order: 6
 
 <EuiText>
 
-You can enhance the content of your options by rendering extra nodes, such as an icon before and a count after the label, in the default block. The block is used for both the dropdown option and the selected pill. Extra nodes are not included in the searchable content, as this only matches against the `@searchField` (`label`).
+There are two object properties you can add to enhance the content of your options, `option.prepend` and `option.append`. These will add nodes before and after the option label respectively, to both the dropdown option and selected pill. They will not be included in the searchable content as this only matches against the label property.
+
+A node is text or a component; components receive the option as `@option`.
 
 </EuiText>
 
@@ -14,33 +16,38 @@ You can enhance the content of your options by rendering extra nodes, such as an
 import Component from '@glimmer/component';
 import { tracked } from '@glimmer/tracking';
 import { action } from '@ember/object';
-import { EuiSwitch, EuiSpacer, EuiComboBox, EuiIcon } from '@ember-eui/core/components';
 import { hash } from '@ember/helper';
+import { EuiComboBox, EuiIcon, EuiSpacer, EuiSwitch } from '@ember-eui/core/components';
 
-const MOONS = [
-  { label: 'Titan', icon: 'bell' },
-  { label: 'Enceladus', icon: 'bolt' },
-  { label: 'Mimas', icon: 'bug' },
+const BellIcon = <template><EuiIcon @size="s" @type="bell" /></template>;
+const BoltIcon = <template><EuiIcon @size="s" @type="bolt" /></template>;
+const BugIcon = <template><EuiIcon @size="s" @type="bug" /></template>;
+const CommentIcon = <template><EuiIcon @size="s" @type="comment" /></template>;
+const FlagIcon = <template><EuiIcon @size="s" @type="flag" @color="danger" /></template>;
+const TagIcon = <template><EuiIcon @size="s" @type="tag" @color="success" /></template>;
+
+const options = [
+  { label: 'Titan', 'data-test-subj': 'titanOption', prepend: BellIcon },
+  { label: 'Enceladus', prepend: BoltIcon },
+  { label: 'Mimas', prepend: BugIcon },
   {
     label:
       "Pandora is one of Saturn's moons, named for a Titaness of Greek mythology",
-    icon: 'comment',
+    prepend: CommentIcon,
     append: '(10)',
   },
-  { label: 'Iapetus', icon: 'flag', iconColor: 'danger', append: '(2)' },
-  { label: 'Phoebe', icon: 'tag', iconColor: 'success', append: '(5)' },
+  { label: 'Iapetus', prepend: FlagIcon, append: '(2)' },
+  { label: 'Phoebe', prepend: TagIcon, append: '(5)' },
 ];
 
 export default class ComboBoxOptionRenderingDemo extends Component {
-  options = MOONS;
+  options = options;
 
-  @tracked selectedOptions = [MOONS[0], MOONS[5]];
+  @tracked selectedOptions = [options[0], options[5]];
   @tracked singleSelection = false;
 
-  get visibleSelectedOptions() {
-    return this.singleSelection
-      ? this.selectedOptions.slice(0, 1)
-      : this.selectedOptions;
+  get singleSelectedOption() {
+    return this.selectedOptions.length ? [this.selectedOptions[0]] : [];
   }
 
   @action
@@ -60,28 +67,21 @@ export default class ComboBoxOptionRenderingDemo extends Component {
 
   <template>
     <EuiSwitch
-      @label="Single selection"
       @checked={{this.singleSelection}}
       @onChange={{this.toggleSingleSelection}}
+      @label="Single selection"
     />
     <EuiSpacer />
     <EuiComboBox
       @ariaLabel="Combo box demo with option prepend/append nodes"
       @options={{this.options}}
-      @selectedOptions={{this.visibleSelectedOptions}}
-      @searchField="label"
-      @singleSelection={{if this.singleSelection (hash asPlainText=true) false}}
-      @placeholder={{if this.singleSelection "Select one option" "Select one or more options"}}
       @onChange={{this.onChange}}
       @removeTag={{this.removeTag}}
-      as |option|
-    >
-      {{#if option.icon}}
-        <EuiIcon @type={{option.icon}} @size="s" @color={{option.iconColor}} />
-      {{/if}}
-      {{option.label}}
-      {{#if option.append}}{{option.append}}{{/if}}
-    </EuiComboBox>
+      @searchField="label"
+      @singleSelection={{if this.singleSelection (hash asPlainText=true) false}}
+      @selectedOptions={{if this.singleSelection this.singleSelectedOption this.selectedOptions}}
+      @placeholder={{if this.singleSelection "Select one option" "Select one or more options"}}
+    />
   </template>
 }
 ```

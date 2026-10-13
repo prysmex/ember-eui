@@ -284,6 +284,8 @@
       "./components/eui-combo-box/create-option.js": "./dist/_app_/components/eui-combo-box/create-option.js",
       "./components/eui-combo-box/group.js": "./dist/_app_/components/eui-combo-box/group.js",
       "./components/eui-combo-box/no-matches-message.js": "./dist/_app_/components/eui-combo-box/no-matches-message.js",
+      "./components/eui-combo-box/node.js": "./dist/_app_/components/eui-combo-box/node.js",
+      "./components/eui-combo-box/option-text.js": "./dist/_app_/components/eui-combo-box/option-text.js",
       "./components/eui-combo-box/options.js": "./dist/_app_/components/eui-combo-box/options.js",
       "./components/eui-combo-box/search-message.js": "./dist/_app_/components/eui-combo-box/search-message.js",
       "./components/eui-combo-box/trigger.js": "./dist/_app_/components/eui-combo-box/trigger.js",

@@ -165,3 +165,75 @@ Node 22.22.1, binaries run directly, Chromium 130 through the scratchpad shim, `
 ## Next step
 
 Coordinator: merge, then regenerate `styles.generated.ts` and `upstream-sources.json` in the main checkout. Switch the pill to EuiBadge `@css` when it exists. Then run the core build and site checks, and look at the combo box docs demos visually: pill colors, panel width and the list.
+
+## Upstream gaps closed (2026-10-13, branch `eui-wave/combo-box`)
+
+All gaps from the docs audit exist in EUI 123.1.0 and are now ported; the
+EuiComboBox row is gone from `docs-audit-gaps.md`.
+
+Files: `eui-combo-box.gts`, `eui-combo-box-pill.gts`,
+`eui-combo-box/{options,trigger,trigger/input,create-option,group}.gts`,
+new private `eui-combo-box/node.gts` (text-or-component renderer) and
+`eui-combo-box/option-text.gts` (upstream `renderTruncatedOption` /
+`renderVariableHeightOption`), matching helpers ported from
+`matching_options.ts` / `utils.tsx` into `utils/eui/combo-box.ts`. No
+generator changes: `hasRowHeightAuto`, `inGroup`, `euiListItemLayout__prepend`
+and `textWrap.wrap` were already generated.
+
+API (all additive):
+- Option keys `prepend` / `append` (text or a component, gets `@option`) in
+  rows (EuiListItemLayout prepend/append), pills (`euiComboBoxPill__*`, text
+  in `.eui-textTruncate`), plain text selection
+  (`euiComboBoxPlainTextSelection__*`) and group titles.
+- Option `toolTipContent` / `toolTipProps` (position, delay, title, offset,
+  className, css, anchorClassName): EuiToolTip inside the row, full-width
+  anchor, `aria-describedby` on the option, shown on hover and while the
+  option is highlighted; none on disabled options; no text `title` then.
+- `@truncationProps` + option `truncationProps` (merged, option wins) →
+  EuiTextTruncate; while searching `startEnd` around the match with
+  EuiHighlight (`strict` = `@isCaseSensitive`) or EuiMark when shorter.
+  Width shared across rows like upstream (`optionWidth`).
+- `@rowHeight="auto"`: VerticalCollection `@renderAll`, no row heights,
+  `textWrap.wrap`, `hasRowHeightAuto` list styles, highlight only.
+- `@delimiter`: typing it adds the text before it; Enter (no highlighted
+  match) and the "add" row add each value (split, trimmed, unique); the
+  empty state says "Add each item separated by ,".
+- `@isCaseSensitive`: upstream partial matcher (trimmed, case-sensitive);
+  `@sortMatchesBy="startsWith"`: options reordered per search (within groups).
+- `@noSuggestions`: list never opens (`onOpen` returns false), no chevron,
+  Enter calls `@onCreateOption`.
+- `@prepend` / `@append` (single selection only, like upstream): one string →
+  EuiFormPrepend/Append label for the input; components / arrays rendered
+  in the layout's side nodes; `inGroup` wrap styles.
+- Default block yields a third value, the raw search text (`''` in pills),
+  so blocks can use EuiHighlight like `renderOption`.
+- `@onCreateOption(value, flattenedOptions)` (2nd arg new); text equal to a
+  selected label is not created again; text equal to the only matching
+  option selects it (upstream `addCustomOption`). `@customOptionText` also
+  takes upstream's `{searchValue}` (bold).
+
+Ember differences kept (documented on the page): default matching still
+ignores case and accents (power-select); selected options stay listed;
+creating on blur only with `@noSuggestions` or `@delimiter`; adding still
+closes the list (except when typing the delimiter / on blur); the first
+match is highlighted on open, so its tooltip shows then too; group
+`sortMatchesBy` sorts within groups (upstream sorts its flat list).
+
+Bug found while porting: deriving `@options` from `select` (replaced on
+every highlight) re-ran power-select's options modifier, which resets the
+highlight → infinite loop. The search text is now copied to a tracked
+`searchValue` only when it changes.
+
+Docs: demos renumbered to upstream's order; new Tooltips, Truncation,
+Multiple lines, Single selection with prepended label, With delimiter,
+Case-sensitive matching, Sorting matches; Option rendering uses
+`prepend`/`append`; Custom dropdown content highlights with the yielded
+search value; Custom options only uses `@noSuggestions` (no adaptation
+note); single selection custom text uses `{searchValue}`. API tables
+regenerated (the generator also re-adds `@initialFocus` to
+`layout/modal/index.md` from main's source; left out of this branch).
+
+Checks: core suite 1315/1315 (1302 + 13 new in
+`eui-combo-box-upstream-props-test.gts`; existing combo tests unmodified),
+ember-tsc clean, eslint clean on changed files, parity 349/349, rollup
+refreshed package.json app-js (2 new private files).

@@ -46,6 +46,8 @@ export interface EuiComboBoxCreateOptionSignature {
     onCreateOption: () => void;
     /** Rendered above matching options (`@alwaysShowCreateOption`). */
     alwaysShow?: boolean;
+    /** EuiComboBox's `@delimiter`. */
+    delimiter?: string;
   };
 }
 
@@ -58,6 +60,30 @@ export default class EuiComboBoxCreateOptionComponent extends Component<EuiCombo
     return this.euiI18n.lookupToken('euiComboBox.createLabel', 'Create');
   }
 
+  /**
+   * Upstream: text with the delimiter will be split into several options,
+   * so the message says so instead of offering it as one.
+   */
+  get hasDelimiter(): boolean {
+    const { delimiter, select } = this.args;
+
+    return Boolean(delimiter && (select.searchText ?? '').includes(delimiter));
+  }
+
+  get delimiterMessage(): ReturnType<typeof htmlSafe> {
+    return htmlSafe(
+      unwrap(
+        this.euiI18n.lookupToken(
+          'euiComboBoxOptionsList.delimiterMessage',
+          'Add each item separated by {delimiter}',
+          {
+            delimiter: `<strong>${escapeHtml(this.args.delimiter ?? '')}</strong>`
+          }
+        )
+      )
+    );
+  }
+
   get formattedString(): ReturnType<typeof htmlSafe> {
     if (
       this.args.customOptionText &&
@@ -65,8 +91,11 @@ export default class EuiComboBoxCreateOptionComponent extends Component<EuiCombo
     ) {
       const str = unwrap(this.args.customOptionText);
 
+      const searchText = escapeHtml(this.args.select.searchText ?? '');
+      // `{searchText}` as typed; upstream's `{searchValue}` in bold
       const context = {
-        searchText: escapeHtml(this.args.select.searchText ?? '')
+        searchText,
+        searchValue: `<strong>${searchText}</strong>`
       };
 
       return htmlSafe(
@@ -129,20 +158,32 @@ export default class EuiComboBoxCreateOptionComponent extends Component<EuiCombo
     >
       <EuiText @size="xs" class="euiComboBoxOptionsList__empty">
         <div class="euiComboBoxOption__contentWrapper">
-          <p class="euiComboBoxOption__emptyStateText">
-            {{this.formattedString}}
-          </p>
+          {{#if this.hasDelimiter}}
+            <p class="euiComboBoxOption__emptyStateText">
+              {{this.delimiterMessage}}
+            </p>
+            <EuiBadge
+              class="euiComboBoxOption__enterBadge"
+              @color="hollow"
+              @iconType="return"
+              aria-hidden="true"
+            />
+          {{else}}
+            <p class="euiComboBoxOption__emptyStateText">
+              {{this.formattedString}}
+            </p>
 
-          <EuiBadge
-            class="euiComboBoxOption__enterBadge"
-            @color="hollow"
-            @iconType={{unless @alwaysShow "return"}}
-            aria-hidden={{unless @alwaysShow "true"}}
-          >
-            {{#if @alwaysShow}}
-              {{this.createLabel}}
-            {{/if}}
-          </EuiBadge>
+            <EuiBadge
+              class="euiComboBoxOption__enterBadge"
+              @color="hollow"
+              @iconType={{unless @alwaysShow "return"}}
+              aria-hidden={{unless @alwaysShow "true"}}
+            >
+              {{#if @alwaysShow}}
+                {{this.createLabel}}
+              {{/if}}
+            </EuiBadge>
+          {{/if}}
         </div>
       </EuiText>
     </div>

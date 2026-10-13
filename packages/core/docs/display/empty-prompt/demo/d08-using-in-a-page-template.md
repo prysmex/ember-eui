@@ -6,13 +6,15 @@ order: 8
 
 <EuiText>
 
-When using an **EuiEmptyPrompt** in an **EuiPageTemplate**, use the `empty` template so it can determine how to display the empty prompt based on the rest of the template configuration. Upstream offers a namespaced `EuiPageTemplate.EmptyPrompt` for this; in Ember EUI place the **EuiEmptyPrompt** inside a `@template="empty"` page template.
+When using an **EuiEmptyPrompt** in an **EuiPageTemplate**, we recommend using the template's `T.EmptyPrompt` part so the template can determine how to display the empty prompt based on the rest of the template configuration.
+
+The following example shows the usage of the [`T.EmptyPrompt`](/docs/core/docs/templates/page-template#empty-pages-or-content) part (upstream's `EuiPageTemplate.EmptyPrompt`). Its default block is the prompt's body.
 
 </EuiText>
 
 ```gjs component
 import Component from '@glimmer/component';
-import { EuiButton, EuiEmptyPrompt, EuiImage, EuiLink, EuiPageTemplate, EuiSpacer, EuiText, EuiTitle } from '@ember-eui/core/components';
+import { EuiButton, EuiImage, EuiLink, EuiPageTemplate, EuiTitle } from '@ember-eui/core/components';
 
 const svg =
   '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 300">' +
@@ -26,33 +28,30 @@ export default class EmptyPromptTemplateDemo extends Component {
   illustration = `data:image/svg+xml;utf8,${encodeURIComponent(svg)}`;
 
   <template>
-    <EuiPageTemplate @template="empty" @minHeight="0">
-      <EuiEmptyPrompt @color="plain" @layout="horizontal">
+    <EuiPageTemplate @minHeight="0" as |T|>
+      <T.EmptyPrompt @color="plain" @layout="horizontal">
         <:icon>
           <EuiImage @size="fullWidth" @src={{this.illustration}} alt="" />
         </:icon>
-        <:content>
-          <EuiTitle @size="m"><h2>Create your first visualization</h2></EuiTitle>
-          <EuiSpacer @size="s" />
-          <EuiText @color="subdued">
-            <p>
-              There are no visualizations to display. This tool allows you to
-              create a wide range of charts, graphs, maps, and other graphics.
-            </p>
-            <p>
-              The visualizations you create can be easily shared with your peers.
-            </p>
-          </EuiText>
-          <EuiSpacer @size="l" />
-          <EuiButton @color="primary" @fill={{true}}>Create visualization</EuiButton>
-        </:content>
+        <:title><h2>Create your first visualization</h2></:title>
+        <:default>
+          <p>
+            There are no visualizations to display. This tool allows you to
+            create a wide range of charts, graphs, maps, and other graphics.
+          </p>
+          <p>
+            The visualizations you create can be easily shared with your peers.
+          </p>
+        </:default>
+        <:actions as |Item|>
+          <Item><EuiButton @color="primary" @fill={{true}}>Create visualization</EuiButton></Item>
+        </:actions>
         <:footer>
           <EuiTitle @size="xxs"><span>Want to learn more?</span></EuiTitle>
           <EuiLink @href="#" @target="_blank">Read the docs</EuiLink>
         </:footer>
-      </EuiEmptyPrompt>
+      </T.EmptyPrompt>
     </EuiPageTemplate>
   </template>
 }
 ```
-

@@ -6,7 +6,7 @@ order: 1
 
 <EuiText>
 
-While the `EuiPageHeader` component can be placed anywhere within your page layout, we recommend using it within the `EuiPageTemplate` component by passing the configuration args as its `@pageHeader`.
+While the `EuiPageHeader` component can be placed anywhere within your page layout, we recommend using it within the `EuiPageTemplate` component through its `T.Header` part.
 
 `EuiPageHeader` provides args for opinionated, consistent formatting of your header. Any combination of `@pageTitle`, `@description`, `@tabs`, or any default block will adjust the layout as needed.
 

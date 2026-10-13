@@ -14,7 +14,6 @@ This is the list of those gaps. Effort: S/M/L.
 | EuiCommentList | `comments` array, `ariaLabel` |
 | EuiCallOut | `actionProps` |
 | EuiCard | `betaBadgeProps` color/href/target, `hasBorder`, `@image` as element |
-| EuiEmptyPrompt | `<:body>`/`<:actions>` blocks; `EuiPageTemplate.EmptyPrompt` |
 | EuiTimeline | node `children` on items |
 | EuiTourStep | `@anchor`, `@zIndex`, `@footerAction` arg; no `useEuiTour` equivalent |
 | EuiToolTip | `@repositionOnScroll` |
@@ -84,11 +83,6 @@ This is the list of those gaps. Effort: S/M/L.
 | EuiCard | `image` as element/node | containers/card.mdx | S/M | `image` is string; d02 notes adaptation. |
 | EuiResizableButton | standalone use (`isHorizontal`, `onMouseDown`, `onTouchStart`, `onKeyDown`) | containers/resizable-container.mdx | M | "Custom resize logic" example omitted. |
 | EuiResizablePanel | collapsible `mode` options `className`, `data-test-subj` | containers/resizable-container.mdx | S | `Mode` allows only `{position}`. |
-| EuiPageTemplate | composable children API (`.Sidebar/.Header/.Section/.BottomBar/.EmptyPrompt`, order-driven) | templates/page-template/index, guidelines | L | Deliberate adaptation (`@template`, named blocks); order-driven stacking not reproducible. |
-| EuiPageTemplate | top-level `panelled`, `bottomBorder`, `offset` | templates/page-template/index | M | Only reachable via `pageBodyProps`/`pageHeader`; `offset` unimplemented. |
-| EuiPageTemplate | per-slot `EmptyPrompt` centering/panelling | templates/page-template/index | M | Approximated by `@template="centeredContent"` for whole page. |
-| EuiPageTemplate | `responsive`, `mainProps` | templates/page-template/index | S | Unverified against upstream source; nearest are `pageSideBarProps.responsive`, `pageContentProps`. |
-| EuiPageTemplate | guidelines page (legacy conversion, centering, empty pages) | templates/page-template/guidelines | S/M | No guidelines doc under docs/templates/page-template. |
 | EuiPageHeader | `tabsProps`; `breadcrumbProps`/`rightSideGroupProps`/`pageTitleProps`/`iconProps` accept only `{className}` | layout/page-header.mdx | S | Upstream passes `aria-label`, `data-test-subj`. |
 | EuiPage / EuiPageSidebar | `component` tag arg (EuiPage also `css`) | layout/page_components | S | Unverified against upstream source. |
 | EuiFlexGroup | `@tagName` beyond `div`/`span` | layout/flex/index.mdx | S | Template has an `eq "span"` branch; would need `{{element}}`. |

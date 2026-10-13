@@ -53,7 +53,10 @@ const ALIASES = {
   EuiSplitPanelOuter: 'eui-split-panel/outer',
   EuiSplitPanelInner: 'eui-split-panel/inner',
   EuiResizablePanel: 'eui-resizable-container/panel',
-  EuiResizableButton: 'eui-resizable-container/button'
+  EuiResizableButton: 'eui-resizable-container/button',
+  EuiPageTemplateSidebar: 'eui-page-template/sidebar',
+  EuiPageTemplateEmptyPrompt: 'eui-page-template/empty-prompt',
+  EuiPageTemplateBottomBar: 'eui-page-template/bottom-bar'
 };
 
 /** `EuiButton` → packages/core/src/components/eui-button.gts */

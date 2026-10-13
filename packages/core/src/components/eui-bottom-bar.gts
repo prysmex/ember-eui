@@ -15,6 +15,7 @@ import EuiEmotionProvider from './eui-emotion-provider.gts';
 import EuiPortal from './eui-portal.gts';
 
 import type { EuiThemeContext } from '../utils/emotion/context.ts';
+import type { EuiCss } from '../utils/eui/styles.ts';
 
 export interface EuiButtomBarArgs {
   /**
@@ -68,6 +69,8 @@ export interface EuiButtomBarArgs {
    * Distance from the bottom, in px or any CSS length. Defaults to `0`.
    */
   bottom?: number | string;
+  /** Styles composed last into the bar's class (upstream's `css`). */
+  css?: EuiCss;
 }
 
 const updateDisplacementModifier = modifier(function (
@@ -171,7 +174,8 @@ export default class EuiBottomBarComponent extends GlimmerComponent<EuiBottomBar
       styles.euiBottomBar,
       styles[this.position],
       styles[this.args.paddingSize ?? 'm'],
-      { '& > .euiBottomBar__heading': euiScreenReaderOnlyCss }
+      { '& > .euiBottomBar__heading': euiScreenReaderOnlyCss },
+      this.args.css
     );
   };
 

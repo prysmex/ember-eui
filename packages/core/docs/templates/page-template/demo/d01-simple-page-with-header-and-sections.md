@@ -6,47 +6,56 @@ order: 1
 
 <EuiText>
 
-`EuiPageTemplate` is for creating the different types of page layout patterns described in these docs. It is somewhat opinionated, but still has the ability to customize most of the inner components directly through args.
+All templates should start with a wrapping `EuiPageTemplate` to control some shared settings like `@paddingSize`, `@bottomBorder`, `@restrictWidth`, and `@panelled`. The template yields its parts (`as |T|`), which apply the appropriate args based on the full configuration:
 
-Upstream builds pages from namespaced children (`EuiPageTemplate.Section`, `.Header`, `.Sidebar`, `.BottomBar`, `.EmptyPrompt`) stacked in the order they are passed. Ember EUI instead has named blocks (`<:pageSideBar>`, `<:bottomBar>`, `<:default>`, …) and the `@template` arg. To stack your own sections and headers like upstream, use `@template="empty"` and put `EuiPageSection` and `EuiPageHeader` in the default block, in the order you want.
+- **`T.Sidebar`** extends `EuiPageSidebar` ([providing a sidebar](#providing-a-sidebar))
+- **`T.Header`** extends [`EuiPageHeader`](/docs/core/docs/layout/page-header)
+- **`T.Section`** extends [`EuiPageSection`](/docs/core/docs/layout/page-section)
+- **`T.BottomBar`** extends [`EuiBottomBar`](/docs/core/docs/layout/bottom-bar)
+- **`T.EmptyPrompt`** extends [`EuiEmptyPrompt`](/docs/core/docs/display/empty-prompt)
+
+With the exception of `T.Sidebar` and `T.BottomBar`, the stacking order of the page contents is the order you render them in. You can also override the template's settings by passing args directly to a part.
 
 </EuiText>
 
 <EuiSpacer />
 
 <EuiCallOut @size="s" @title="Fixed headers">
-  <p>If you have a fixed position header, the template automatically accounts for the padding offset based on the total number of page headers.</p>
+  <p>If you have fixed position headers, the template automatically accounts for the padding <code>@offset</code> based on the total height of the fixed headers (the <code>--euiFixedHeadersOffset</code> CSS variable). If you do not want the template to calculate this, pass <code>0</code> as the manual <code>@offset</code>.</p>
 </EuiCallOut>
 
 ```gjs component
-import { EuiPageTemplate, EuiPageSection, EuiText, EuiPageHeader, EuiButton, EuiSkeletonText } from '@ember-eui/core/components';
+import { EuiPageTemplate, EuiText, EuiButton, EuiSkeletonText } from '@ember-eui/core/components';
 import { array, hash } from '@ember/helper';
 
 <template>
-  <EuiPageTemplate @template="empty" @grow={{false}} @restrictWidth={{false}}>
-    <:default>
-      <EuiPageSection @grow={{false}} @color="subdued" @bottomBorder="extended">
-        <EuiText @textAlign="center">
-          <strong>
-            Stack EuiPageSection and EuiPageHeader to create your custom content order.
-          </strong>
-        </EuiText>
-      </EuiPageSection>
-      <EuiPageHeader
-        @iconType="logoElastic"
-        @pageTitle="Page title"
-        @description="Header description."
-        @tabs={{array (hash label="Tab 1" isSelected=true) (hash label="Tab 2")}}
-        @bottomBorder="extended"
-      >
-        <:rightSideItems as |Item|>
-          <Item><EuiButton>Right side item</EuiButton></Item>
-        </:rightSideItems>
-      </EuiPageHeader>
-      <EuiPageSection>
-        <EuiSkeletonText @isLoading={{true}} @lines={{6}} />
-      </EuiPageSection>
-    </:default>
+  <EuiPageTemplate
+    @restrictWidth={{false}}
+    @bottomBorder="extended"
+    @offset={{0}}
+    @grow={{false}}
+    as |T|
+  >
+    <T.Section @grow={{false}} @color="subdued" @bottomBorder="extended">
+      <EuiText @textAlign="center">
+        <strong>
+          Stack EuiPageTemplate sections and headers to create your custom content order.
+        </strong>
+      </EuiText>
+    </T.Section>
+    <T.Header
+      @iconType="logoElastic"
+      @pageTitle="Page title"
+      @description="Header description."
+      @tabs={{array (hash label="Tab 1" isSelected=true) (hash label="Tab 2")}}
+    >
+      <:rightSideItems as |Item|>
+        <Item><EuiButton>Right side item</EuiButton></Item>
+      </:rightSideItems>
+    </T.Header>
+    <T.Section>
+      <EuiSkeletonText @isLoading={{true}} @lines={{6}} />
+    </T.Section>
   </EuiPageTemplate>
 </template>
 ```

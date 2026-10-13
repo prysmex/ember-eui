@@ -408,6 +408,9 @@
   ],
   "packages/core/docs/templates/page-template/index.md": [
     "EuiPageTemplate",
+    "EuiPageTemplateSidebar",
+    "EuiPageTemplateEmptyPrompt",
+    "EuiPageTemplateBottomBar",
     "EuiPage",
     "EuiPageSideBar",
     "EuiPageBody",

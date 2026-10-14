@@ -18,7 +18,7 @@ module('Leak | regressions', function (hooks) {
   setupRenderingTest(hooks);
 
   // LH-02
-  test.todo(
+  test(
     'resize-observer modifier: re-running modify() 50 times keeps one observer, and unmount disconnects all',
     async function (assert) {
       const counter = startObserverCounter(['ResizeObserver']);

@@ -70,6 +70,8 @@ interface ThumbSignature {
 }
 
 /** @private One stop of EuiColorStops: a thumb opening an edit popover. */
+const noop = (): void => {};
+
 export default class EuiColorStopThumb extends Component<ThumbSignature> {
   constructor(owner: Owner, args: ThumbSignature['Args']) {
     super(owner, args);
@@ -186,14 +188,27 @@ export default class EuiColorStopThumb extends Component<ThumbSignature> {
         )
       );
     };
-    const up = () => {
-      document.removeEventListener('mousemove', move);
-      document.removeEventListener('mouseup', up);
-    };
+    const up = () => this.stopDrag();
 
     event.preventDefault();
+    this.stopDrag();
     document.addEventListener('mousemove', move);
     document.addEventListener('mouseup', up);
+    window.addEventListener('blur', up);
+    this.stopDrag = () => {
+      document.removeEventListener('mousemove', move);
+      document.removeEventListener('mouseup', up);
+      window.removeEventListener('blur', up);
+      this.stopDrag = noop;
+    };
+  }
+
+  /** Removes the document drag listeners (also on teardown mid-drag). */
+  stopDrag: () => void = noop;
+
+  willDestroy(): void {
+    super.willDestroy();
+    this.stopDrag();
   }
 
   @action

@@ -4,7 +4,7 @@
  * window/document listeners go too. See
  * internal/memory-leak-audit/leak-infra.md.
  */
-import { module, test, todo } from 'qunit';
+import { module, test } from 'qunit';
 import { setupRenderingTest } from 'ember-qunit';
 import { render, settled } from '@ember/test-helpers';
 import { run } from '@ember/runloop';
@@ -77,7 +77,7 @@ module('Integration | leak-infra | eui-flatpickr', function (hooks) {
     assert.strictEqual(listeners.size, 0, 'no window/document listener left');
   });
 
-  todo('unmounted while a string @locale loads, the picker is never created (LI-6)', async function (assert) {
+  test('unmounted while a string @locale loads, the picker is never created (LI-6)', async function (assert) {
     const state = new State();
     await render(
       <template>

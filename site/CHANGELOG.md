@@ -1,5 +1,11 @@
 # site
 
+## 15.0.1
+
+### Patch Changes
+
+- memory leaks
+
 ## 15.0.0
 
 ### Major Changes

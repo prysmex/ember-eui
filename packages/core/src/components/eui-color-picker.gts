@@ -3,7 +3,7 @@ import { cached, tracked } from '@glimmer/tracking';
 import { fn } from '@ember/helper';
 import { on } from '@ember/modifier';
 import { action } from '@ember/object';
-import { next } from '@ember/runloop';
+import { cancel, next } from '@ember/runloop';
 import { service } from '@ember/service';
 
 import chroma from 'chroma-js';
@@ -150,6 +150,13 @@ export default class EuiColorPicker extends Component<EuiColorPickerSignature> {
 
     this.prevColor = color ? color.rgba().join() : null;
     this.colorAsHsv = color ? hsvOf(color) : HSV_FALLBACK;
+  }
+
+  closeTimer: ReturnType<typeof next> | undefined;
+
+  willDestroy(): void {
+    super.willDestroy();
+    cancel(this.closeTimer);
   }
 
   get id(): string {
@@ -368,7 +375,8 @@ export default class EuiColorPicker extends Component<EuiColorPickerSignature> {
   @action
   finalSelection(): void {
     this.input?.focus();
-    next(this, this.closeColorSelector);
+    cancel(this.closeTimer);
+    this.closeTimer = next(this, this.closeColorSelector);
   }
 
   @action

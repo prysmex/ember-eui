@@ -5,7 +5,7 @@ import { on } from '@ember/modifier';
 import { action } from '@ember/object';
 import { guidFor } from '@ember/object/internals';
 import didInsert from '@ember/render-modifiers/modifiers/did-insert';
-import { later } from '@ember/runloop';
+import { cancel, later } from '@ember/runloop';
 import { service } from '@ember/service';
 
 import optional from '@nullvoxpopuli/ember-composable-helpers/helpers/optional';
@@ -719,7 +719,8 @@ export default class EuiDualRangeComponent extends Component<EuiDualRangeSignatu
 
   @action
   onInputBlur(e: FocusEvent): void {
-    later(
+    cancel(this.blurTimer);
+    this.blurTimer = later(
       this,
       () => {
         // Safari does not recognize any focus-related eventing for input[type=range]
@@ -773,8 +774,11 @@ export default class EuiDualRangeComponent extends Component<EuiDualRangeSignatu
     return this.showInputOnly ? undefined : this.args.ariaDescribedby;
   }
 
+  blurTimer: ReturnType<typeof later> | undefined;
+
   willDestroy() {
     super.willDestroy();
+    cancel(this.blurTimer);
 
     this.rangeSliderRef = null;
   }

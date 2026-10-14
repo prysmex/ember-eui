@@ -4,7 +4,7 @@ import { fn } from '@ember/helper';
 import { on } from '@ember/modifier';
 import { action } from '@ember/object';
 import { guidFor } from '@ember/object/internals';
-import { later } from '@ember/runloop';
+import { cancel, later } from '@ember/runloop';
 import { service } from '@ember/service';
 
 import optional from '@nullvoxpopuli/ember-composable-helpers/helpers/optional';
@@ -188,6 +188,13 @@ export interface EuiRangeSignature {
 }
 
 export default class EuiRangeComponent extends Component<EuiRangeSignature> {
+  blurTimer: ReturnType<typeof later> | undefined;
+
+  willDestroy(): void {
+    super.willDestroy();
+    cancel(this.blurTimer);
+  }
+
   // Defaults
   @argOrDefaultDecorator(0) min!: number;
   @argOrDefaultDecorator(100) max!: number;
@@ -302,7 +309,8 @@ export default class EuiRangeComponent extends Component<EuiRangeSignature> {
 
   @action
   onInputBlur(e: Event): void {
-    later(
+    cancel(this.blurTimer);
+    this.blurTimer = later(
       this,
       () => {
         // Safari does not recognize any focus-related eventing for input[type=range]

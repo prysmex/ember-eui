@@ -1,5 +1,18 @@
 # `renderComponent` never releases its renderer, so every rendering test's owner and DOM stay in memory
 
+> **Status (2026-10-14): already fixed upstream, don't file.**
+> [emberjs/ember.js#21647](https://github.com/emberjs/ember.js/pull/21647) ties each
+> `renderComponent` root to the owner and deregisters the renderer once its last root is
+> destroyed. It was backported in #21682 (`release`) and #21683 (`lts-6-12`), and shipped in
+> **ember-source 7.3.1** and **6.12.1** (both 2026-10-14).
+>
+> The repro below passes on 7.3.1: 0 of 5 rendering-test owners survive, without any workaround.
+> The fix's own tests cover `result.destroy()` only; the repro checks the test-teardown path
+> (destroying the owner). Our `~7.3.0` range already allows 7.3.1, but the lockfile still pins
+> 7.3.0. Once upgraded, leak mode no longer needs `_resetRenderers()`.
+>
+> The report below is kept as the record of what we found.
+
 ## Summary
 
 Since `@ember/test-helpers` switched `render()` to `renderComponent` (Ember ≥ 6.8), the owner of

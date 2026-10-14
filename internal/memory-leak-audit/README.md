@@ -38,7 +38,7 @@ test or the crawl, S = code reading.
 
 #11, markdown drop zone `insertText` part: Fixed (9ca3d9c1). The other #11 callbacks belong to other fixes.
 
-Not EUI:
+Not EUI (ember-source: fixed upstream in 7.3.1, see ember-render-component-leak-report.md):
 - **ember-source 7.3 `renderComponent`** (used by `render()` in tests) never releases a test's app or DOM, ~5 MB per test. Report upstream. Leak mode works around it (LH-01).
 - **`@atlaskit` drag-and-drop auto-scroll** logs a warning with a DOM element on every render; DevTools keeps those nodes while open (S1).
 

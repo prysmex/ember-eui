@@ -17,6 +17,10 @@
 
     <script src="/testem.js" integrity="" data-embroider-ignore></script>
     <script type="module">
+      // opt-in leak instrumentation (`?leaks`); patches globals before anything else runs
+      import "./leak-detector.ts";
+    </script>
+    <script type="module">
       import "ember-testing";
     </script>
 

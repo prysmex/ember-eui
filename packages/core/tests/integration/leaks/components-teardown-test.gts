@@ -174,10 +174,9 @@ module('Integration | Leaks | components teardown', function (hooks) {
     }
   });
 
-  // F-POP-1: registerPanel(null) is never called (the panel is wired with
-  // `didInsert` only), so a closed popover keeps a stale, detached panel and
-  // never reports `panelRef(null)`.
-  skip('popover: closing it reports panelRef(null)', async function (assert) {
+  // F-POP-1: the panel used to be wired with `didInsert` only, so a closed
+  // popover kept a stale, detached panel and never reported `panelRef(null)`.
+  test('popover: closing it reports panelRef(null)', async function (assert) {
     const state = new PopoverState();
     const panelRefs: Array<HTMLElement | null> = [];
     const panelRef = (el: HTMLElement | null) => panelRefs.push(el);
@@ -197,8 +196,8 @@ module('Integration | Leaks | components teardown', function (hooks) {
     assert.strictEqual(panelRefs[panelRefs.length - 1], null, 'panelRef(null) after the panel is removed');
   });
 
-  // F-POP-1 (same cause): the window resize listener stays while closed.
-  skip('popover: closing it removes the window resize listener', async function (assert) {
+  // F-POP-1 (same cause): the window resize listener stayed while closed.
+  test('popover: closing it removes the window resize listener', async function (assert) {
     const win = trackListeners(window);
     const state = new PopoverState();
 

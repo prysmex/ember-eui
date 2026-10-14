@@ -1996,6 +1996,27 @@ export default class EuiComboBoxComponent extends Component<EuiComboBoxSignature
       return;
     }
 
+    if (!next) {
+      // Focus left for nowhere, which is also what Chrome reports when it
+      // blurs the focused input while Glimmer removes the combo box. That
+      // happens inside the render, which has already read ember-basic-
+      // dropdown's `_isOpen`, so closing the list there trips an autotracking
+      // assertion (development builds). Leave after the render instead, and
+      // not at all when the combo box is being torn down.
+      schedule('actions', this, this.leaveComboBox, event, api);
+
+      return;
+    }
+
+    this.leaveComboBox(event, api);
+  }
+
+  /** The rest of `containerBlur`: focus has left the combo box. */
+  leaveComboBox(event?: FocusEvent, blurApi?: ContainerBlurApi): void {
+    if (this.isDestroying || this.isDestroyed) return;
+
+    const api = (this.select ?? blurApi) as ContainerBlurApi | undefined;
+
     (this.args.onBlur as ((...args: unknown[]) => void) | undefined)?.(
       api,
       event

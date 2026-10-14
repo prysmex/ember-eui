@@ -1,5 +1,11 @@
 # @ember-eui/core
 
+## 16.0.1
+
+### Patch Changes
+
+- memory leaks
+
 ## 16.0.0
 
 ### Major Changes

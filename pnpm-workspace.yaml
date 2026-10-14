@@ -41,3 +41,6 @@ packageExtensions:
 allowBuilds:
   esbuild: true # validates its platform binary
   core-js: false # postinstall only prints a donation message
+
+minimumReleaseAgeExclude:
+  - ember-source@7.3.1

@@ -1,6 +1,8 @@
 import Component from '@glimmer/component';
 import { cached } from '@glimmer/tracking';
 
+import style from 'ember-style-modifier/modifiers/style';
+
 import { getEuiThemeContext } from '../utils/emotion/consume.ts';
 import { euiClass } from '../utils/eui/styles.ts';
 
@@ -30,15 +32,28 @@ export interface EuiAspectRatioSignature {
  * wrapper takes those styles and its content fills it.
  */
 export default class EuiAspectRatio extends Component<EuiAspectRatioSignature> {
+  /**
+   * The ratio and max width go inline, as upstream's `style`: a class per
+   * ratio would stay in the style cache for good.
+   */
+  get inlineStyle(): Record<string, string> {
+    const { width, height, maxWidth } = this.args;
+    const inline: Record<string, string> = {
+      aspectRatio: `${width} / ${height}`
+    };
+    if (maxWidth !== undefined) {
+      inline['maxInlineSize'] =
+        typeof maxWidth === 'number' ? `${maxWidth}px` : maxWidth;
+    }
+    return inline;
+  }
+
   @cached
   get classes() {
-    const { width, height, maxWidth } = this.args;
     return `euiAspectRatio ${euiClass(getEuiThemeContext(this), {
       boxSizing: 'border-box',
-      aspectRatio: `${width} / ${height}`,
       blockSize: 'auto',
       inlineSize: '100%',
-      maxInlineSize: typeof maxWidth === 'number' ? `${maxWidth}px` : maxWidth,
       // block, so an inline iframe/img adds no line-box descender space
       '& > *': {
         boxSizing: 'border-box',
@@ -50,6 +65,6 @@ export default class EuiAspectRatio extends Component<EuiAspectRatioSignature> {
   }
 
   <template>
-    <div class={{this.classes}} ...attributes>{{yield}}</div>
+    <div class={{this.classes}} ...attributes {{style this.inlineStyle}}>{{yield}}</div>
   </template>
 }

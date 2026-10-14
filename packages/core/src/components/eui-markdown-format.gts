@@ -3,6 +3,7 @@ import { cached } from '@glimmer/tracking';
 import { isArray } from '@ember/array';
 
 import optional from '@nullvoxpopuli/ember-composable-helpers/helpers/optional';
+import style from 'ember-style-modifier/modifiers/style';
 import unified from 'unified';
 
 import { getEuiThemeContext } from '../utils/emotion/consume.ts';
@@ -17,7 +18,11 @@ import {
 } from '../utils/markdown/plugins/markdown-default-plugins/index.ts';
 import { toDOM } from '../utils/markdown/plugins/to-dom.ts';
 import { euiTextAlignCss } from './eui-text-align.gts';
-import { TEXT_COLORS, euiTextColorCss } from './eui-text-color.gts';
+import {
+  TEXT_COLORS,
+  euiTextColorCss,
+  euiTextColorInlineStyle
+} from './eui-text-color.gts';
 import { euiTextReset } from './eui-text.gts';
 
 import type {
@@ -172,6 +177,13 @@ export default class EuiMarkdownFormat extends Component<EuiMarkdownFormatSignat
       : (rootClasses as string).trim().split(/\s+/);
   }
 
+  /** A custom text color, inline (only with the default EuiText classes). */
+  get inlineStyle(): Record<string, string> {
+    return this.shouldIncludeDefaultRootClasses
+      ? euiTextColorInlineStyle(this.color)
+      : {};
+  }
+
   /** Upstream: EuiText (size, color) with the markdown css composed last. */
   @cached
   get styleClass() {
@@ -250,7 +262,7 @@ export default class EuiMarkdownFormat extends Component<EuiMarkdownFormatSignat
   <template>
     {{! This hbs was inspired by https://github.com/ampatspell/ember-cli-remark-static/blob/v3.0.5/addon/components/remark.hbs }}
     {{#let (element (tagName @component)) as |Tag|}}
-      <Tag class={{this.rootClassName}} ...attributes>
+      <Tag class={{this.rootClassName}} ...attributes {{style this.inlineStyle}}>
         {{#if this.result}}
           {{#each this.result.nodes as |node|}}{{node}}{{/each}}
         {{/if}}

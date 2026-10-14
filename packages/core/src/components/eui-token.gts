@@ -1,6 +1,8 @@
 import Component from '@glimmer/component';
 import { cached } from '@glimmer/tracking';
 
+import style from 'ember-style-modifier/modifiers/style';
+
 import { hexToRgb } from '../helpers/hex-to-rgb.ts';
 import { isColorDark } from '../helpers/is-color-dark.ts';
 import { getEuiThemeContext } from '../utils/emotion/consume.ts';
@@ -10,7 +12,6 @@ import { TOKEN_MAP } from '../utils/eui/styles.generated.ts';
 import { euiTokenStyles, TOKEN_COLORS } from '../utils/eui/token.ts';
 import EuiIcon from './eui-icon.gts';
 
-import type { CSSObject } from '@emotion/css/create-instance';
 import type { EuiTokenFill } from '../utils/eui/token.ts';
 import type { IconType } from './eui-icon';
 
@@ -109,34 +110,49 @@ export default class EuiToken extends Component<EuiTokenSignature> {
     return size;
   }
 
+  get preset() {
+    const { iconType } = this.args;
+    return typeof iconType === 'string'
+      ? TOKEN_DEFAULTS[TOKEN_ALIASES[iconType] ?? iconType]
+      : undefined;
+  }
+
+  get color(): string {
+    return this.args.color || this.preset?.color || 'gray';
+  }
+
+  get isCustomColor(): boolean {
+    return !(TOKEN_COLORS as readonly string[]).includes(this.color);
+  }
+
+  /**
+   * Upstream's inline `style` for a custom color. Inline, so each custom
+   * color doesn't add a class that stays in the style cache for good.
+   */
+  get inlineStyle(): Record<string, string> {
+    if (!this.isCustomColor) return {};
+    const color = this.color;
+    return oneOf(FILLS, this.args.fill, 'light') === 'none'
+      ? { color }
+      : {
+          color: isColorDark(...hexToRgb(color)) ? '#FFFFFF' : '#000000',
+          backgroundColor: color
+        };
+  }
+
   @cached
   get classes(): string {
-    const { iconType } = this.args;
     const context = getEuiThemeContext(this);
-    const preset =
-      typeof iconType === 'string'
-        ? TOKEN_DEFAULTS[TOKEN_ALIASES[iconType] ?? iconType]
-        : undefined;
-    const color = this.args.color || preset?.color || 'gray';
+    const preset = this.preset;
+    const color = this.color;
     const shape = oneOf(SHAPES, this.args.shape || preset?.shape, 'circle');
     const fill = oneOf(FILLS, this.args.fill, 'light');
     // upstream builds the styles for the requested fill, before a custom
     // color switches the token to `dark`
     const styles = useEuiBorealisStyles(context, TOKEN_STYLES[fill]);
-    let custom: CSSObject | undefined;
-    let colorStyles = styles[color];
-
-    if (!(TOKEN_COLORS as readonly string[]).includes(color)) {
-      colorStyles = styles['customColor'];
-      // Upstream sets these inline; a class keeps the caller's `style`.
-      custom =
-        fill === 'none'
-          ? { color }
-          : {
-              color: isColorDark(...hexToRgb(color)) ? '#FFFFFF' : '#000000',
-              backgroundColor: color
-            };
-    }
+    const colorStyles = this.isCustomColor
+      ? styles['customColor']
+      : styles[color];
 
     return `euiToken ${euiClass(
       context,
@@ -144,13 +160,12 @@ export default class EuiToken extends Component<EuiTokenSignature> {
       styles[shape],
       styles[fill],
       styles[this.size],
-      colorStyles,
-      custom
+      colorStyles
     )}`;
   }
 
   <template>
-    <span class={{this.classes}} ...attributes>
+    <span class={{this.classes}} ...attributes {{style this.inlineStyle}}>
       <EuiIcon
         @type={{@iconType}}
         @size={{this.iconSize}}

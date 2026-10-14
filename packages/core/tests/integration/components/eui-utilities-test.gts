@@ -746,7 +746,9 @@ module('Integration | Component | Borealis utilities', function (hooks) {
     );
 
     const ratio = el('[data-ratio]');
-    assert.dom(ratio).hasClass('euiAspectRatio').doesNotHaveAttribute('style');
+    assert.dom(ratio).hasClass('euiAspectRatio');
+    // The ratio is inline, as upstream sets it through `style`.
+    assert.strictEqual(ratio.style.aspectRatio, '16 / 9');
     // offset sizes: the test container may be zoomed, which scales client rects
     assert.deepEqual([ratio.offsetWidth, ratio.offsetHeight], [320, 180]);
     const frame = el('[data-ratio] iframe');

@@ -1,11 +1,14 @@
 import Component from '@glimmer/component';
 import { cached } from '@glimmer/tracking';
+
+import style from 'ember-style-modifier/modifiers/style';
+
 import { getEuiThemeContext } from '../utils/emotion/consume.ts';
 import { euiClass, useEuiBorealisStyles } from '../utils/eui/styles.ts';
 import type { EuiCss } from '../utils/eui/styles.ts';
 import { euiTextStyles } from '../utils/eui/styles.generated.ts';
 import { euiTextAlignCss } from './eui-text-align.gts';
-import { euiTextColorCss } from './eui-text-color.gts';
+import { euiTextColorCss, euiTextColorInlineStyle } from './eui-text-color.gts';
 
 import type { CSSObject } from '@emotion/css/create-instance';
 import type { EuiBorealisContext } from '../utils/eui/theme.ts';
@@ -100,7 +103,7 @@ export default class EuiText extends Component<EuiTextSignature> {
 
   <template>
     {{#let (element (tagName @component)) as |Tag|}}
-      <Tag class="euiText {{this.classes}}" ...attributes>{{yield}}</Tag>
+      <Tag class="euiText {{this.classes}}" ...attributes {{style (euiTextColorInlineStyle @color)}}>{{yield}}</Tag>
     {{/let}}
   </template>
 }

@@ -69,25 +69,32 @@ export const getWaitDuration = (records: MutationRecord[]): number => {
   }, 0);
 };
 
-// Uses `requestAnimationFrame` to perform a given callback after a specified waiting period
+// Uses `requestAnimationFrame` to perform a given callback after a specified waiting period.
+// Returns a function that stops the loop (upstream returns nothing, so the loop
+// can't be stopped when its owner is destroyed).
 export const performOnFrame = (
   waitDuration: number,
   toPerform: () => void
-): void => {
+): (() => void) => {
   if (waitDuration > 0) {
     const startTime = Date.now();
     const endTime = startTime + waitDuration;
+    let frame: number;
 
     const onFrame = () => {
       toPerform();
 
       if (endTime > Date.now()) {
-        requestAnimationFrame(onFrame);
+        frame = requestAnimationFrame(onFrame);
       }
     };
 
-    requestAnimationFrame(onFrame);
+    frame = requestAnimationFrame(onFrame);
+
+    return () => cancelAnimationFrame(frame);
   }
+
+  return () => {};
 };
 
 // Convenience method for combining the result of 'getWaitDuration' directly with 'performOnFrame'

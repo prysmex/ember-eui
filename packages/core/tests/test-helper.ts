@@ -6,6 +6,10 @@ import { setup } from 'qunit-dom';
 import { start as qunitStart, setupEmberOnerrorValidation } from 'ember-qunit';
 import { setTesting } from '@embroider/macros';
 import { setConfig as setBasicDropdownConfig } from 'ember-basic-dropdown/config';
+import { captureRenderTree } from '@ember/debug';
+import { _backburner } from '@ember/runloop';
+
+import { installLeakHooks } from './leak-detector.ts';
 
 import EuiConfigService from '#src/services/eui-config.ts';
 import EuiI18nService from '#src/services/eui-i18n.ts';
@@ -61,5 +65,10 @@ export function start() {
   );
   setup(QUnit.assert);
   setupEmberOnerrorValidation();
+  // opt-in (`?leaks`), see tests/leak-detector.ts
+  installLeakHooks(QUnit, {
+    captureRenderTree,
+    backburner: _backburner
+  });
   qunitStart();
 }

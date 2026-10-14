@@ -269,11 +269,22 @@ export default class ValidatedFormComponent extends Component<ValidatedFormSigna
       return;
     }
 
-    this.childComponents
-      .find((child) => {
-        return 'formRowElement' in child && targetEuiFormRow === child.formRowElement;
-      })
-      ?.setIsTouched(true);
+    const field = this.childComponents.find((child) => {
+      return 'formRowElement' in child && targetEuiFormRow === child.formRowElement;
+    });
+
+    if (!field) {
+      return;
+    }
+
+    // Chrome also fires `focusout` when the focused element is removed, which
+    // happens while rendering; touching the field then would update tracked
+    // state that the same render already read. Defer it until after render.
+    schedule('actions', () => {
+      if (!field.isDestroying && !field.isDestroyed) {
+        field.setIsTouched(true);
+      }
+    });
   }
 
   get theme() {

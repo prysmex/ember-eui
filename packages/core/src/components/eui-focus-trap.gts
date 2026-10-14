@@ -226,9 +226,12 @@ export default class EuiFocusTrapComponent extends Component<EuiFocusTrapSignatu
   lastDisabled = false;
   private mouseupCleanup: (() => void) | undefined;
 
+  private outsideClickTimer: ReturnType<typeof setTimeout> | undefined;
+
   willDestroy() {
     super.willDestroy();
     this.mouseupCleanup?.();
+    clearTimeout(this.outsideClickTimer);
   }
 
   get enabled() {
@@ -273,7 +276,8 @@ export default class EuiFocusTrapComponent extends Component<EuiFocusTrapSignatu
     const release = (e: MouseEvent | TouchEvent) => {
       this.mouseupCleanup?.();
       // Gives a toggling consumer precedence, like upstream.
-      setTimeout(() => this.args.onClickOutside?.(e));
+      clearTimeout(this.outsideClickTimer);
+      this.outsideClickTimer = setTimeout(() => this.args.onClickOutside?.(e));
     };
     document.addEventListener('mouseup', release);
     document.addEventListener('touchend', release);

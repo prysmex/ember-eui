@@ -39,6 +39,8 @@ export interface EuiSaturationSignature {
 }
 
 /** The saturation / value square on the upstream EUI 123 / Borealis styles. */
+const noop = (): void => {};
+
 export default class EuiSaturation extends Component<EuiSaturationSignature> {
   @service declare euiI18n: EuiI18n;
 
@@ -110,14 +112,28 @@ export default class EuiSaturation extends Component<EuiSaturationSignature> {
   onMouseDown(event: MouseEvent): void {
     this.moveTo(event);
 
+    this.stopDrag();
+
     const move = (e: MouseEvent) => this.moveTo(e);
-    const up = () => {
-      document.removeEventListener('mousemove', move);
-      document.removeEventListener('mouseup', up);
-    };
+    const up = () => this.stopDrag();
 
     document.addEventListener('mousemove', move);
     document.addEventListener('mouseup', up);
+    window.addEventListener('blur', up);
+    this.stopDrag = () => {
+      document.removeEventListener('mousemove', move);
+      document.removeEventListener('mouseup', up);
+      window.removeEventListener('blur', up);
+      this.stopDrag = noop;
+    };
+  }
+
+  /** Removes the document drag listeners (also on teardown mid-drag). */
+  stopDrag: () => void = noop;
+
+  willDestroy(): void {
+    super.willDestroy();
+    this.stopDrag();
   }
 
   @action

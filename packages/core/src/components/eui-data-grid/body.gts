@@ -634,12 +634,20 @@ export default class EuiDataGridBody extends EuiDataGridBodyBase<EuiDataGridBody
   private isPointerDown = false;
   private pendingScroll = false;
 
+  private stopPointerTracking: (() => void) | undefined;
+
+  willDestroy(): void {
+    super.willDestroy();
+    this.stopPointerTracking?.();
+  }
+
   @action
   onPointerDown(): void {
     this.isPointerDown = true;
+    this.stopPointerTracking?.();
     const onPointerUp = (event: PointerEvent) => {
       this.isPointerDown = false;
-      document.removeEventListener('pointerup', onPointerUp, true);
+      this.stopPointerTracking?.();
       if (!this.pendingScroll) return;
       this.pendingScroll = false;
       // only primary-button clicks; middle clicks scroll on Windows
@@ -649,7 +657,21 @@ export default class EuiDataGridBody extends EuiDataGridBodyBase<EuiDataGridBody
       const focused = this.grid.focusedCell;
       if (focused) this.scrollCellIntoView({ rowIndex: focused[1], colIndex: focused[0] });
     };
+    const onCancel = () => {
+      // aborted gesture: nothing to scroll to
+      this.pendingScroll = false;
+      this.isPointerDown = false;
+      this.stopPointerTracking?.();
+    };
     document.addEventListener('pointerup', onPointerUp, true);
+    document.addEventListener('pointercancel', onCancel, true);
+    window.addEventListener('blur', onCancel);
+    this.stopPointerTracking = () => {
+      document.removeEventListener('pointerup', onPointerUp, true);
+      document.removeEventListener('pointercancel', onCancel, true);
+      window.removeEventListener('blur', onCancel);
+      this.stopPointerTracking = undefined;
+    };
   }
 
   onFocusedCellChange(cell: EuiDataGridFocusedCell): void {

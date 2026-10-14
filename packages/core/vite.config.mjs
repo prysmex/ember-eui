@@ -19,6 +19,9 @@ export default defineConfig({
     })
   ],
   build: {
+    // leak mode (EUI_LEAKS=1): source maps let scripts/leak-report.mjs map
+    // the stacks captured by tests/leak-detector.ts back to src files
+    sourcemap: Boolean(process.env.EUI_LEAKS),
     rollupOptions: {
       input: {
         tests: 'tests/index.html'

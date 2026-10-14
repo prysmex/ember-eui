@@ -4,6 +4,7 @@ import { fn } from '@ember/helper';
 import { on } from '@ember/modifier';
 import { action } from '@ember/object';
 import didInsert from '@ember/render-modifiers/modifiers/did-insert';
+import willDestroy from '@ember/render-modifiers/modifiers/will-destroy';
 import { service } from '@ember/service';
 import type Owner from '@ember/owner';
 
@@ -91,7 +92,8 @@ export default class EuiGlobalToastList extends Component<EuiGlobalToastListItem
   @service declare euiToaster: EuiToasterService;
   @service declare euiI18n: EuiI18n;
 
-  dismissTimeoutIds: number[] = [];
+  /** Pending fade-out timeouts, by toast id (pruned when they fire). */
+  dismissTimeoutIds = new Map<string, number>();
   toastIdToTimerMap: { [toastId: string]: Timer } = {};
 
   isScrollingToBottom = false;
@@ -367,8 +369,11 @@ export default class EuiGlobalToastList extends Component<EuiGlobalToastListItem
   @action
   dismissToast(toast: EuiToastPropsWithId): void {
     // Remove the toast after it's done fading out.
-    this.dismissTimeoutIds.push(
+    window.clearTimeout(this.dismissTimeoutIds.get(toast.id));
+    this.dismissTimeoutIds.set(
+      toast.id,
       window.setTimeout(() => {
+        this.dismissTimeoutIds.delete(toast.id);
         // It is possible to double-dismiss a toast (e.g. by double-clicking
         // its "x" button): only the first dismissal counts.
         if (Object.prototype.hasOwnProperty.call(this.toastIdToTimerMap, toast.id)) {
@@ -391,6 +396,28 @@ export default class EuiGlobalToastList extends Component<EuiGlobalToastListItem
       ...this.toastIdToDismissedMap,
       [toast.id]: true
     };
+  }
+
+  /**
+   * A toast element is gone. When the app removed it from `@toasts` (rather
+   * than this list dismissing it), drop its timers: they would otherwise
+   * fire for a toast that no longer exists.
+   */
+  @action
+  willDestroyToast(toast: EuiToastPropsWithId): void {
+    if (this.isDestroying || this.isDestroyed) return;
+    if (this.toasts.some((t) => t.id === toast.id)) return;
+
+    window.clearTimeout(this.dismissTimeoutIds.get(toast.id));
+    this.dismissTimeoutIds.delete(toast.id);
+    this.toastIdToTimerMap[toast.id]?.clear();
+    delete this.toastIdToTimerMap[toast.id];
+
+    if (toast.id in this.toastIdToDismissedMap) {
+      const dismissed = { ...this.toastIdToDismissedMap };
+      delete dismissed[toast.id];
+      this.toastIdToDismissedMap = dismissed;
+    }
   }
 
   /** Upstream "Clear all": dismisses every toast at once (no fade out). */
@@ -428,7 +455,8 @@ export default class EuiGlobalToastList extends Component<EuiGlobalToastListItem
       window.cancelAnimationFrame(this.startScrollingAnimationFrame);
     }
 
-    this.dismissTimeoutIds.forEach(clearTimeout);
+    this.dismissTimeoutIds.forEach((id) => window.clearTimeout(id));
+    this.dismissTimeoutIds.clear();
 
     for (const toastId in this.toastIdToTimerMap) {
       if (Object.prototype.hasOwnProperty.call(this.toastIdToTimerMap, toastId)) {
@@ -476,6 +504,7 @@ export default class EuiGlobalToastList extends Component<EuiGlobalToastListItem
               @actionProps={{toast.actionProps}}
               @onClose={{fn this.closeToast toast}}
               {{didInsert (fn this.didInsertToast toast)}}
+              {{willDestroy (fn this.willDestroyToast toast)}}
               {{on "focusin" this.onFocusIn}}
               {{on "focusout" this.onFocusOut}}
             />

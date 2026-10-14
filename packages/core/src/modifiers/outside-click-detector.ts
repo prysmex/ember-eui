@@ -4,6 +4,9 @@ import { guidFor } from '@ember/object/internals';
 
 import Modifier from 'ember-modifier';
 
+import type Owner from '@ember/owner';
+import type { ArgsFor } from 'ember-modifier';
+
 interface Named {
   onOutsideClick: (event: Event) => void;
   isDisabled?: boolean;
@@ -62,10 +65,24 @@ export default class OutsideClickDetector extends Modifier<OutsideClickDetectorM
   }
 
   modify(element: HTMLElement, positional: Positional, named: Named): void {
-    this.element = element;
+    // Later updates only refresh the args, which the listeners read when they
+    // fire. Setting up again (and registering another destructor) on every
+    // update was wasted work.
+    const isNewElement = this.element !== element;
+
+    if (isNewElement && this.element) this._teardown();
+
     this.named = named;
     this.positional = positional;
-    this._setup();
+
+    if (isNewElement) {
+      this.element = element;
+      this._setup();
+    }
+  }
+
+  constructor(owner: Owner, args: ArgsFor<OutsideClickDetectorModifierArgs>) {
+    super(owner, args);
     registerDestructor(this, () => this._teardown());
   }
 

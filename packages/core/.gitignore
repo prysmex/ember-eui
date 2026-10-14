@@ -4,3 +4,7 @@ dist-tests/
 tmp/
 config/optional-features.json
 ember-cli-build.cjs
+
+# leak mode output (scripts/leaks.sh, EUI_LEAKS=1 testem)
+leak-report.json
+*.heapsnapshot

@@ -21,8 +21,13 @@ interface EuiOverlayMaskArgs {
   headerZindexLocation?: 'above' | 'below';
   /** Fades the mask in. Defaults to `true`. */
   hasAnimation?: boolean;
-  /** Called with the mask element once it is rendered. */
-  maskRef?: (element: HTMLDivElement) => void;
+  /**
+   * Called with the mask element once it is rendered, and with `null` when it
+   * is removed.
+   */
+  // method syntax keeps existing `(element: HTMLDivElement) => void`
+  // callbacks assignable
+  maskRef?(element: HTMLDivElement | null): void;
 }
 
 /**
@@ -39,8 +44,14 @@ export interface EuiOverlayMaskSignature {
 }
 
 const callWith = modifier(
-  (element: HTMLDivElement, [callback]: [((el: HTMLDivElement) => void)?]) => {
+  (
+    element: HTMLDivElement,
+    [callback]: [((el: HTMLDivElement | null) => void)?]
+  ) => {
     callback?.(element);
+
+    // like a React ref: `null` when the mask goes away (or the callback changes)
+    return () => callback?.(null);
   }
 );
 

@@ -247,7 +247,7 @@ module('Integration | Component | Borealis text family', function (hooks) {
     );
     assert
       .dom('[data-custom]')
-      .doesNotHaveAttribute('style', 'custom color is class based');
+      .hasAttribute('style', /color: rgb\(102, 51, 153\)/, 'custom color is inline, as upstream');
     assert.dom('[data-plain]').hasClass('euiText');
     assert
       .dom('.euiText--small, .euiTextColor--danger, .euiTextAlign--center')

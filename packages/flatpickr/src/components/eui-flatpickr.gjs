@@ -67,6 +67,7 @@ async function loadLocale(key) {
  */
 export default class EuiFlatpickrComponent extends Component {
   flatpickrRef;
+  setupToken = 0;
 
   @action
   onClear() {
@@ -80,7 +81,10 @@ export default class EuiFlatpickrComponent extends Component {
 
   @action
   onWillDestroy() {
+    // invalidate any in-flight async setup
+    this.setupToken++;
     this.flatpickrRef?.destroy();
+    this.flatpickrRef = undefined;
   }
 
   setupFlatpickr(element) {
@@ -103,6 +107,7 @@ export default class EuiFlatpickrComponent extends Component {
   }
 
   async setFlatpickrOptions(element) {
+    const token = ++this.setupToken;
     const fastboot = getOwner(this)?.lookup('service:fastboot');
 
     if (fastboot?.isFastBoot) {
@@ -126,6 +131,18 @@ export default class EuiFlatpickrComponent extends Component {
       config.locale = await waitForPromise(loadLocale(config.locale));
     }
 
+    // The component may have been torn down, or a newer setup started (e.g.
+    // `@locale` changed again), while the locale chunk loaded.
+    if (
+      token !== this.setupToken ||
+      this.isDestroying ||
+      this.isDestroyed ||
+      !element.isConnected
+    ) {
+      return;
+    }
+
+    this.flatpickrRef?.destroy();
     this.flatpickrRef = flatpickr(element, {
       onChange,
       onClose,
@@ -189,6 +206,7 @@ export default class EuiFlatpickrComponent extends Component {
   @action
   onLocaleUpdated(element) {
     this.flatpickrRef?.destroy();
+    this.flatpickrRef = undefined;
     this.setupFlatpickr(element);
   }
 

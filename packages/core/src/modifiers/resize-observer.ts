@@ -3,6 +3,9 @@ import { action } from '@ember/object';
 
 import Modifier from 'ember-modifier';
 
+import type Owner from '@ember/owner';
+import type { ArgsFor } from 'ember-modifier';
+
 // IE11 and Safari don't support the `ResizeObserver` API at the time of writing
 const hasResizeObserver =
   typeof window !== 'undefined' &&
@@ -71,6 +74,12 @@ export default class ResizeObserver extends Modifier<ResizeObserverSignature> {
   named: ResizeObserverSignature['Args']['Named'] | null = null;
   positional: ResizeObserverSignature['Args']['Positional'] | null = null;
 
+  constructor(owner: Owner, args: ArgsFor<ResizeObserverSignature>) {
+    super(owner, args);
+    // Registered once: `modify` runs again on every arg update.
+    registerDestructor(this, () => this._teardown());
+  }
+
   @action
   setSize({ width, height }: { width: number; height: number }) {
     const [dimension] = this.positional || [];
@@ -84,6 +93,8 @@ export default class ResizeObserver extends Modifier<ResizeObserverSignature> {
     ) {
       this.width = width;
       this.height = height;
+      // `named` is ember-modifier's live args proxy, so this always calls the
+      // latest `onResize`.
       this.named?.onResize({ width, height });
     }
   }
@@ -93,11 +104,18 @@ export default class ResizeObserver extends Modifier<ResizeObserverSignature> {
     positional: ResizeObserverSignature['Args']['Positional'] = [],
     named: ResizeObserverSignature['Args']['Named']
   ) {
-    this.element = element;
     this.named = named;
     this.positional = positional;
-    this._setup();
-    registerDestructor(this, () => this._teardown());
+
+    // One observer per element: an arg update only refreshes `named` and
+    // `positional` (the observer reads them when it fires). Re-creating the
+    // observer here used to orphan the previous one on every update.
+    if (this.element !== element) {
+      this.observer?.disconnect();
+      this.observer = null;
+      this.element = element;
+      this._setup();
+    }
   }
 
   _setup() {
@@ -114,7 +132,7 @@ export default class ResizeObserver extends Modifier<ResizeObserverSignature> {
       });
 
       this.observer = makeResizeObserver(element, () => {
-        if (!element) {
+        if (this.element !== element) {
           return;
         }
 

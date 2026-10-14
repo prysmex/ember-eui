@@ -468,7 +468,20 @@ export function flyoutManagerReducer(
         (f) => !flyoutsToRemove.has(f.flyoutId)
       );
 
-      return { ...state, sessions: newSessions, flyouts: newFlyouts };
+      // Ember EUI: reset the z-index counter like ACTION_CLOSE does once
+      // nothing is left. Upstream 123.1.0 skips it here, so each Back that
+      // closes the last session raised every later flyout's z-index.
+      const currentZIndex =
+        newSessions.length === 0 && state.unmanagedFlyouts.length === 0
+          ? 0
+          : state.currentZIndex;
+
+      return {
+        ...state,
+        sessions: newSessions,
+        flyouts: newFlyouts,
+        currentZIndex,
+      };
     }
 
     // Navigate to a specific flyout (by main session or by child in current session's history)

@@ -46,6 +46,11 @@ export type EuiCssFunction = (theme: EuiBorealisContext) => EuiCss;
  * interpolation (object, string, serialized styles), a theme function, or
  * an array of those. Use it to style a migrated child instead of adding a
  * second class, whose precedence would depend on rule insertion order.
+ *
+ * Keep values static: each distinct value adds rules that are never removed
+ * (Emotion is append-only, as upstream). Put values that change often
+ * (data- or animation-driven positions and sizes, per-item colors) in
+ * `style` instead.
  */
 export type EuiCss =
   | CSSInterpolation

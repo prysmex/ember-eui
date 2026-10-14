@@ -6,6 +6,7 @@ import { concat } from '@ember/helper';
 import { action } from '@ember/object';
 import didInsert from '@ember/render-modifiers/modifiers/did-insert';
 import didUpdate from '@ember/render-modifiers/modifiers/did-update';
+import willDestroy from '@ember/render-modifiers/modifiers/will-destroy';
 import { cancel, later, scheduleOnce } from '@ember/runloop';
 import { service } from '@ember/service';
 import { htmlSafe } from '@ember/template';
@@ -871,6 +872,8 @@ export default class EuiPopoverComponent
     cancel(this.respositionTimeout as ReturnType<typeof later>);
     cancel(this.closingTransitionTimeout as ReturnType<typeof later>);
     cancelAnimationFrame(this.closingTransitionAnimationFrame as number);
+    this.cancelPositionOnFrame?.();
+    this.cancelPositionOnFrame = undefined;
     this.cancelUpdateFocus();
   }
 
@@ -880,8 +883,22 @@ export default class EuiPopoverComponent
 
     this.positionPopoverFixed();
 
-    performOnFrame(waitDuration, this.positionPopoverFixed);
+    // Upstream starts a new, uncancellable frame loop per mutation (it keeps
+    // running after unmount there too). Here one loop runs until the latest
+    // transition ends, and willDestroy cancels it.
+    const now = Date.now();
+    const remaining = Math.max(waitDuration, this.positionOnFrameUntil - now);
+
+    this.cancelPositionOnFrame?.();
+    this.positionOnFrameUntil = now + remaining;
+    this.cancelPositionOnFrame = performOnFrame(
+      remaining,
+      this.positionPopoverFixed
+    );
   }
+
+  positionOnFrameUntil = 0;
+  cancelPositionOnFrame?: () => void;
 
   @action
   positionPopover(allowEnforcePosition: boolean): void {
@@ -1198,8 +1215,14 @@ export default class EuiPopoverComponent
     this.args.buttonRef?.(btn);
   }
 
+  /** Upstream's `panelRef(null)`: the panel left the DOM. */
   @action
-  registerPanel(panel: HTMLElement): void {
+  unregisterPanel(): void {
+    this.registerPanel(null);
+  }
+
+  @action
+  registerPanel(panel: HTMLElement | null): void {
     this.panel = panel;
     this.args.panelRef?.(panel);
 
@@ -1267,6 +1290,7 @@ export default class EuiPopoverComponent
             tabindex={{this.tabindex}}
             {{simpleStyle this._popoverStyles}}
             {{didInsert this.registerPanel}}
+            {{willDestroy this.unregisterPanel}}
             {{this.joinFocusTraps}}
             {{this.applyPanelProps @panelProps}}
             {{outsideClickDetector onOutsideClick=this.onClickOutside}}

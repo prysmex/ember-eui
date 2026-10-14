@@ -2,6 +2,8 @@ import Component from '@glimmer/component';
 import { cached } from '@glimmer/tracking';
 import { warn } from '@ember/debug';
 
+import style from 'ember-style-modifier/modifiers/style';
+
 import { hexToRgb } from '../helpers/hex-to-rgb.ts';
 import { isColorDark } from '../helpers/is-color-dark.ts';
 import { isValidHex } from '../helpers/is-valid-hex.ts';
@@ -172,6 +174,19 @@ export default class EuiAvatar extends Component<EuiAvatarSignature> {
     return { backgroundColor: assignedColor, color: textColor };
   }
 
+  /**
+   * `avatarStyle` as inline styles (upstream sets them through `style`).
+   * Per-avatar values such as image URLs stay out of the shared style cache,
+   * which would otherwise keep one class per URL or color for good.
+   */
+  get inlineStyle(): Record<string, string> {
+    const inline: Record<string, string> = {};
+    for (const [key, value] of Object.entries(this.avatarStyle ?? {})) {
+      if (value !== undefined) inline[key] = value;
+    }
+    return inline;
+  }
+
   get isForcedColors(): boolean {
     return this.context.upstream.highContrastMode === 'forced';
   }
@@ -209,8 +224,6 @@ export default class EuiAvatar extends Component<EuiAvatarSignature> {
     // The React global reset makes every element border-box; without it the
     // forced-colors border would grow the avatar.
     const reset: CSSObject = { boxSizing: 'border-box' };
-    // Upstream sets these inline; a class keeps the caller's `style` intact.
-    const avatarStyle = this.avatarStyle as CSSObject | undefined;
     // Background colors are ignored in Windows forced-colors themes.
     const highContrastBorder: CSSObject | undefined = this.isForcedColors
       ? { border: context.upstream.euiTheme.border.thin }
@@ -226,7 +239,6 @@ export default class EuiAvatar extends Component<EuiAvatarSignature> {
       color === 'plain' && styles['plain'],
       color === 'subdued' && styles['subdued'],
       isDisabled && styles['isDisabled'],
-      avatarStyle,
       highContrastBorder,
       this.args.css
     )}`;
@@ -277,6 +289,7 @@ const AvatarNode: TOC<{
     aria-label={{if @avatar.args.isDisabled undefined @avatar.args.name}}
     role={{if @avatar.args.isDisabled "presentation" "img"}}
     ...attributes
+    {{style @avatar.inlineStyle}}
   >
     {{#unless @avatar.args.imageUrl}}
       {{#if @avatar.args.iconType}}

@@ -1,6 +1,6 @@
 import { module, test } from 'qunit';
 import { setupRenderingTest } from 'ember-qunit';
-import { click, fillIn, render, waitUntil } from '@ember/test-helpers';
+import { click, fillIn, render, triggerKeyEvent, waitUntil } from '@ember/test-helpers';
 import { tracked } from '@glimmer/tracking';
 
 import EuiMarkdownEditor from '#src/components/eui-markdown-editor.gts';
@@ -172,5 +172,36 @@ module('Integration | Component | eui-markdown-editor', function (hooks) {
 
     assert.strictEqual(preview.style.height, '200px');
     assert.true(preview.scrollHeight > 200, 'the content scrolls');
+  });
+
+  test('the cursor-node lookup skips plugin nodes without a position', async function (assert) {
+    // The comment-list and base-editor demos threw `reading 'start'`: after
+    // Italic on this text, remark-intraword-underscore leaves text and break
+    // nodes without `position`.
+    const state = new State();
+
+    state.value = 'Take a look: [Update.exe](http://example.com/file).\n_****_';
+
+    await render(<template><EuiMarkdownEditor @value={{state.value}} @onChange={{state.onChange}} /></template>);
+
+    const textarea = document.querySelector('textarea.euiMarkdownEditorTextArea') as HTMLTextAreaElement;
+    const errors: string[] = [];
+    const onError = (event: ErrorEvent) => {
+      errors.push(event.message);
+      event.preventDefault();
+    };
+
+    window.addEventListener('error', onError);
+
+    try {
+      for (let i = 0; i <= textarea.value.length; i++) {
+        textarea.setSelectionRange(i, i);
+        await triggerKeyEvent(textarea, 'keyup', 'Escape');
+      }
+    } finally {
+      window.removeEventListener('error', onError);
+    }
+
+    assert.deepEqual(errors, []);
   });
 });

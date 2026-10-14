@@ -1,5 +1,19 @@
 # @ember-eui/changeset-form
 
+## 16.0.1
+
+### Patch Changes
+
+- Memory leak fixes from an audit of every component, and ember-source 7.3.1.
+
+  - The `resizeObserver` modifier keeps one observer per element and disconnects it on teardown. It used to add a new observer on every update without disconnecting the old one; EuiToolTip, EuiInputPopover, EuiCodeBlock, the markdown editor and others use it.
+  - `EuiPopover` releases its panel (`panelRef(null)`) and its window resize listener when it closes, and stops its reposition loop when destroyed. `EuiOverlayMask` sends `@maskRef(null)` on teardown. `outsideClickDetector` sets up once.
+  - Per-instance values no longer become permanent style classes: `EuiAvatar` image URLs and colors, custom colors on `EuiTextColor` / `EuiText` / `EuiMarkdownFormat` / `EuiToken`, and `EuiAspectRatio` ratios are inline styles, as upstream. Keep `@css` values static and put values that change in `style`.
+  - Closing the last flyout with Back resets the flyout manager's z-index counter.
+  - Teardown cleanup: drag listeners in the color picker saturation, color stops and data grid body; toast list timers; the shared document `copy` listener of data grids and tables; deferred callbacks in EuiToolTip, EuiRange, EuiDualRange, EuiColorPicker, EuiFocusTrap, the search bar filter and the markdown drop zone; changeset-form validation timers.
+  - `EuiComboBox` no longer throws an autotracking assertion when removed while its list is open, and the markdown editor no longer throws `reading 'start'` after formatting.
+  - The test suite and docs use ember-source 7.3.1, which releases `renderComponent` renderers with their owner.
+
 ## 16.0.0
 
 ### Major Changes

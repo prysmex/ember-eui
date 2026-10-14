@@ -328,6 +328,7 @@ export default class EuiToolTip extends Component<EuiToolTipSignature> {
   @tracked _attachTo: undefined | HTMLElement | string | null = null;
 
   private timeoutId?: ReturnType<typeof later>;
+  private attachToTimer?: ReturnType<typeof next>;
 
   @action
   updateAttachTo(): void {
@@ -339,7 +340,13 @@ export default class EuiToolTip extends Component<EuiToolTipSignature> {
     }
 
     if (this.args.attachTo && this.args.attachTo !== this._attachTo) {
-      next(() => {
+      cancel(this.attachToTimer);
+      this.attachToTimer = next(() => {
+        this.attachToTimer = undefined;
+        // destroyed in the same tick: willDestroy already removed the
+        // handlers, so adding them now would leave them on `@attachTo`
+        if (this.isDestroying || this.isDestroyed) return;
+
         this.removeAttachToHandlers();
         this._attachTo = this.args.attachTo;
         this.setupAttachToHandlers();
@@ -621,19 +628,6 @@ export default class EuiToolTip extends Component<EuiToolTipSignature> {
   }
 
   @action
-  hasFocusMouseMoveListener(): void {
-    this.hideToolTip();
-    window.removeEventListener('mousemove', this.hasFocusMouseMoveListener);
-  }
-
-  @action
-  onKeyUp(event: KeyboardEvent): void {
-    if (event.key === keys.TAB) {
-      window.addEventListener('mousemove', this.hasFocusMouseMoveListener);
-    }
-  }
-
-  @action
   onFocus(): void {
     this.hasFocus = true;
     this.showToolTip();
@@ -675,6 +669,7 @@ export default class EuiToolTip extends Component<EuiToolTipSignature> {
     super.willDestroy();
 
     this.clearAnimationTimeout();
+    cancel(this.attachToTimer);
     toolTipManager.deregisterToolTip(this.hideToolTip);
     this.removeAttachToHandlers();
     window.removeEventListener('scroll', this.positionToolTip, true);

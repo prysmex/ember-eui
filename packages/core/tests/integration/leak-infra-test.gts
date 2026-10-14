@@ -105,7 +105,7 @@ module('Integration | leak-infra', function (hooks) {
       assert.strictEqual(harness.createdResizeObservers, N);
     });
 
-    todo('resizeObserver: a changed named arg replaces the observer instead of adding one (LI-1)', async function (assert) {
+    test('resizeObserver: a changed named arg keeps one observer that calls the latest callback (LI-1)', async function (assert) {
       const state = new State();
       state.show = true;
       const calls: number[] = [];
@@ -127,15 +127,20 @@ module('Integration | leak-infra', function (hooks) {
       calls.length = 0;
       state.value = 500;
       await idle();
-      const callsForOneResize = calls.length;
+      const callsForOneResize = [...calls];
       state.show = false;
       await settled();
       const afterUnmount = harness.snapshot().resizeObservers;
 
       assert.deepEqual(
-        { whileMounted, afterUnmount, created: harness.createdResizeObservers },
-        { whileMounted: 1, afterUnmount: 0, created: 1 + N },
-        `live observers while mounted: ${whileMounted}, after unmount: ${afterUnmount}, created: ${harness.createdResizeObservers}, onResize calls for one resize: ${callsForOneResize}`
+        {
+          whileMounted,
+          afterUnmount,
+          created: harness.createdResizeObservers,
+          callsForOneResize
+        },
+        { whileMounted: 1, afterUnmount: 0, created: 1, callsForOneResize: [N] },
+        `live observers while mounted: ${whileMounted}, after unmount: ${afterUnmount}, created: ${harness.createdResizeObservers}, onResize calls for one resize: ${callsForOneResize.join(',')}`
       );
     });
 

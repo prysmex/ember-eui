@@ -26,7 +26,7 @@ test or the crawl, S = code reading.
 | 4 | Medium | Open | `eui-popover.gts` `registerPanel` | `panelRef(null)` is never sent: a closed popover keeps its detached panel and a window `resize` listener until destroyed; data grid cells keep a stale panel (C) | F-POP-1 |
 | 5 | Medium | Open | flatpickr `eui-flatpickr.gjs` | Unmounted during setup (lazy `@locale`, same run loop) or two quick `@locale` changes: an orphan picker stays in `<body>` with window/document listeners (C) | LI-6 |
 | 6 | Medium | Open | `eui-search-bar/field-value-selection-filter.gts` | A cache-reset timer on every load, only the last cleared; each holds the destroyed component (C) | LH-03, L2, F-MISC-3 |
-| 7 | Medium | Open | `@css` (all components) | Each distinct dynamic `@css` value adds a full copy of the component's rules, never removed. Same as React EUI (Emotion is append-only). Plan: document "use `style` for values that change" (C) | LI-2 |
+| 7 | Medium | Documented (78bdb590) | `@css` (all components) | Each distinct dynamic `@css` value adds a full copy of the component's rules, never removed. Same as React EUI (Emotion is append-only). Documented in docs/theming.md and the `EuiCss` JSDoc: keep `@css` static, use `style` for values that change (C) | LI-2 |
 | 8 | Low | Open | `eui-saturation.gts`, color stop thumb, data grid body | Drag listeners on `document` removed only on mouseup/pointerup; unmount mid-drag leaves them (C for saturation) | F-DRAG-1/2 |
 | 9 | Low | Open | `eui-global-toast-list.gts` | Dismissed timer ids never pruned; timers of toasts removed by the app still fire (S) | F-TOAST-1/2 |
 | 10 | Low | Open | `eui-data-grid.gts`, `eui-basic-table.gts` | One permanent shared `copy` listener on `document` each (C) | F-GLOB-1, LH-05 |
@@ -36,14 +36,16 @@ test or the crawl, S = code reading.
 | 14 | Low | Open | `outsideClickDetector` | One extra destructor per update, released with the modifier; no listener leak (C) | LI-5 |
 | 15 | Low | Accepted | Emotion per theme, `euiToaster` queue, `htmlIdGenerator` warnings, split-button color memo, first-use style variants | Bounded in normal use; unbounded only with live theme overrides / arbitrary strings (C/S) | LI-3, LI-8, LI-9, LI-10, L3 |
 
+#11, markdown drop zone `insertText` part: Fixed (9ca3d9c1). The other #11 callbacks belong to other fixes.
+
 Not EUI:
 - **ember-source 7.3 `renderComponent`** (used by `render()` in tests) never releases a test's app or DOM, ~5 MB per test. Report upstream. Leak mode works around it (LH-01).
 - **`@atlaskit` drag-and-drop auto-scroll** logs a warning with a DOM element on every render; DevTools keeps those nodes while open (S1).
 
 Bugs found along the way (not leaks):
 - EuiComboBox unmounted while its list is open throws an autotracking assertion in development builds (LH-06).
-- The comment list and markdown editor demos throw `TypeError: … reading 'start'` (leak-site.md).
-- A tracking assertion in a validated-form demo (leak-site.md).
+- Fixed (70aba706): the comment list and markdown editor demos threw `TypeError: … reading 'start'` (leak-site.md). `getCursorNode` had lost upstream's `child.position` check; remark-intraword-underscore makes nodes without a position.
+- Fixed (2dc7177f): a tracking assertion on `isTouched` in a validated-form demo (leak-site.md). Chrome fires `focusout` when the focused element is removed mid-render; ValidatedForm now touches the field after render.
 
 ## Clean
 

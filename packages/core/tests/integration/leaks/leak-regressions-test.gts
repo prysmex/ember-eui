@@ -50,7 +50,7 @@ module('Leak | regressions', function (hooks) {
   );
 
   // LH-03
-  test.todo(
+  test(
     'field_value_selection filter with cache: reopening 10 times leaves no cache timer behind after unmount',
     async function (assert) {
       const timers = startTimerCounter();

@@ -1,8 +1,6 @@
 import Component from '@glimmer/component';
 import { cached } from '@glimmer/tracking';
 
-import style from 'ember-style-modifier/modifiers/style';
-
 import { getEuiThemeContext } from '../utils/emotion/consume.ts';
 import { euiClass, useEuiBorealisStyles } from '../utils/eui/styles.ts';
 import type { EuiCss } from '../utils/eui/styles.ts';
@@ -55,6 +53,9 @@ export default class EuiBeacon extends Component<EuiBeaconSignature> {
       ) => Record<string, SerializedStyles>
     );
     const color = this.args.color;
+    const size = `${this.args.size ?? 12}px`;
+
+    // Upstream sets the size inline; a class keeps the caller's `style`.
     return `euiBeacon ${euiClass(
       context,
       styles['euiBeacon'],
@@ -63,20 +64,12 @@ export default class EuiBeacon extends Component<EuiBeaconSignature> {
           ? color
           : 'success'
       ],
+      { blockSize: size, inlineSize: size },
       this.args.css
     )}`;
   }
 
-  /**
-   * Upstream sets the size inline, so each size doesn't add a class that
-   * stays in the style cache for good.
-   */
-  get inlineStyle(): Record<string, string> {
-    const size = `${this.args.size ?? 12}px`;
-    return { blockSize: size, inlineSize: size };
-  }
-
   <template>
-    <div class={{this.classes}} ...attributes {{style this.inlineStyle}}></div>
+    <div class={{this.classes}} ...attributes></div>
   </template>
 }

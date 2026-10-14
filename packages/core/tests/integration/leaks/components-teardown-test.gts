@@ -7,6 +7,7 @@ import { on } from '@ember/modifier';
 import { tracked } from '@glimmer/tracking';
 import { clearRender, click, render, settled, triggerEvent, waitUntil } from '@ember/test-helpers';
 
+import EuiAspectRatio from '#src/components/eui-aspect-ratio.gts';
 import EuiAvatar from '#src/components/eui-avatar.gts';
 import EuiButton from '#src/components/eui-button.gts';
 import EuiFlyout from '#src/components/eui-flyout.gts';
@@ -15,6 +16,7 @@ import EuiPopover from '#src/components/eui-popover.gts';
 import EuiSaturation from '#src/components/eui-saturation.gts';
 import EuiSuperDatePicker from '#src/components/eui-super-date-picker.gts';
 import EuiTextColor from '#src/components/eui-text-color.gts';
+import EuiToken from '#src/components/eui-token.gts';
 import EuiToolTip from '#src/components/eui-tool-tip.gts';
 
 import type EuiToasterService from '#src/services/eui-toaster.ts';
@@ -248,41 +250,55 @@ module('Integration | Leaks | components teardown', function (hooks) {
       0
     );
 
-  skip('avatar: rules for per-instance image URLs are released after unmount', async function (assert) {
+  // Per-instance values go inline like upstream's `style`, so new values add
+  // no style rules (F-EMO-1).
+  test('avatar: per-instance image URLs and colors add no style rules', async function (assert) {
     class S {
-      @tracked urls: string[] = [];
+      @tracked urls: string[] = ['/img/warmup.png'];
+      @tracked colors: string[] = ['#000001'];
     }
     const state = new S();
     await render(
       <template>
         {{#each state.urls as |url|}}<EuiAvatar @name="A" @imageUrl={{url}} />{{/each}}
+        {{#each state.colors as |color|}}<EuiAvatar @name="B" @color={{color}} />{{/each}}
       </template>
     );
     const before = ruleCount();
     state.urls = Array.from({ length: 30 }, (_, i) => `/img/${i}.png`);
-    await settled();
-    assert.true(ruleCount() > before, 'distinct image URLs add rules');
-    state.urls = [];
-    await settled();
-    assert.strictEqual(ruleCount(), before, 'rules are gone once the avatars are gone');
-  });
-
-  skip('text color: rules for custom colors are released after unmount', async function (assert) {
-    class S {
-      @tracked colors: string[] = [];
-    }
-    const state = new S();
-    await render(
-      <template>
-        {{#each state.colors as |color|}}<EuiTextColor @color={{color}}>x</EuiTextColor>{{/each}}
-      </template>
-    );
-    const before = ruleCount();
     state.colors = Array.from({ length: 30 }, (_, i) => `#${(0x100000 + i * 997).toString(16)}`);
     await settled();
-    assert.true(ruleCount() > before, 'distinct colors add rules');
-    state.colors = [];
+    assert.strictEqual(ruleCount(), before, 'no rule per URL or color');
+    const avatars = [...document.querySelectorAll<HTMLElement>('.euiAvatar')];
+    assert.true(avatars[0]!.style.backgroundImage.includes('/img/0.png'), 'the image is applied inline');
+    assert.strictEqual(avatars[30]!.style.backgroundColor, 'rgb(16, 0, 0)', 'the color is applied inline');
+  });
+
+  test('text color, token and aspect ratio: per-instance values add no style rules', async function (assert) {
+    class S {
+      @tracked values: number[] = [];
+    }
+    const state = new S();
+    const hex = (i: number) => `#${(0x100000 + i * 997).toString(16)}`;
+    await render(
+      <template>
+        {{#each state.values as |i|}}
+          <EuiTextColor @color={{hex i}}>x</EuiTextColor>
+          <EuiToken @iconType="tokenString" @color={{hex i}} />
+          <EuiAspectRatio @width={{i}} @height={{9}} @maxWidth={{i}}><div /></EuiAspectRatio>
+        {{/each}}
+      </template>
+    );
+    // the first set inserts the components' static classes (and icons)
+    state.values = Array.from({ length: 30 }, (_, i) => i + 1);
     await settled();
-    assert.strictEqual(ruleCount(), before, 'rules are gone once the components are gone');
+    await waitUntil(() => document.querySelector('.euiToken svg'));
+    const before = ruleCount();
+    state.values = Array.from({ length: 30 }, (_, i) => i + 100);
+    await settled();
+    assert.strictEqual(ruleCount(), before, 'no rule per value');
+    assert.strictEqual(document.querySelector<HTMLElement>('.euiTextColor')!.style.color, 'rgb(17, 133, 116)', 'text color inline');
+    assert.strictEqual(document.querySelector<HTMLElement>('.euiToken')!.style.backgroundColor, 'rgb(17, 133, 116)', 'token color inline');
+    assert.strictEqual(document.querySelector<HTMLElement>('.euiAspectRatio')!.style.aspectRatio, '100 / 9', 'ratio inline');
   });
 });

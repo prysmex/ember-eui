@@ -411,7 +411,7 @@ module('Integration | leak-infra', function (hooks) {
       assert.strictEqual(harness.snapshot().resizeObservers, 0, 'no live ResizeObserver');
     });
 
-    todo('closing the last session with Back resets the z-index counter (LI-4)', async function (assert) {
+    test('closing the last session with Back resets the z-index counter (LI-4)', async function (assert) {
       const state = new State();
       const manager: EuiFlyoutManagerService = euiFlyoutManager(this);
       const emotion = (this.owner.lookup('service:eui-emotion') as EuiEmotionService).context.cache;

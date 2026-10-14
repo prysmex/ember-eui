@@ -203,8 +203,11 @@ export const getCursorNode = (
       for (let i = 0; i < node.children.length; i++) {
         const child = node.children[i];
 
+        // Nodes made by plugins (e.g. remark-intraword-underscore) can have
+        // no position; upstream skips them too.
         if (
           child &&
+          child.position &&
           child.position.start.offset < (selectionStart as number) &&
           (selectionStart as number) < child.position.end.offset
         ) {

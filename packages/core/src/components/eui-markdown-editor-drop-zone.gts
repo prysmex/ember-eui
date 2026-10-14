@@ -262,6 +262,9 @@ export default class EuiMarkdownEditorDropZone extends Component<EuiMarkdownEdit
 
     void Promise.all(resolved)
       .then((results) => {
+        // The handlers are async: the editor may be gone by now
+        if (this.isDestroying || this.isDestroyed) return;
+
         results.forEach(({ text, config }) =>
           this.args.insertText?.(text, config)
         );

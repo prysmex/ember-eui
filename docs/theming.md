@@ -132,6 +132,15 @@ const subdued = ({ euiTheme }) => ({
 </template>
 ```
 
+Keep `@css` values **static**. Each distinct value adds a new class whose
+rules stay in the page for good (Emotion never removes rules, the same as
+upstream EUI). Values that change often, such as positions or sizes driven
+by data or animation, or a color per item, belong in `style`:
+
+```gjs
+<EuiPanel style="inline-size: {{this.width}}px">…</EuiPanel>
+```
+
 ### 4. CSS variables for plain CSS
 
 For stylesheets you don't want to move into JS (an app's `app.css`, a

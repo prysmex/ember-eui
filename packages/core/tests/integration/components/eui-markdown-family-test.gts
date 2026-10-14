@@ -15,6 +15,7 @@ import { module, test } from 'qunit';
 
 import EuiEmotionProvider from '#src/components/eui-emotion-provider.gts';
 import EuiMarkdownEditor from '#src/components/eui-markdown-editor.gts';
+import EuiMarkdownEditorDropZone from '#src/components/eui-markdown-editor-drop-zone.gts';
 import EuiMarkdownEditorFooter from '#src/components/eui-markdown-editor-footer.gts';
 import EuiMarkdownFormat from '#src/components/eui-markdown-format.gts';
 import { euiFormVariables } from '#src/utils/eui/styles.generated.ts';
@@ -480,6 +481,42 @@ module('Integration | Component | Borealis markdown family', function (hooks) {
     const event = dragEvent('dragover', [png()]);
     other.dispatchEvent(event);
     assert.false(event.defaultPrevented, 'no handlers: drops are not accepted');
+  });
+
+  test('drop zone: a handler that resolves after unmount inserts nothing', async function (assert) {
+    class Shown {
+      @tracked value = true;
+    }
+    const shown = new Shown();
+    const inserted: string[] = [];
+    const insertText = (text: string) => inserted.push(text);
+    let resolve!: (value: { text: string; config: { block: boolean } }) => void;
+    const handlers: EuiMarkdownDropHandler[] = [
+      {
+        ...pngHandler,
+        getFormattingForItem: () => new Promise((r) => (resolve = r))
+      }
+    ];
+
+    await render(
+      <template>
+        {{#if shown.value}}
+          <EuiMarkdownEditorDropZone @dropHandlers={{handlers}} @insertText={{insertText}}>
+            <textarea></textarea>
+          </EuiMarkdownEditorDropZone>
+        {{/if}}
+      </template>
+    );
+
+    el('.euiMarkdownEditorDropZone').dispatchEvent(dragEvent('drop', [png()]));
+    shown.value = false;
+    await settled();
+
+    resolve({ text: '![cat.png](blob:cat.png)', config: { block: true } });
+    await new Promise((r) => setTimeout(r, 0));
+    await settled();
+
+    assert.deepEqual(inserted, [], 'no insertText after destroy');
   });
 
   test('markdown format renders through EuiText: sizes, typography and migrated components, no legacy classes', async function (assert) {

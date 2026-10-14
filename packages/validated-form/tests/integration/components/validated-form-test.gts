@@ -1,6 +1,6 @@
 import { module, test } from 'qunit';
 import { setupRenderingTest } from 'ember-qunit';
-import { hash } from '@ember/helper';
+import { array, hash } from '@ember/helper';
 import { blur, click, fillIn, focus, render, settled, triggerEvent } from '@ember/test-helpers';
 import { tracked } from '@glimmer/tracking';
 
@@ -92,6 +92,37 @@ module('Integration | Component | validated-form', function (hooks) {
     await blur('input');
 
     assert.dom('.euiFormErrorText').hasText('This field must be a valid email address');
+  });
+
+  test('removing a focused element inside a field while rendering touches the field after render', async function (assert) {
+    // Chrome fires `focusout` synchronously when the focused element is
+    // removed. That happens mid-render, after the field has read `isTouched`
+    // (here through the new @error), and used to throw a tracking assertion.
+    class State {
+      @tracked showButton = true;
+      @tracked text = '';
+      setText = (v: string) => (this.text = v);
+    }
+
+    const state = new State();
+
+    await render(
+      <template>
+        <ValidatedForm as |Form|>
+          <Form.FieldText @label="Name" @value={{state.text}} @onChange={{state.setText}} @error={{if state.showButton (array) (array "Taken")}}>
+            <:helpText>{{#if state.showButton}}<button type="button" id="inside-row">Check</button>{{/if}}</:helpText>
+          </Form.FieldText>
+        </ValidatedForm>
+      </template>
+    );
+    await wait();
+
+    await focus('#inside-row');
+    state.showButton = false;
+    await settled();
+
+    assert.dom('#inside-row').doesNotExist();
+    assert.dom('.euiFormErrorText').hasText('Taken', 'the field was touched after the render');
   });
 
   test('@onValidityChange reports the form validity', async function (assert) {

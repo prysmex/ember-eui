@@ -101,6 +101,10 @@ are classified at the end.
 
 ### LH-01: ember-source `renderComponent` keeps every test's owner and DOM alive (third-party; High for the test suite)
 
+> **Fixed upstream** in ember-source 7.3.1 (emberjs/ember.js#21647), which the repo now uses.
+> Leak mode no longer calls `_resetRenderers()`, and `?leaks=raw` is gone. See
+> ember-render-component-leak-report.md.
+
 - **Where:** `ember-source` 7.3.0
   `dist/dev/packages/shared-chunks/index-COgCjiy-.js:1243-1255` (module-level
   `renderers` array), `:1356-1363` (`RendererState.renderRoot` registers),

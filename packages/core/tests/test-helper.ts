@@ -8,8 +8,6 @@ import { setTesting } from '@embroider/macros';
 import { setConfig as setBasicDropdownConfig } from 'ember-basic-dropdown/config';
 import { captureRenderTree } from '@ember/debug';
 import { _backburner } from '@ember/runloop';
-// private: lets leak mode drop renderers ember-source never deregisters
-import { _resetRenderers } from '@ember/-internals/glimmer';
 
 import { installLeakHooks } from './leak-detector.ts';
 
@@ -70,8 +68,7 @@ export function start() {
   // opt-in (`?leaks`), see tests/leak-detector.ts
   installLeakHooks(QUnit, {
     captureRenderTree,
-    backburner: _backburner,
-    resetRenderers: _resetRenderers
+    backburner: _backburner
   });
   qunitStart();
 }

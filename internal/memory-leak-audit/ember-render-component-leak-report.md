@@ -9,7 +9,7 @@
 > The repro below passes on 7.3.1: 0 of 5 rendering-test owners survive, without any workaround.
 > The fix's own tests cover `result.destroy()` only; the repro checks the test-teardown path
 > (destroying the owner). Our `~7.3.0` range already allows 7.3.1, but the lockfile still pins
-> 7.3.0. Once upgraded, leak mode no longer needs `_resetRenderers()`.
+> 7.3.0 at the time; the repo now uses 7.3.1 and leak mode no longer calls `_resetRenderers()`.
 >
 > The report below is kept as the record of what we found.
 

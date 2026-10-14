@@ -568,7 +568,7 @@ export function serializeTest(t: TestInfo) {
  */
 export function installLeakHooks(
   QUnit: any,
-  deps: { captureRenderTree: any; backburner: any; resetRenderers?: () => void }
+  deps: { captureRenderTree: any; backburner: any }
 ) {
   if (!LEAKS_ENABLED) return;
   (window as any).__leakBackburner = deps.backburner;
@@ -620,16 +620,9 @@ export function installLeakHooks(
     }
   });
 
-  // ember-source's renderComponent() (used by @ember/test-helpers' render())
-  // keeps one renderer per owner in a module-level `renderers` array and never
-  // removes it when the owner is destroyed, so every test's owner and DOM
-  // survive (finding LH-01). Unless `?leaks=raw`, drop them after each test's
-  // teardown so the survivors left are attributable to EUI.
-  const raw = new URLSearchParams(location.search).get('leaks') === 'raw';
   QUnit.testDone(() => {
     if (state.current) state.current.finished = true;
     state.current = null;
-    if (!raw) deps.resetRenderers?.();
   });
 
   QUnit.hooks.beforeEach(async function () {

@@ -225,7 +225,7 @@ module('Integration | Leaks | components teardown', function (hooks) {
 
   // F-SAT-1: document mousemove/mouseup listeners added on mousedown are only
   // removed on mouseup; unmounting mid-drag leaves them (and the component).
-  skip('saturation: unmounting mid-drag removes the document drag listeners', async function (assert) {
+  test('saturation: unmounting mid-drag removes the document drag listeners', async function (assert) {
     const doc = trackListeners(document);
     const onChange = () => {};
 

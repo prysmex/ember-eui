@@ -1,3 +1,4 @@
+import { registerDestructor } from '@ember/destroyable';
 import Component from '@glimmer/component';
 import { cached, tracked } from '@glimmer/tracking';
 import { action } from '@ember/object';
@@ -32,6 +33,7 @@ import * as keys from '../utils/keys.ts';
 import EuiDataGridBody from './eui-data-grid/body.gts';
 import EuiDataGridCopyMarker from './eui-data-grid/copy-marker.gts';
 import { euiScreenReaderOnlyClass } from './eui-screen-reader-only.gts';
+import { retainDocumentListener } from '../utils/retain-document-listener.ts';
 import { onTabularCopy } from '../utils/data-grid/tabular-copy.ts';
 import { euiTablePaginationDefaults } from '../-private/table-pagination-defaults.ts';
 import EuiDataGridCustomBody from './eui-data-grid/custom-body.gts';
@@ -709,11 +711,11 @@ export default class EuiDataGrid extends Component<EuiDataGridSignature> {
     super(owner, args);
     this.initialGridStyles = { ...startingStyles, ...args.gridStyle };
     this.initialRowHeightsOptions = args.rowHeightsOptions ?? {};
-    // copies the focused cell's text on Ctrl/Cmd+C (static handler: deduped)
-    document.addEventListener('copy', copyFocusedDataGridCell);
+    // copies the focused cell's text on Ctrl/Cmd+C (static handler, ref-counted across instances)
+    registerDestructor(this, retainDocumentListener('copy', copyFocusedDataGridCell as EventListener));
     // tabs/newlines for selections copied across cells (upstream
-    // OverrideCopiedTabularContent; static handler: deduped)
-    document.addEventListener('copy', onTabularCopy);
+    // OverrideCopiedTabularContent; static handler, ref-counted across instances)
+    registerDestructor(this, retainDocumentListener('copy', onTabularCopy as EventListener));
   }
 
   /* ---------------------------------------------------------------------- */

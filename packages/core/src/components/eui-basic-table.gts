@@ -1,3 +1,4 @@
+import { registerDestructor } from '@ember/destroyable';
 import Component from '@glimmer/component';
 import { cached, tracked } from '@glimmer/tracking';
 import { fn } from '@ember/helper';
@@ -21,6 +22,7 @@ import {
 import TableNode from '../-private/table-node.gts';
 import { euiTablePaginationDefaults } from '../-private/table-pagination-defaults.ts';
 import TabularCopyMarker from '../-private/tabular-copy-marker.gts';
+import { retainDocumentListener } from '../utils/retain-document-listener.ts';
 import { onTabularCopy } from '../utils/data-grid/tabular-copy.ts';
 import { randomId } from '../-private/random-id.ts';
 import { getEuiThemeContext } from '../utils/emotion/consume.ts';
@@ -330,8 +332,8 @@ export default class EuiBasicTable<T extends object = any> extends Component<
   constructor(owner: Owner, args: EuiBasicTableSignature<T>['Args']) {
     super(owner, args);
     // tabs/newlines for copied selections (upstream `OverrideCopiedTabularContent`
-    // registers it on the document; static handler: deduped)
-    document.addEventListener('copy', onTabularCopy);
+    // registers it on the document; static handler, ref-counted across instances)
+    registerDestructor(this, retainDocumentListener('copy', onTabularCopy as EventListener));
   }
 
   /** Uncontrolled selection, `null` until the user (or `initialSelected`) sets it. */

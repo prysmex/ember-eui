@@ -143,11 +143,16 @@ export default class FieldValueSelectionFilter extends Component<FieldValueSelec
         loadedOptions = options;
       } else {
         // Async options loader fn, potentially with a cache
-        loadedOptions = this.cachedOptions ?? (await options());
+        const fromCache = this.cachedOptions;
+        loadedOptions = fromCache ?? (await options());
 
-        // If a cache time is set, populate the cache and schedule a cache reset
-        if (cache != null && cache > 0) {
+        // If a cache time is set, populate the cache and schedule a cache
+        // reset. Only when the options were just loaded (a cache hit keeps
+        // its running timer), and never leave an earlier timer running.
+        // (Upstream starts a new timer on every load without clearing.)
+        if (!fromCache && cache != null && cache > 0 && !this.isDestroying && !this.isDestroyed) {
           this.cachedOptions = loadedOptions;
+          clearTimeout(this.cacheTimeout);
           this.cacheTimeout = setTimeout(() => {
             this.cachedOptions = null;
           }, cache);

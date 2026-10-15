@@ -1,5 +1,13 @@
 # @ember-eui/flatpickr
 
+## 8.0.70
+
+### Patch Changes
+
+- Fix validations
+- Updated dependencies
+  - @ember-eui/core@8.0.70
+
 ## 8.0.69
 
 ### Patch Changes

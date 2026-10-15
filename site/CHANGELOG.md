@@ -1,5 +1,11 @@
 # site
 
+## 8.0.70
+
+### Patch Changes
+
+- Fix validations
+
 ## 8.0.69
 
 ### Patch Changes

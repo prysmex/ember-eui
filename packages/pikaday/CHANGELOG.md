@@ -1,5 +1,11 @@
 # @ember-eui/pikaday
 
+## 16.0.2
+
+### Patch Changes
+
+- fix validated form
+
 ## 16.0.1
 
 ### Patch Changes

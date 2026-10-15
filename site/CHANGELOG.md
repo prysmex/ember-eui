@@ -1,5 +1,11 @@
 # site
 
+## 16.0.2
+
+### Patch Changes
+
+- fix validated form
+
 ## 15.0.1
 
 ### Patch Changes

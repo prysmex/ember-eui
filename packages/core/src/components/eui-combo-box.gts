@@ -240,6 +240,16 @@ export interface EuiComboBoxSignature {
      * Allows only one selected option (still passed to `@onChange` as a
      * one-item array). `{ asPlainText: true }` shows the selection as the
      * input's text instead of a pill. Defaults to multiple selection.
+     *
+     * Not upstream: with a block, a plain text selection is rendered with
+     * that block (like the option rows) while nothing is typed, as
+     * ember-eui 14 (ember-power-select) did, e.g. for enum values rendered
+     * as an avatar and a translated label. The block receives the option,
+     * then the select. Typing shows the input's text again, so search
+     * works as usual. The input keeps the option's label as its value
+     * (what screen readers announce and what typing replaces), so prefer
+     * object options with a readable `label` over raw string values.
+     * Without a block the input shows the label text, as upstream.
      */
     singleSelection?:
       | boolean
@@ -1089,6 +1099,7 @@ export default class EuiComboBoxComponent extends Component<EuiComboBoxSignature
         compressed=@compressed
         isInvalid=this.markAsInvalid
         singleSelection=@singleSelection
+        hasOptionBlock=(has-block)
         onClose=@removeTag
         isLoading=@isLoading
         autoFocus=(and (not @isDisabled) @autoFocus)

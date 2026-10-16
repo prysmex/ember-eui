@@ -57,6 +57,10 @@ export default class EuiComboBoxTriggerInputComponent extends PowerSelectInput {
    * input sizes to its content (`field-sizing`) and fills the rest of the
    * row, so it wraps below the pills like upstream's. With a placeholder or
    * plain text selection it takes the whole row.
+   *
+   * Not upstream: under a plain text selection rendered with EuiComboBox's
+   * block (`@hidesValue`), the text is transparent but the caret is not.
+   * The value stays the label (screen readers, typing over it).
    */
   @cached
   get inputClass(): string {
@@ -72,6 +76,13 @@ export default class EuiComboBoxTriggerInputComponent extends PowerSelectInput {
         fieldSizing: 'content',
         // @ts-expect-error `fillWidth` is passed by EuiComboBoxTrigger
         inlineSize: this.args.fillWidth ? '100%' : undefined
+      },
+      // @ts-expect-error `hidesValue` is passed by EuiComboBoxTrigger
+      this.args.hidesValue && {
+        '&, &:disabled': {
+          color: 'transparent',
+          caretColor: context.upstream.euiTheme.colors.textParagraph
+        }
       }
     );
   }

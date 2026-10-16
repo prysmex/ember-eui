@@ -50,6 +50,8 @@ interface TriggerArgs {
   placeholder?: string;
   searchEnabled?: boolean;
   singleSelection?: boolean | { asPlainText?: boolean };
+  /** EuiComboBox's caller passed a block (renders the options). */
+  hasOptionBlock?: boolean;
   prepend?: unknown;
   append?: unknown;
   noSuggestions?: boolean;
@@ -171,6 +173,39 @@ export default class EuiComboBoxTriggerComponent extends PowerSelectTrigger {
     return comboBoxOptionLabel(option, this.comboArgs.searchField) ?? '';
   }
 
+  /**
+   * Not upstream: with a caller's block, the plain text selection is
+   * rendered with it (as ember-eui 14 did) while nothing is typed; the
+   * input's text is hidden under it.
+   */
+  get showsPlainTextBlock(): boolean {
+    return Boolean(
+      this.comboArgs.hasOptionBlock &&
+        this.plainTextOption !== undefined &&
+        !this.comboArgs.select.searchText
+    );
+  }
+
+  /**
+   * The block over the input wrap, inside its padding, centered like the
+   * input's text; clicks go through to the input.
+   */
+  @cached
+  get plainTextBlockClass(): string {
+    const context = getEuiThemeContext(this);
+
+    return euiClass(context, {
+      position: 'absolute',
+      inset: 0,
+      padding: 'inherit',
+      display: 'flex',
+      alignItems: 'center',
+      minWidth: 0,
+      overflow: 'hidden',
+      pointerEvents: 'none'
+    });
+  }
+
   /** Plain text selection's option prepend/append: upstream `xxs` spacing. */
   @cached
   get plainTextSideClasses(): { prepend: string; append: string } {
@@ -267,7 +302,8 @@ export default class EuiComboBoxTriggerComponent extends PowerSelectTrigger {
           ]
         : []),
       select.disabled ? styles.disabled : stateCss,
-      Boolean(this.prepend || this.append) && styles.inGroup
+      Boolean(this.prepend || this.append) && styles.inGroup,
+      this.showsPlainTextBlock && { position: 'relative' }
     );
   }
 
@@ -423,6 +459,13 @@ export default class EuiComboBoxTriggerComponent extends PowerSelectTrigger {
               /></span>
           {{/if}}
           {{#if @searchEnabled}}
+            {{#if this.showsPlainTextBlock}}
+              <span
+                class="euiComboBoxPlainTextSelection__block
+                  {{this.plainTextBlockClass}}"
+                aria-hidden="true"
+              >{{yield this.plainTextOption @select}}</span>
+            {{/if}}
             {{#let
               (component
                 EuiComboBoxTriggerInput
@@ -449,6 +492,7 @@ export default class EuiComboBoxTriggerComponent extends PowerSelectTrigger {
                 noSuggestions=@noSuggestions
                 plainTextValue=this.plainTextValue
                 asPlainText=this.asPlainText
+                hidesValue=this.showsPlainTextBlock
                 onPlainTextClick=@onPlainTextClick
               )
               as |InputComponent|

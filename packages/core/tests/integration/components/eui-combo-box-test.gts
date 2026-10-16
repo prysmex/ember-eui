@@ -10,6 +10,7 @@ import {
   waitUntil
 } from '@ember/test-helpers';
 import { tracked } from '@glimmer/tracking';
+import { array, hash } from '@ember/helper';
 
 import EuiComboBox from '#src/components/eui-combo-box.gts';
 import EuiText from '#src/components/eui-text.gts';
@@ -553,5 +554,101 @@ module('Integration | Component | eui-combo-box', function (hooks) {
 
     assert.deepEqual(state.changes, [], 'the group is not chosen');
     assert.dom('.euiComboBoxPill').doesNotExist();
+  });
+
+  module('plain text selection with a block (not upstream)', function () {
+    const ENUMS = ['complete_ppe', 'partial_ppe'];
+    const BLOCK = '.euiComboBoxPlainTextSelection__block';
+    const isUniqueId = (select: { uniqueId?: string }) => Boolean(select?.uniqueId);
+    const noop = () => {};
+
+    test('the block renders the selection while nothing is typed', async function (assert) {
+      await render(
+        <template>
+          <EuiComboBox
+            @options={{ENUMS}}
+            @selectedOptions={{array "complete_ppe"}}
+            @singleSelection={{hash asPlainText=true}}
+            @onChange={{noop}}
+            as |option select|
+          >
+            <span class="enum-option" data-select={{isUniqueId select}}>Enum
+              {{option}}</span>
+          </EuiComboBox>
+        </template>
+      );
+
+      assert.dom(BLOCK).exists({ count: 1 });
+      assert.dom(BLOCK).hasAttribute('aria-hidden', 'true');
+      assert.dom(`${BLOCK} .enum-option`).hasText('Enum complete_ppe');
+      assert.dom(`${BLOCK} .enum-option`).hasAttribute('data-select', 'true', 'the block receives the option, then the select');
+      // the input keeps the label (screen readers, typing over it), unseen
+      assert.dom(INPUT).hasValue('complete_ppe');
+      assert.strictEqual(getComputedStyle(document.querySelector(INPUT)!).color, 'rgba(0, 0, 0, 0)');
+      assert.notStrictEqual(getComputedStyle(document.querySelector(INPUT)!).caretColor, 'rgba(0, 0, 0, 0)', 'the caret shows');
+      assert.strictEqual(getComputedStyle(document.querySelector(BLOCK)!).pointerEvents, 'none');
+      assert.strictEqual(getComputedStyle(document.querySelector('.euiComboBox__inputWrap')!).position, 'relative');
+    });
+
+    test('typing hides the block and shows the typed text', async function (assert) {
+      await render(
+        <template>
+          <EuiComboBox
+            @options={{ENUMS}}
+            @selectedOptions={{array "complete_ppe"}}
+            @singleSelection={{hash asPlainText=true}}
+            @onChange={{noop}}
+            as |option|
+          >
+            <span class="enum-option">Enum {{option}}</span>
+          </EuiComboBox>
+        </template>
+      );
+
+      await open();
+      assert.dom(BLOCK).exists('still shown while the list is open');
+      await fillIn(INPUT, 'part');
+
+      assert.dom(BLOCK).doesNotExist();
+      assert.dom(INPUT).hasValue('part');
+      assert.notStrictEqual(getComputedStyle(document.querySelector(INPUT)!).color, 'rgba(0, 0, 0, 0)');
+      assert.deepEqual(optionTexts(), ['Enum partial_ppe'], 'search still filters');
+    });
+
+    test('without a block the input shows the label text (upstream)', async function (assert) {
+      await render(
+        <template>
+          <EuiComboBox
+            @options={{ENUMS}}
+            @selectedOptions={{array "complete_ppe"}}
+            @singleSelection={{hash asPlainText=true}}
+            @onChange={{noop}}
+          />
+        </template>
+      );
+
+      assert.dom(BLOCK).doesNotExist();
+      assert.dom(INPUT).hasValue('complete_ppe');
+      assert.notStrictEqual(getComputedStyle(document.querySelector(INPUT)!).color, 'rgba(0, 0, 0, 0)');
+    });
+
+    test('multiple selection keeps rendering the block in pills', async function (assert) {
+      await render(
+        <template>
+          <EuiComboBox
+            @options={{ENUMS}}
+            @selectedOptions={{array "complete_ppe" "partial_ppe"}}
+            @onChange={{noop}}
+            as |option|
+          >
+            <span class="enum-option">Enum {{option}}</span>
+          </EuiComboBox>
+        </template>
+      );
+
+      assert.dom(BLOCK).doesNotExist();
+      assert.dom('.euiComboBoxPill .enum-option').exists({ count: 2 });
+      assert.dom(INPUT).hasValue('');
+    });
   });
 });

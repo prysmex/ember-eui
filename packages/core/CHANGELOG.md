@@ -4,6 +4,12 @@
 
 ### Patch Changes
 
+- fixes
+
+## 16.0.3
+
+### Patch Changes
+
 - ee57848: `EuiComboBox`: with `@singleSelection={{hash asPlainText=true}}` and a block, the selection is rendered with the block again (as in 14.x, on ember-power-select) while nothing is typed, e.g. enum values shown as an avatar and a translated label instead of the raw value. The block receives the option, then the select. Typing shows the input's text again, so search works as before. The input keeps the option's label as its value, which screen readers announce. Without a block, the input shows the label text, as upstream EUI does. Focusing or clicking the input selects the hidden label, so typing replaces it.
 - eb495f9: `EuiComboBox` gains `@ignoreAccents` to match options ignoring accents ("medico" finds "Médico"), as ember-power-select did. It defaults to the app's `euiComboBox.ignoreAccents` in eui-config, else `false` (upstream).
 - eb495f9: `EuiComboBox` reads options and selections that are Ember array-likes without `slice()` (e.g. ember-data's `PromiseManyArray`) via `toArray()`, their iterator or their `content`, instead of throwing.

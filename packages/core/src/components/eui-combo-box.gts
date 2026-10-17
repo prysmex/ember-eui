@@ -56,6 +56,7 @@ import EuiComboBoxSearchMessage from './eui-combo-box/search-message.gts';
 import EuiComboBoxTrigger from './eui-combo-box/trigger.gts';
 
 import type EuiI18n from '../services/eui-i18n';
+import type EuiConfigService from '../services/eui-config';
 import type {
   EuiComboBoxOptionMatcher,
   EuiComboBoxSortMatchesBy
@@ -419,6 +420,13 @@ export interface EuiComboBoxSignature {
     /** Matches options case-sensitively. */
     isCaseSensitive?: boolean;
     /**
+     * Matches options ignoring accents ("medico" finds "Médico"), as
+     * ember-power-select did. Defaults to the app's
+     * `euiComboBox.ignoreAccents` (eui-config), else `false` (upstream).
+     * Only for the default matching (not `@matcher` / `@optionMatcher`).
+     */
+    ignoreAccents?: boolean;
+    /**
      * `'startsWith'` lists the matches starting with the search text first;
      * `'none'` keeps the options' order. Defaults to `'none'`.
      */
@@ -548,6 +556,19 @@ type ContainerBlurApi = Select & {
 
 export default class EuiComboBoxComponent extends Component<EuiComboBoxSignature> {
   @service declare euiI18n: EuiI18n;
+  @service('eui-config') declare euiConfig: EuiConfigService;
+
+  /**
+   * `@ignoreAccents`, else the app's `euiComboBox.ignoreAccents`
+   * (eui-config), else `false` (upstream).
+   */
+  get ignoreAccents(): boolean {
+    return (
+      this.args.ignoreAccents ??
+      this.euiConfig?.getConfig('euiComboBox.ignoreAccents') ??
+      false
+    );
+  }
 
   // UI state only: everything else is derived from the arguments
 
@@ -790,7 +811,10 @@ export default class EuiComboBoxComponent extends Component<EuiComboBoxSignature
       return ({ option, searchValue }) => matcher(option, searchValue) >= 0;
     }
 
-    return createPartialStringEqualityOptionMatcher(searchField);
+    return createPartialStringEqualityOptionMatcher(
+      searchField,
+      this.ignoreAccents
+    );
   }
 
   /** Upstream `getMatchingOptions` (with group titles) for a search text. */
@@ -2220,7 +2244,21 @@ function toList(collection: unknown): unknown[] {
   if (!collection) return [];
   if (Array.isArray(collection)) return collection;
   if (isArray(collection)) {
-    return (collection as unknown as { slice(): unknown[] }).slice();
+    // Ember arrays, ArrayProxy, PromiseManyArray (ember-data), …
+    const list = collection as unknown as {
+      slice?: () => unknown[];
+      toArray?: () => unknown[];
+      content?: unknown;
+      [Symbol.iterator]?: () => Iterator<unknown>;
+    };
+
+    if (typeof list.slice === 'function') return list.slice();
+    if (typeof list.toArray === 'function') return list.toArray();
+    if (typeof list[Symbol.iterator] === 'function') {
+      return Array.from(list as Iterable<unknown>);
+    }
+
+    return list.content ? toList(list.content) : [];
   }
 
   return [];

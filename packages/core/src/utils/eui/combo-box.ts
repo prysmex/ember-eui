@@ -97,17 +97,26 @@ export type EuiComboBoxOptionMatcher = (
  * (trimmed) includes the normalized search text.
  */
 export function createPartialStringEqualityOptionMatcher(
-  searchField?: string
+  searchField?: string,
+  ignoreAccents = false
 ): EuiComboBoxOptionMatcher {
+  const fold = ignoreAccents ? removeAccents : (text: string) => text;
+
   return ({ option, isCaseSensitive, normalizedSearchValue }) => {
     if (!normalizedSearchValue) return true;
 
-    return transformForCaseSensitivity(
-      comboBoxOptionLabel(option, searchField).trim(),
-      isCaseSensitive
-    ).includes(normalizedSearchValue);
+    return fold(
+      transformForCaseSensitivity(
+        comboBoxOptionLabel(option, searchField).trim(),
+        isCaseSensitive
+      )
+    ).includes(fold(normalizedSearchValue));
   };
 }
+
+/** "Médico" -> "Medico": accents (any combining mark) off. */
+const removeAccents = (text: string): string =>
+  text.normalize('NFD').replace(/\p{M}/gu, '');
 
 const keyOf = (option: unknown): unknown =>
   option && typeof option === 'object'

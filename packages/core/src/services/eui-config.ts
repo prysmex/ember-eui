@@ -41,6 +41,11 @@ export interface EuiConfig {
   'euiButtonIcon.size'?: EuiButtonIconSignature['Args']['iconSize'];
   euiComboBoxOptionsHeight?: number;
   /**
+   * Default of `EuiComboBox`'s `@ignoreAccents`: match options ignoring
+   * accents ("medico" finds "Médico"). Upstream: `false`.
+   */
+  'euiComboBox.ignoreAccents'?: boolean;
+  /**
    * Upstream `EuiProvider componentDefaults`, e.g.
    * `{ EuiTablePagination: { itemsPerPage: 25, itemsPerPageOptions: [25, 50, 100] } }`.
    * Set it with `setConfig` or a single `updateConfig` call: `updateConfig`

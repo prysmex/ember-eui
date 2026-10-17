@@ -14,6 +14,8 @@ import { array, hash } from '@ember/helper';
 
 import EuiComboBox from '#src/components/eui-combo-box.gts';
 import EuiText from '#src/components/eui-text.gts';
+
+import type EuiConfigService from '#src/services/eui-config.ts';
 // what apps load with `import '@ember-eui/core/styles/ember-eui.css'`
 import emberEuiCss from '#src/styles/ember-eui.css?raw';
 
@@ -615,6 +617,28 @@ module('Integration | Component | eui-combo-box', function (hooks) {
       assert.deepEqual(optionTexts(), ['Enum partial_ppe'], 'search still filters');
     });
 
+    test('focusing or clicking the input selects the hidden label, so typing replaces it', async function (assert) {
+      await render(
+        <template>
+          <EuiComboBox
+            @options={{ENUMS}}
+            @selectedOptions={{array "complete_ppe"}}
+            @singleSelection={{hash asPlainText=true}}
+            @onChange={{noop}}
+            as |option|
+          >
+            <span class="enum-option">Enum {{option}}</span>
+          </EuiComboBox>
+        </template>
+      );
+
+      await click(INPUT);
+
+      const input = document.querySelector<HTMLInputElement>(INPUT)!;
+      assert.strictEqual(input.selectionStart, 0);
+      assert.strictEqual(input.selectionEnd, 'complete_ppe'.length);
+    });
+
     test('without a block the input shows the label text (upstream)', async function (assert) {
       await render(
         <template>
@@ -649,6 +673,98 @@ module('Integration | Component | eui-combo-box', function (hooks) {
       assert.dom(BLOCK).doesNotExist();
       assert.dom('.euiComboBoxPill .enum-option').exists({ count: 2 });
       assert.dom(INPUT).hasValue('');
+    });
+  });
+
+  module('ignoreAccents (not upstream)', function () {
+    const PROFESSIONS = [{ label: 'Médico' }, { label: 'Enfermero' }];
+    const noop = () => {};
+
+    test('off by default (upstream)', async function (assert) {
+      await render(<template><EuiComboBox @options={{PROFESSIONS}} @onChange={{noop}} /></template>);
+      await open();
+      await fillIn(INPUT, 'medico');
+
+      assert.deepEqual(optionTexts().filter((text) => text.includes('dico')), []);
+    });
+
+    test('@ignoreAccents matches options ignoring accents, both ways', async function (assert) {
+      const options = [...PROFESSIONS, { label: 'Medicina' }];
+
+      await render(
+        <template><EuiComboBox @options={{options}} @ignoreAccents={{true}} @onChange={{noop}} /></template>
+      );
+      await open();
+      await fillIn(INPUT, 'medic');
+      assert.deepEqual(optionTexts(), ['Médico', 'Medicina']);
+      await fillIn(INPUT, 'MÉDICI');
+      assert.deepEqual(optionTexts(), ['Medicina']);
+    });
+
+    test('the euiComboBox.ignoreAccents config sets the default; the argument wins', async function (assert) {
+      const config = this.owner.lookup('service:eui-config') as EuiConfigService;
+
+      config.updateConfig({ 'euiComboBox.ignoreAccents': true });
+
+      await render(
+        <template>
+          <div data-c="config"><EuiComboBox @options={{PROFESSIONS}} @onChange={{noop}} /></div>
+          <div data-c="off"><EuiComboBox @options={{PROFESSIONS}} @ignoreAccents={{false}} @onChange={{noop}} /></div>
+        </template>
+      );
+
+      await click(`[data-c="config"] ${INPUT}`);
+      await waitUntil(inDocument(OPTION));
+      await fillIn(`[data-c="config"] ${INPUT}`, 'medico');
+      assert.deepEqual(optionTexts(), ['Médico'], 'from the config');
+
+      await click(`[data-c="off"] ${INPUT}`);
+      await fillIn(`[data-c="off"] ${INPUT}`, 'medico');
+      assert.deepEqual(optionTexts().filter((text) => text.includes('dico')), [], 'the argument wins');
+    });
+  });
+
+  module('array-like options and selections', function () {
+    const noop = () => {};
+
+    // Ember array-likes (`objectAt`) without `slice`, e.g. ember-data's
+    // PromiseManyArray: iterable, or only with `content`
+    class Iterable {
+      constructor(private items: unknown[]) {}
+      get length() {
+        return this.items.length;
+      }
+      objectAt(index: number) {
+        return this.items[index];
+      }
+      [Symbol.iterator]() {
+        return this.items[Symbol.iterator]();
+      }
+    }
+
+    class WithContent {
+      constructor(public content: unknown[]) {}
+      get length() {
+        return this.content.length;
+      }
+      objectAt(index: number) {
+        return this.content[index];
+      }
+    }
+
+    test('array-likes without slice() are read as lists', async function (assert) {
+      const iterable = new Iterable(['Apple', 'Banana', 'Cherry']);
+      const selected = new WithContent(['Banana']);
+
+      await render(
+        <template>
+          <EuiComboBox @options={{iterable}} @selectedOptions={{selected}} @onChange={{noop}} />
+        </template>
+      );
+
+      assert.dom('.euiComboBoxPill').hasText('Banana');
+      await open();
+      assert.deepEqual(optionTexts(), ['Apple', 'Cherry']);
     });
   });
 });

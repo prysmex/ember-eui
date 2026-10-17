@@ -155,7 +155,20 @@ export default class EuiComboBoxTriggerInputComponent extends PowerSelectInput {
 
     // @ts-expect-error `asPlainText` is passed by EuiComboBoxTrigger
     if (this.args.asPlainText) onClick?.(event);
+
+    this.selectHiddenValue(event);
   }
+
+  /**
+   * Not upstream: under a selection's block the value's text is hidden, so
+   * typing replaces it (as a new search) instead of adding to it.
+   */
+  selectHiddenValue = (event: Event): void => {
+    // @ts-expect-error `hidesValue` is passed by EuiComboBoxTrigger
+    if (!this.args.hidesValue) return;
+
+    (event.target as HTMLInputElement | null)?.select?.();
+  };
 
   /** The id of the options list while it is open (upstream `aria-controls`). */
   get ariaControls(): string | undefined {
@@ -202,6 +215,7 @@ export default class EuiComboBoxTriggerInputComponent extends PowerSelectInput {
         tabindex={{@tabindex}}
         form="power-select-fake-form"
         {{on "focus" this.handleFocus}}
+        {{on "focus" this.selectHiddenValue}}
         {{on "blur" this.handleBlur}}
         {{on "input" this.handleInput}}
         {{on "keydown" this.handleKeydown}}

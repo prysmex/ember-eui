@@ -1,6 +1,7 @@
 import { module, test } from 'qunit';
 import { setupRenderingTest } from 'ember-qunit';
 import { click, render } from '@ember/test-helpers';
+import { htmlSafe } from '@ember/template';
 
 import EuiToast from '#src/components/eui-toast.gts';
 
@@ -48,5 +49,22 @@ module('Integration | Component | eui-toast', function (hooks) {
 
     assert.dom('[data-test-subj="a"] .rich-body').hasText('**not markdown**');
     assert.dom('[data-test-subj="b"] strong').hasText('bold');
+  });
+
+  test('@body can be an htmlSafe string, rendered as HTML (as in 14.x)', async function (assert) {
+    const body = htmlSafe('Saved <strong>3</strong> items');
+
+    await render(
+      <template>
+        <EuiToast @title="A" @body={{body}} data-test-subj="a" />
+        <EuiToast @title="B" @body={{body}} @useMarkdownFormat={{true}} data-test-subj="b" />
+      </template>
+    );
+
+    for (const toast of ['a', 'b']) {
+      assert.dom(`[data-test-subj="${toast}"] .euiToast__text`).hasText('Saved 3 items');
+      assert.dom(`[data-test-subj="${toast}"] .euiToast__text strong`).hasText('3');
+    }
+    assert.dom('[data-test-subj="b"] .euiMarkdownFormat').doesNotExist('HTML already, not markdown');
   });
 });

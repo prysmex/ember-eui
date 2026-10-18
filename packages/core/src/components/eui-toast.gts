@@ -2,6 +2,7 @@ import Component from '@glimmer/component';
 import { cached } from '@glimmer/tracking';
 import { on } from '@ember/modifier';
 import { service } from '@ember/service';
+import { isHTMLSafe } from '@ember/template';
 
 import { getTokenName } from '@elastic/eui-theme-common';
 import { and, or } from 'ember-truth-helpers';
@@ -115,7 +116,9 @@ const DEFAULT_ICONS: Record<EuiToastColor, { type: string; color?: string }> =
     danger: { type: 'errorFill', color: 'danger' }
   };
 
-const isText = isTextNode;
+/** Text for markdown; `htmlSafe` text is HTML already. */
+const isMarkdownText = (value: unknown): boolean =>
+  isTextNode(value) && !isHTMLSafe(value);
 
 /** Native Ember toast on the upstream EUI 123 / Borealis factories. */
 export default class EuiToast extends Component<EuiToastSignature> {
@@ -254,7 +257,7 @@ export default class EuiToast extends Component<EuiToastSignature> {
 
   /** The body as text, for markdown. */
   get bodyText(): string {
-    return isTextNode(this.body) ? String(this.body) : '';
+    return isMarkdownText(this.body) ? String(this.body) : '';
   }
 
   get dismissLabel(): string {
@@ -318,7 +321,7 @@ export default class EuiToast extends Component<EuiToastSignature> {
             {{#if (or this.body (has-block))}}
               <div class={{this.textClass}} data-test-subj="euiToastBody">
                 {{#if this.body}}
-                  {{#if (and @useMarkdownFormat (isText this.body))}}
+                  {{#if (and @useMarkdownFormat (isMarkdownText this.body))}}
                     <div class="euiToast__text" data-test-subj="euiToastText">
                       <EuiMarkdownFormat @textSize="s" @value={{this.bodyText}} />
                     </div>

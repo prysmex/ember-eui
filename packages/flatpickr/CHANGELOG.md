@@ -1,5 +1,11 @@
 # @ember-eui/flatpickr
 
+## 16.0.4
+
+### Patch Changes
+
+- fixes
+
 ## 16.0.3
 
 ### Patch Changes

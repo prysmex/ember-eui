@@ -50,6 +50,7 @@ module('Integration | Component | eui-panel | Borealis', function (hooks) {
     const theme = resolveBorealisTheme('light');
     assert
       .dom(panel)
+      .hasClass('euiPanel', 'upstream class name')
       .hasClass('euiPanelBorealis')
       .hasClass('custom')
       .hasText('Content')

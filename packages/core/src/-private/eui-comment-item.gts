@@ -28,7 +28,6 @@ type EuiCommentType = 'regular' | 'update' | 'custom';
 /** Theme-less upstream factories (static, shared by every comment). */
 const ITEM_STYLES = euiTimelineItemStyles();
 const ITEM_EVENT_STYLES = euiTimelineItemEventStyles();
-const NO_BORDER = { border: 'none' } as const;
 
 interface CommentItemSignature {
   Element: HTMLLIElement;
@@ -210,15 +209,6 @@ export class EuiCommentItem extends Component<CommentItemSignature> {
     );
   }
 
-  /**
-   * Upstream removes the header panel's high contrast border (`& > .euiPanel`
-   * in the header styles; Ember's panel root class differs), here through
-   * the panel's own `@css`.
-   */
-  get panelCss() {
-    return this.context.upstream.highContrastMode ? NO_BORDER : undefined;
-  }
-
   get eventIconAriaHidden(): 'true' | undefined {
     return this.args.eventIconAriaLabel ? undefined : 'true';
   }
@@ -257,7 +247,6 @@ export class EuiCommentItem extends Component<CommentItemSignature> {
                   @borderRadius={{this.panelRadius}}
                   @hasShadow={{false}}
                   @hasBorder={{false}}
-                  @css={{this.panelCss}}
                 >
                   <div
                     class="euiCommentEvent__headerMain {{this.headerMainClass}}"

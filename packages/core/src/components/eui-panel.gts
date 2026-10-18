@@ -153,7 +153,9 @@ export default class EuiPanel extends Component<EuiPanelSignature> {
       },
       this.args.css
     );
-    return ['euiPanelBorealis', `euiPanel--${color}`, generated].join(' ');
+    // `euiPanel` like upstream, so upstream's `.euiPanel` selectors match;
+    // `euiPanelBorealis`, the class this port used first, stays for apps
+    return ['euiPanel', 'euiPanelBorealis', `euiPanel--${color}`, generated].join(' ');
   }
 
   <template>

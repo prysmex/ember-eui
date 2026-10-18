@@ -163,6 +163,24 @@ function declaration(source, name) {
   return { head, body: source.slice(open + 1, closingIndex(source, open) - 1) };
 }
 
+/** The index of the `)` closing the `(` at `open`, or -1. */
+function closingParen(body, open) {
+  let depth = 0;
+
+  for (let j = open; j < body.length; j++) {
+    const skipped = skipNonCode(body, j);
+    if (skipped !== -1) {
+      j = skipped - 1;
+      continue;
+    }
+
+    if (body[j] === '(') depth++;
+    else if (body[j] === ')' && --depth === 0) return j;
+  }
+
+  return -1;
+}
+
 /** Splits a `{ … }` body into members: `{ name, optional, type, doc }`. */
 function members(body) {
   const result = [];
@@ -192,7 +210,20 @@ function members(body) {
       continue;
     }
 
-    const match = /^\s*['"]?([@\w-]+)['"]?(\?)?\s*:/.exec(body.slice(i));
+    let match = /^\s*['"]?([@\w-]+)['"]?(\?)?\s*:/.exec(body.slice(i));
+    // method syntax, `name?(params): Return`: documented as a function type
+    let params = '';
+
+    if (!match) {
+      const method = /^\s*['"]?([@\w-]+)['"]?(\?)?\s*\(/.exec(body.slice(i));
+      const close = method ? closingParen(body, i + method[0].length - 1) : -1;
+      const colon = close === -1 ? null : /^\s*:/.exec(body.slice(close + 1));
+
+      if (method && colon) {
+        params = body.slice(i + method[0].length - 1, close + 1);
+        match = [method[0] + body.slice(i + method[0].length, close + 1) + colon[0], method[1], method[2]];
+      }
+    }
 
     if (!match) {
       i++;
@@ -230,7 +261,9 @@ function members(body) {
     result.push({
       name: match[1],
       optional: Boolean(match[2]),
-      type: body.slice(i + match[0].length, j).trim(),
+      type: params
+        ? `${params} => ${body.slice(i + match[0].length, j).trim()}`
+        : body.slice(i + match[0].length, j).trim(),
       doc: cleanDoc(doc)
     });
     doc = '';

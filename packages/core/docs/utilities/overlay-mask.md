@@ -50,7 +50,7 @@ behind a modal. Prevents scrolling the page while shown.
 | `@onClick` | `(e: MouseEvent) => void` |  | Called when the mask itself (not its content) is clicked. |
 | `@headerZindexLocation` | `'above' \| 'below'` | `'above'` | Whether the mask covers the page header (`'above'`, z-index `levels.mask`) or leaves it visible (`'below'`, z-index `levels.maskBelowHeader`, starting below `--euiFixedHeadersOffset`). |
 | `@hasAnimation` | `boolean` | `true` | Fades the mask in. |
-| `@maskRef` | `(element: HTMLDivElement) => void` |  | Called with the mask element once it is rendered. |
+| `@maskRef` | `(element: HTMLDivElement \| null) => void` |  | Called with the mask element once it is rendered, and with `null` when it is removed. |
 
 | Block | Description |
 | --- | --- |

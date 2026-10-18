@@ -42,10 +42,11 @@ search results or the options of a filtered list.
 
 | Argument | Type | Default | Description |
 | --- | --- | --- | --- |
-| `@text` (required) | `string` |  | The text to show. |
-| `@search` | `string \| string[]` |  | What to highlight in it. Nothing is highlighted when empty. With `@highlightAll`, an array highlights every one of several words or phrases. |
+| `@text` (required) | `string` |  | The text to show. Anything else (a number, `null`, …) renders as is, with nothing highlighted. |
+| `@search` | `string \| string[]` |  | What to highlight in it. Nothing is highlighted when empty. With `@highlightAll`, an array highlights every one of several words or phrases. Anything but strings is ignored. |
 | `@strict` | `boolean` |  | Match case exactly (by default "app" also matches "Apple"). |
 | `@highlightAll` | `boolean` |  | Highlight every match instead of only the first one. |
+| `@ignoreAccents` | `boolean` |  | Match ignoring accents ("medico" marks "Médico", and "médico" marks "Medico"); defaults to `true`. `false` matches them exactly, like upstream. Not upstream. |
 | `@hasScreenReaderHelpText` | `boolean` |  | Passed to each EuiMark; defaults to `true`. |
 
 HTML attributes and modifiers (`class`, `data-test-*`, `{{on …}}`) are applied to its `<span>`.

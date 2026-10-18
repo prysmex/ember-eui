@@ -141,38 +141,40 @@ class ToolTipManager {
 export const toolTipManager = new ToolTipManager();
 
 /**
- * Upstream links the anchor's child to the visible tooltip with
- * `aria-describedby` (the tooltip id first, existing ids kept). Only the id
- * added here is removed again.
+ * Upstream links the anchor to the visible tooltip with `aria-describedby`
+ * (the tooltip id first, existing ids kept). Returns what removes only the
+ * id added here again.
  */
+function addDescribedBy(element: Element, id: string): (() => void) | undefined {
+  const current = (element.getAttribute('aria-describedby') ?? '')
+    .split(/\s+/)
+    .filter(Boolean);
+
+  if (current.includes(id)) return;
+
+  element.setAttribute('aria-describedby', [id, ...current].join(' '));
+
+  return () => {
+    const remaining = (element.getAttribute('aria-describedby') ?? '')
+      .split(/\s+/)
+      .filter((token) => token && token !== id);
+
+    if (remaining.length) {
+      element.setAttribute('aria-describedby', remaining.join(' '));
+    } else {
+      element.removeAttribute('aria-describedby');
+    }
+  };
+}
+
+/** `addDescribedBy` for the anchor's child while the tooltip is visible. */
 const describedBy = modifier(
-  (
-    anchor: HTMLElement,
-    [target, id, isVisible]: [Element | null | undefined, string, boolean]
-  ) => {
-    const element = target ?? anchor.firstElementChild;
+  (anchor: HTMLElement, [id, isVisible]: [string, boolean]) => {
+    const element = anchor.firstElementChild;
 
     if (!element || !isVisible) return;
 
-    const current = (element.getAttribute('aria-describedby') ?? '')
-      .split(/\s+/)
-      .filter(Boolean);
-
-    if (current.includes(id)) return;
-
-    element.setAttribute('aria-describedby', [id, ...current].join(' '));
-
-    return () => {
-      const remaining = (element.getAttribute('aria-describedby') ?? '')
-        .split(/\s+/)
-        .filter((token) => token && token !== id);
-
-      if (remaining.length) {
-        element.setAttribute('aria-describedby', remaining.join(' '));
-      } else {
-        element.removeAttribute('aria-describedby');
-      }
-    };
+    return addDescribedBy(element, id);
   }
 );
 
@@ -352,6 +354,63 @@ export default class EuiToolTip extends Component<EuiToolTipSignature> {
         this.setupAttachToHandlers();
       });
     }
+  }
+
+  /** `@isShown` as last applied to the `@attachTo` element. */
+  private attachToShown?: boolean;
+  /** The `@attachTo` element described by the tooltip, and the undo. */
+  private described?: { element: Element; id: string; remove?: () => void };
+
+  /**
+   * With `@attachTo` the tooltip renders no element of its own (upstream),
+   * so what the anchor's modifiers do for it runs from here, after each
+   * render that changed one of the arguments (passed only to be tracked).
+   * Tooltips that never had `@attachTo` schedule nothing.
+   */
+  attachToEffects = (..._tracked: unknown[]): undefined => {
+    if (this.args.attachTo || this._attachTo || this.described) {
+      scheduleOnce('afterRender', this, this.runAttachToEffects);
+    }
+
+    return undefined;
+  };
+
+  private runAttachToEffects(): void {
+    if (this.isDestroying || this.isDestroyed) return;
+
+    this.updateAttachTo();
+
+    if (!this.args.attachTo) {
+      // the anchor's own modifiers take over
+      this.describe(null);
+      this.attachToShown = undefined;
+
+      return;
+    }
+
+    this.syncScrollListener();
+
+    const isShown = this.args.isShown === true;
+
+    if (isShown !== this.attachToShown) {
+      this.attachToShown = isShown;
+      if (isShown) this.onFocus();
+      else this.onBlur();
+    }
+
+    this.describe(this.describesAnchor ? this.attachTo : null);
+  }
+
+  /** Points `aria-describedby` of `element` (only) at the tooltip. */
+  private describe(element: Element | null | undefined): void {
+    const { described, id } = this;
+
+    if (described?.element === element && described?.id === id) return;
+
+    described?.remove?.();
+    this.described = element
+      ? { element, id, remove: addDescribedBy(element, id) }
+      : undefined;
   }
 
   @action
@@ -672,6 +731,7 @@ export default class EuiToolTip extends Component<EuiToolTipSignature> {
     cancel(this.attachToTimer);
     toolTipManager.deregisterToolTip(this.hideToolTip);
     this.removeAttachToHandlers();
+    this.describe(null);
     window.removeEventListener('scroll', this.positionToolTip, true);
     this.listeningToScroll = false;
     this.anchor = null;
@@ -684,20 +744,15 @@ export default class EuiToolTip extends Component<EuiToolTipSignature> {
       (has-block "content") (has-block "title") (has-block "anchor")
       as |hasContentBlock hasTitleBlock hasAnchorBlock|
     }}
-      {{#if @attachTo}}
-        <span
-          {{didInsert this.updateAttachTo}}
-          {{didInsert this.syncScrollListener}}
-          {{didUpdate this.syncScrollListener @repositionOnScroll}}
-          {{didUpdate this.updateAttachTo @attachTo}}
-          {{describedBy this.attachTo this.id this.describesAnchor}}
-          {{didUpdate
-            (if (eq @isShown true) this.onFocus this.onBlur)
-            @isShown
-          }}
-          {{didInsert (if (eq @isShown true) this.onFocus this.onBlur)}}
-        ></span>
-      {{else}}
+      {{~this.attachToEffects
+        @attachTo
+        @repositionOnScroll
+        @isShown
+        this.describesAnchor
+        this.attachTo
+        this.id
+      ~}}
+      {{#unless @attachTo}}
         {{! A11y: NVDA merges identical markup into one stop; the id keeps
             wrappers apart (upstream) }}
         <span
@@ -713,7 +768,7 @@ export default class EuiToolTip extends Component<EuiToolTipSignature> {
           {{didInsert this.didInsertAnchor}}
           {{didInsert this.syncScrollListener}}
           {{didUpdate this.syncScrollListener @repositionOnScroll}}
-          {{describedBy null this.id this.describesAnchor}}
+          {{describedBy this.id this.describesAnchor}}
           {{on "keydown" this.onKeyDown}}
           {{on "mouseover" this.showToolTip}}
           {{on "focusin" this.onFocus}}
@@ -731,7 +786,7 @@ export default class EuiToolTip extends Component<EuiToolTipSignature> {
             {{yield this.id}}
           {{/if}}
         </span>
-      {{/if}}
+      {{/unless}}
       {{#if
         (and this.visible (or @title @content hasContentBlock hasTitleBlock))
       }}

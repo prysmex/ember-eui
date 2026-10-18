@@ -202,7 +202,7 @@ module('Integration | Leaks | modifiers and popover teardown', function (hooks) 
         </template>
       );
       run(() => (state.show = true));
-      assert.ok(document.querySelector('.euiToolTipAnchor, span'), 'rendered');
+      assert.dom('#ember-testing .euiToolTipAnchor').doesNotExist('renders no anchor of its own');
       run(() => (state.show = false));
       await settled();
       await new Promise((resolve) => setTimeout(resolve, 20));

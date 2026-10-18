@@ -167,4 +167,41 @@ module('Integration | Component | eui-tool-tip', function (hooks) {
       assert.strictEqual(el.style.top, moved, 'stops once disabled');
     });
   });
+
+  test('@attachTo renders no element of its own and describes the target', async function (assert) {
+    class State {
+      @tracked shown = false;
+    }
+    const state = new State();
+    const target = document.createElement('button');
+    target.setAttribute('aria-describedby', 'existing');
+    document.body.append(target);
+
+    try {
+      await render(
+        <template>
+          <div class="host"><EuiToolTip @content="Attached" @attachTo={{target}} @isShown={{state.shown}} /></div>
+        </template>
+      );
+
+      assert.strictEqual(document.querySelector('.host')!.children.length, 0, 'no empty span');
+
+      state.shown = true;
+      await waitUntil(tooltip);
+      await settled();
+      const id = tooltip()!.id;
+      assert.strictEqual(target.getAttribute('aria-describedby'), `${id} existing`, 'described while shown');
+
+      state.shown = false;
+      await waitUntil(() => !tooltip());
+      await settled();
+      assert.strictEqual(target.getAttribute('aria-describedby'), 'existing', 'only its id is removed');
+
+      await triggerEvent(target, 'mousemove');
+      await waitUntil(tooltip);
+      assert.dom('.euiToolTip', document.body).containsText('Attached', 'hovering the target shows it');
+    } finally {
+      target.remove();
+    }
+  });
 });

@@ -55,18 +55,33 @@ const TRIGGER_RESET = {
 /**
  * Measures the children's layout height (unaffected by CSS transforms) and
  * reports it after layout, like upstream's `EuiResizeObserver` (rounded).
+ *
+ * One ResizeObserver serves every accordion on the page, not one each. Each
+ * observer's callback runs on its own, and the tracked height it sets
+ * schedules a render of its own: a form with a hundred section rows
+ * re-rendered a hundred times as it mounted. One observer reports every
+ * accordion in a single callback, so the heights land in one render.
  */
+const heightCallbacks = new WeakMap<Element, () => void>();
+let heightObserver: ResizeObserver | undefined;
+
 const observeHeight = modifier(
   (element: HTMLElement, [onResize]: [(height: number) => void]) => {
     if (typeof ResizeObserver === 'undefined') {
       onResize(element.offsetHeight);
       return;
     }
-    const observer = new ResizeObserver(() =>
+    heightObserver ??= new ResizeObserver((entries) => {
+      for (const entry of entries) heightCallbacks.get(entry.target)?.();
+    });
+    heightCallbacks.set(element, () =>
       onResize(Math.round(element.offsetHeight))
     );
-    observer.observe(element);
-    return () => observer.disconnect();
+    heightObserver.observe(element);
+    return () => {
+      heightCallbacks.delete(element);
+      heightObserver?.unobserve(element);
+    };
   }
 );
 

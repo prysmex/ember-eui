@@ -701,6 +701,16 @@ module('Integration | Component | eui-combo-box', function (hooks) {
       assert.deepEqual(optionTexts(), ['Medicina']);
     });
 
+    test('@ignoreAccents highlights what it matched', async function (assert) {
+      await render(
+        <template><EuiComboBox @options={{PROFESSIONS}} @ignoreAccents={{true}} @onChange={{noop}} /></template>
+      );
+      await open();
+      await fillIn(INPUT, 'medico');
+
+      assert.dom(`${OPTION} mark`).hasText('Médico');
+    });
+
     test('the euiComboBox.ignoreAccents config sets the default; the argument wins', async function (assert) {
       const config = this.owner.lookup('service:eui-config') as EuiConfigService;
 

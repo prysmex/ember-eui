@@ -509,7 +509,8 @@ export interface EuiComboBoxSignature {
     /**
      * Renders each option (in the list and in the pills), with its index
      * and the search text (upstream `renderOption`): `as |option i search|`
-     * → `<EuiHighlight @text={{option.label}} @search={{search}} />`. In
+     * → `<EuiHighlight @text={{option.label}} @search={{search}} />`
+     * (with `@ignoreAccents={{true}}` too when ignoring accents). In
      * pills the second value is the select API and the search is empty.
      * Optional: without a block, options show their text (strings, or
      * `@searchField` / `label` of objects), with the search text highlighted
@@ -1266,6 +1267,7 @@ export default class EuiComboBoxComponent extends Component<EuiComboBoxSignature
           @text={{this.labelFor option}}
           @search={{this.searchValue}}
           @isCaseSensitive={{@isCaseSensitive}}
+          @ignoreAccents={{this.ignoreAccents}}
           @rowHeight={{@rowHeight}}
           @truncationProps={{this.truncationFor option}}
           @width={{this.optionWidth}}

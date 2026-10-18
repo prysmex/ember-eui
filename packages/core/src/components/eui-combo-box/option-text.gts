@@ -1,6 +1,6 @@
 import Component from '@glimmer/component';
 
-import EuiHighlight from '../eui-highlight.gts';
+import EuiHighlight, { highlightChunks } from '../eui-highlight.gts';
 import EuiMark from '../eui-mark.gts';
 import EuiTextTruncate from '../eui-text-truncate.gts';
 
@@ -18,6 +18,8 @@ interface Signature {
     /** The search text (untrimmed). */
     search?: string;
     isCaseSensitive?: boolean;
+    /** EuiComboBox's `ignoreAccents`, to highlight what it matched. */
+    ignoreAccents?: boolean;
     /** `'auto'` wraps the text instead of truncating it. */
     rowHeight?: number | 'auto';
     /** EuiComboBox's `@truncationProps` merged with the option's own. */
@@ -44,15 +46,22 @@ export default class EuiComboBoxOptionText extends Component<Signature> {
     return this.args.rowHeight === 'auto';
   }
 
-  /** Upstream `searchPositionCenter`. */
+  /**
+   * Upstream `searchPositionCenter`: the middle of the match, found like
+   * EuiHighlight finds it (the match is not always the search's length
+   * when ignoring accents).
+   */
   get truncationPosition(): number {
-    const { text, isCaseSensitive } = this.args;
+    const { text, isCaseSensitive, ignoreAccents } = this.args;
     const search = this.search;
-    const start = isCaseSensitive
-      ? text.indexOf(search)
-      : text.toLowerCase().indexOf(search.toLowerCase());
+    const chunks = highlightChunks(text, search, isCaseSensitive, false, ignoreAccents);
+    const index = chunks.findIndex((chunk) => chunk.highlight);
 
-    return start + Math.floor(search.length / 2);
+    if (index < 0) return -1 + Math.floor(search.length / 2);
+
+    const start = chunks.slice(0, index).reduce((length, chunk) => length + chunk.text.length, 0);
+
+    return start + Math.floor(chunks[index]!.text.length / 2);
   }
 
   /** Shorter truncated text than the search: mark all of it (upstream). */
@@ -65,6 +74,7 @@ export default class EuiComboBoxOptionText extends Component<Signature> {
           @text={{@text}}
           @search={{this.search}}
           @strict={{@isCaseSensitive}}
+          @ignoreAccents={{@ignoreAccents}}
         />
       {{else}}
         {{@text}}
@@ -89,6 +99,7 @@ export default class EuiComboBoxOptionText extends Component<Signature> {
             @text={{text}}
             @search={{this.search}}
             @strict={{@isCaseSensitive}}
+            @ignoreAccents={{@ignoreAccents}}
           />
         {{/if}}
       </EuiTextTruncate>

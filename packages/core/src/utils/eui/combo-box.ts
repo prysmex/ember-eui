@@ -2,6 +2,8 @@
  * Combo box helpers. The group label style port it needs is shared with
  * EuiSelectableList (`utils/eui/selectable.ts`).
  */
+import { removeAccents } from '../../-private/accents.ts';
+
 import type { CSSObject } from '@emotion/css/create-instance';
 
 /**
@@ -113,10 +115,6 @@ export function createPartialStringEqualityOptionMatcher(
     ).includes(fold(normalizedSearchValue));
   };
 }
-
-/** "Médico" -> "Medico": accents (any combining mark) off. */
-const removeAccents = (text: string): string =>
-  text.normalize('NFD').replace(/\p{M}/gu, '');
 
 const keyOf = (option: unknown): unknown =>
   option && typeof option === 'object'

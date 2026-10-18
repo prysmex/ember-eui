@@ -491,7 +491,7 @@ Renamed or replaced hooks worth knowing:
 
 | Old | Use instead |
 | --- | --- |
-| `euiPanel` variant classes | Root `euiPanelBorealis` / `[data-eui-panel]` |
+| `euiPanel` variant classes | Root `euiPanel` (as upstream; `euiPanelBorealis` too) / `[data-eui-panel]` |
 | `euiFilePicker--hasFiles` | `euiFilePicker-hasFiles` |
 | `euiCallOut--small` | `[data-size="s"]` |
 | `.euiCallOut .euiText` | `.euiCallOut__additionalContent` |

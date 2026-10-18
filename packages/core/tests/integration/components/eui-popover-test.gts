@@ -178,6 +178,27 @@ module('Integration | Component | eui-popover', function (hooks) {
       assert.dom(panel()).hasAttribute('tabindex', '0');
     });
 
+    test('a hidden open panel stops retrying focus, and settles', async function (assert) {
+      const state = new State();
+      state.isOpen = true;
+      const start = performance.now();
+
+      // upstream retries every frame while the panel can't take focus: the
+      // focus waiter never ended, so render's settled() never resolved
+      await render(
+        <template>
+          <style>.hidden-panel { visibility: hidden; }</style>
+          <EuiPopover @isOpen={{state.isOpen}} @closePopover={{state.close}} @panelClassName="hidden-panel">
+            <:button><EuiButton>Anchor</EuiButton></:button>
+            <:content><button type="button">first</button></:content>
+          </EuiPopover>
+        </template>
+      );
+
+      assert.ok(panel(), 'open');
+      assert.ok(performance.now() - start < 5000, 'settled once the retries ran out');
+    });
+
     test('@initialFocus still wins over the panel', async function (assert) {
       const state = new State();
       state.isOpen = true;

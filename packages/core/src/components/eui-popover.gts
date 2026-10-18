@@ -413,6 +413,14 @@ const CLOSING_TRANSITION_TIME = 250;
 // tests settle once an opening popover has set its focus
 const focusWaiter = buildWaiter('@ember-eui/core:eui-popover-focus');
 
+/**
+ * How long `updateFocus` keeps waiting, a frame at a time, for a hidden
+ * panel (or focus target) to show. Upstream retries forever, so an open
+ * popover in a hidden container looped every frame and kept its test
+ * waiter pending; the opening transition takes far less than this.
+ */
+const UPDATE_FOCUS_RETRY_MS = 1000;
+
 export type FocusTarget = HTMLElement | string | (() => HTMLElement | null);
 
 const DEFAULT_POPOVER_STYLES = {
@@ -613,7 +621,8 @@ export default class EuiPopoverComponent
     }
   }
 
-  updateFocus(): void {
+  /** `retryUntil`: the retries' deadline, set by the first call. */
+  updateFocus(retryUntil = performance.now() + UPDATE_FOCUS_RETRY_MS): void {
     this.cancelUpdateFocus();
 
     const token = focusWaiter.beginAsync();
@@ -671,8 +680,8 @@ export default class EuiPopoverComponent
         const panelVisibility = window.getComputedStyle(this.panel).opacity;
 
         if (panelVisibility === '0') {
-          // #1
-          this.updateFocus();
+          // #1 (until the deadline: a panel in a hidden container stays hidden)
+          if (performance.now() < retryUntil) this.updateFocus(retryUntil);
         } else {
           // #2
           focusTarget = this.panel;
@@ -682,8 +691,8 @@ export default class EuiPopoverComponent
         const visibility = window.getComputedStyle(focusTarget).visibility;
 
         if (visibility === 'hidden') {
-          // not visible, check again next render frame
-          this.updateFocus();
+          // not visible, check again next render frame (until the deadline)
+          if (performance.now() < retryUntil) this.updateFocus(retryUntil);
         }
       }
 

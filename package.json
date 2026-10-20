@@ -17,6 +17,7 @@
     "release": "changeset publish",
     "sync-injected": "node scripts/sync-injected.mjs",
     "eui:generate": "node scripts/generate-eui-styles.mjs",
+    "size": "node scripts/measure-bundle-size.mjs",
     "eui:check": "node scripts/generate-eui-styles.mjs --check && node --test scripts/eui-upstream-parity.test.mjs"
   },
   "devDependencies": {

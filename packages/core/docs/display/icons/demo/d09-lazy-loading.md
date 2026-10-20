@@ -42,6 +42,17 @@ import magnify from '@ember-eui/core/icons/magnify';
 registerIcons({ chevronSingleDown, cross, magnify });
 ```
 
+To bundle every EUI icon up front instead (no lazy loading at all, at the
+cost of all ~700 icons in your bundle: ~330KB minified, ~130KB gzip),
+register them all once:
+
+```js
+// app/app.js
+import { registerAllIcons } from '@ember-eui/core/utils/register-all-icons';
+
+registerAllIcons();
+```
+
 Icons that are neither registered nor preloaded load the first time they
 render, as above. An icon that has loaded (or was registered) renders at
 once everywhere afterwards, without fading in again.

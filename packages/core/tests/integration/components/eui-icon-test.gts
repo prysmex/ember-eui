@@ -21,6 +21,7 @@ import { clearIconCache } from '#src/-private/icon-loader.ts';
 import { iconsFromGlob } from '#src/utils/icons-from-glob.ts';
 import bellIcon from '#src/icons/bell.ts';
 import { preloadIcons, registerIcons } from '#src/utils/preload-icons.ts';
+import { registerAllIcons } from '#src/utils/register-all-icons.ts';
 import { resolveBorealisTheme } from '#src/utils/eui/theme.ts';
 
 import type { EuiIconType } from '#src/components/eui-icon.gts';
@@ -594,6 +595,24 @@ module('Integration | Component | eui-icon', function (hooks) {
       assert.dom('svg').doesNotHaveAttribute('data-is-loading');
       assert.dom('svg').doesNotHaveAttribute('data-is-loaded');
       assert.dom('svg').hasAttribute('data-icon-type', 'bell');
+    });
+
+    test('registerAllIcons registers every icon type', async function (assert) {
+      registerAllIcons();
+
+      const children = await firstRenderedChildren(() =>
+        render(
+          <template>
+            <EuiIcon @type="logoElastic" class="a" />
+            <EuiIcon @type="tear" class="b" />
+            <EuiIcon @type="search" class="c" />
+          </template>
+        )
+      );
+
+      assert.true((children ?? 0) > 0, 'no empty icon first');
+      assert.dom('svg[data-is-loading]').doesNotExist();
+      assert.dom('svg[data-is-loaded]').doesNotExist();
     });
 
     test('registerIcons rejects names that are not EUI icons', function (assert) {

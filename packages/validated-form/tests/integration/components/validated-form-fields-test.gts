@@ -1,8 +1,11 @@
 import { module, test } from 'qunit';
 import { setupRenderingTest } from 'ember-qunit';
 import { array, hash } from '@ember/helper';
+import { on } from '@ember/modifier';
 import { click, fillIn, render, triggerKeyEvent, waitUntil } from '@ember/test-helpers';
 import { tracked } from '@glimmer/tracking';
+
+import pick from '@nullvoxpopuli/ember-composable-helpers/helpers/pick';
 
 import ValidatedForm from '#src/components/validated-form.gts';
 
@@ -199,6 +202,27 @@ module('Integration | Component | validated-form fields', function (hooks) {
 
     await fillIn('textarea', '**bold**');
     assert.deepEqual(md.values, ['**bold**']);
+  });
+
+  test('FieldMarkdownEditor renders @editorComponent instead of EuiMarkdownEditor', async function (assert) {
+    const md = recorder();
+    const Editor = <template>
+      <textarea class="my-editor" value={{@value}} {{on "input" (pick "target.value" @onChange)}} ...attributes></textarea>
+    </template>;
+
+    await render(
+      <template>
+        <ValidatedForm as |Form|>
+          <Form.FieldMarkdownEditor @label="Notes" @value="" @onChange={{md.onChange}} @editorComponent={{Editor}} />
+        </ValidatedForm>
+      </template>
+    );
+
+    assert.dom('.euiFormRow textarea.my-editor').exists();
+    assert.dom('.euiMarkdownEditor').doesNotExist();
+
+    await fillIn('textarea', 'plain');
+    assert.deepEqual(md.values, ['plain']);
   });
 
   test('validation messages for select presence', async function (assert) {

@@ -51,6 +51,14 @@ The yielded fields are `FieldText`, `FieldTextArea`, `FieldNumber`,
 `EuiFormRow`'s args and its control's args. `@onValidityChange` on the
 form tells you when the whole form becomes valid or invalid.
 
+`FieldComboBox`, `FieldRangeSlider`, `FieldDualRangeSlider` and
+`FieldMarkdownEditor` import their control (`EuiComboBox`, `EuiRange`,
+`EuiDualRange`, `EuiMarkdownEditor`) the first time one of them renders,
+and render once it has loaded, so a form that does not use them does not
+bring them into your app's bundle. In tests, `settled()` (and every test
+helper that waits for it) waits for the import. `FieldMarkdownEditor`
+with an `@editorComponent` never loads `EuiMarkdownEditor`.
+
 `FieldComboBox` takes every `EuiComboBox` argument and behaves like it:
 selected options leave the list, and leaving the field with typed text
 adds it through `@onCreateOption`; its validity follows

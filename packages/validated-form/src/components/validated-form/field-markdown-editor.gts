@@ -2,16 +2,17 @@ import { action } from '@ember/object';
 import didInsert from '@ember/render-modifiers/modifiers/did-insert';
 import didUpdate from '@ember/render-modifiers/modifiers/did-update';
 import EuiFormRow from '@ember-eui/core/components/eui-form-row';
-import EuiMarkdownEditor from '@ember-eui/core/components/eui-markdown-editor';
 import { argOrDefault } from '@ember-eui/core/helpers';
 
 import { not } from 'ember-truth-helpers';
 
+import { LazyComponent } from '../../-private/lazy-component.ts';
 import randomId from '../../-private/random-id.ts';
 import ValidatedFormFieldBase from './field-base.gts';
 
 import type { FieldBaseSignature } from './field-base.gts';
 import type { EuiFormRowSignature } from '@ember-eui/core/components/eui-form-row';
+import type EuiMarkdownEditor from '@ember-eui/core/components/eui-markdown-editor';
 import type { EuiMarkdownEditorSignature } from '@ember-eui/core/components/eui-markdown-editor';
 import type { ComponentLike } from '@glint/template';
 
@@ -38,7 +39,10 @@ export interface FieldMarkdownEditorSignature {
       onChange?: (value: string) => void;
       /** Placeholder text. */
       placeholder?: string;
-      /** @deprecated Has no effect. */
+      /**
+       * Renders this editor instead of EuiMarkdownEditor (which is then
+       * never loaded), with the same args.
+       */
       editorComponent?: ComponentLike;
     };
   Blocks: {
@@ -46,6 +50,16 @@ export interface FieldMarkdownEditorSignature {
     helpText: [...EuiFormRowSignature['Blocks']['helpText']];
   };
 }
+
+type MarkdownEditorLike = ComponentLike<{
+  Element: FieldMarkdownEditorSignature['Element'];
+  Args: Record<string, any>;
+}>;
+
+// imported on first render without `@editorComponent` (see LazyComponent)
+const euiMarkdownEditor = new LazyComponent<typeof EuiMarkdownEditor>(
+  () => import('@ember-eui/core/components/eui-markdown-editor')
+);
 
 export default class ValidatedFormFieldMarkdownEditor extends ValidatedFormFieldBase<FieldMarkdownEditorSignature> {
   @action
@@ -55,70 +69,72 @@ export default class ValidatedFormFieldMarkdownEditor extends ValidatedFormField
     this.notifyValidityChange();
   }
 
+  // `@editorComponent` takes any component: it gets the editor's args and
+  // attributes, unchecked
+  get MarkdownEditor(): MarkdownEditorLike | undefined {
+    return (this.args.editorComponent ?? euiMarkdownEditor.component) as
+      | MarkdownEditorLike
+      | undefined;
+  }
+
   <template>
-    {{#let (argOrDefault @id (randomId)) as |theId|}}
-      <EuiFormRow
-        class={{this.rowClasses}}
-        @labelType={{@labelType}}
-        @display={{@display}}
-        @hasEmptyLabelSpace={{@hasEmptyLabelSpace}}
-        @fullWidth={{@fullWidth}}
-        @hasChildLabel={{@hasChildLabel}}
-        @label={{this.label}}
-        @labelAppend={{@labelAppend}}
-        @id={{theId}}
-        @isInvalid={{this.isInvalidAndTouched}}
-        @error={{this.validationErrorMessages}}
-        @helpText={{@helpText}}
-        @errorClasses={{@errorClasses}}
-        @isFakeLabelBlock={{not (has-block "label")}}
-        @isFakeHelpTextBlock={{not (has-block "helpText")}}
-        {{didInsert this.setValidationMessages}}
-        {{didUpdate this.didUpdateValue @validations}}
-        {{didUpdate this.didUpdateValue @value}}
-      >
-        <:label as |label|>
-          {{yield label to="label"}}
-        </:label>
-        <:field>
-          {{#let
-            (if
-              @editorComponent
-              (component @editorComponent)
-              (component EuiMarkdownEditor)
-            )
-            as |MarkdownEditor|
-          }}
-            {{!@glint-expect-error}}
-            <MarkdownEditor
-              class={{@fieldClasses}}
-              form={{@formId}}
-              aria-label={{@ariaLabel}}
-              @value={{@value}}
-              @isInvalid={{this.isInvalidAndTouched}}
-              @disabled={{@disabled}}
-              @editorId={{theId}}
-              @onChange={{this.handleChange}}
-              @ariaDescribedBy={{@ariaDescribedBy}}
-              @ariaLabel={{@ariaLabel}}
-              @ariaLabelledBy={{@ariaLabelledBy}}
-              autofocus={{@autofocus}}
-              placeholder={{@placeholder}}
-              @onParse={{@onParse}}
-              @parsingPluginList={{@parsingPluginList}}
-              @uiPlugins={{@uiPlugins}}
-              @height={{@height}}
-              @maxHeight={{@maxHeight}}
-              @autoExpandPreview={{@autoExpandPreview}}
-              @initialViewMode={{@initialViewMode}}
-              ...attributes
-            />
-          {{/let}}
-        </:field>
-        <:helpText as |helpText|>
-          {{yield helpText to="helpText"}}
-        </:helpText>
-      </EuiFormRow>
+    {{#let this.MarkdownEditor as |MarkdownEditor|}}
+      {{#if MarkdownEditor}}
+        {{#let (argOrDefault @id (randomId)) as |theId|}}
+          <EuiFormRow
+            class={{this.rowClasses}}
+            @labelType={{@labelType}}
+            @display={{@display}}
+            @hasEmptyLabelSpace={{@hasEmptyLabelSpace}}
+            @fullWidth={{@fullWidth}}
+            @hasChildLabel={{@hasChildLabel}}
+            @label={{this.label}}
+            @labelAppend={{@labelAppend}}
+            @id={{theId}}
+            @isInvalid={{this.isInvalidAndTouched}}
+            @error={{this.validationErrorMessages}}
+            @helpText={{@helpText}}
+            @errorClasses={{@errorClasses}}
+            @isFakeLabelBlock={{not (has-block "label")}}
+            @isFakeHelpTextBlock={{not (has-block "helpText")}}
+            {{didInsert this.setValidationMessages}}
+            {{didUpdate this.didUpdateValue @validations}}
+            {{didUpdate this.didUpdateValue @value}}
+          >
+            <:label as |label|>
+              {{yield label to="label"}}
+            </:label>
+            <:field>
+              <MarkdownEditor
+                class={{@fieldClasses}}
+                form={{@formId}}
+                aria-label={{@ariaLabel}}
+                @value={{@value}}
+                @isInvalid={{this.isInvalidAndTouched}}
+                @disabled={{@disabled}}
+                @editorId={{theId}}
+                @onChange={{this.handleChange}}
+                @ariaDescribedBy={{@ariaDescribedBy}}
+                @ariaLabel={{@ariaLabel}}
+                @ariaLabelledBy={{@ariaLabelledBy}}
+                autofocus={{@autofocus}}
+                placeholder={{@placeholder}}
+                @onParse={{@onParse}}
+                @parsingPluginList={{@parsingPluginList}}
+                @uiPlugins={{@uiPlugins}}
+                @height={{@height}}
+                @maxHeight={{@maxHeight}}
+                @autoExpandPreview={{@autoExpandPreview}}
+                @initialViewMode={{@initialViewMode}}
+                ...attributes
+              />
+            </:field>
+            <:helpText as |helpText|>
+              {{yield helpText to="helpText"}}
+            </:helpText>
+          </EuiFormRow>
+        {{/let}}
+      {{/if}}
     {{/let}}
   </template>
 }

@@ -86,11 +86,114 @@ export function resolveEuiCss(
 }
 
 /**
+ * Class names per Emotion cache, in a trie walked with the styles passed to
+ * `euiClass`. Serialized styles are a step by identity: upstream's style
+ * factories return the same objects for a theme (see memoizedStyles).
+ * Plain objects (often literals, a new object each call) are walked by
+ * content, a step per property and value. Repeated rows composing the same
+ * styles thus find their class without serializing and hashing again. Keyed on the cache's `inserted` record,
+ * which `flush()` replaces: a flushed cache starts over, so a remembered
+ * class always has its rules in the sheet.
+ */
+interface ClassNode {
+  className?: string;
+  values?: Map<unknown, ClassNode>;
+  objects?: WeakMap<object, ClassNode>;
+}
+
+const classTries = new WeakMap<object, ClassNode>();
+const ARRAY_START = Symbol('[');
+const ARRAY_END = Symbol(']');
+const OBJECT_START = Symbol('{');
+const OBJECT_END = Symbol('}');
+
+function isPlainObject(value: object): boolean {
+  const prototype = Object.getPrototypeOf(value);
+
+  return prototype === Object.prototype || prototype === null;
+}
+
+function step(node: ClassNode, value: unknown): ClassNode {
+  let next: ClassNode | undefined;
+
+  if (typeof value === 'object' && value !== null) {
+    node.objects ??= new WeakMap();
+    next = node.objects.get(value);
+    if (!next) node.objects.set(value, (next = {}));
+  } else {
+    node.values ??= new Map();
+    next = node.values.get(value);
+    if (!next) node.values.set(value, (next = {}));
+  }
+
+  return next;
+}
+
+/**
+ * The trie node for `style`, or `undefined` when it holds a function (whose
+ * result is not known). A string that is a registered class name expands to
+ * its styles, so it is keyed apart from the same string as raw css.
+ */
+function walk(
+  node: ClassNode,
+  style: unknown,
+  registered: Record<string, unknown>
+): ClassNode | undefined {
+  if (Array.isArray(style)) {
+    let next: ClassNode | undefined = step(node, ARRAY_START);
+
+    for (const item of style) {
+      next = walk(next, item, registered);
+      if (!next) return undefined;
+    }
+
+    return step(next, ARRAY_END);
+  }
+
+  if (typeof style === 'function') return undefined;
+
+  if (typeof style === 'string') {
+    return step(node, (registered[style] === undefined ? 's' : 'r') + style);
+  }
+
+  if (typeof style === 'object' && style !== null && isPlainObject(style)) {
+    const { name, styles } = style as { name?: unknown; styles?: unknown };
+
+    if (typeof name !== 'string' || typeof styles !== 'string') {
+      let next: ClassNode | undefined = step(node, OBJECT_START);
+
+      for (const [property, value] of Object.entries(style)) {
+        next = walk(step(next, property), value, registered);
+        if (!next) return undefined;
+      }
+
+      return step(next, OBJECT_END);
+    }
+  }
+
+  return step(node, style);
+}
+
+/**
  * Compose serialized upstream styles into a class in the provider-owned
  * cache. Theme functions anywhere in `styles` (e.g. a caller's `@css`) are
  * resolved here against the context's theme, so every component that
  * composes `@css` through `euiClass` supports them.
+ *
+ * The class is remembered per cache and styles (by identity), so rows of a
+ * list or table composing the same styles serialize and hash them once.
  */
 export function euiClass(context: EuiThemeContext, ...styles: EuiCss[]): string {
-  return context.cache.css(resolveEuiCss(context, styles));
+  const resolved = resolveEuiCss(context, styles);
+  const emotion = context.cache;
+  const { inserted, registered } = emotion.cache;
+  let root = classTries.get(inserted);
+
+  if (!root) classTries.set(inserted, (root = {}));
+
+  const node = walk(root, resolved, registered);
+
+  if (!node) return emotion.css(resolved);
+
+  return (node.className ??= emotion.css(resolved));
 }

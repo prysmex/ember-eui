@@ -34,6 +34,9 @@ flatpickr as an [option](https://flatpickr.js.org/options/) (`@mode`,
 `@enableTime`, `@minDate`, `@dateFormat`, `@locale`, …), and
 `EuiFieldText`'s args style the input.
 
+flatpickr itself is imported when the first picker is set up, not when
+your app imports `EuiFlatpickr`. In tests, `settled()` waits for it.
+
 </EuiText>
 
 <EuiHorizontalRule />

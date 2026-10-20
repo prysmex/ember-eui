@@ -43,3 +43,15 @@ test('core does not import CommonJS lodash or the theme packages', () => {
   );
   assert.equal(found.length, 0, describe(found));
 });
+
+test('flatpickr imports flatpickr only when a picker is set up', () => {
+  const found = distImports('flatpickr').filter(
+    ({ specifier, dynamic }) => /^flatpickr(\/|$)/.test(specifier) && !dynamic
+  );
+  assert.equal(found.length, 0, describe(found));
+  assert.ok(
+    distImports('flatpickr').some(
+      ({ specifier, dynamic }) => specifier === 'flatpickr' && dynamic
+    )
+  );
+});

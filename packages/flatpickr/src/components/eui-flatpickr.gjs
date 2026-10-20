@@ -7,10 +7,9 @@ import didUpdate from '@ember/render-modifiers/modifiers/did-update';
 import willDestroy from '@ember/render-modifiers/modifiers/will-destroy';
 import { scheduleOnce } from '@ember/runloop';
 import { waitForPromise } from '@ember/test-waiters';
-import { EuiFieldText } from '@ember-eui/core/components';
+import EuiFieldText from '@ember-eui/core/components/eui-field-text';
 import { argOrDefault } from '@ember-eui/core/helpers';
 
-import flatpickr from 'flatpickr';
 import { and, not } from 'ember-truth-helpers';
 
 import randomId from '../-private/random-id.ts';
@@ -29,6 +28,21 @@ async function loadLocale(key) {
   const locales = module.default?.default ?? module.default ?? module;
 
   return locales[key] ?? key;
+}
+
+/**
+ * flatpickr itself (~40KB) is imported when the first picker is set up, not
+ * by importing this component. Once loaded, pickers are created without
+ * waiting.
+ */
+let flatpickr;
+
+async function loadFlatpickr() {
+  const module = await import('flatpickr');
+
+  flatpickr = module.default?.default ?? module.default ?? module;
+
+  return flatpickr;
 }
 
 /**
@@ -131,8 +145,12 @@ export default class EuiFlatpickrComponent extends Component {
       config.locale = await waitForPromise(loadLocale(config.locale));
     }
 
+    if (!flatpickr) {
+      await waitForPromise(loadFlatpickr());
+    }
+
     // The component may have been torn down, or a newer setup started (e.g.
-    // `@locale` changed again), while the locale chunk loaded.
+    // `@locale` changed again), while flatpickr or the locale chunk loaded.
     if (
       token !== this.setupToken ||
       this.isDestroying ||

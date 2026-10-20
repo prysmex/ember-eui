@@ -1,6 +1,7 @@
 import { on } from '@ember/modifier';
 import { action } from '@ember/object';
-import { EuiFieldPassword, EuiFormRow } from '@ember-eui/core/components';
+import EuiFieldPassword from '@ember-eui/core/components/eui-field-password';
+import EuiFormRow from '@ember-eui/core/components/eui-form-row';
 import { argOrDefault } from '@ember-eui/core/helpers';
 
 import { not } from 'ember-truth-helpers';

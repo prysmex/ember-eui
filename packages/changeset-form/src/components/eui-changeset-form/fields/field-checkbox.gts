@@ -1,6 +1,6 @@
 import { on } from '@ember/modifier';
 import { action } from '@ember/object';
-import { EuiCheckbox } from '@ember-eui/core/components';
+import EuiCheckbox from '@ember-eui/core/components/eui-checkbox';
 import { argOrDefault } from '@ember-eui/core/helpers';
 
 import { not, or } from 'ember-truth-helpers';

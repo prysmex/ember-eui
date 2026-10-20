@@ -1,6 +1,6 @@
 import { assert } from '@ember/debug';
 import { action } from '@ember/object';
-import { EuiComboBox, EuiFormRow } from '@ember-eui/core/components';
+import EuiFormRow from '@ember-eui/core/components/eui-form-row';
 import { argOrDefault } from '@ember-eui/core/helpers';
 import type Owner from '@ember/owner';
 
@@ -8,10 +8,12 @@ import optional from '@nullvoxpopuli/ember-composable-helpers/helpers/optional';
 import queue from '@nullvoxpopuli/ember-composable-helpers/helpers/queue';
 import { or } from 'ember-truth-helpers';
 
+import { LazyComponent } from '../../../-private/lazy-component.ts';
 import randomId from '../../../-private/random-id.ts';
 import Base from './base.gts';
 
 import type { BaseSignature } from './base';
+import type EuiComboBox from '@ember-eui/core/components/eui-combo-box';
 import type { EuiComboBoxSignature } from '@ember-eui/core/components/eui-combo-box';
 import type { EuiFormRowSignature } from '@ember-eui/core/components/eui-form-row';
 
@@ -47,6 +49,11 @@ export interface EuiChangesetFormFieldComboBoxSignature {
  * In order to provide full flexibility, this component doesn't handle the setting
  * or hardcodes the selected
  */
+// imported on first render (see LazyComponent)
+const euiComboBox = new LazyComponent<typeof EuiComboBox>(
+  () => import('@ember-eui/core/components/eui-combo-box')
+);
+
 export default class EuiChangesetFormFieldComboBox extends Base<EuiChangesetFormFieldComboBoxSignature> {
   constructor(
     owner: Owner,
@@ -82,112 +89,120 @@ export default class EuiChangesetFormFieldComboBox extends Base<EuiChangesetForm
     return result;
   }
 
+  get EuiComboBox() {
+    return euiComboBox.component;
+  }
+
   <template>
-    {{#let (argOrDefault @id (randomId)) as |theId|}}
-      <EuiFormRow
-        class={{this.rowClasses}}
-        @labelType={{@labelType}}
-        @display={{@display}}
-        @hasEmptyLabelSpace={{@hasEmptyLabelSpace}}
-        @fullWidth={{@fullWidth}}
-        @hasChildLabel={{@hasChildLabel}}
-        @label={{@label}}
-        @labelAppend={{@labelAppend}}
-        @id={{theId}}
-        @isInvalid={{this.isInvalid}}
-        @error={{this.errors}}
-        @helpText={{@helpText}}
-        @errorClasses={{@errorClasses}}
-      >
-        {{#let
-          (component
-            EuiComboBox
-            onChange=this.handleChange
-            options=@options
-            singleSelection=@singleSelection
-            selectedOptions=@selectedOptions
-            searchEnabled=(argOrDefault @searchEnabled true)
-            searchField=@searchField
-            search=@search
-            searchMessage=@searchMessage
-            searchMessageComponent=@searchMessageComponent
-            searchPlaceholder=@searchPlaceholder
-            placeholder=@placeholder
-            placeholderComponent=@placeholderComponent
-            loadingMessage=@loadingMessage
-            noMatchesMessage=@noMatchesMessage
-            noMatchesMessageComponent=@noMatchesMessageComponent
-            beforeOptionsComponent=@beforeOptionsComponent
-            afterOptionsComponent=@afterOptionsComponent
-            selectedItemComponent=@selectedItemComponent
-            dropdownClass=@dropdownClass
-            optionsClass=@optionsClass
-            onCreateOption=(if @onCreateOption this.handleCreateOption)
-            alwaysShowCreateOption=@alwaysShowCreateOption
-            customOptionText=@customOptionText
-            delimiter=@delimiter
-            isCaseSensitive=@isCaseSensitive
-            sortMatchesBy=@sortMatchesBy
-            matcher=@matcher
-            optionMatcher=@optionMatcher
-            typeAheadOptionMatcher=@typeAheadOptionMatcher
-            async=@async
-            onSearchChange=@onSearchChange
-            noSuggestions=@noSuggestions
-            truncationProps=@truncationProps
-            rowHeight=@rowHeight
-            onFocusBadge=@onFocusBadge
-            prepend=@prepend
-            append=@append
-            triggerIcon=@triggerIcon
-            isInvalid=this.isInvalid
-            isClearable=@isClearable
-            isLoading=@isLoading
-            isDisabled=@isDisabled
-            readOnly=@readOnly
-            fullWidth=@fullWidth
-            compressed=@compressed
-            closeOnSelect=@closeOnSelect
-            autoFocus=(or @autoFocus @autofocus)
-            initiallyOpen=@initiallyOpen
-            defaultHighlighted=@defaultHighlighted
-            matchTriggerWidth=@matchTriggerWidth
-            renderInPlace=@renderInPlace
-            horizontalPosition=@horizontalPosition
-            verticalPosition=@verticalPosition
-            destination=@destination
-            preventScroll=@preventScroll
-            calculatePosition=@calculatePosition
-            eventType=@eventType
-            tabindex=@tabindex
-            ariaLabel=@ariaLabel
-            ariaLabelledBy=@ariaLabelledBy
-            required=@required
-            triggerRole=@triggerRole
-            title=@title
-            triggerId=@triggerId
-            removeTag=@removeTag
-            onInput=@onInput
-            onKeydown=@onKeydown
-            registerApi=@registerApi
-            onBlur=(queue this.validate (optional @onBlur))
-            onFocus=@onFocus
-            onClose=@onClose
-            onOpen=@onOpen
-            extra=@extra
-          )
-          as |ComboBox|
-        }}
-          {{#if (has-block)}}
-            <ComboBox class={{@fieldClasses}} ...attributes as |opt index search|>
-              {{yield opt index search}}
-            </ComboBox>
-          {{else}}
-            {{! without a block, EuiComboBox renders the option labels }}
-            <ComboBox class={{@fieldClasses}} ...attributes />
-          {{/if}}
+    {{#let this.EuiComboBox as |EuiComboBox|}}
+      {{#if EuiComboBox}}
+        {{#let (argOrDefault @id (randomId)) as |theId|}}
+          <EuiFormRow
+            class={{this.rowClasses}}
+            @labelType={{@labelType}}
+            @display={{@display}}
+            @hasEmptyLabelSpace={{@hasEmptyLabelSpace}}
+            @fullWidth={{@fullWidth}}
+            @hasChildLabel={{@hasChildLabel}}
+            @label={{@label}}
+            @labelAppend={{@labelAppend}}
+            @id={{theId}}
+            @isInvalid={{this.isInvalid}}
+            @error={{this.errors}}
+            @helpText={{@helpText}}
+            @errorClasses={{@errorClasses}}
+          >
+            {{#let
+              (component
+                EuiComboBox
+                onChange=this.handleChange
+                options=@options
+                singleSelection=@singleSelection
+                selectedOptions=@selectedOptions
+                searchEnabled=(argOrDefault @searchEnabled true)
+                searchField=@searchField
+                search=@search
+                searchMessage=@searchMessage
+                searchMessageComponent=@searchMessageComponent
+                searchPlaceholder=@searchPlaceholder
+                placeholder=@placeholder
+                placeholderComponent=@placeholderComponent
+                loadingMessage=@loadingMessage
+                noMatchesMessage=@noMatchesMessage
+                noMatchesMessageComponent=@noMatchesMessageComponent
+                beforeOptionsComponent=@beforeOptionsComponent
+                afterOptionsComponent=@afterOptionsComponent
+                selectedItemComponent=@selectedItemComponent
+                dropdownClass=@dropdownClass
+                optionsClass=@optionsClass
+                onCreateOption=(if @onCreateOption this.handleCreateOption)
+                alwaysShowCreateOption=@alwaysShowCreateOption
+                customOptionText=@customOptionText
+                delimiter=@delimiter
+                isCaseSensitive=@isCaseSensitive
+                sortMatchesBy=@sortMatchesBy
+                matcher=@matcher
+                optionMatcher=@optionMatcher
+                typeAheadOptionMatcher=@typeAheadOptionMatcher
+                async=@async
+                onSearchChange=@onSearchChange
+                noSuggestions=@noSuggestions
+                truncationProps=@truncationProps
+                rowHeight=@rowHeight
+                onFocusBadge=@onFocusBadge
+                prepend=@prepend
+                append=@append
+                triggerIcon=@triggerIcon
+                isInvalid=this.isInvalid
+                isClearable=@isClearable
+                isLoading=@isLoading
+                isDisabled=@isDisabled
+                readOnly=@readOnly
+                fullWidth=@fullWidth
+                compressed=@compressed
+                closeOnSelect=@closeOnSelect
+                autoFocus=(or @autoFocus @autofocus)
+                initiallyOpen=@initiallyOpen
+                defaultHighlighted=@defaultHighlighted
+                matchTriggerWidth=@matchTriggerWidth
+                renderInPlace=@renderInPlace
+                horizontalPosition=@horizontalPosition
+                verticalPosition=@verticalPosition
+                destination=@destination
+                preventScroll=@preventScroll
+                calculatePosition=@calculatePosition
+                eventType=@eventType
+                tabindex=@tabindex
+                ariaLabel=@ariaLabel
+                ariaLabelledBy=@ariaLabelledBy
+                required=@required
+                triggerRole=@triggerRole
+                title=@title
+                triggerId=@triggerId
+                removeTag=@removeTag
+                onInput=@onInput
+                onKeydown=@onKeydown
+                registerApi=@registerApi
+                onBlur=(queue this.validate (optional @onBlur))
+                onFocus=@onFocus
+                onClose=@onClose
+                onOpen=@onOpen
+                extra=@extra
+              )
+              as |ComboBox|
+            }}
+              {{#if (has-block)}}
+                <ComboBox class={{@fieldClasses}} ...attributes as |opt index search|>
+                  {{yield opt index search}}
+                </ComboBox>
+              {{else}}
+                {{! without a block, EuiComboBox renders the option labels }}
+                <ComboBox class={{@fieldClasses}} ...attributes />
+              {{/if}}
+            {{/let}}
+          </EuiFormRow>
         {{/let}}
-      </EuiFormRow>
+      {{/if}}
     {{/let}}
   </template>
 }

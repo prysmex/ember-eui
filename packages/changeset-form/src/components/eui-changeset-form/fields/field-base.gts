@@ -1,5 +1,5 @@
 import { hash } from '@ember/helper';
-import { EuiFormRow } from '@ember-eui/core/components';
+import EuiFormRow from '@ember-eui/core/components/eui-form-row';
 import { argOrDefault } from '@ember-eui/core/helpers';
 
 import randomId from '../../../-private/random-id.ts';

@@ -48,6 +48,12 @@ The form yields its fields already bound to the changeset: `FieldText`,
 takes `EuiFormRow`'s args (`@label`, `@helpText`, …) and its control's args.
 Nested properties work (`@fieldName="address.city"`).
 
+`FieldComboBox`, `FieldRangeSlider` and `FieldDualRangeSlider` import
+their control (`EuiComboBox`, `EuiRange`, `EuiDualRange`) the first time
+one of them renders, and render once it has loaded, so a form that does
+not use them does not bring them into your app's bundle. In tests,
+`settled()` (and every test helper that waits for it) waits for the import.
+
 On submit the form calls `@beforeSubmit`, validates, then
 `changeset.save()` (or `changeset.execute()` with
 `@runExecuteInsteadOfSave`) and `@onSubmit` with the saved data. Errors

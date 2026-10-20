@@ -1,14 +1,16 @@
 import { action } from '@ember/object';
-import { EuiFormRow, EuiRange } from '@ember-eui/core/components';
+import EuiFormRow from '@ember-eui/core/components/eui-form-row';
 import { argOrDefault } from '@ember-eui/core/helpers';
 
 import { not } from 'ember-truth-helpers';
 
+import { LazyComponent } from '../../../-private/lazy-component.ts';
 import randomId from '../../../-private/random-id.ts';
 import Base from './base.gts';
 
 import type { BaseSignature } from './base';
 import type { EuiFormRowSignature } from '@ember-eui/core/components/eui-form-row';
+import type EuiRange from '@ember-eui/core/components/eui-range';
 import type { EuiRangeSignature } from '@ember-eui/core/components/eui-range';
 
 /**
@@ -45,6 +47,11 @@ export interface EuiChangesetFormFieldRangeSliderSignature {
   };
 }
 
+// imported on first render (see LazyComponent)
+const euiRange = new LazyComponent<typeof EuiRange>(
+  () => import('@ember-eui/core/components/eui-range')
+);
+
 export default class EuiChangesetFormFieldRangeSlider extends Base<EuiChangesetFormFieldRangeSliderSignature> {
   @action
   handleInput(e: Event) {
@@ -55,83 +62,91 @@ export default class EuiChangesetFormFieldRangeSlider extends Base<EuiChangesetF
     this.args.onChange?.(value, e);
   }
 
+  get EuiRange() {
+    return euiRange.component;
+  }
+
   <template>
-    {{#let (argOrDefault @id (randomId)) as |theId|}}
-      <EuiFormRow
-        class={{this.rowClasses}}
-        @labelType={{@labelType}}
-        @display={{@display}}
-        @hasEmptyLabelSpace={{@hasEmptyLabelSpace}}
-        @fullWidth={{@fullWidth}}
-        @hasChildLabel={{@hasChildLabel}}
-        @label={{@label}}
-        @labelAppend={{@labelAppend}}
-        @id={{theId}}
-        @isInvalid={{this.isInvalid}}
-        @error={{this.errors}}
-        @helpText={{@helpText}}
-        @errorClasses={{@errorClasses}}
-      >
-        <EuiRange
-          class={{@fieldClasses}}
-          form={{@formId}}
-          @compressed={{@compressed}}
-          @readOnly={{@readOnly}}
-          @fullWidth={{@fullWidth}}
-          {{!template-lint-disable}}
-          @id={{theId}}
-          @levels={{@levels}}
-          @step={{@step}}
-          @showInput={{@showInput}}
-          @showLabels={{@showLabels}}
-          @showRange={{@showRange}}
-          @showTicks={{@showTicks}}
-          @showValue={{@showValue}}
-          @ticks={{@ticks}}
-          @tickInterval={{@tickInterval}}
-          @valuePrepend={{@valuePrepend}}
-          @valueAppend={{@valueAppend}}
-          @onChange={{this.handleInput}}
-          @value={{this.value}}
-          @max={{@max}}
-          @isLoading={{@isLoading}}
-          @min={{@min}}
-          @isInvalid={{this.isInvalid}}
-          @isPrependProvided={{has-block "prepend"}}
-          @isAppendProvided={{has-block "append"}}
-          @isFakeMinBlock={{not (has-block "min")}}
-          @isFakeMaxBlock={{not (has-block "max")}}
-          @isFakeValueBlock={{not (has-block "value")}}
-          @isFakeValuePrependBlock={{not (has-block "valuePrepend")}}
-          @isFakeValueAppendBlock={{not (has-block "valueAppend")}}
-          disabled={{@disabled}}
-          aria-label={{@ariaLabel}}
-          autofocus={{@autofocus}}
-          ...attributes
-        >
-          <:prepend as |classes|>
-            {{yield classes to="prepend"}}
-          </:prepend>
-          <:min as |min|>
-            {{yield min to="min"}}
-          </:min>
-          <:valuePrepend>
-            {{yield to="valuePrepend"}}
-          </:valuePrepend>
-          <:value>
-            {{yield to="value"}}
-          </:value>
-          <:valueAppend>
-            {{yield to="valueAppend"}}
-          </:valueAppend>
-          <:max as |max|>
-            {{yield max to="max"}}
-          </:max>
-          <:append as |classes|>
-            {{yield classes to="append"}}
-          </:append>
-        </EuiRange>
-      </EuiFormRow>
+    {{#let this.EuiRange as |EuiRange|}}
+      {{#if EuiRange}}
+        {{#let (argOrDefault @id (randomId)) as |theId|}}
+          <EuiFormRow
+            class={{this.rowClasses}}
+            @labelType={{@labelType}}
+            @display={{@display}}
+            @hasEmptyLabelSpace={{@hasEmptyLabelSpace}}
+            @fullWidth={{@fullWidth}}
+            @hasChildLabel={{@hasChildLabel}}
+            @label={{@label}}
+            @labelAppend={{@labelAppend}}
+            @id={{theId}}
+            @isInvalid={{this.isInvalid}}
+            @error={{this.errors}}
+            @helpText={{@helpText}}
+            @errorClasses={{@errorClasses}}
+          >
+            <EuiRange
+              class={{@fieldClasses}}
+              form={{@formId}}
+              @compressed={{@compressed}}
+              @readOnly={{@readOnly}}
+              @fullWidth={{@fullWidth}}
+              {{!template-lint-disable}}
+              @id={{theId}}
+              @levels={{@levels}}
+              @step={{@step}}
+              @showInput={{@showInput}}
+              @showLabels={{@showLabels}}
+              @showRange={{@showRange}}
+              @showTicks={{@showTicks}}
+              @showValue={{@showValue}}
+              @ticks={{@ticks}}
+              @tickInterval={{@tickInterval}}
+              @valuePrepend={{@valuePrepend}}
+              @valueAppend={{@valueAppend}}
+              @onChange={{this.handleInput}}
+              @value={{this.value}}
+              @max={{@max}}
+              @isLoading={{@isLoading}}
+              @min={{@min}}
+              @isInvalid={{this.isInvalid}}
+              @isPrependProvided={{has-block "prepend"}}
+              @isAppendProvided={{has-block "append"}}
+              @isFakeMinBlock={{not (has-block "min")}}
+              @isFakeMaxBlock={{not (has-block "max")}}
+              @isFakeValueBlock={{not (has-block "value")}}
+              @isFakeValuePrependBlock={{not (has-block "valuePrepend")}}
+              @isFakeValueAppendBlock={{not (has-block "valueAppend")}}
+              disabled={{@disabled}}
+              aria-label={{@ariaLabel}}
+              autofocus={{@autofocus}}
+              ...attributes
+            >
+              <:prepend as |classes|>
+                {{yield classes to="prepend"}}
+              </:prepend>
+              <:min as |min|>
+                {{yield min to="min"}}
+              </:min>
+              <:valuePrepend>
+                {{yield to="valuePrepend"}}
+              </:valuePrepend>
+              <:value>
+                {{yield to="value"}}
+              </:value>
+              <:valueAppend>
+                {{yield to="valueAppend"}}
+              </:valueAppend>
+              <:max as |max|>
+                {{yield max to="max"}}
+              </:max>
+              <:append as |classes|>
+                {{yield classes to="append"}}
+              </:append>
+            </EuiRange>
+          </EuiFormRow>
+        {{/let}}
+      {{/if}}
     {{/let}}
   </template>
 }

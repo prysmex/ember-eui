@@ -1,6 +1,7 @@
 import { on } from '@ember/modifier';
 import { action } from '@ember/object';
-import { EuiFormRow, EuiRadio } from '@ember-eui/core/components';
+import EuiFormRow from '@ember-eui/core/components/eui-form-row';
+import EuiRadio from '@ember-eui/core/components/eui-radio';
 import { argOrDefault } from '@ember-eui/core/helpers';
 
 import { not, or } from 'ember-truth-helpers';

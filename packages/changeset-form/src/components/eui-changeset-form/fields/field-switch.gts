@@ -1,5 +1,6 @@
 import { action } from '@ember/object';
-import { EuiFormRow, EuiSwitch } from '@ember-eui/core/components';
+import EuiFormRow from '@ember-eui/core/components/eui-form-row';
+import EuiSwitch from '@ember-eui/core/components/eui-switch';
 import { argOrDefault } from '@ember-eui/core/helpers';
 
 import { not } from 'ember-truth-helpers';

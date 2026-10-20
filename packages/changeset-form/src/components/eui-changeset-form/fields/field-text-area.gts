@@ -1,6 +1,7 @@
 import { on } from '@ember/modifier';
 import { action } from '@ember/object';
-import { EuiFormRow, EuiTextArea } from '@ember-eui/core/components';
+import EuiFormRow from '@ember-eui/core/components/eui-form-row';
+import EuiTextArea from '@ember-eui/core/components/eui-text-area';
 import { argOrDefault } from '@ember-eui/core/helpers';
 
 import randomId from '../../../-private/random-id.ts';

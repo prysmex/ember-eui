@@ -1,13 +1,15 @@
 import { action } from '@ember/object';
-import { EuiDualRange,EuiFormRow } from '@ember-eui/core/components';
+import EuiFormRow from '@ember-eui/core/components/eui-form-row';
 import { argOrDefault } from '@ember-eui/core/helpers';
 
 import { not } from 'ember-truth-helpers';
 
+import { LazyComponent } from '../../../-private/lazy-component.ts';
 import randomId from '../../../-private/random-id.ts';
 import Base from './base.gts';
 
 import type { BaseSignature } from './base';
+import type EuiDualRange from '@ember-eui/core/components/eui-dual-range';
 import type {
   EuiDualRangeSignature,
   ValueMember
@@ -45,6 +47,11 @@ export interface EuiChangesetFormFieldDualRangeSliderSignature {
   };
 }
 
+// imported on first render (see LazyComponent)
+const euiDualRange = new LazyComponent<typeof EuiDualRange>(
+  () => import('@ember-eui/core/components/eui-dual-range')
+);
+
 export default class EuiChangesetFormFieldDualRangeSlider extends Base<EuiChangesetFormFieldDualRangeSliderSignature> {
   @action
   handleInput(e: [ValueMember, ValueMember]) {
@@ -53,67 +60,75 @@ export default class EuiChangesetFormFieldDualRangeSlider extends Base<EuiChange
     this.args.onInput?.(e);
   }
 
+  get EuiDualRange() {
+    return euiDualRange.component;
+  }
+
   <template>
-    {{#let (argOrDefault @id (randomId)) as |theId|}}
-      <EuiFormRow
-        class={{this.rowClasses}}
-        @labelType={{@labelType}}
-        @display={{@display}}
-        @hasEmptyLabelSpace={{@hasEmptyLabelSpace}}
-        @fullWidth={{@fullWidth}}
-        @hasChildLabel={{@hasChildLabel}}
-        @label={{@label}}
-        @labelAppend={{@labelAppend}}
-        @id={{theId}}
-        @isInvalid={{this.isInvalid}}
-        @error={{this.errors}}
-        @helpText={{@helpText}}
-        @errorClasses={{@errorClasses}}
-      >
-        <EuiDualRange
-          class={{@fieldClasses}}
-          form={{@formId}}
-          @value={{this.value}}
-          @fullWidth={{@fullWidth}}
-          @isInvalid={{this.isInvalid}}
-          @levels={{@levels}}
-          @showLabels={{@showLabels}}
-          @showInput={{@showInput}}
-          @tickInterval={{@tickInterval}}
-          @ticks={{@ticks}}
-          aria-label={{@ariaLabel}}
-          @compressed={{@compressed}}
-          @showRange={{@showRange}}
-          @showTicks={{@showTicks}}
-          @readOnly={{@readOnly}}
-          {{!template-lint-disable}}
-          @id={{theId}}
-          @step={{@step}}
-          @onChange={{this.handleInput}}
-          @max={{@max}}
-          @min={{@min}}
-          @isPrependProvided={{has-block "prepend"}}
-          @isAppendProvided={{has-block "append"}}
-          @isFakeMinBlock={{not (has-block "min")}}
-          @isFakeMaxBlock={{not (has-block "max")}}
-          disabled={{@disabled}}
-          autofocus={{@autofocus}}
-          ...attributes
-        >
-          <:prepend as |classes|>
-            {{yield classes to="prepend"}}
-          </:prepend>
-          <:min>
-            {{yield to="min"}}
-          </:min>
-          <:max>
-            {{yield to="max"}}
-          </:max>
-          <:append as |classes|>
-            {{yield classes to="append"}}
-          </:append>
-        </EuiDualRange>
-      </EuiFormRow>
+    {{#let this.EuiDualRange as |EuiDualRange|}}
+      {{#if EuiDualRange}}
+        {{#let (argOrDefault @id (randomId)) as |theId|}}
+          <EuiFormRow
+            class={{this.rowClasses}}
+            @labelType={{@labelType}}
+            @display={{@display}}
+            @hasEmptyLabelSpace={{@hasEmptyLabelSpace}}
+            @fullWidth={{@fullWidth}}
+            @hasChildLabel={{@hasChildLabel}}
+            @label={{@label}}
+            @labelAppend={{@labelAppend}}
+            @id={{theId}}
+            @isInvalid={{this.isInvalid}}
+            @error={{this.errors}}
+            @helpText={{@helpText}}
+            @errorClasses={{@errorClasses}}
+          >
+            <EuiDualRange
+              class={{@fieldClasses}}
+              form={{@formId}}
+              @value={{this.value}}
+              @fullWidth={{@fullWidth}}
+              @isInvalid={{this.isInvalid}}
+              @levels={{@levels}}
+              @showLabels={{@showLabels}}
+              @showInput={{@showInput}}
+              @tickInterval={{@tickInterval}}
+              @ticks={{@ticks}}
+              aria-label={{@ariaLabel}}
+              @compressed={{@compressed}}
+              @showRange={{@showRange}}
+              @showTicks={{@showTicks}}
+              @readOnly={{@readOnly}}
+              {{!template-lint-disable}}
+              @id={{theId}}
+              @step={{@step}}
+              @onChange={{this.handleInput}}
+              @max={{@max}}
+              @min={{@min}}
+              @isPrependProvided={{has-block "prepend"}}
+              @isAppendProvided={{has-block "append"}}
+              @isFakeMinBlock={{not (has-block "min")}}
+              @isFakeMaxBlock={{not (has-block "max")}}
+              disabled={{@disabled}}
+              autofocus={{@autofocus}}
+              ...attributes
+            >
+              <:prepend as |classes|>
+                {{yield classes to="prepend"}}
+              </:prepend>
+              <:min>
+                {{yield to="min"}}
+              </:min>
+              <:max>
+                {{yield to="max"}}
+              </:max>
+              <:append as |classes|>
+                {{yield classes to="append"}}
+              </:append>
+            </EuiDualRange>
+          </EuiFormRow>
+        {{/let}}
+      {{/if}}
     {{/let}}
   </template>
 }

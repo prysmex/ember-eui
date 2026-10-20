@@ -1,5 +1,6 @@
 import { action } from '@ember/object';
-import { EuiFormRow, EuiRadioGroup } from '@ember-eui/core/components';
+import EuiFormRow from '@ember-eui/core/components/eui-form-row';
+import EuiRadioGroup from '@ember-eui/core/components/eui-radio-group';
 import { argOrDefault } from '@ember-eui/core/helpers';
 
 import randomId from '../../../-private/random-id.ts';

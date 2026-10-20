@@ -96,3 +96,67 @@ test('every icon type has a public module', () => {
     assert.ok(existsSync(join(dir, `${type}.js`)), type);
   }
 });
+
+const PACKAGES = [
+  'core',
+  'validated-form',
+  'changeset-form',
+  'flatpickr',
+  'pikaday'
+];
+
+test('every package lets bundlers drop its unused modules', () => {
+  for (const pkg of PACKAGES) {
+    const { sideEffects } = JSON.parse(
+      readFileSync(join(root, 'packages', pkg, 'package.json'), 'utf8')
+    );
+    // only styles (and the package's own tests) have side effects
+    assert.deepEqual(sideEffects, ['*.css', './tests/**'], pkg);
+  }
+});
+
+/**
+ * Registration (templates, managers, waiters, and decorators, which
+ * decorator-transforms' runtime applies through one-letter helpers) is
+ * what modules may do when imported; nothing else may run.
+ */
+const REGISTRATION =
+  /^(setComponentTemplate|precompileTemplate|templateOnly|setModifierManager|setHelperManager|setComponentManager|buildWaiter|[a-z])\(/;
+
+test('no module does anything but registration when imported', async () => {
+  const { createRequire } = await import('node:module');
+  const require = createRequire(join(root, 'packages/core/package.json'));
+  const { parse } = require('@babel/parser');
+  const found = [];
+
+  for (const pkg of PACKAGES) {
+    const dist = join(root, 'packages', pkg, 'dist');
+    for (const file of readdirSync(dist, { recursive: true })) {
+      // upstream EUI's style code (scripts/generate-eui-styles.mjs): pure,
+      // though tree-shaking leaves some values it computes and discards
+      if (
+        !file.endsWith('.js') ||
+        file.startsWith('utils/eui/styles.generated')
+      )
+        continue;
+      const code = readFileSync(join(dist, file), 'utf8');
+      for (const statement of parse(code, { sourceType: 'module' }).program
+        .body) {
+        if (statement.type !== 'ExpressionStatement') continue;
+        const source = code.slice(statement.start, statement.end);
+        // validated-form's default theme gets its nested form from the module
+        // defining it (a cycle otherwise)
+        if (
+          REGISTRATION.test(source) ||
+          source ===
+            'ValidatedFormDefaultTheme.FieldNestedForm = ValidatedFormComponent;'
+        ) {
+          continue;
+        }
+        found.push({ file: `${pkg}/${file}`, specifier: source.slice(0, 120) });
+      }
+    }
+  }
+
+  assert.equal(found.length, 0, describe(found));
+});

@@ -51,6 +51,10 @@
     "declarations",
     "dist"
   ],
+  "sideEffects": [
+    "*.css",
+    "./tests/**"
+  ],
   "dependencies": {
     "@ember/render-modifiers": "^4.0.0",
     "@ember/test-waiters": "^4.1.1",

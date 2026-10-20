@@ -52,6 +52,10 @@
     "declarations",
     "dist"
   ],
+  "sideEffects": [
+    "*.css",
+    "./tests/**"
+  ],
   "dependencies": {
     "@babel/core": "^7.26.0",
     "@ember/render-modifiers": "^4.0.0",

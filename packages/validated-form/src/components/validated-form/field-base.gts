@@ -1,7 +1,7 @@
 import Component from '@glimmer/component';
-import { tracked } from '@glimmer/tracking';
-import { action } from '@ember/object';
-import { later } from '@ember/runloop';
+import { cached, tracked } from '@glimmer/tracking';
+import { action, get } from '@ember/object';
+import { scheduleOnce } from '@ember/runloop';
 import type Owner from '@ember/owner';
 
 import {
@@ -71,9 +71,56 @@ export default class ValidatedFormFieldBase<
   lastIsValid?: boolean;
   lastIsTouched?: boolean;
 
-  @tracked _validationErrorMessages: null | string[] = null;
-
   @tracked isTouched = false;
+
+  /**
+   * The messages of `@validations` and `@customValidations` for the current
+   * value. Derived, so a field renders once with its messages on insert and
+   * once per value change (they used to be stored after each render, which
+   * rendered every field twice).
+   */
+  @cached
+  get derivedValidationErrorMessages(): string[] {
+    return this.derivedValidation.messages;
+  }
+
+  // The messages with the value they were derived for (see didUpdateValue).
+  @cached
+  private get derivedValidation(): { messages: string[]; value: unknown } {
+    void this.revision;
+
+    return {
+      messages: buildValidationMessages.call(this, this.validationProperty),
+      value: get(this, this.validationProperty as keyof this)
+    };
+  }
+
+  // Derives the messages again when a subclass validates a property that is
+  // not tracked.
+  @tracked private revision = 0;
+
+  /**
+   * An assignment (subclasses used to store the messages here) shows until
+   * the value or the validations change.
+   */
+  @tracked private _assignedMessages?: {
+    messages: null | string[];
+    for: string[];
+  };
+
+  get _validationErrorMessages(): null | string[] {
+    const derived = this.derivedValidationErrorMessages;
+    const assigned = this._assignedMessages;
+
+    return assigned && assigned.for === derived ? assigned.messages : derived;
+  }
+
+  set _validationErrorMessages(messages: null | string[]) {
+    this._assignedMessages = {
+      messages,
+      for: this.derivedValidationErrorMessages
+    };
+  }
 
   formRowElement: HTMLElement | null = null;
 
@@ -157,28 +204,33 @@ export default class ValidatedFormFieldBase<
     this.args.register?.(this as unknown as ComponentLike);
   }
 
-  //Should be executed by the child on start
+  // Run by the field's row on insert: the form finds the field of a row.
   @action
   setValidationMessages(ele?: HTMLElement) {
-    this._validationErrorMessages = buildValidationMessages.call(
-      this,
-      this.validationProperty
-    );
-
     if (ele) {
       this.formRowElement = ele;
     }
   }
 
-  //Should be executed by the child on value update
+  // Run by the field's row when the value or the validations change. The
+  // messages update with them; tell the form after this render, in the same
+  // run loop.
   @action
   didUpdateValue() {
-    later(() => {
-      if (!this.isDestroyed && !this.isDestroying) {
-        this.setValidationMessages();
-        this.notifyValidityChange();
-      }
-    }, 1);
+    if (
+      get(this, this.validationProperty as keyof this) !==
+      this.derivedValidation.value
+    ) {
+      this.revision++;
+    }
+
+    scheduleOnce('afterRender', this, this.notifyValidityChangeIfAlive);
+  }
+
+  private notifyValidityChangeIfAlive() {
+    if (!this.isDestroyed && !this.isDestroying) {
+      this.notifyValidityChange();
+    }
   }
 
   @action

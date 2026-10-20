@@ -5,7 +5,7 @@ import { hash } from '@ember/helper';
 import { on } from '@ember/modifier';
 import { action, set } from '@ember/object';
 import didInsert from '@ember/render-modifiers/modifiers/did-insert';
-import { next, schedule } from '@ember/runloop';
+import { schedule, scheduleOnce } from '@ember/runloop';
 import EuiForm from '@ember-eui/core/components/eui-form';
 import { argOrDefault } from '@ember-eui/core/helpers';
 import type Owner from '@ember/owner';
@@ -161,13 +161,47 @@ export default class ValidatedFormComponent extends Component<ValidatedFormSigna
     return this.isInvalid && this.isTouched;
   }
 
+  // The registered children that are invalid or touched. The child that
+  // changed updates them (see onChildValidityChange), so a keystroke costs
+  // the same whatever the number of fields.
+  private children = new Set<ValidatedFormChild>();
+  private invalidChildren = new Set<ValidatedFormChild>();
+  private touchedChildren = new Set<ValidatedFormChild>();
+
   addChild(child: ValidatedFormChild) {
     this.childComponents.pushObject(child);
+    this.children.add(child);
+    this.updateChild(child);
     this.triggerValidityChange();
   }
 
   removeChild(child: ValidatedFormChild) {
     this.childComponents.removeObject(child);
+    this.children.delete(child);
+    this.invalidChildren.delete(child);
+    this.touchedChildren.delete(child);
+  }
+
+  private updateChild(child: ValidatedFormChild) {
+    if (child.isValid) {
+      this.invalidChildren.delete(child);
+    } else {
+      this.invalidChildren.add(child);
+    }
+
+    if (child.isTouched) {
+      this.touchedChildren.add(child);
+    } else {
+      this.touchedChildren.delete(child);
+    }
+  }
+
+  // Children that do not say what changed (nested forms, app fields), and
+  // submitting, read every child again.
+  private updateChildren() {
+    this.invalidChildren.clear();
+    this.touchedChildren.clear();
+    this.childComponents.forEach((child) => this.updateChild(child));
   }
 
   @action
@@ -177,6 +211,9 @@ export default class ValidatedFormComponent extends Component<ValidatedFormSigna
     }
 
     e.preventDefault();
+    // app fields may not report their changes
+    this.updateChildren();
+    this.flushValidity();
 
     if (this.isInvalid) {
       this.setIsTouched(true);
@@ -227,52 +264,76 @@ export default class ValidatedFormComponent extends Component<ValidatedFormSigna
 
   @action
   updateValidity() {
+    this.updateChildren();
     this.triggerValidityChange();
   }
 
   getIsValid() {
-    return this.childComponents.isEvery('isValid');
+    return this.invalidChildren.size === 0;
   }
 
   getIsTouched() {
-    return this.childComponents.isAny('isTouched');
+    return this.touchedChildren.size > 0;
   }
 
   triggerValidityChange() {
-    const lastIsValid = this.isValid;
-    const lastIsTouched = this.isTouched;
-
     if (
-      lastIsValid !== this.getIsValid() ||
-      lastIsTouched !== this.getIsTouched()
+      this.isValid !== this.getIsValid() ||
+      this.isTouched !== this.getIsTouched()
     ) {
       this.setNewValidity();
     }
   }
 
+  // After the current render, in the same run loop (it used to wait for the
+  // next one); one update however many children changed.
   @action
   setNewValidity() {
-    next(() => {
-      if (this.isDestroying || this.isDestroyed) {
-        return;
-      }
-
-      this.isInvalid = !this.getIsValid();
-      this.isTouched = this.getIsTouched();
-
-      if (!this.isDestroying) {
-        this.args.onValidityChange?.(
-          this.isValid,
-          this.isTouched,
-          this.isInvalidAndTouched
-        );
-      }
-    });
+    scheduleOnce('afterRender', this, this.flushValidity);
   }
 
+  private flushValidity() {
+    if (this.isDestroying || this.isDestroyed) {
+      return;
+    }
+
+    const isInvalid = !this.getIsValid();
+    const isTouched = this.getIsTouched();
+
+    // the first flush always reports (as the form's insert did)
+    if (
+      this.lastIsValid === !isInvalid &&
+      this.lastIsTouched === isTouched
+    ) {
+      return;
+    }
+
+    this.isInvalid = isInvalid;
+    this.isTouched = isTouched;
+    this.lastIsValid = this.isValid;
+    this.lastIsTouched = isTouched;
+
+    this.args.onValidityChange?.(
+      this.isValid,
+      this.isTouched,
+      this.isInvalidAndTouched
+    );
+  }
+
+  // Fields call it with `{ child, isValid, isTouched }` when theirs changes;
+  // nested forms with their own `(isValid, isTouched, …)`.
   @action
-  onChildValidityChange() {
-    if (!this.isDestroying) {
+  onChildValidityChange(change?: unknown) {
+    if (this.isDestroying) {
+      return;
+    }
+
+    const child = (change as { child?: ValidatedFormChild } | undefined)?.child;
+
+    if (child && this.children.has(child)) {
+      this.updateChild(child);
+      this.triggerValidityChange();
+    } else {
       this.updateValidity();
     }
   }

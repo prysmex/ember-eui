@@ -24,7 +24,22 @@
 import { euiShadowSmall } from '@elastic/eui-theme-common';
 import { serializeStyles } from '@emotion/serialize';
 
-import * as generated from './styles.generated.ts';
+import {
+  euiButtonColor as _euiButtonColor,
+  euiButtonEmptyColor as _euiButtonEmptyColor,
+  euiButtonFillColor as _euiButtonFillColor,
+  euiCanAnimate as _euiCanAnimate,
+  euiFontSize as _euiFontSize,
+  euiFormControlDefaultShadow as _euiFormControlDefaultShadow,
+  euiFormControlStyles as _euiFormControlStyles,
+  euiFormControlText as _euiFormControlText,
+  euiMaxBreakpoint as _euiMaxBreakpoint,
+  euiYScroll as _euiYScroll,
+  highContrastModeStyles as _highContrastModeStyles,
+  logicalCSS as _logicalCSS,
+  logicalSizeCSS as _logicalSizeCSS,
+  mathWithUnits as _mathWithUnits
+} from './styles.generated.ts';
 
 import type { EuiBorealisContext } from './theme.ts';
 import type { SerializedStyles } from '@emotion/serialize';
@@ -35,6 +50,8 @@ type Vars = any;
 
 // The generated module is untyped (`@ts-nocheck`); this port is upstream's
 // JavaScript, checked by the parity suite rather than the type checker.
+// (Named imports, not a namespace: a namespace import would bundle every
+// generated module.)
 const {
   euiButtonColor,
   euiButtonEmptyColor,
@@ -50,8 +67,22 @@ const {
   logicalCSS,
   logicalSizeCSS,
   mathWithUnits
-   
-} = generated as any;
+} = {
+  euiButtonColor: _euiButtonColor,
+  euiButtonEmptyColor: _euiButtonEmptyColor,
+  euiButtonFillColor: _euiButtonFillColor,
+  euiCanAnimate: _euiCanAnimate,
+  euiFontSize: _euiFontSize,
+  euiFormControlDefaultShadow: _euiFormControlDefaultShadow,
+  euiFormControlStyles: _euiFormControlStyles,
+  euiFormControlText: _euiFormControlText,
+  euiMaxBreakpoint: _euiMaxBreakpoint,
+  euiYScroll: _euiYScroll,
+  highContrastModeStyles: _highContrastModeStyles,
+  logicalCSS: _logicalCSS,
+  logicalSizeCSS: _logicalSizeCSS,
+  mathWithUnits: _mathWithUnits
+} as any;
 
 const css = (...args: unknown[]): SerializedStyles =>
   serializeStyles(args as Parameters<typeof serializeStyles>[0]);

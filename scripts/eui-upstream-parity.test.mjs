@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import { createRequire, Module } from 'node:module';
 import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { readFileSync } from 'node:fs';
+import { readFileSync, readdirSync } from 'node:fs';
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const require = createRequire(resolve(root, 'packages/core/package.json'));
@@ -508,7 +508,15 @@ test('color picker: EuiColorStops hand port (EUI 88.5.4, removed upstream in 89)
 });
 
 test('generated artifact has no React or upstream hook execution paths', () => {
-  const code = readFileSync(source, 'utf8');
+  const dir = resolve(root, 'packages/core/src/utils/eui/styles.generated');
+  const code = [
+    source,
+    ...readdirSync(dir, { recursive: true })
+      .filter((file) => file.endsWith('.ts'))
+      .map((file) => resolve(dir, file))
+  ]
+    .map((file) => readFileSync(file, 'utf8'))
+    .join('\n');
   assert.doesNotMatch(
     code,
     /from ["'](?:react|react-dom|@emotion\/react)(?:["'/])/

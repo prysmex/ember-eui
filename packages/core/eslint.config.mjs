@@ -36,7 +36,7 @@ const tsParserOptions = {
 
 export default defineConfig([
   // Upstream-generated JavaScript is validated by eui:check, not source lint.
-  globalIgnores(['dist/', 'dist-*/', 'declarations/', 'coverage/', 'src/utils/eui/styles.generated.ts', '!**/.*']),
+  globalIgnores(['dist/', 'dist-*/', 'declarations/', 'coverage/', 'src/utils/eui/styles.generated.ts', 'src/utils/eui/styles.generated/', '!**/.*']),
   js.configs.recommended,
   prettier,
   ember.configs.base,

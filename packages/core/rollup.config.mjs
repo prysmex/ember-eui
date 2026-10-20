@@ -15,6 +15,13 @@ const rootDirectory = dirname(fileURLToPath(import.meta.url));
 const babelConfig = resolve(rootDirectory, './babel.publish.config.cjs');
 
 export default {
+  treeshake: {
+    // The generated EUI style modules (scripts/generate-eui-styles.mjs) only
+    // define factories; their top-level `css()` calls are pure. Saying so
+    // lets each component's chunk import just the style modules it uses
+    // instead of every module the styles.generated barrel re-exports.
+    moduleSideEffects: (id) => !/[\\/]utils[\\/]eui[\\/]styles\.generated[./\\]/.test(id)
+  },
   output: {
     ...addon.output(),
     // one lazily loaded chunk per EUI icon (src/-private/icons.ts), kept

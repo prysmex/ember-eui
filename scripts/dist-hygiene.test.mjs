@@ -55,3 +55,30 @@ test('flatpickr imports flatpickr only when a picker is set up', () => {
     )
   );
 });
+
+test('markdown format loads its parser on first render', () => {
+  const format = distImports('core').filter(
+    ({ file }) => file === 'components/eui-markdown-format.js'
+  );
+  assert.ok(format.length > 0);
+  const found = format.filter(({ specifier }) =>
+    /^(unified|remark-|rehype-|refractor|node-emoji|emoticon)|markdown-default-plugins|markdown-engine\.js$/.test(
+      specifier
+    )
+  );
+  assert.equal(found.length, 0, describe(found));
+});
+
+test('nothing imports node-emoji or remark-emoji (they require CommonJS lodash)', () => {
+  const found = distImports('core').filter(({ specifier }) =>
+    /^(node-emoji|remark-emoji)$/.test(specifier)
+  );
+  assert.equal(found.length, 0, describe(found));
+});
+
+test('the code language loaders are imported with the first language', () => {
+  const found = distImports('core').filter(
+    ({ specifier, dynamic }) => /\/languages\.js$/.test(specifier) && !dynamic
+  );
+  assert.equal(found.length, 0, describe(found));
+});

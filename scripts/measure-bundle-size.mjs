@@ -13,6 +13,8 @@
  *   node scripts/measure-bundle-size.mjs --json out.json
  *   node scripts/measure-bundle-size.mjs --modules eui-button
  *                                             largest modules in an entry
+ *   … --modules eui-markdown-format --chunk markdown-engine
+ *                                             largest modules in its lazy chunk
  */
 import {
   mkdirSync,
@@ -41,6 +43,9 @@ const jsonOut = args.includes('--json')
 const modulesOf = args.includes('--modules')
   ? args[args.indexOf('--modules') + 1]
   : null;
+// with --modules: list the modules of the (lazy) chunks whose file name
+// contains this instead of the entry's static graph
+const chunkOf = args.includes('--chunk') ? args[args.indexOf('--chunk') + 1] : null;
 
 // the site consumes the packages as injected copies (pnpm-workspace.yaml)
 if (!args.includes('--entry'))
@@ -171,7 +176,8 @@ async function buildEntry(name) {
       gzip: 0
     });
   const modules = [...moduleSizes].filter(([, m]) => files.includes(m.chunk));
-  return { total, lazyChunks: lazy.size, modules };
+  const allModules = [...moduleSizes];
+  return { total, lazyChunks: lazy.size, modules, allModules };
 }
 
 // `--entry <name>` (internal): build one entry and print its result. Each
@@ -222,10 +228,14 @@ console.log(
 
 if (modulesOf) {
   const baselineIds = new Set(baseline.modules.map(([id]) => id));
-  const own = results[modulesOf].modules
+  const own = (
+    chunkOf
+      ? results[modulesOf].allModules.filter(([, m]) => m.chunk.includes(chunkOf))
+      : results[modulesOf].modules
+  )
     .filter(([id]) => !baselineIds.has(id))
     .sort((a, b) => b[1].bytes - a[1].bytes)
-    .slice(0, 40);
+    .slice(0, Number(process.env.SIZE_TOP ?? 40));
   console.log(
     `\nlargest modules loaded by ${modulesOf} (rendered bytes, before minify):`
   );

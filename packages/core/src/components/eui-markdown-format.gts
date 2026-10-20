@@ -4,19 +4,14 @@ import { isArray } from '@ember/array';
 
 import optional from '@nullvoxpopuli/ember-composable-helpers/helpers/optional';
 import style from 'ember-style-modifier/modifiers/style';
-import unified from 'unified';
 
+import { markdownEngine } from '../-private/markdown-engine-loader.ts';
 import { getEuiThemeContext } from '../utils/emotion/consume.ts';
 import { euiClass, useEuiBorealisStyles } from '../utils/eui/styles.ts';
 import {
   euiMarkdownFormatStyles,
   euiTextStyles
 } from '../utils/eui/styles.generated.ts';
-import {
-  defaultParsingPlugins,
-  defaultProcessingPlugins
-} from '../utils/markdown/plugins/markdown-default-plugins/index.ts';
-import { toDOM } from '../utils/markdown/plugins/to-dom.ts';
 import { euiTextAlignCss } from './eui-text-align.gts';
 import {
   TEXT_COLORS,
@@ -29,6 +24,10 @@ import type {
   EuiMarkdownAstNodePosition,
   RehypeNode
 } from '../utils/markdown/markdown-types';
+import type {
+  defaultParsingPlugins,
+  defaultProcessingPlugins
+} from '../utils/markdown/plugins/markdown-default-plugins/index.ts';
 import type { EuiTextAlignment } from './eui-text-align.gts';
 import type { EuiTextColorValue } from './eui-text-color.gts';
 import type { EuiTextSignature } from './eui-text.gts';
@@ -66,7 +65,9 @@ type MarkdownFormatColor = keyof ReturnType<
  * Renders markdown as EUI-styled content (headings, lists, code blocks,
  * tables, checkboxes, tooltips and emoji):
  * `<EuiMarkdownFormat @value={{this.markdown}} />`. Attributes go to the
- * root `<div class="euiMarkdownFormat">`.
+ * root `<div class="euiMarkdownFormat">`. The markdown parser and
+ * highlighter load with the first one rendered, which renders its content
+ * once they have (`settled()` waits for them).
  */
 export interface EuiMarkdownFormatSignature {
   Element: HTMLDivElement;
@@ -129,16 +130,27 @@ function tagName(component: string | undefined): 'div' {
 }
 
 export default class EuiMarkdownFormat extends Component<EuiMarkdownFormatSignature> {
+  /** unified, the default plugins and toDOM, once loaded. */
+  get engine() {
+    return markdownEngine();
+  }
+
   get parsingPluginList() {
-    return this.args.parsingPluginList || defaultParsingPlugins;
+    return this.args.parsingPluginList || this.engine?.defaultParsingPlugins;
   }
 
   get processingPluginList() {
-    return this.args.processingPluginList || defaultProcessingPlugins;
+    return (
+      this.args.processingPluginList || this.engine?.defaultProcessingPlugins
+    );
   }
 
   @cached
   get processor() {
+    const engine = this.engine;
+
+    if (!engine) return undefined;
+
     const Compiler = (tree: any) => {
       return tree;
     };
@@ -148,9 +160,10 @@ export default class EuiMarkdownFormat extends Component<EuiMarkdownFormatSignat
       this.Compiler = Compiler;
     }
 
-    return unified()
-      .use(this.parsingPluginList)
-      .use(this.processingPluginList)
+    return engine
+      .unified()
+      .use(this.args.parsingPluginList || engine.defaultParsingPlugins)
+      .use(this.args.processingPluginList || engine.defaultProcessingPlugins)
       .use(identityCompiler);
   }
 
@@ -244,9 +257,15 @@ export default class EuiMarkdownFormat extends Component<EuiMarkdownFormatSignat
 
   @cached
   get result() {
+    const { engine, processor } = this;
+
+    if (!engine || !processor) return null;
+
     try {
-      const processed = this.processor.processSync(this.args.value);
-      const { element, components } = toDOM(processed['result'] as RehypeNode);
+      const processed = processor.processSync(this.args.value);
+      const { element, components } = engine.toDOM(
+        processed['result'] as RehypeNode
+      );
 
       return {
         nodes: element ? Array.from(element.childNodes) : [],

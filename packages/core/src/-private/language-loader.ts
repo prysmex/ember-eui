@@ -3,7 +3,7 @@ import { buildWaiter } from '@ember/test-waiters';
 
 import { register } from 'refractor/core';
 
-import languageLoaders, { BUILT_IN_LANGUAGES } from './languages.ts';
+import { BUILT_IN_LANGUAGES, LOADABLE_LANGUAGES } from './language-names.ts';
 
 // `await render()` / `settled()` wait for languages that are still loading
 const waiter = buildWaiter('@ember-eui/core:code-language');
@@ -16,7 +16,10 @@ class LoadingLanguage {
   constructor(name: string) {
     const token = waiter.beginAsync();
 
-    this.promise = languageLoaders[name]!()
+    // the loaders (one import per language, ~35KB) come with the first
+    // language that needs one
+    this.promise = import('./languages.ts')
+      .then(({ default: languageLoaders }) => languageLoaders[name]!())
       .then(
         ({ default: syntax }) => {
           register(syntax);
@@ -34,8 +37,10 @@ class LoadingLanguage {
 
 const cache = new Map<string, LoadingLanguage>();
 
+const loadable = new Set(LOADABLE_LANGUAGES);
+
 function isLoadable(name: string): boolean {
-  return Object.prototype.hasOwnProperty.call(languageLoaders, name);
+  return loadable.has(name);
 }
 
 function load(name: string): LoadingLanguage {
@@ -52,7 +57,7 @@ function load(name: string): LoadingLanguage {
 /** Every language that can be highlighted, by name and alias. */
 export const SUPPORTED_LANGUAGES: string[] = [
   ...BUILT_IN_LANGUAGES,
-  ...Object.keys(languageLoaders)
+  ...LOADABLE_LANGUAGES
 ];
 
 export function isSupportedLanguage(name: string): boolean {

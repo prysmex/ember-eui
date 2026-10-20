@@ -533,6 +533,9 @@ importers:
       ember-truth-helpers:
         specifier: ^5.0.0
         version: 5.0.0(supports-color@10.2.2)
+      emoticon:
+        specifier: ^3.2.0
+        version: 3.2.0
       focus-trap:
         specifier: ^6.9.4
         version: 6.9.4
@@ -542,6 +545,9 @@ importers:
       mdast-util-to-hast:
         specifier: ^10.2.0
         version: 10.2.0
+      node-emoji:
+        specifier: ^1.11.0
+        version: 1.11.0
       refractor:
         specifier: ^3.5.0
         version: 3.6.0
@@ -554,9 +560,6 @@ importers:
       remark-breaks:
         specifier: ^3.0.2
         version: 3.0.3
-      remark-emoji:
-        specifier: ^2.1.0
-        version: 2.2.0
       remark-parse:
         specifier: ^8.0.3
         version: 8.0.3

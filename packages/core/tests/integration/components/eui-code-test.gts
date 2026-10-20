@@ -56,6 +56,12 @@ module('Integration | Component | eui-code (languages)', function (hooks) {
     assert.dom('pre code .token.key').hasText('key');
   });
 
+  test('markdown renders emoji shortcodes', async function (assert) {
+    await render(<template><EuiMarkdownFormat @value="Ship it :rocket: :nope:" /></template>);
+
+    assert.dom('.euiMarkdownFormat').hasText('Ship it 🚀 :nope:');
+  });
+
   test('every refractor language and alias is supported', function (assert) {
     for (const name of ['markup', 'html', 'css', 'js', 'ts', 'hbs', 'json', 'yml', 'vb']) {
       assert.true(SUPPORTED_LANGUAGES.includes(name), name);

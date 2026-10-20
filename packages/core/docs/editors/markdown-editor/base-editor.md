@@ -25,6 +25,11 @@ title: Base editor
 GitHub-style markdown plus emoji (`:tada:`), task lists (`- [ ] todo`,
 clickable in the preview) and tooltips (`!{tooltip[text](tooltip)}`).
 
+`EuiMarkdownFormat` loads the markdown parser, the code highlighter and
+the emoji data the first time one renders, and shows its content once they
+have; importing it (or `EuiToast`, for markdown toasts) adds none of them
+to your app's bundle. In tests, `settled()` waits for them.
+
 The Ember EUI docs for the editor, `EuiMarkdownFormat` and the plugins
 live on this page: the examples follow upstream's Editor, Format and
 Plugins pages, followed by Ember EUI extras.
@@ -122,7 +127,9 @@ extensible syntax (plugins). Attributes go to the `<textarea>`.
 Renders markdown as EUI-styled content (headings, lists, code blocks,
 tables, checkboxes, tooltips and emoji):
 `<EuiMarkdownFormat @value={{this.markdown}} />`. Attributes go to the
-root `<div class="euiMarkdownFormat">`.
+root `<div class="euiMarkdownFormat">`. The markdown parser and
+highlighter load with the first one rendered, which renders its content
+once they have (`settled()` waits for them).
 
 | Argument | Type | Default | Description |
 | --- | --- | --- | --- |

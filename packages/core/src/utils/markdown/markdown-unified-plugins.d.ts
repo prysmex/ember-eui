@@ -11,3 +11,20 @@ declare module 'remark-highlight.js' {
   const RemarkHighlight: Plugin;
   export = RemarkHighlight;
 }
+
+// remark/remark-emoji.ts reads the data of node-emoji and emoticon directly
+declare module 'node-emoji/lib/emoji.json' {
+  const emojiByName: Record<string, string>;
+  export default emojiByName;
+}
+
+declare module 'emoticon' {
+  const emoticons: {
+    name: string;
+    emoji: string;
+    tags: string[];
+    description: string;
+    emoticons: string[];
+  }[];
+  export default emoticons;
+}

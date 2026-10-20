@@ -1,6 +1,6 @@
 import { assert } from '@ember/debug';
 
-import type { EuiIconComponent } from '../-private/icons.ts';
+import type { EuiIconComponent } from '../-private/icon-data.ts';
 
 export interface IconsFromGlobOptions {
   /**

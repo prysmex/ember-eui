@@ -27,6 +27,25 @@ export default class ApplicationRoute extends Route {
 `preloadIcons` resolves once all of them loaded. An icon that fails to load
 (e.g. a network error) is logged and loaded again the next time it renders.
 
+To have icons without any loading at all, import them and register them
+at boot: they are bundled with your app and render with the first paint,
+without the placeholder or the fade-in. Every icon type has a module,
+`@ember-eui/core/icons/<type>`, whose default export is its component:
+
+```js
+// app/app.js
+import { registerIcons } from '@ember-eui/core/utils/preload-icons';
+import chevronSingleDown from '@ember-eui/core/icons/chevronSingleDown';
+import cross from '@ember-eui/core/icons/cross';
+import magnify from '@ember-eui/core/icons/magnify';
+
+registerIcons({ chevronSingleDown, cross, magnify });
+```
+
+Icons that are neither registered nor preloaded load the first time they
+render, as above. An icon that has loaded (or was registered) renders at
+once everywhere afterwards, without fading in again.
+
 In tests, `await render()` and `settled()` wait for icons to load, so
 assertions see the real svg.
 

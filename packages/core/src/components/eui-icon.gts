@@ -7,7 +7,7 @@ import { service } from '@ember/service';
 import { modifier } from 'ember-modifier';
 
 import { loadedIcon } from '../-private/icon-loader.ts';
-import { emptyIcon, iconDataTypes } from '../-private/icons.ts';
+import { emptyIcon, iconDataTypes } from '../-private/icon-data.ts';
 
 import { typeToPathMap } from '../utils/css-mappings/eui-icon.ts';
 import { getEuiThemeContext } from '../utils/emotion/consume.ts';
@@ -16,7 +16,7 @@ import type { EuiCss } from '../utils/eui/styles.ts';
 import { euiIconStyles } from '../utils/eui/styles.generated.ts';
 import { keysOf } from './common.ts';
 
-import type { EuiIconComponent } from '../-private/icons.ts';
+import type { EuiIconComponent } from '../-private/icon-data.ts';
 import type EuiConfigService from '../services/eui-config';
 import type { EuiThemeContext } from '../utils/emotion/context.ts';
 import type { CommonArgs } from './common.ts';

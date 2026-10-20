@@ -82,3 +82,17 @@ test('the code language loaders are imported with the first language', () => {
   );
   assert.equal(found.length, 0, describe(found));
 });
+
+test('the icon loaders are imported with the first icon that loads', () => {
+  const found = distImports('core').filter(
+    ({ specifier, dynamic }) => /\/icons\.js$/.test(specifier) && !dynamic
+  );
+  assert.equal(found.length, 0, describe(found));
+});
+
+test('every icon type has a public module', () => {
+  const dir = join(root, 'packages/core/dist/icons');
+  for (const type of ['search', 'magnify', 'cross', 'logoElastic', 'empty']) {
+    assert.ok(existsSync(join(dir, `${type}.js`)), type);
+  }
+});

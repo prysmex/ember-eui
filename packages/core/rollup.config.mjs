@@ -73,10 +73,13 @@ export default {
   },
   output: {
     ...addon.output(),
-    // one lazily loaded chunk per EUI icon (src/-private/icons.ts), kept
-    // together instead of next to the public entrypoints
+    // the svgs shared by several icon types (src/icons/*.ts) and the
+    // svg-jar runtime they use, kept with the icons instead of next to the
+    // public entrypoints
     chunkFileNames: (chunk) =>
-      chunk.moduleIds.every((id) => /\.svg(\?|$)/.test(id))
+      chunk.moduleIds.every(
+        (id) => /\.svg(\?|$)/.test(id) || id.includes('@svg-jar/plugin/')
+      )
         ? 'icons/[name]-[hash].js'
         : chunk.moduleIds.every(isThemeModule)
           ? 'eui-theme/[name]-[hash].js'

@@ -19,7 +19,8 @@ import {
 } from '#src/utils/css-mappings/eui-icon.ts';
 import { clearIconCache } from '#src/-private/icon-loader.ts';
 import { iconsFromGlob } from '#src/utils/icons-from-glob.ts';
-import { preloadIcons } from '#src/utils/preload-icons.ts';
+import bellIcon from '#src/icons/bell.ts';
+import { preloadIcons, registerIcons } from '#src/utils/preload-icons.ts';
 import { resolveBorealisTheme } from '#src/utils/eui/theme.ts';
 
 import type { EuiIconType } from '#src/components/eui-icon.gts';
@@ -569,6 +570,38 @@ module('Integration | Component | eui-icon', function (hooks) {
       );
 
       assert.true((children ?? 0) > 0, 'no empty icon first');
+    });
+
+    test('an icon that had to load fades in; a loaded one does not', async function (assert) {
+      await render(<template><EuiIcon @type="bell" class="first" /></template>);
+
+      assert.dom('svg.first').hasAttribute('data-is-loaded', 'true');
+
+      await render(<template><EuiIcon @type="bell" class="second" /></template>);
+
+      assert.dom('svg.second').doesNotHaveAttribute('data-is-loading');
+      assert.dom('svg.second').doesNotHaveAttribute('data-is-loaded', 'cached: no fade');
+    });
+
+    test('registered icons render right away, without placeholder or fade', async function (assert) {
+      registerIcons({ bell: bellIcon });
+
+      const children = await firstRenderedChildren(() =>
+        render(<template><EuiIcon @type="bell" /></template>)
+      );
+
+      assert.true((children ?? 0) > 0, 'no empty icon first');
+      assert.dom('svg').doesNotHaveAttribute('data-is-loading');
+      assert.dom('svg').doesNotHaveAttribute('data-is-loaded');
+      assert.dom('svg').hasAttribute('data-icon-type', 'bell');
+    });
+
+    test('registerIcons rejects names that are not EUI icons', function (assert) {
+      assert.throws(
+        // @ts-expect-error not an icon name
+        () => registerIcons({ notAnIcon: bellIcon }),
+        /"notAnIcon" is not an EUI icon/
+      );
     });
 
     test('preloadIcons rejects names that are not EUI icons', async function (assert) {

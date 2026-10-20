@@ -1,5 +1,9 @@
-import { loadIcons } from '../-private/icon-loader.ts';
+import {
+  loadIcons,
+  registerIcons as registerLoadedIcons
+} from '../-private/icon-loader.ts';
 
+import type { EuiIconComponent } from '../-private/icon-data.ts';
 import type { EuiIconType } from '../components/eui-icon.gts';
 
 /**
@@ -22,4 +26,28 @@ import type { EuiIconType } from '../components/eui-icon.gts';
  */
 export function preloadIcons(types: EuiIconType[]): Promise<void> {
   return loadIcons(types);
+}
+
+/**
+ * Registers EUI icons the app imports itself, so they render right away,
+ * without the loading placeholder, the fade-in or a request: e.g. the
+ * icons of the first screen, at boot (in `app/app.js`):
+ *
+ * ```js
+ * import { registerIcons } from '@ember-eui/core/utils/preload-icons';
+ * import cross from '@ember-eui/core/icons/cross';
+ * import search from '@ember-eui/core/icons/search';
+ *
+ * registerIcons({ cross, search });
+ * ```
+ *
+ * `@ember-eui/core/icons/<type>` exists for every EUI icon type (aliases
+ * included), and its default export is that icon's component. Registered
+ * icons are bundled with the module that imports them; the others still
+ * load the first time they render.
+ */
+export function registerIcons(
+  icons: Partial<Record<EuiIconType, EuiIconComponent>>
+): void {
+  registerLoadedIcons(icons);
 }

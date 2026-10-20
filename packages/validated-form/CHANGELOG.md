@@ -1,5 +1,14 @@
 # @ember-eui/validated-form
 
+## 16.0.5
+
+### Patch Changes
+
+- 3a3c853: The packages declare `"sideEffects": ["*.css", "./tests/**"]` (as `@ember-eui/core` already did), so bundlers may leave out the modules your app imports but does not use. Their modules do nothing when imported beyond registering their templates; a new check over the built packages keeps it that way.
+- 84c1f69: The heavy fields load their control on demand: `FieldComboBox`, `FieldRangeSlider`, `FieldDualRangeSlider` and `FieldMarkdownEditor` import `EuiComboBox`, `EuiRange`, `EuiDualRange` or `EuiMarkdownEditor` the first time one renders, and render once it has loaded (later renders have it at once). Importing `ValidatedForm` no longer brings the combo box (ember-power-select, vertical-collection), the ranges and the markdown editor (parser, highlighter, emoji) into your bundle: a login form with three text fields loads 646KB of ember-eui in a production Vite/Embroider build instead of 1285KB (189KB gzip instead of 367KB). `FieldMarkdownEditor` with `@editorComponent` never loads `EuiMarkdownEditor`. The imports register test waiters, so `settled()` and the test helpers wait for them. `@ember/test-waiters` is now a dependency.
+- 43f9dcb: Fields render once when inserted and once per value change, instead of twice each time: their error messages are derived from the value and the validations rather than stored after every render and again in a timer. The form keeps track of which children are invalid or touched as each child reports its change, so a keystroke no longer asks every other field of the form for its validity, and `@onValidityChange` is called in the same run loop as the change instead of the next one. App fields that extend `FieldBase` keep working: `setValidationMessages`, `didUpdateValue` and assigning `_validationErrorMessages` still do what they did.
+- Performance improvements
+
 ## 16.0.4
 
 ### Patch Changes

@@ -1,5 +1,11 @@
 # site
 
+## 16.0.5
+
+### Patch Changes
+
+- Performance improvements
+
 ## 16.0.4
 
 ### Patch Changes

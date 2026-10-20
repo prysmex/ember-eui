@@ -1,5 +1,12 @@
 # @ember-eui/pikaday
 
+## 16.0.5
+
+### Patch Changes
+
+- 3a3c853: The packages declare `"sideEffects": ["*.css", "./tests/**"]` (as `@ember-eui/core` already did), so bundlers may leave out the modules your app imports but does not use. Their modules do nothing when imported beyond registering their templates; a new check over the built packages keeps it that way.
+- Performance improvements
+
 ## 16.0.4
 
 ### Patch Changes

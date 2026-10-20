@@ -1,5 +1,0 @@
----
-'@ember-eui/core': patch
----
-
-`EuiMarkdownFormat` loads the markdown parser (unified, remark), the code highlighter (refractor and its language list) and the emoji data the first time one renders, and renders its content once they have loaded; later ones render at once. Importing `EuiMarkdownFormat`, or `EuiToast` (which renders markdown bodies), no longer brings them into your bundle: an app rendering one `EuiMarkdownFormat` loads 167KB of ember-eui up front instead of 681KB (minified; 52KB gzip instead of 218KB). Emoji shortcodes no longer go through node-emoji's main module, which required CommonJS `lodash/toArray`: the default emoji plugin reads node-emoji's emoji list directly, with the same results (except that names like `:constructor:` now stay as typed instead of losing their colons). `EuiCode` and `EuiCodeBlock` load the per-language loaders (~35KB) with the first language they need to load, not up front. The loading registers test waiters, so `settled()` and the test helpers wait for it. `remark-emoji` is no longer a dependency; `node-emoji` and `emoticon` are.

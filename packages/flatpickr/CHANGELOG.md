@@ -1,5 +1,13 @@
 # @ember-eui/flatpickr
 
+## 16.0.5
+
+### Patch Changes
+
+- c0fb306: `EuiFlatpickr` imports flatpickr (~40KB minified) when the first picker is set up instead of at module level, so importing the component, or a route that renders it only sometimes, no longer adds flatpickr to your bundle: an app rendering one `EuiFlatpickr` loads 298KB of ember-eui and flatpickr up front instead of 347KB (93KB gzip instead of 107KB), and the picker's code arrives as a separate chunk. Later pickers are created without waiting. The import is a test waiter, so `settled()` waits for it. The component also imports `EuiFieldText` directly instead of through the `@ember-eui/core/components` index.
+- 3a3c853: The packages declare `"sideEffects": ["*.css", "./tests/**"]` (as `@ember-eui/core` already did), so bundlers may leave out the modules your app imports but does not use. Their modules do nothing when imported beyond registering their templates; a new check over the built packages keeps it that way.
+- Performance improvements
+
 ## 16.0.4
 
 ### Patch Changes

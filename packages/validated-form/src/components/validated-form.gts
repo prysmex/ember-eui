@@ -11,6 +11,7 @@ import { argOrDefault } from '@ember-eui/core/helpers';
 import type Owner from '@ember/owner';
 
 import randomId from '../-private/random-id.ts';
+import { revealFirstInvalid } from '../-private/reveal-first-invalid.ts';
 import { ValidatedFormDefaultTheme } from './default-theme.ts';
 
 import type { IValidatedFormTheme } from './default-theme';
@@ -58,6 +59,11 @@ export interface ValidatedFormSignature {
     removeChild?: (child: ValidatedFormChild) => void;
     /** Called on submit while a field is invalid (all fields show their errors). */
     onInvalid?: () => void;
+    /**
+     * On a submit with errors, after `@onInvalid`, scroll to the first
+     * invalid field and focus its control. Defaults to `true`.
+     */
+    revealFirstInvalid?: boolean;
     /**
      * Called on submit when every field is valid. If it returns a promise
      * that rejects, the fields are marked touched again.
@@ -211,6 +217,7 @@ export default class ValidatedFormComponent extends Component<ValidatedFormSigna
     }
 
     e.preventDefault();
+    const form = e.currentTarget as HTMLElement;
     // app fields may not report their changes
     this.updateChildren();
     this.flushValidity();
@@ -218,6 +225,11 @@ export default class ValidatedFormComponent extends Component<ValidatedFormSigna
     if (this.isInvalid) {
       this.setIsTouched(true);
       this.args.onInvalid?.();
+
+      // fields mark their controls invalid once touched, i.e. in this render
+      if (this.args.revealFirstInvalid !== false) {
+        schedule('afterRender', null, revealFirstInvalid, form);
+      }
     } else {
       this.setIsTouched(false);
 

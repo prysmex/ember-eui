@@ -51,6 +51,14 @@ The yielded fields are `FieldText`, `FieldTextArea`, `FieldNumber`,
 `EuiFormRow`'s args and its control's args. `@onValidityChange` on the
 form tells you when the whole form becomes valid or invalid.
 
+Submitting while a field is invalid marks every field touched, so they
+show their errors, and calls `@onInvalid`. After that, once the errors
+have rendered, the form scrolls the first invalid field's row into view
+and focuses its control, as the browser does for its own validation.
+A custom field that reports its validity through a hidden input gets its
+row scrolled to and its first visible control focused. Pass
+`@revealFirstInvalid={{false}}` to handle that yourself in `@onInvalid`.
+
 `FieldComboBox`, `FieldRangeSlider`, `FieldDualRangeSlider` and
 `FieldMarkdownEditor` import their control (`EuiComboBox`, `EuiRange`,
 `EuiDualRange`, `EuiMarkdownEditor`) the first time one of them renders,
@@ -181,6 +189,7 @@ valid.
 | `@id` | `string` | a random id | Id of the form; fields join it with `form=`. |
 | `@formId` | `string` |  | HTML form that owns the fields; inherited by nested forms. |
 | `@onInvalid` | `() => void` |  | Called on submit while a field is invalid (all fields show their errors). |
+| `@revealFirstInvalid` | `boolean` | `true` | On a submit with errors, after `@onInvalid`, scroll to the first invalid field and focus its control. |
 | `@onSubmit` | `() => void \| Promise<void>` |  | Called on submit when every field is valid. If it returns a promise that rejects, the fields are marked touched again. |
 | `@onReset` | `(e: Event) => void` |  | Called when the form is reset. |
 | `@onValidityChange` |  |  | Called when the form's validity or touched state changes, e.g. to disable the submit button while invalid. |

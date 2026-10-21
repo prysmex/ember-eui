@@ -1,5 +1,11 @@
 # @ember-eui/core
 
+## 16.1.0
+
+### Minor Changes
+
+- add jumping to field on first clcik when error
+
 ## 16.0.5
 
 ### Patch Changes

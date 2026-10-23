@@ -1,5 +1,11 @@
 # @ember-eui/pikaday
 
+## 16.1.1
+
+### Patch Changes
+
+- Fix types in breadcrumbs
+
 ## 16.1.0
 
 ### Minor Changes

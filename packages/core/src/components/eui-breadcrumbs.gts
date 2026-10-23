@@ -9,6 +9,7 @@ import type Owner from '@ember/owner';
 
 import optional from '@nullvoxpopuli/ember-composable-helpers/helpers/optional';
 
+import EuiRenderNode from '../-private/eui-render-node.gts';
 import onWindowResize from '../-private/window-resize.ts';
 import useState from '../helpers/use-state.ts';
 import { getBreakpoint } from '../utils/breakpoint.ts';
@@ -68,9 +69,11 @@ export type EuiBreadcrumbPopoverProps = Omit<
 
 export type EuiBreadcrumb = {
   /**
-   * Visible label of the breadcrumb
+   * Visible label of the breadcrumb: a string, or a component (curried),
+   * rendered in its place. With `popoverContent`, the button's tooltip
+   * shows it too.
    */
-  text: string;
+  text: string | ComponentLike<any>;
   /**
    * Makes the breadcrumb a link.
    */
@@ -653,10 +656,8 @@ class BreadcrumbItem extends Component<BreadcrumbItemSignature> {
                 </EuiLink>
               {{else if this.breadcrumb.text}}
                 {{! Upstream wraps the button in a tooltip with its text. }}
-                <EuiToolTip
-                  @content={{this.breadcrumb.text}}
-                  @disableScreenReaderOutput={{true}}
-                >
+                <EuiToolTip @disableScreenReaderOutput={{true}}>
+                  <:content><EuiRenderNode @value={{this.breadcrumb.text}} /></:content>
                   <:anchor>
                     <EuiLink
                       class={{this.contentClassNames}}
@@ -665,7 +666,7 @@ class BreadcrumbItem extends Component<BreadcrumbItemSignature> {
                       aria-current={{this.ariaCurrent}}
                       {{on "click" (fn popover.setState (if popover.value false true))}}
                     >
-                      <span class={{this.truncationClass}}>{{this.breadcrumb.text}}</span>
+                      <span class={{this.truncationClass}}><EuiRenderNode @value={{this.breadcrumb.text}} /></span>
                       <EuiIcon
                         @type="chevronSingleDown"
                         @size="s"
@@ -735,7 +736,7 @@ class BreadcrumbItem extends Component<BreadcrumbItemSignature> {
               aria-current={{this.ariaCurrent}}
               {{on "click" (optional this.breadcrumb.onClick)}}
             >
-              {{this.breadcrumb.text}}
+              <EuiRenderNode @value={{this.breadcrumb.text}} />
             </EuiLink>
           {{else}}
             <span
@@ -744,7 +745,7 @@ class BreadcrumbItem extends Component<BreadcrumbItemSignature> {
               class={{this.contentClass}}
               aria-current={{this.ariaCurrent}}
             >
-              {{this.breadcrumb.text}}
+              <EuiRenderNode @value={{this.breadcrumb.text}} />
             </span>
           {{/if}}
         </EuiInnerText>

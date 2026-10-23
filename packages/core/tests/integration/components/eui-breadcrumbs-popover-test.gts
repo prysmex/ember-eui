@@ -3,6 +3,7 @@ import { setupRenderingTest } from 'ember-qunit';
 import { on } from '@ember/modifier';
 import { click, focus, render, triggerKeyEvent, waitUntil } from '@ember/test-helpers';
 
+import EuiRenderNode from '#src/-private/eui-render-node.gts';
 import EuiBreadcrumbs from '#src/components/eui-breadcrumbs.gts';
 import EuiHeaderBreadcrumbs from '#src/components/eui-header-breadcrumbs.gts';
 
@@ -76,7 +77,7 @@ module('Integration | Component | eui-breadcrumbs popoverContent', function (hoo
     await render(<template>
       <EuiBreadcrumbs @breadcrumbs={{crumbs}} @responsive={{false}}>
         <:popoverContent as |breadcrumb closePopover|>
-          <button type="button" class="closer" {{on "click" closePopover}}>Block {{breadcrumb.text}}</button>
+          <button type="button" class="closer" {{on "click" closePopover}}>Block <EuiRenderNode @value={{breadcrumb.text}} /></button>
         </:popoverContent>
       </EuiBreadcrumbs>
     </template>);

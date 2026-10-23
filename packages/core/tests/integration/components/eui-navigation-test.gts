@@ -413,7 +413,7 @@ module('Integration | Component | Borealis navigation', function (hooks) {
     assert.dom('[data-crumbs] li:nth-child(4) span').hasAttribute('aria-current', 'page');
     assert.dom('[data-crumbs] [aria-current]').exists({ count: 1 });
     assert.dom('[data-not-current] [aria-current]').doesNotExist();
-    assert.dom('[data-crumbs] li:nth-child(2) .euiBreadcrumb__content').hasAttribute('title', crumbs[1]!.text);
+    assert.dom('[data-crumbs] li:nth-child(2) .euiBreadcrumb__content').hasAttribute('title', crumbs[1]!.text as string);
     assert.dom('[data-crumbs] li').hasAttribute('data-test-subj', 'euiBreadcrumb');
     assert.dom('[data-crumbs]').doesNotHaveClass('euiBreadcrumbs--truncate', 'no legacy class');
     assert.dom('[data-crumbs] .euiBreadcrumb--last').doesNotExist();

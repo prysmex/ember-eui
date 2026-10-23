@@ -1,5 +1,11 @@
 # @ember-eui/changeset-form
 
+## 16.1.2
+
+### Patch Changes
+
+- types release
+
 ## 16.1.1
 
 ### Patch Changes

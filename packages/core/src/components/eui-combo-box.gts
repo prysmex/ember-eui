@@ -1106,7 +1106,7 @@ export default class EuiComboBoxComponent extends Component<EuiComboBoxSignature
       @noMatchesMessage={{this.noMatchesMessage}}
       @matchTriggerWidth={{@matchTriggerWidth}}
       @options={{this.powerSelectOptions}}
-      @selected={{@selectedOptions}}
+      @selected={{this.selectedOptions}}
       @closeOnSelect={{this.closeOnSelect}}
       @defaultHighlighted={{if
         @defaultHighlighted

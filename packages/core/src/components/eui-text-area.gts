@@ -25,8 +25,8 @@ export interface EuiTextAreaSignature {
   Args: {
     /** Id of the textarea. Defaults to a random id. */
     id?: string;
-    /** The value. Update it from `{{on "input" …}}`. */
-    value?: string;
+    /** The value; `null` leaves it empty. Update it from `{{on "input" …}}`. */
+    value?: string | null;
     /** Stretches the textarea to its container's width. */
     fullWidth?: boolean;
     /** Tighter padding (8px instead of 12px) and 3 default rows, for dense forms. */

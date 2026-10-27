@@ -45,7 +45,7 @@ Attributes (`placeholder`, `maxlength`…) go to the `<textarea>`.
 | Argument | Type | Default | Description |
 | --- | --- | --- | --- |
 | `@id` | `string` | a random id | Id of the textarea. |
-| `@value` | `string` |  | The value. Update it from `{{on "input" …}}`. |
+| `@value` | `string \| null` |  | The value; `null` leaves it empty. Update it from `{{on "input" …}}`. |
 | `@fullWidth` | `boolean` |  | Stretches the textarea to its container's width. |
 | `@compressed` | `boolean` |  | Tighter padding (8px instead of 12px) and 3 default rows, for dense forms. |
 | `@disabled` | `boolean` |  | Disables the textarea. |

@@ -1,7 +1,32 @@
 import { hash } from '@ember/helper';
 
-import type { IEuiChangesetFormTheme } from '../eui-changeset-form';
+import type { EuiChangesetFormTheme } from '../eui-changeset-form';
 import type { TemplateOnlyComponent } from '@ember/component/template-only';
+import type { WithBoundArgs } from '@glint/template';
+
+type Theme = EuiChangesetFormTheme;
+type ContextArgs = 'formId' | 'changeset';
+
+/** The theme's fields with the form's changeset and id bound. */
+export interface ContextFields {
+  FieldBase: WithBoundArgs<Theme['FieldBase'], ContextArgs>;
+  FieldText: WithBoundArgs<Theme['FieldText'], ContextArgs>;
+  FieldTextArea: WithBoundArgs<Theme['FieldTextArea'], ContextArgs>;
+  FieldPassword: WithBoundArgs<Theme['FieldPassword'], ContextArgs>;
+  FieldRadio: WithBoundArgs<Theme['FieldRadio'], ContextArgs>;
+  FieldCheckbox: WithBoundArgs<Theme['FieldCheckbox'], ContextArgs>;
+  FieldSwitch: WithBoundArgs<Theme['FieldSwitch'], ContextArgs>;
+  FieldRadioGroup: WithBoundArgs<Theme['FieldRadioGroup'], ContextArgs>;
+  FieldCheckboxGroup: WithBoundArgs<Theme['FieldCheckboxGroup'], ContextArgs>;
+  FieldDualRangeSlider: WithBoundArgs<
+    Theme['FieldDualRangeSlider'],
+    ContextArgs
+  >;
+  FieldRangeSlider: WithBoundArgs<Theme['FieldRangeSlider'], ContextArgs>;
+  FieldNumber: WithBoundArgs<Theme['FieldNumber'], ContextArgs>;
+  FieldSelect: WithBoundArgs<Theme['FieldSelect'], ContextArgs>;
+  FieldComboBox: WithBoundArgs<Theme['FieldComboBox'], ContextArgs>;
+}
 
 /** @private Binds the theme's fields to the form's changeset and id. */
 export interface ContextSignature {
@@ -11,11 +36,11 @@ export interface ContextSignature {
     /** The form's changeset. */
     changeset: any;
     /** The field components to bind. */
-    theme: IEuiChangesetFormTheme;
+    theme: EuiChangesetFormTheme;
   };
   Blocks: {
     /** Yields the bound field components. */
-    default: [IEuiChangesetFormTheme];
+    default: [ContextFields];
   };
 }
 

@@ -22,6 +22,8 @@ export interface BaseSignature {
     rowClasses?: string;
     /** @private Set by EuiChangesetForm. */
     formId?: string;
+    /** @private Set by EuiChangesetForm: whether the form was submitted. */
+    hasSubmitted?: boolean;
     /** Disables the control. */
     disabled?: boolean;
   };

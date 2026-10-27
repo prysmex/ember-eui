@@ -49,7 +49,7 @@ A native `<select>` styled like EUI's inputs. For search or multiple values use 
 | --- | --- | --- | --- |
 | `@id` | `string` | a random id | Id of the select. |
 | `@options` (required) |  |  | The options: `[{ value: 'a', text: 'Option A', disabled? }]`. |
-| `@value` | `string \| number` |  | The selected option's `value`. Update it from `{{on "change" …}}`. |
+| `@value` | `string \| number \| null` |  | The selected option's `value`. Update it from `{{on "change" …}}`. `null` selects nothing, like leaving it out. |
 | `@fullWidth` | `boolean` |  | Stretches the select to its container's width. |
 | `@compressed` | `boolean` |  | Shorter select (32px instead of 40px), for dense forms. |
 | `@isLoading` | `boolean` |  | Shows a spinner. |

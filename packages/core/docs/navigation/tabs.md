@@ -68,7 +68,7 @@ upstream; EuiTabs moves focus between tabs with the arrow keys.
 
 | Argument | Type | Default | Description |
 | --- | --- | --- | --- |
-| `@id` | `string` | a random id | Id of the tab. |
+| `@id` | `string \| number` | a random id | Id of the tab, e.g. an `{{#each}}` index. |
 | `@href` | `string` |  | Makes the tab a link, e.g. to a route. A `javascript:` URL disables the tab instead (upstream `validateHref`). |
 | `@target` | `string` |  | `target` of a link tab. |
 | `@rel` | `string` |  | `rel` of a link tab; `noreferrer` is always added (upstream). |

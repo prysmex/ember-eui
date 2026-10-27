@@ -376,7 +376,7 @@ importers:
         version: 5.0.0(@babel/core@7.29.7(supports-color@10.2.2))(@ember/string@4.0.1)(@glint/template@1.9.0)(ember-source@7.3.1(@glimmer/component@2.1.1(supports-color@10.2.2))(supports-color@10.2.2))(supports-color@10.2.2)
       ember-cli:
         specifier: ~7.3.0
-        version: 7.3.0(@babel/core@7.29.7(supports-color@10.2.2))(debug@4.4.3(supports-color@10.2.2))(ejs@3.1.10)(handlebars@4.7.8)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(supports-color@10.2.2)(underscore@1.13.6)
+        version: 7.3.0(@babel/core@7.29.7(supports-color@10.2.2))(@types/node@20.10.6)(debug@4.4.3(supports-color@10.2.2))(ejs@3.1.10)(handlebars@4.7.8)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(supports-color@10.2.2)(underscore@1.13.6)
       ember-cli-clean-css:
         specifier: ^3.0.0
         version: 3.0.0(supports-color@10.2.2)
@@ -457,7 +457,7 @@ importers:
         version: 8.70.1(eslint@9.39.5(jiti@2.7.0)(supports-color@10.2.2))(supports-color@10.2.2)(typescript@6.0.3)
       vite:
         specifier: ^7.1.9
-        version: 7.3.6(jiti@2.7.0)(lightningcss@1.33.0)(terser@5.39.0)(yaml@2.9.1)
+        version: 7.3.6(@types/node@20.10.6)(jiti@2.7.0)(lightningcss@1.33.0)(terser@5.39.0)(yaml@2.9.1)
       webpack:
         specifier: ^5.97.1
         version: 5.98.0(esbuild@0.28.2)(uglify-js@3.17.4)
@@ -518,9 +518,6 @@ importers:
       ember-math-helpers:
         specifier: ^5.0.0
         version: 5.0.0(@babel/core@7.29.7(supports-color@10.2.2))(ember-source@7.3.1(@glimmer/component@2.1.1(supports-color@10.2.2))(supports-color@10.2.2))(supports-color@10.2.2)
-      ember-modifier:
-        specifier: ^4.2.0
-        version: 4.3.0(@babel/core@7.29.7(supports-color@10.2.2))(supports-color@10.2.2)
       ember-provide-consume-context:
         specifier: 0.10.0
         version: 0.10.0(@babel/core@7.29.7(supports-color@10.2.2))(@ember/test-helpers@5.5.0(@babel/core@7.29.7(supports-color@10.2.2))(supports-color@10.2.2))(@glimmer/component@2.1.1(supports-color@10.2.2))(@glint/template@1.9.0)(ember-source@7.3.1(@glimmer/component@2.1.1(supports-color@10.2.2))(supports-color@10.2.2))(supports-color@10.2.2)
@@ -653,7 +650,7 @@ importers:
         version: 15.2.3(rollup@4.63.5)
       '@svg-jar/plugin':
         specifier: 0.2.1
-        version: 0.2.1(@glint/template@1.9.0)(ember-source@7.3.1(@glimmer/component@2.1.1(supports-color@10.2.2))(supports-color@10.2.2))(esbuild@0.28.2)(rolldown@1.2.11)(rollup@4.63.5)(vite@7.3.6(jiti@2.7.0)(lightningcss@1.33.0)(terser@5.39.0)(yaml@2.9.1))(webpack@5.98.0(esbuild@0.28.2)(uglify-js@3.17.4))
+        version: 0.2.1(@glint/template@1.9.0)(ember-source@7.3.1(@glimmer/component@2.1.1(supports-color@10.2.2))(supports-color@10.2.2))(esbuild@0.28.2)(rolldown@1.2.11)(rollup@4.63.5)(vite@7.3.6(@types/node@20.10.6)(jiti@2.7.0)(lightningcss@1.33.0)(terser@5.39.0)(yaml@2.9.1))(webpack@5.98.0(esbuild@0.28.2)(uglify-js@3.17.4))
       '@tsconfig/ember':
         specifier: 3.0.0
         version: 3.0.0
@@ -746,7 +743,7 @@ importers:
         version: 9.0.0(@babel/core@7.29.7(supports-color@10.2.2))(@ember/test-helpers@5.5.0(@babel/core@7.29.7(supports-color@10.2.2))(supports-color@10.2.2))(@embroider/macros@1.21.1(@babel/core@7.29.7(supports-color@10.2.2))(@glint/template@1.9.0)(supports-color@10.2.2))(@glimmer/component@2.1.1(supports-color@10.2.2))(supports-color@10.2.2)
       ember-cli:
         specifier: ~7.3.0
-        version: 7.3.0(@babel/core@7.29.7(supports-color@10.2.2))(debug@4.4.3(supports-color@10.2.2))(ejs@3.1.10)(handlebars@4.7.8)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(supports-color@10.2.2)(underscore@1.13.6)
+        version: 7.3.0(@babel/core@7.29.7(supports-color@10.2.2))(@types/node@20.10.6)(debug@4.4.3(supports-color@10.2.2))(ejs@3.1.10)(handlebars@4.7.8)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(supports-color@10.2.2)(underscore@1.13.6)
       ember-cli-clean-css:
         specifier: ^3.0.0
         version: 3.0.0(supports-color@10.2.2)
@@ -756,6 +753,9 @@ importers:
       ember-focus-trap:
         specifier: ^1.1.0
         version: 1.1.0(ember-source@7.3.1(@glimmer/component@2.1.1(supports-color@10.2.2))(supports-color@10.2.2))(supports-color@10.2.2)
+      ember-modifier:
+        specifier: ^4.2.0
+        version: 4.3.0(@babel/core@7.29.7(supports-color@10.2.2))(supports-color@10.2.2)
       ember-power-select:
         specifier: ^9.0.2
         version: 9.0.2(@babel/core@7.29.7(supports-color@10.2.2))(@ember/test-helpers@5.5.0(@babel/core@7.29.7(supports-color@10.2.2))(supports-color@10.2.2))(@glimmer/component@2.1.1(supports-color@10.2.2))(ember-basic-dropdown@9.0.0(@babel/core@7.29.7(supports-color@10.2.2))(@ember/test-helpers@5.5.0(@babel/core@7.29.7(supports-color@10.2.2))(supports-color@10.2.2))(@embroider/macros@1.21.1(@babel/core@7.29.7(supports-color@10.2.2))(@glint/template@1.9.0)(supports-color@10.2.2))(@glimmer/component@2.1.1(supports-color@10.2.2))(supports-color@10.2.2))(ember-concurrency@5.3.0(@babel/core@7.29.7(supports-color@10.2.2))(@glint/template@1.9.0)(supports-color@10.2.2))(supports-color@10.2.2)
@@ -830,7 +830,7 @@ importers:
         version: 8.70.1(eslint@9.39.5(jiti@2.7.0)(supports-color@10.2.2))(supports-color@10.2.2)(typescript@6.0.3)
       vite:
         specifier: ^7.1.9
-        version: 7.3.6(jiti@2.7.0)(lightningcss@1.33.0)(terser@5.39.0)(yaml@2.9.1)
+        version: 7.3.6(@types/node@20.10.6)(jiti@2.7.0)(lightningcss@1.33.0)(terser@5.39.0)(yaml@2.9.1)
       webpack:
         specifier: ^5.97.1
         version: 5.98.0(esbuild@0.28.2)(uglify-js@3.17.4)
@@ -1017,7 +1017,7 @@ importers:
         version: 9.0.0(@babel/core@7.29.7(supports-color@10.2.2))(@ember/test-helpers@5.5.0(@babel/core@7.29.7(supports-color@10.2.2))(supports-color@10.2.2))(@embroider/macros@1.21.1(@babel/core@7.29.7(supports-color@10.2.2))(@glint/template@1.9.0)(supports-color@10.2.2))(@glimmer/component@2.1.1(supports-color@10.2.2))(supports-color@10.2.2)
       ember-cli:
         specifier: ~7.3.0
-        version: 7.3.0(@babel/core@7.29.7(supports-color@10.2.2))(debug@4.4.3(supports-color@10.2.2))(ejs@3.1.10)(handlebars@4.7.8)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(supports-color@10.2.2)(underscore@1.13.6)
+        version: 7.3.0(@babel/core@7.29.7(supports-color@10.2.2))(@types/node@20.10.6)(debug@4.4.3(supports-color@10.2.2))(ejs@3.1.10)(handlebars@4.7.8)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(supports-color@10.2.2)(underscore@1.13.6)
       ember-cli-clean-css:
         specifier: ^3.0.0
         version: 3.0.0(supports-color@10.2.2)
@@ -1101,7 +1101,7 @@ importers:
         version: 8.70.1(eslint@9.39.5(jiti@2.7.0)(supports-color@10.2.2))(supports-color@10.2.2)(typescript@6.0.3)
       vite:
         specifier: ^7.1.9
-        version: 7.3.6(jiti@2.7.0)(lightningcss@1.33.0)(terser@5.39.0)(yaml@2.9.1)
+        version: 7.3.6(@types/node@20.10.6)(jiti@2.7.0)(lightningcss@1.33.0)(terser@5.39.0)(yaml@2.9.1)
       webpack:
         specifier: ^5.97.1
         version: 5.98.0(esbuild@0.28.2)(uglify-js@3.17.4)
@@ -1288,7 +1288,7 @@ importers:
         version: 9.0.0(@babel/core@7.29.7(supports-color@10.2.2))(@ember/test-helpers@5.5.0(@babel/core@7.29.7(supports-color@10.2.2))(supports-color@10.2.2))(@embroider/macros@1.21.1(@babel/core@7.29.7(supports-color@10.2.2))(@glint/template@1.9.0)(supports-color@10.2.2))(@glimmer/component@2.1.1(supports-color@10.2.2))(supports-color@10.2.2)
       ember-cli:
         specifier: ~7.3.0
-        version: 7.3.0(@babel/core@7.29.7(supports-color@10.2.2))(debug@4.4.3(supports-color@10.2.2))(ejs@3.1.10)(handlebars@4.7.8)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(supports-color@10.2.2)(underscore@1.13.6)
+        version: 7.3.0(@babel/core@7.29.7(supports-color@10.2.2))(@types/node@20.10.6)(debug@4.4.3(supports-color@10.2.2))(ejs@3.1.10)(handlebars@4.7.8)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(supports-color@10.2.2)(underscore@1.13.6)
       ember-cli-clean-css:
         specifier: ^3.0.0
         version: 3.0.0(supports-color@10.2.2)
@@ -1366,7 +1366,7 @@ importers:
         version: 8.70.1(eslint@9.39.5(jiti@2.7.0)(supports-color@10.2.2))(supports-color@10.2.2)(typescript@6.0.3)
       vite:
         specifier: ^7.1.9
-        version: 7.3.6(jiti@2.7.0)(lightningcss@1.33.0)(terser@5.39.0)(yaml@2.9.1)
+        version: 7.3.6(@types/node@20.10.6)(jiti@2.7.0)(lightningcss@1.33.0)(terser@5.39.0)(yaml@2.9.1)
       webpack:
         specifier: ^5.97.1
         version: 5.98.0(esbuild@0.28.2)(uglify-js@3.17.4)
@@ -1547,7 +1547,7 @@ importers:
         version: 9.0.0(@babel/core@7.29.7(supports-color@10.2.2))(@ember/test-helpers@5.5.0(@babel/core@7.29.7(supports-color@10.2.2))(supports-color@10.2.2))(@embroider/macros@1.21.1(@babel/core@7.29.7(supports-color@10.2.2))(@glint/template@1.9.0)(supports-color@10.2.2))(@glimmer/component@2.1.1(supports-color@10.2.2))(supports-color@10.2.2)
       ember-cli:
         specifier: ~7.3.0
-        version: 7.3.0(@babel/core@7.29.7(supports-color@10.2.2))(debug@4.4.3(supports-color@10.2.2))(ejs@3.1.10)(handlebars@4.7.8)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(supports-color@10.2.2)(underscore@1.13.6)
+        version: 7.3.0(@babel/core@7.29.7(supports-color@10.2.2))(@types/node@20.10.6)(debug@4.4.3(supports-color@10.2.2))(ejs@3.1.10)(handlebars@4.7.8)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(supports-color@10.2.2)(underscore@1.13.6)
       ember-cli-clean-css:
         specifier: ^3.0.0
         version: 3.0.0(supports-color@10.2.2)
@@ -1628,7 +1628,7 @@ importers:
         version: 8.70.1(eslint@9.39.5(jiti@2.7.0)(supports-color@10.2.2))(supports-color@10.2.2)(typescript@6.0.3)
       vite:
         specifier: ^7.1.9
-        version: 7.3.6(jiti@2.7.0)(lightningcss@1.33.0)(terser@5.39.0)(yaml@2.9.1)
+        version: 7.3.6(@types/node@20.10.6)(jiti@2.7.0)(lightningcss@1.33.0)(terser@5.39.0)(yaml@2.9.1)
       webpack:
         specifier: ^5.97.1
         version: 5.98.0(esbuild@0.28.2)(uglify-js@3.17.4)
@@ -1676,7 +1676,7 @@ importers:
         version: link:../packages/pikaday
       '@ember-eui/validated-form':
         specifier: workspace:*
-        version: file:packages/validated-form(@ember-eui/core@file:packages/core(5c0c4b8810623d9d6b2d810f26dce66f))(@glimmer/component@2.1.1(supports-color@10.2.2))(@glint/template@1.9.0)(ember-source@7.3.1(@glimmer/component@2.1.1(supports-color@10.2.2))(supports-color@10.2.2))(supports-color@10.2.2)
+        version: file:packages/validated-form(@ember-eui/core@file:packages/core(9580c9d8fdb586a0d57cc1b8316c0320))(@glimmer/component@2.1.1(supports-color@10.2.2))(@glint/template@1.9.0)(ember-source@7.3.1(@glimmer/component@2.1.1(supports-color@10.2.2))(supports-color@10.2.2))(supports-color@10.2.2)
       '@ember/app-tsconfig':
         specifier: ^2.0.0
         version: 2.0.0
@@ -1766,7 +1766,7 @@ importers:
         version: 5.0.0(@babel/core@7.29.7(supports-color@10.2.2))(@ember/string@4.0.1)(@glint/template@1.9.0)(ember-source@7.3.1(@glimmer/component@2.1.1(supports-color@10.2.2))(supports-color@10.2.2))(supports-color@10.2.2)
       ember-cli:
         specifier: ~7.3.0
-        version: 7.3.0(@babel/core@7.29.7(supports-color@10.2.2))(debug@4.4.3(supports-color@10.2.2))(ejs@3.1.10)(handlebars@4.7.8)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(supports-color@10.2.2)(underscore@1.13.6)
+        version: 7.3.0(@babel/core@7.29.7(supports-color@10.2.2))(@types/node@20.10.6)(debug@4.4.3(supports-color@10.2.2))(ejs@3.1.10)(handlebars@4.7.8)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(supports-color@10.2.2)(underscore@1.13.6)
       ember-cli-babel:
         specifier: ^8.3.2
         version: 8.3.2(@babel/core@7.29.7(supports-color@10.2.2))(supports-color@10.2.2)
@@ -3222,6 +3222,7 @@ packages:
       ember-basic-dropdown: ^9.0.0
       ember-concurrency: ^5.1.0
       ember-focus-trap: ^1.1.0
+      ember-modifier: ^4.1.0
       ember-power-select: ^9.0.2
       ember-source: '>= 7.1.0'
       moment: ^2.29.3
@@ -13807,9 +13808,9 @@ snapshots:
       - react
       - react-dom
 
-  '@elastic/eui-theme-borealis@8.1.0(@emotion/react@11.14.0(@types/react@19.3.0)(react@18.3.1)(supports-color@10.2.2))(react-dom@18.3.1(react@18.3.1))(react@18.3.1)':
+  '@elastic/eui-theme-borealis@8.1.0(@emotion/react@11.14.0(react@18.3.1)(supports-color@10.2.2))(react-dom@18.3.1(react@18.3.1))(react@18.3.1)':
     dependencies:
-      '@elastic/eui-theme-common': 10.1.0(@emotion/react@11.14.0(@types/react@19.3.0)(react@18.3.1)(supports-color@10.2.2))(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      '@elastic/eui-theme-common': 10.1.0(@emotion/react@11.14.0(react@18.3.1)(supports-color@10.2.2))(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       chroma-js: 2.4.2
     transitivePeerDependencies:
       - '@emotion/react'
@@ -13825,7 +13826,7 @@ snapshots:
       react: 18.3.1
       react-dom: 18.3.1(react@18.3.1)
 
-  '@elastic/eui-theme-common@10.1.0(@emotion/react@11.14.0(@types/react@19.3.0)(react@18.3.1)(supports-color@10.2.2))(react-dom@18.3.1(react@18.3.1))(react@18.3.1)':
+  '@elastic/eui-theme-common@10.1.0(@emotion/react@11.14.0(react@18.3.1)(supports-color@10.2.2))(react-dom@18.3.1(react@18.3.1))(react@18.3.1)':
     dependencies:
       '@emotion/react': 11.14.0(@types/react@19.3.0)(react@18.3.1)(supports-color@10.2.2)
       '@types/lodash': 4.14.202
@@ -13891,15 +13892,15 @@ snapshots:
 
   '@ember-data/rfc395-data@0.0.4': {}
 
-  '@ember-eui/core@file:packages/core(8919c21547cba1094fd47df872fa5658)':
+  '@ember-eui/core@file:packages/core(9580c9d8fdb586a0d57cc1b8316c0320)':
     dependencies:
       '@atlaskit/pragmatic-drag-and-drop': 1.8.1
       '@atlaskit/pragmatic-drag-and-drop-auto-scroll': 2.1.5
       '@babel/core': 7.29.7(supports-color@10.2.2)
       '@babel/runtime': 7.29.7
       '@elastic/datemath': 5.0.3(moment@2.30.1)
-      '@elastic/eui-theme-borealis': 8.1.0(@emotion/react@11.14.0(@types/react@19.3.0)(react@18.3.1)(supports-color@10.2.2))(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
-      '@elastic/eui-theme-common': 10.1.0(@emotion/react@11.14.0(@types/react@19.3.0)(react@18.3.1)(supports-color@10.2.2))(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      '@elastic/eui-theme-borealis': 8.1.0(@emotion/react@11.14.0(react@18.3.1)(supports-color@10.2.2))(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      '@elastic/eui-theme-common': 10.1.0(@emotion/react@11.14.0(react@18.3.1)(supports-color@10.2.2))(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       '@ember/render-modifiers': 4.0.0(supports-color@10.2.2)
       '@ember/string': 4.0.1
       '@ember/test-waiters': 4.1.2(supports-color@10.2.2)
@@ -13923,15 +13924,16 @@ snapshots:
       ember-source: 7.3.1(@glimmer/component@2.1.1(supports-color@10.2.2))(supports-color@10.2.2)
       ember-style-modifier: 4.6.0(@babel/core@7.29.7(supports-color@10.2.2))(supports-color@10.2.2)
       ember-truth-helpers: 5.0.0(supports-color@10.2.2)
+      emoticon: 3.2.0
       focus-trap: 6.9.4
       lodash-es: 4.17.21
       mdast-util-to-hast: 10.2.0
       moment: 2.30.1
+      node-emoji: 1.11.0
       refractor: 3.6.0
       rehype-raw: 5.1.0
       rehype-stringify: 8.0.0
       remark-breaks: 3.0.3
-      remark-emoji: 2.2.0
       remark-parse-no-trim: 8.0.4
       remark-rehype: 8.1.0
       resolve: 1.22.12
@@ -13948,11 +13950,12 @@ snapshots:
       - react-dom
       - supports-color
 
-  '@ember-eui/validated-form@file:packages/validated-form(@ember-eui/core@file:packages/core(5c0c4b8810623d9d6b2d810f26dce66f))(@glimmer/component@2.1.1(supports-color@10.2.2))(@glint/template@1.9.0)(ember-source@7.3.1(@glimmer/component@2.1.1(supports-color@10.2.2))(supports-color@10.2.2))(supports-color@10.2.2)':
+  '@ember-eui/validated-form@file:packages/validated-form(@ember-eui/core@file:packages/core(9580c9d8fdb586a0d57cc1b8316c0320))(@glimmer/component@2.1.1(supports-color@10.2.2))(@glint/template@1.9.0)(ember-source@7.3.1(@glimmer/component@2.1.1(supports-color@10.2.2))(supports-color@10.2.2))(supports-color@10.2.2)':
     dependencies:
       '@babel/core': 7.29.7(supports-color@10.2.2)
-      '@ember-eui/core': file:packages/core(8919c21547cba1094fd47df872fa5658)
+      '@ember-eui/core': file:packages/core(9580c9d8fdb586a0d57cc1b8316c0320)
       '@ember/render-modifiers': 4.0.0(supports-color@10.2.2)
+      '@ember/test-waiters': 4.1.2(supports-color@10.2.2)
       '@embroider/addon-shim': 1.10.3(supports-color@10.2.2)
       '@glimmer/component': 2.1.1(supports-color@10.2.2)
       '@nullvoxpopuli/ember-composable-helpers': 5.3.2(@babel/core@7.29.7(supports-color@10.2.2))(supports-color@10.2.2)
@@ -14036,7 +14039,7 @@ snapshots:
   '@ember/optional-features@3.0.0(supports-color@10.2.2)':
     dependencies:
       ember-cli-version-checker: 5.1.2(supports-color@10.2.2)
-      inquirer: 13.4.3
+      inquirer: 13.4.3(@types/node@20.10.6)
       silent-error: 1.1.1(supports-color@10.2.2)
       tinyglobby: 0.2.17
     transitivePeerDependencies:
@@ -14304,7 +14307,7 @@ snapshots:
       send: 1.2.1(supports-color@10.2.2)
       source-map-url: 0.4.1
       terser: 5.39.0
-      vite: 7.3.6(jiti@2.7.0)(lightningcss@1.33.0)(terser@5.39.0)(yaml@2.9.1)
+      vite: 7.3.6(@types/node@20.10.6)(jiti@2.7.0)(lightningcss@1.33.0)(terser@5.39.0)(yaml@2.9.1)
     transitivePeerDependencies:
       - '@glint/template'
       - bufferutil
@@ -14836,104 +14839,134 @@ snapshots:
 
   '@inquirer/ansi@2.0.8': {}
 
-  '@inquirer/checkbox@5.2.5':
+  '@inquirer/checkbox@5.2.5(@types/node@20.10.6)':
     dependencies:
       '@inquirer/ansi': 2.0.8
-      '@inquirer/core': 12.0.3
+      '@inquirer/core': 12.0.3(@types/node@20.10.6)
       '@inquirer/figures': 2.0.9
-      '@inquirer/type': 4.1.1
+      '@inquirer/type': 4.1.1(@types/node@20.10.6)
+    optionalDependencies:
+      '@types/node': 20.10.6
 
-  '@inquirer/confirm@6.3.2':
+  '@inquirer/confirm@6.3.2(@types/node@20.10.6)':
     dependencies:
-      '@inquirer/core': 12.0.3
-      '@inquirer/type': 4.1.1
+      '@inquirer/core': 12.0.3(@types/node@20.10.6)
+      '@inquirer/type': 4.1.1(@types/node@20.10.6)
+    optionalDependencies:
+      '@types/node': 20.10.6
 
-  '@inquirer/core@11.2.1':
+  '@inquirer/core@11.2.1(@types/node@20.10.6)':
     dependencies:
       '@inquirer/ansi': 2.0.8
       '@inquirer/figures': 2.0.9
-      '@inquirer/type': 4.1.1
+      '@inquirer/type': 4.1.1(@types/node@20.10.6)
       cli-width: 4.1.0
       fast-wrap-ansi: 0.2.2
       mute-stream: 3.0.0
       signal-exit: 4.1.0
+    optionalDependencies:
+      '@types/node': 20.10.6
 
-  '@inquirer/core@12.0.3':
+  '@inquirer/core@12.0.3(@types/node@20.10.6)':
     dependencies:
       '@inquirer/ansi': 2.0.8
       '@inquirer/figures': 2.0.9
-      '@inquirer/type': 4.1.1
+      '@inquirer/type': 4.1.1(@types/node@20.10.6)
       cli-width: 4.1.0
       fast-wrap-ansi: 0.2.2
       mute-stream: 3.0.0
       signal-exit: 4.1.0
+    optionalDependencies:
+      '@types/node': 20.10.6
 
-  '@inquirer/editor@5.3.3':
+  '@inquirer/editor@5.3.3(@types/node@20.10.6)':
     dependencies:
-      '@inquirer/core': 12.0.3
-      '@inquirer/external-editor': 3.0.5
-      '@inquirer/type': 4.1.1
+      '@inquirer/core': 12.0.3(@types/node@20.10.6)
+      '@inquirer/external-editor': 3.0.5(@types/node@20.10.6)
+      '@inquirer/type': 4.1.1(@types/node@20.10.6)
+    optionalDependencies:
+      '@types/node': 20.10.6
 
-  '@inquirer/expand@5.1.5':
+  '@inquirer/expand@5.1.5(@types/node@20.10.6)':
     dependencies:
-      '@inquirer/core': 12.0.3
-      '@inquirer/type': 4.1.1
+      '@inquirer/core': 12.0.3(@types/node@20.10.6)
+      '@inquirer/type': 4.1.1(@types/node@20.10.6)
+    optionalDependencies:
+      '@types/node': 20.10.6
 
-  '@inquirer/external-editor@3.0.5':
+  '@inquirer/external-editor@3.0.5(@types/node@20.10.6)':
     dependencies:
       chardet: 2.2.0
       iconv-lite: 0.7.3
+    optionalDependencies:
+      '@types/node': 20.10.6
 
   '@inquirer/figures@2.0.9': {}
 
-  '@inquirer/input@5.1.6':
+  '@inquirer/input@5.1.6(@types/node@20.10.6)':
     dependencies:
-      '@inquirer/core': 12.0.3
-      '@inquirer/type': 4.1.1
+      '@inquirer/core': 12.0.3(@types/node@20.10.6)
+      '@inquirer/type': 4.1.1(@types/node@20.10.6)
+    optionalDependencies:
+      '@types/node': 20.10.6
 
-  '@inquirer/number@4.2.3':
+  '@inquirer/number@4.2.3(@types/node@20.10.6)':
     dependencies:
-      '@inquirer/core': 12.0.3
-      '@inquirer/type': 4.1.1
+      '@inquirer/core': 12.0.3(@types/node@20.10.6)
+      '@inquirer/type': 4.1.1(@types/node@20.10.6)
+    optionalDependencies:
+      '@types/node': 20.10.6
 
-  '@inquirer/password@5.2.2':
-    dependencies:
-      '@inquirer/ansi': 2.0.8
-      '@inquirer/core': 12.0.3
-      '@inquirer/type': 4.1.1
-
-  '@inquirer/prompts@8.7.2':
-    dependencies:
-      '@inquirer/checkbox': 5.2.5
-      '@inquirer/confirm': 6.3.2
-      '@inquirer/editor': 5.3.3
-      '@inquirer/expand': 5.1.5
-      '@inquirer/input': 5.1.6
-      '@inquirer/number': 4.2.3
-      '@inquirer/password': 5.2.2
-      '@inquirer/rawlist': 5.3.5
-      '@inquirer/search': 4.3.3
-      '@inquirer/select': 5.2.5
-
-  '@inquirer/rawlist@5.3.5':
-    dependencies:
-      '@inquirer/core': 12.0.3
-      '@inquirer/type': 4.1.1
-
-  '@inquirer/search@4.3.3':
-    dependencies:
-      '@inquirer/core': 12.0.3
-      '@inquirer/figures': 2.0.9
-      '@inquirer/type': 4.1.1
-
-  '@inquirer/select@5.2.5':
+  '@inquirer/password@5.2.2(@types/node@20.10.6)':
     dependencies:
       '@inquirer/ansi': 2.0.8
-      '@inquirer/core': 12.0.3
-      '@inquirer/figures': 2.0.9
-      '@inquirer/type': 4.1.1
+      '@inquirer/core': 12.0.3(@types/node@20.10.6)
+      '@inquirer/type': 4.1.1(@types/node@20.10.6)
+    optionalDependencies:
+      '@types/node': 20.10.6
 
-  '@inquirer/type@4.1.1': {}
+  '@inquirer/prompts@8.7.2(@types/node@20.10.6)':
+    dependencies:
+      '@inquirer/checkbox': 5.2.5(@types/node@20.10.6)
+      '@inquirer/confirm': 6.3.2(@types/node@20.10.6)
+      '@inquirer/editor': 5.3.3(@types/node@20.10.6)
+      '@inquirer/expand': 5.1.5(@types/node@20.10.6)
+      '@inquirer/input': 5.1.6(@types/node@20.10.6)
+      '@inquirer/number': 4.2.3(@types/node@20.10.6)
+      '@inquirer/password': 5.2.2(@types/node@20.10.6)
+      '@inquirer/rawlist': 5.3.5(@types/node@20.10.6)
+      '@inquirer/search': 4.3.3(@types/node@20.10.6)
+      '@inquirer/select': 5.2.5(@types/node@20.10.6)
+    optionalDependencies:
+      '@types/node': 20.10.6
+
+  '@inquirer/rawlist@5.3.5(@types/node@20.10.6)':
+    dependencies:
+      '@inquirer/core': 12.0.3(@types/node@20.10.6)
+      '@inquirer/type': 4.1.1(@types/node@20.10.6)
+    optionalDependencies:
+      '@types/node': 20.10.6
+
+  '@inquirer/search@4.3.3(@types/node@20.10.6)':
+    dependencies:
+      '@inquirer/core': 12.0.3(@types/node@20.10.6)
+      '@inquirer/figures': 2.0.9
+      '@inquirer/type': 4.1.1(@types/node@20.10.6)
+    optionalDependencies:
+      '@types/node': 20.10.6
+
+  '@inquirer/select@5.2.5(@types/node@20.10.6)':
+    dependencies:
+      '@inquirer/ansi': 2.0.8
+      '@inquirer/core': 12.0.3(@types/node@20.10.6)
+      '@inquirer/figures': 2.0.9
+      '@inquirer/type': 4.1.1(@types/node@20.10.6)
+    optionalDependencies:
+      '@types/node': 20.10.6
+
+  '@inquirer/type@4.1.1(@types/node@20.10.6)':
+    optionalDependencies:
+      '@types/node': 20.10.6
 
   '@isaacs/cliui@8.0.2':
     dependencies:
@@ -15570,12 +15603,12 @@ snapshots:
 
   '@socket.io/component-emitter@3.1.0': {}
 
-  '@svg-jar/plugin@0.2.1(@glint/template@1.9.0)(ember-source@7.3.1(@glimmer/component@2.1.1(supports-color@10.2.2))(supports-color@10.2.2))(esbuild@0.28.2)(rolldown@1.2.11)(rollup@4.63.5)(vite@7.3.6(jiti@2.7.0)(lightningcss@1.33.0)(terser@5.39.0)(yaml@2.9.1))(webpack@5.98.0(esbuild@0.28.2)(uglify-js@3.17.4))':
+  '@svg-jar/plugin@0.2.1(@glint/template@1.9.0)(ember-source@7.3.1(@glimmer/component@2.1.1(supports-color@10.2.2))(supports-color@10.2.2))(esbuild@0.28.2)(rolldown@1.2.11)(rollup@4.63.5)(vite@7.3.6(@types/node@20.10.6)(jiti@2.7.0)(lightningcss@1.33.0)(terser@5.39.0)(yaml@2.9.1))(webpack@5.98.0(esbuild@0.28.2)(uglify-js@3.17.4))':
     dependencies:
       '@eksml/xml': 0.2.0
       magic-string: 1.4.2
       svgo: 4.1.0
-      unplugin: 3.4.0(esbuild@0.28.2)(rolldown@1.2.11)(rollup@4.63.5)(vite@7.3.6(jiti@2.7.0)(lightningcss@1.33.0)(terser@5.39.0)(yaml@2.9.1))(webpack@5.98.0(esbuild@0.28.2)(uglify-js@3.17.4))
+      unplugin: 3.4.0(esbuild@0.28.2)(rolldown@1.2.11)(rollup@4.63.5)(vite@7.3.6(@types/node@20.10.6)(jiti@2.7.0)(lightningcss@1.33.0)(terser@5.39.0)(yaml@2.9.1))(webpack@5.98.0(esbuild@0.28.2)(uglify-js@3.17.4))
     optionalDependencies:
       '@glint/template': 1.9.0
       ember-source: 7.3.1(@glimmer/component@2.1.1(supports-color@10.2.2))(supports-color@10.2.2)
@@ -18002,7 +18035,7 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  ember-cli@7.3.0(@babel/core@7.29.7(supports-color@10.2.2))(debug@4.4.3(supports-color@10.2.2))(ejs@3.1.10)(handlebars@4.7.8)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(supports-color@10.2.2)(underscore@1.13.6):
+  ember-cli@7.3.0(@babel/core@7.29.7(supports-color@10.2.2))(@types/node@20.10.6)(debug@4.4.3(supports-color@10.2.2))(ejs@3.1.10)(handlebars@4.7.8)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(supports-color@10.2.2)(underscore@1.13.6):
     dependencies:
       '@ember-tooling/blueprint-blueprint': 0.3.0
       '@ember-tooling/blueprint-model': 0.7.1(supports-color@10.2.2)
@@ -18057,7 +18090,7 @@ snapshots:
       heimdalljs-logger: 0.1.10(supports-color@10.2.2)
       http-proxy: 1.18.1(debug@4.4.3(supports-color@10.2.2))
       inflection: 3.0.2
-      inquirer: 13.4.3
+      inquirer: 13.4.3(@types/node@20.10.6)
       is-git-url: 1.0.0
       is-language-code: 5.2.2
       lodash: 4.18.1
@@ -20012,15 +20045,17 @@ snapshots:
 
   inline-style-parser@0.1.1: {}
 
-  inquirer@13.4.3:
+  inquirer@13.4.3(@types/node@20.10.6):
     dependencies:
       '@inquirer/ansi': 2.0.8
-      '@inquirer/core': 11.2.1
-      '@inquirer/prompts': 8.7.2
-      '@inquirer/type': 4.1.1
+      '@inquirer/core': 11.2.1(@types/node@20.10.6)
+      '@inquirer/prompts': 8.7.2(@types/node@20.10.6)
+      '@inquirer/type': 4.1.1(@types/node@20.10.6)
       mute-stream: 3.0.0
       run-async: 4.0.6
       rxjs: 7.8.2
+    optionalDependencies:
+      '@types/node': 20.10.6
 
   inquirer@6.5.2:
     dependencies:
@@ -23811,7 +23846,7 @@ snapshots:
 
   unpipe@1.0.0: {}
 
-  unplugin@3.4.0(esbuild@0.28.2)(rolldown@1.2.11)(rollup@4.63.5)(vite@7.3.6(jiti@2.7.0)(lightningcss@1.33.0)(terser@5.39.0)(yaml@2.9.1))(webpack@5.98.0(esbuild@0.28.2)(uglify-js@3.17.4)):
+  unplugin@3.4.0(esbuild@0.28.2)(rolldown@1.2.11)(rollup@4.63.5)(vite@7.3.6(@types/node@20.10.6)(jiti@2.7.0)(lightningcss@1.33.0)(terser@5.39.0)(yaml@2.9.1))(webpack@5.98.0(esbuild@0.28.2)(uglify-js@3.17.4)):
     dependencies:
       '@jridgewell/remapping': 2.3.5
       picomatch: 4.0.7
@@ -23820,7 +23855,7 @@ snapshots:
       esbuild: 0.28.2
       rolldown: 1.2.11
       rollup: 4.63.5
-      vite: 7.3.6(jiti@2.7.0)(lightningcss@1.33.0)(terser@5.39.0)(yaml@2.9.1)
+      vite: 7.3.6(@types/node@20.10.6)(jiti@2.7.0)(lightningcss@1.33.0)(terser@5.39.0)(yaml@2.9.1)
       webpack: 5.98.0(esbuild@0.28.2)(uglify-js@3.17.4)
 
   unplugin@3.4.0(esbuild@0.28.2)(rolldown@1.2.11)(rollup@4.63.5)(vite@8.3.1(esbuild@0.28.2)(jiti@2.7.0)(terser@5.39.0)(yaml@2.9.1)):
@@ -23944,7 +23979,7 @@ snapshots:
       '@types/unist': 3.0.3
       vfile-message: 4.0.3
 
-  vite@7.3.6(jiti@2.7.0)(lightningcss@1.33.0)(terser@5.39.0)(yaml@2.9.1):
+  vite@7.3.6(@types/node@20.10.6)(jiti@2.7.0)(lightningcss@1.33.0)(terser@5.39.0)(yaml@2.9.1):
     dependencies:
       esbuild: 0.28.2
       fdir: 6.5.0(picomatch@4.0.7)
@@ -23953,6 +23988,7 @@ snapshots:
       rollup: 4.63.5
       tinyglobby: 0.2.17
     optionalDependencies:
+      '@types/node': 20.10.6
       fsevents: 2.3.3
       jiti: 2.7.0
       lightningcss: 1.33.0

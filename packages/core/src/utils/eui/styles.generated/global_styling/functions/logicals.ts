@@ -4,7 +4,7 @@
 import {
   logicalCSS,
   logicalSizeCSS
-} from "../../shared/ZKVETBHH.ts";
+} from "../../shared/A6LXAOTP.ts";
 export {
   logicalCSS,
   logicalSizeCSS

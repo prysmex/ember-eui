@@ -6,7 +6,7 @@ import {
   euiRangeThumbFocus,
   euiRangeThumbStyle,
   euiRangeVariables
-} from "../../../shared/TWXYPCNK.ts";
+} from "../../../shared/UNNOJ3VZ.ts";
 export {
   euiRangeStyles,
   euiRangeThumbFocus,

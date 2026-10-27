@@ -5,7 +5,7 @@ import {
   euiRangeLevelColor,
   getLevelColor,
   isNamedLevelColor
-} from "../../../shared/FM74KBRW.ts";
+} from "../../../shared/DE7ZWQRL.ts";
 export {
   euiRangeLevelColor,
   getLevelColor,

@@ -3,7 +3,7 @@
 // Upstream sources licensed under Elastic License 2.0 or SSPL v1; see vendor/eui-latest.
 import {
   EUI_TABLE_CSS_CONTAINER_NAME
-} from "../../shared/UMXTDMKT.ts";
+} from "../../shared/YLLLTNBX.ts";
 export {
   EUI_TABLE_CSS_CONTAINER_NAME
 };

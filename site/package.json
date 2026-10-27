@@ -32,7 +32,7 @@
     "@babel/eslint-parser": "^7.29.7",
     "@babel/plugin-transform-runtime": "^7.29.7",
     "@babel/plugin-transform-typescript": "^7.29.7",
-    "@babel/runtime": "^7.29.7",
+    "@babel/runtime": "^7.29.10",
     "@docfy/core": "^0.14.2",
     "@docfy/ember": "^0.14.2",
     "@docfy/ember-vite": "^0.14.2",
@@ -66,7 +66,7 @@
     "@types/qunit": "^2.19.14",
     "@types/rsvp": "^4.0.9",
     "babel-plugin-ember-template-compilation": "^4.0.0",
-    "concurrently": "^9.2.4",
+    "concurrently": "^9.2.5",
     "decorator-transforms": "^2.4.0",
     "ember-basic-dropdown": "^9.0.0",
     "ember-changeset": "^5.0.0",
@@ -95,7 +95,7 @@
     "eslint-plugin-qunit": "^8.2.6",
     "flatpickr": "^4.6.13",
     "globals": "^16.5.0",
-    "moment": "^2.29.3",
+    "moment": "^2.31.0",
     "prettier": "^3.9.6",
     "prettier-plugin-ember-template-tag": "^2.1.8",
     "qunit": "^2.26.0",
@@ -105,7 +105,7 @@
     "testem": "^3.21.0",
     "typescript": "^6.0.3",
     "typescript-eslint": "^8.70.0",
-    "vite": "^8.3.0"
+    "vite": "^8.3.5"
   },
   "engines": {
     "node": ">= 20.19.0"

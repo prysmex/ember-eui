@@ -5,7 +5,7 @@ import {
   FLYOUT_BREAKPOINT,
   composeFlyoutInlineStyles,
   euiFlyoutStyles
-} from "../../shared/MOWJCDZN.ts";
+} from "../../shared/WLKR57KU.ts";
 export {
   FLYOUT_BREAKPOINT,
   composeFlyoutInlineStyles,

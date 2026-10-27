@@ -3,7 +3,7 @@
 // Upstream sources licensed under Elastic License 2.0 or SSPL v1; see vendor/eui-latest.
 import {
   euiTextShift
-} from "../../shared/7JAANWBO.ts";
+} from "../../shared/EQ4DQYIA.ts";
 export {
   euiTextShift
 };

@@ -22,9 +22,9 @@
     "eui:check": "node scripts/generate-eui-styles.mjs --check && node --test scripts/eui-upstream-parity.test.mjs"
   },
   "devDependencies": {
-    "@changesets/cli": "^2.26.0",
+    "@changesets/cli": "^2.31.1",
     "@pnpm/workspace.injected-deps-syncer": "1100.0.39",
-    "concurrently": "^9.1.2",
+    "concurrently": "^9.2.5",
     "prettier": "^3.0.3",
     "prettier-plugin-ember-template-tag": "^2.0.4",
     "turbo": "^2.11.4",

@@ -4,7 +4,7 @@
 import {
   euiFocusRing,
   euiOutline
-} from "../../shared/3X7KG6KZ.ts";
+} from "../../shared/QSSW2F7V.ts";
 export {
   euiFocusRing,
   euiOutline

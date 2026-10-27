@@ -6,7 +6,7 @@ import {
   euiFormControlStyles,
   euiFormControlText,
   euiFormVariables
-} from "../../shared/FF2BUTYE.ts";
+} from "../../shared/C3LC2DKX.ts";
 export {
   euiFormControlDefaultShadow,
   euiFormControlStyles,

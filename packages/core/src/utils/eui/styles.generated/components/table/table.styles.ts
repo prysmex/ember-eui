@@ -5,7 +5,7 @@ import {
   euiTableCaptionStyles,
   euiTableStyles,
   euiTableVariables
-} from "../../shared/AK7JHATO.ts";
+} from "../../shared/MPTOZVCU.ts";
 export {
   euiTableCaptionStyles,
   euiTableStyles,

@@ -7,7 +7,7 @@ import {
   getCustomInteractiveColors,
   getIsValidColor,
   getTextColor
-} from "../../shared/CB6ESQBS.ts";
+} from "../../shared/TLZ74DAE.ts";
 export {
   euiBadgeColors,
   getBadgeColors,

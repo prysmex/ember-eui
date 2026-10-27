@@ -3,7 +3,7 @@
 // Upstream sources licensed under Elastic License 2.0 or SSPL v1; see vendor/eui-latest.
 import {
   makeHighContrastColor
-} from "../../shared/AOXFB3IO.ts";
+} from "../../shared/HQA7WMN4.ts";
 export {
   makeHighContrastColor
 };

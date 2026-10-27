@@ -3,11 +3,11 @@
 // Upstream sources licensed under Elastic License 2.0 or SSPL v1; see vendor/eui-latest.
 import {
   euiYScrollWithShadows
-} from "../../shared/2KP7ZYVN.ts";
+} from "../../shared/K4WLYBNG.ts";
 import {
   logicalCSS,
   logicalCSSWithFallback
-} from "../../shared/ZKVETBHH.ts";
+} from "../../shared/A6LXAOTP.ts";
 import {
   css
 } from "../../shared/ZAJGS5EL.ts";

@@ -5,7 +5,7 @@ import {
   euiDataGridCellOutlineSelectors,
   euiDataGridCellOutlineStyles,
   euiDataGridRowCellStyles
-} from "../../../../shared/ALXERYI2.ts";
+} from "../../../../shared/VRGXM52Z.ts";
 export {
   euiDataGridCellOutlineSelectors,
   euiDataGridCellOutlineStyles,

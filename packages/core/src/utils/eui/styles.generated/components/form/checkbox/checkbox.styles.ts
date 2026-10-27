@@ -4,7 +4,7 @@
 import {
   euiFormCustomControlStyles,
   euiFormCustomControlVariables
-} from "../../../shared/FF2BUTYE.ts";
+} from "../../../shared/C3LC2DKX.ts";
 import {
   css
 } from "../../../shared/ZAJGS5EL.ts";

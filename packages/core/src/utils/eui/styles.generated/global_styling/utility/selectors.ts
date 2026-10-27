@@ -3,7 +3,7 @@
 // Upstream sources licensed under Elastic License 2.0 or SSPL v1; see vendor/eui-latest.
 import {
   euiDisabledSelector
-} from "../../shared/2PX3JFSX.ts";
+} from "../../shared/HMMLNB5L.ts";
 export {
   euiDisabledSelector
 };

@@ -5,7 +5,7 @@ import {
   euiFontSize,
   euiTextBreakWord,
   euiTextTruncate
-} from "../../shared/OM62WJTY.ts";
+} from "../../shared/AOVHFF5R.ts";
 export {
   euiFontSize,
   euiTextBreakWord,

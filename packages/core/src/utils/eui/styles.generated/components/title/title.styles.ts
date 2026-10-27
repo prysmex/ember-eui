@@ -4,7 +4,7 @@
 import {
   euiTitle,
   euiTitleStyles
-} from "../../shared/SORCSWXI.ts";
+} from "../../shared/4GT53OH2.ts";
 export {
   euiTitle,
   euiTitleStyles

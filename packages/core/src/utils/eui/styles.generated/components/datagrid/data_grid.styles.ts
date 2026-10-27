@@ -4,7 +4,7 @@
 import {
   euiDataGridStyles,
   euiDataGridVariables
-} from "../../shared/QDR655TL.ts";
+} from "../../shared/EIFE752C.ts";
 export {
   euiDataGridStyles,
   euiDataGridVariables

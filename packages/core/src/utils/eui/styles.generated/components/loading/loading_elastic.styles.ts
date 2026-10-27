@@ -3,7 +3,7 @@
 // Upstream sources licensed under Elastic License 2.0 or SSPL v1; see vendor/eui-latest.
 import {
   euiCanAnimate
-} from "../../shared/XFWFA3DO.ts";
+} from "../../shared/ZXHYDJKW.ts";
 import {
   css,
   keyframes

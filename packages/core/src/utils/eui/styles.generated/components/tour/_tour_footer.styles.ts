@@ -4,7 +4,7 @@
 import {
   _tourFooterBgColor,
   euiTourFooterStyles
-} from "../../shared/ULLKMG3C.ts";
+} from "../../shared/JMM5FBKO.ts";
 export {
   _tourFooterBgColor,
   euiTourFooterStyles

@@ -4,7 +4,7 @@
 import {
   euiContainerCSS,
   euiContainerQuery
-} from "../../shared/ITO4GMBL.ts";
+} from "../../shared/IFBV57QH.ts";
 export {
   euiContainerCSS,
   euiContainerQuery

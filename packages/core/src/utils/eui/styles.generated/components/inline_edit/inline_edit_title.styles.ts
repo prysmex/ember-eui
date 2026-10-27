@@ -3,7 +3,7 @@
 // Upstream sources licensed under Elastic License 2.0 or SSPL v1; see vendor/eui-latest.
 import {
   euiTitleStyles
-} from "../../shared/SORCSWXI.ts";
+} from "../../shared/4GT53OH2.ts";
 import {
   css
 } from "../../shared/ZAJGS5EL.ts";

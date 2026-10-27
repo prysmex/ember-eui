@@ -3,7 +3,7 @@
 // Upstream sources licensed under Elastic License 2.0 or SSPL v1; see vendor/eui-latest.
 import {
   EUI_BASIC_TABLE_PANEL_CLASS_NAME
-} from "../../shared/7BV6JFNX.ts";
+} from "../../shared/HZSKJ73C.ts";
 export {
   EUI_BASIC_TABLE_PANEL_CLASS_NAME
 };

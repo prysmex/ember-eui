@@ -4,7 +4,7 @@
 import {
   highContrastModeStyles,
   preventForcedColors
-} from "../../shared/PEESTLDI.ts";
+} from "../../shared/2DMOIJUN.ts";
 export {
   highContrastModeStyles,
   preventForcedColors

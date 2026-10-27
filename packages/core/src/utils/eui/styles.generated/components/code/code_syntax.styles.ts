@@ -4,7 +4,7 @@
 import {
   euiCodeSyntaxVariables,
   euiCodeTextColors
-} from "../../shared/ADPZ5ZHU.ts";
+} from "../../shared/UK2BWNSB.ts";
 export {
   euiCodeSyntaxVariables,
   euiCodeTextColors

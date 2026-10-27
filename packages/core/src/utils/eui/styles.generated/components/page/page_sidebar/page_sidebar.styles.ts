@@ -3,10 +3,10 @@
 // Upstream sources licensed under Elastic License 2.0 or SSPL v1; see vendor/eui-latest.
 import {
   euiYScroll
-} from "../../../shared/2KP7ZYVN.ts";
+} from "../../../shared/K4WLYBNG.ts";
 import {
   transparentize
-} from "../../../shared/K76TL4VL.ts";
+} from "../../../shared/RFTIOXMM.ts";
 import {
   css
 } from "../../../shared/ZAJGS5EL.ts";

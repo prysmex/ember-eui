@@ -8,7 +8,7 @@ import {
   euiXScrollWithShadows,
   euiYScroll,
   euiYScrollWithShadows
-} from "../../shared/2KP7ZYVN.ts";
+} from "../../shared/K4WLYBNG.ts";
 export {
   euiFullHeight,
   euiScrollBarStyles,

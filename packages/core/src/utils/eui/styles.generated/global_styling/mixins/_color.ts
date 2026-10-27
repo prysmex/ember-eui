@@ -4,7 +4,7 @@
 import {
   euiBackgroundColor,
   euiBorderColor
-} from "../../shared/LXBSAITL.ts";
+} from "../../shared/7O3SAKKX.ts";
 export {
   euiBackgroundColor,
   euiBorderColor

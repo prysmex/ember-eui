@@ -3,7 +3,7 @@
 // Upstream sources licensed under Elastic License 2.0 or SSPL v1; see vendor/eui-latest.
 import {
   euiMaxBreakpoint
-} from "../../shared/JZFLXET7.ts";
+} from "../../shared/QJF5CPFU.ts";
 import {
   css
 } from "../../shared/ZAJGS5EL.ts";

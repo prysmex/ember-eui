@@ -7,7 +7,7 @@ import {
   FLYOUT_SIZES,
   FLYOUT_TYPES,
   isEuiFlyoutSizeNamed
-} from "../../shared/AAE5X575.ts";
+} from "../../shared/OM22NNK5.ts";
 export {
   FLYOUT_PADDING_SIZES,
   FLYOUT_SIDES,

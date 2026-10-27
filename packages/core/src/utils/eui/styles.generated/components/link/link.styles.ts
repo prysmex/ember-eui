@@ -3,7 +3,7 @@
 // Upstream sources licensed under Elastic License 2.0 or SSPL v1; see vendor/eui-latest.
 import {
   euiLinkStyles
-} from "../../shared/3HLX7DYX.ts";
+} from "../../shared/OXGMBZQN.ts";
 export {
   euiLinkStyles
 };

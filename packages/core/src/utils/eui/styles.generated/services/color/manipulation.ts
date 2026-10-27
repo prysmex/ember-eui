@@ -5,7 +5,7 @@ import {
   shade,
   tint,
   transparentize
-} from "../../shared/K76TL4VL.ts";
+} from "../../shared/RFTIOXMM.ts";
 export {
   shade,
   tint,

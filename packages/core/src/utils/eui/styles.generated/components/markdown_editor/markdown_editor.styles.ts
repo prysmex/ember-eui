@@ -4,7 +4,7 @@
 import {
   euiMarkdownEditorStyles,
   euiMarkdownEditorVariables
-} from "../../shared/5YF7BOXJ.ts";
+} from "../../shared/W2672ILX.ts";
 export {
   euiMarkdownEditorStyles,
   euiMarkdownEditorVariables

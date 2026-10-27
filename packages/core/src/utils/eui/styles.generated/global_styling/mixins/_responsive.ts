@@ -5,7 +5,7 @@ import {
   euiBreakpoint,
   euiMaxBreakpoint,
   euiMinBreakpoint
-} from "../../shared/JZFLXET7.ts";
+} from "../../shared/QJF5CPFU.ts";
 export {
   euiBreakpoint,
   euiMaxBreakpoint,

@@ -3,7 +3,7 @@
 // Upstream sources licensed under Elastic License 2.0 or SSPL v1; see vendor/eui-latest.
 import {
   euiRangeThumbPerBrowser
-} from "../../../shared/TWXYPCNK.ts";
+} from "../../../shared/UNNOJ3VZ.ts";
 import {
   css
 } from "../../../shared/ZAJGS5EL.ts";

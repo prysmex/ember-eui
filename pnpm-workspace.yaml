@@ -20,6 +20,11 @@ peerDependencyRules:
 
 overrides:
   '@ember/string': ^4.0.0
+  # security fixes (pnpm audit) for exact/tilde pins that no parent release
+  # has bumped yet; each is API-compatible with the pinned version
+  'refractor@3>prismjs': ^1.30.0
+  'ember-cli-babel@7>@babel/runtime': ^7.26.10
+  'tmp@<0.2.6': ^0.2.6
 
 # Packages whose types import @glint/template (or ember-source) without
 # declaring it: as optional peers they resolve each consumer's own version.

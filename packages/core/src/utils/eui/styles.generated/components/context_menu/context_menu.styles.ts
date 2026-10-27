@@ -4,7 +4,7 @@
 import {
   euiContextMenuStyles,
   euiContextMenuVariables
-} from "../../shared/DRBXG4RG.ts";
+} from "../../shared/EVVDF352.ts";
 export {
   euiContextMenuStyles,
   euiContextMenuVariables

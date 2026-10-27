@@ -3,7 +3,7 @@
 // Upstream sources licensed under Elastic License 2.0 or SSPL v1; see vendor/eui-latest.
 import {
   euiPopoverPanelStyles
-} from "../../../shared/U7GEKFI5.ts";
+} from "../../../shared/R6ZH7LLJ.ts";
 export {
   euiPopoverPanelStyles
 };

@@ -4,7 +4,7 @@
 import {
   euiHeaderStyles,
   euiHeaderVariables
-} from "../../shared/KTFNPVK5.ts";
+} from "../../shared/OFZBDQYG.ts";
 export {
   euiHeaderStyles,
   euiHeaderVariables

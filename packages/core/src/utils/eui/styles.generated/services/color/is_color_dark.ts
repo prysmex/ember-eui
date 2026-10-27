@@ -3,7 +3,7 @@
 // Upstream sources licensed under Elastic License 2.0 or SSPL v1; see vendor/eui-latest.
 import {
   isColorDark
-} from "../../shared/CCCFBJVK.ts";
+} from "../../shared/NKBMWRUE.ts";
 export {
   isColorDark
 };

@@ -3,7 +3,7 @@
 // Upstream sources licensed under Elastic License 2.0 or SSPL v1; see vendor/eui-latest.
 import {
   euiPanelStyles
-} from "../../shared/5EH4B2MX.ts";
+} from "../../shared/Z6EMFMWG.ts";
 export {
   euiPanelStyles
 };

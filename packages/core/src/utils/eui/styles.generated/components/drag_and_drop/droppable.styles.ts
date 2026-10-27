@@ -3,7 +3,7 @@
 // Upstream sources licensed under Elastic License 2.0 or SSPL v1; see vendor/eui-latest.
 import {
   euiDroppableStyles
-} from "../../shared/SL36VYZY.ts";
+} from "../../shared/5WZXEPTE.ts";
 export {
   euiDroppableStyles
 };

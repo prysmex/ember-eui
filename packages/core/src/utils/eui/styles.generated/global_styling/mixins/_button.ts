@@ -8,7 +8,7 @@ import {
   euiButtonSizeMap,
   getEuiButtonColorValues,
   getEuiFilledButtonColorValues
-} from "../../shared/OMXYFSPG.ts";
+} from "../../shared/K32ONDGT.ts";
 export {
   BUTTON_COLORS,
   euiButtonDisplaysColors,

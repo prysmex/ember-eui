@@ -6,7 +6,7 @@ import {
   euiStepStyles,
   euiStepTitleStyles,
   euiStepVariables
-} from "../../shared/TXBWGYWM.ts";
+} from "../../shared/QLERZNOF.ts";
 export {
   euiStepContentStyles,
   euiStepStyles,

@@ -4,10 +4,10 @@
 import {
   euiTextBreakWord,
   euiTextTruncate
-} from "../../shared/OM62WJTY.ts";
+} from "../../shared/AOVHFF5R.ts";
 import {
   logicalTextAlignCSS
-} from "../../shared/ZKVETBHH.ts";
+} from "../../shared/A6LXAOTP.ts";
 import {
   css
 } from "../../shared/ZAJGS5EL.ts";

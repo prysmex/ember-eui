@@ -3,10 +3,10 @@
 // Upstream sources licensed under Elastic License 2.0 or SSPL v1; see vendor/eui-latest.
 import {
   euiSkeletonGradientAnimation
-} from "../../shared/T3K55UA5.ts";
+} from "../../shared/7N4EQUW2.ts";
 import {
   preventForcedColors
-} from "../../shared/PEESTLDI.ts";
+} from "../../shared/2DMOIJUN.ts";
 import {
   css
 } from "../../shared/ZAJGS5EL.ts";

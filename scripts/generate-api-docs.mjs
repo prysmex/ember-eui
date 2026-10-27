@@ -142,8 +142,9 @@ function closingIndex(text, start) {
 
 /** Body of `interface Name … {` or `type Name = … {` in the file. */
 function declaration(source, name) {
+  // type parameters may nest one level: `type X<T extends Y<unknown> = Y> =`
   const pattern = new RegExp(
-    `(?:interface\\s+${name}\\b[^{]*|type\\s+${name}\\s*(?:<[^>]*>)?\\s*=)`
+    `(?:interface\\s+${name}\\b[^{]*|type\\s+${name}\\s*(?:<(?:[^<>]|<[^<>]*>)*>)?\\s*=)`
   );
   const match = pattern.exec(source);
 
@@ -336,7 +337,10 @@ function resolveArgs(source, typeText, seen = new Set()) {
   const inherited = [];
 
   for (const part of splitIntersection(typeText)) {
-    const trimmed = part.trim();
+    // a generic type of this file, e.g. `XArgs<Tab>`, has the members of `XArgs`
+    const generic = /^(\w+)<[\s\S]*>$/.exec(part.trim());
+    const trimmed =
+      generic && declaration(source, generic[1]) ? generic[1] : part.trim();
 
     if (trimmed.startsWith('{')) {
       // mapped type `{ [K in keyof X]: X[K] }`

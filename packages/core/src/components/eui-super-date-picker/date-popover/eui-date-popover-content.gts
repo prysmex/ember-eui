@@ -38,8 +38,8 @@ interface EuiDatePopoverContentArgs {
   dateFormat: string;
   /** moment format of times. */
   timeFormat?: string;
-  /** moment locale. */
-  locale?: LocaleSpecifier;
+  /** moment locale; `'en'` when unset or `null`. */
+  locale?: LocaleSpecifier | null;
   /** `'start'` or `'end'` of the range. */
   position: 'start' | 'end';
   /** UTC offset in minutes. */

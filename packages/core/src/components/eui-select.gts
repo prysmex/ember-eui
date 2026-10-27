@@ -27,8 +27,11 @@ export interface EuiSelectSignature {
       text: string | number;
       disabled?: boolean;
     }[];
-    /** The selected option's `value`. Update it from `{{on "change" …}}`. */
-    value?: string | number;
+    /**
+     * The selected option's `value`. Update it from `{{on "change" …}}`.
+     * `null` selects nothing, like leaving it out.
+     */
+    value?: string | number | null;
     /** Stretches the select to its container's width. */
     fullWidth?: boolean;
     /** Shorter select (32px instead of 40px), for dense forms. */

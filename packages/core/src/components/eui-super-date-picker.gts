@@ -129,9 +129,10 @@ export interface EuiSuperDatePickerArgs {
    */
   compressed?: boolean;
   /**
-   * Used to localize e.g. month names, passed to `moment`
+   * Used to localize e.g. month names, passed to `moment`. Defaults to
+   * `'en'`, also for `null`.
    */
-  locale?: LocaleSpecifier;
+  locale?: LocaleSpecifier | null;
   /**
    * Called every `@refreshInterval` ms while not `@isPaused` (and by the
    * update button when the range has not changed), with `{ start, end,

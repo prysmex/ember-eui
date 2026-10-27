@@ -22,6 +22,10 @@ const TEXT_TRUNCATE = euiTextTruncate();
 export type IEuiTab = {
   /** Id of the tab. Defaults to a random id. */
   id?: string;
+} & EuiTabProps;
+
+/** The arguments of a tab other than its `id`. */
+type EuiTabProps = {
   /**
    * Makes the tab a link, e.g. to a route. A `javascript:` URL disables the
    * tab instead (upstream `validateHref`).
@@ -52,8 +56,9 @@ export type IEuiTab = {
 export interface EuiTabSignature {
   Element: HTMLButtonElement | HTMLAnchorElement;
   Args: {
-    [K in keyof IEuiTab]: IEuiTab[K];
-  };
+    /** Id of the tab, e.g. an `{{#each}}` index. Defaults to a random id. */
+    id?: string | number;
+  } & EuiTabProps;
   Blocks: {
     /** Content before the label, e.g. an icon. */
     prepend: [];
@@ -67,7 +72,7 @@ export interface EuiTabSignature {
 export default class EuiTab extends Component<EuiTabSignature> {
   fallbackId = randomId();
 
-  get id(): string {
+  get id(): string | number {
     return this.args.id ?? this.fallbackId;
   }
 

@@ -63,7 +63,7 @@ short and non-essential; it is not reachable on touch screens.
 | --- | --- | --- | --- |
 | `@anchorClassName` | `string` |  | Passes onto the the trigger. |
 | `@className` | `string` |  | Passes onto the tooltip itself, not the trigger. |
-| `@content` | `string` |  | The main content of your tooltip. |
+| `@content` | `string \| SafeString` |  | The main content of your tooltip: text, or markup from `htmlSafe`. |
 | `@display` | `EuiToolTipDisplay` | `'inlineBlock'` | Display of the anchor wrapper: `'inlineBlock'`, `'block'` or `'flex'`. |
 | `@offset` | `number` | `16` | Distance between the anchor and the tooltip. |
 | `@disableScreenReaderOutput` | `boolean` | `false` | Keeps the tooltip visual only: the anchor's element is not linked to it with `aria-describedby`, and Escape does not stop propagating. Use when the anchor's label already says the same. |

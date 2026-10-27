@@ -574,7 +574,7 @@ module('Integration | Component | eui-combo-box', function (hooks) {
             @onChange={{noop}}
             as |option select|
           >
-            <span class="enum-option" data-select={{isUniqueId select}}>Enum
+            <span class="enum-option" data-select={{if (isUniqueId select) "true"}}>Enum
               {{option}}</span>
           </EuiComboBox>
         </template>
@@ -708,7 +708,7 @@ module('Integration | Component | eui-combo-box', function (hooks) {
       await open();
       await fillIn(INPUT, 'medico');
 
-      assert.dom(`${OPTION} mark`).hasText('Médico');
+      assert.dom(`${OPTION} mark`, document.body).hasText('Médico');
     });
 
     test('the euiComboBox.ignoreAccents config sets the default; the argument wins', async function (assert) {

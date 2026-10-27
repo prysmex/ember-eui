@@ -23,8 +23,8 @@ export interface EuiStatSignature {
      * Defaults to `'left'`.
      */
     textAlign?: EuiStatTextAlign;
-    /** The number or value, e.g. "1,234". Use the `<:title>` block for markup. */
-    title?: string;
+    /** The number or value, e.g. `1234` or "1,234". Use the `<:title>` block for markup. */
+    title?: string | number;
     /** What it measures, e.g. "Total users". Use the `<:description>` block for markup. */
     description?: string;
     /**

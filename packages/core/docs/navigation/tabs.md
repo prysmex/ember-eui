@@ -68,7 +68,7 @@ upstream; EuiTabs moves focus between tabs with the arrow keys.
 
 | Argument | Type | Default | Description |
 | --- | --- | --- | --- |
-| `@id` | `string` | a random id | Id of the tab. |
+| `@id` | `string \| number` | a random id | Id of the tab, e.g. an `{{#each}}` index. |
 | `@href` | `string` |  | Makes the tab a link, e.g. to a route. A `javascript:` URL disables the tab instead (upstream `validateHref`). |
 | `@target` | `string` |  | `target` of a link tab. |
 | `@rel` | `string` |  | `rel` of a link tab; `noreferrer` is always added (upstream). |
@@ -88,17 +88,18 @@ HTML attributes and modifiers (`class`, `data-test-*`, `{{on …}}`) are applied
 ### EuiTabbedContent
 
 Tabs with their panels, managing the selected tab for you. For custom layouts use EuiTabs.
+`Tab` is the type of `@tabs`' items (an `EuiTabbedContentTab`), so the blocks yield your own tab type.
 
 | Argument | Type | Default | Description |
 | --- | --- | --- | --- |
 | `@autoFocus` | `'initial' \| 'selected'` |  | When tabbing into the tabs, set the focus on `initial` for the first tab, or `selected` for the currently selected tab. Best use case is for inside of overlay content like popovers or flyouts. |
 | `@display` |  |  | Choose `default` or alternative `condensed` display styles |
 | `@expand` | `boolean` |  | Evenly stretches each tab to fill the horizontal space |
-| `@initialSelectedTab` | `EuiTabbedContentTab` |  | Use this prop to set the initially selected tab while letting the tabbed content component control selection state internally |
-| `@onTabClick` | `(selectedTab: EuiTabbedContentTab) => void` |  | Called with the clicked tab. |
-| `@selectedTab` | `EuiTabbedContentTab` |  | Use this prop if you want to control selection state within the owner component |
+| `@initialSelectedTab` | `Tab` |  | Use this prop to set the initially selected tab while letting the tabbed content component control selection state internally |
+| `@onTabClick` | `(selectedTab: Tab) => void` |  | Called with the clicked tab. |
+| `@selectedTab` | `Tab` |  | Use this prop if you want to control selection state within the owner component |
 | `@size` |  | `'m'` | Size of the tabs: `'s'`, `'m'`, `'l'` or `'xl'`. |
-| `@tabs` (required) | `EuiTabbedContentTab[]` |  | Each tab needs id and content properties, so we can associate it with its panel for accessibility. The name property (a node) is also required to display to the user. |
+| `@tabs` (required) | `Tab[]` |  | Each tab needs id and content properties, so we can associate it with its panel for accessibility. The name property (a node) is also required to display to the user. |
 
 | Block | Description |
 | --- | --- |

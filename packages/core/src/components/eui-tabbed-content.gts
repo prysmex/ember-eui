@@ -20,8 +20,12 @@ import type { CommonArgs } from './common.ts';
 import type { EuiTabsSignature } from './eui-tabs';
 import type { ComponentLike } from '@glint/template';
 
-/** A tab of EuiTabbedContent. */
-export interface EuiTabbedContentTab {
+/**
+ * A tab of EuiTabbedContent. `Content` is the type of its `content`: a
+ * component by default, or anything else (e.g. a translation key) when
+ * the `<:selectedTabContent>` block renders it.
+ */
+export interface EuiTabbedContentTab<Content = ComponentLike> {
   /** Unique id. */
   id: string;
   /** The tab's label: text or a component. */
@@ -40,9 +44,10 @@ export interface EuiTabbedContentTab {
   className?: string;
   /**
    * The panel shown while the tab is selected (a component). Or render
-   * panels with the `<:selectedTabContent>` block.
+   * panels with the `<:selectedTabContent>` block, which yields the tab, so
+   * `content` can then be any value, e.g. a translation key.
    */
-  content?: ComponentLike;
+  content?: Content;
   /** Disables the tab. */
   disabled?: boolean;
   /**
@@ -67,7 +72,9 @@ const TAB_PROPS = [
   'isSelected'
 ];
 
-export type EuiTabbedContentArgs = CommonArgs & {
+export type EuiTabbedContentArgs<
+  Tab extends EuiTabbedContentTab<unknown> = EuiTabbedContentTab
+> = CommonArgs & {
   /**
    * When tabbing into the tabs, set the focus on `initial` for the first tab,
    * or `selected` for the currently selected tab. Best use case is for inside of
@@ -86,38 +93,45 @@ export type EuiTabbedContentArgs = CommonArgs & {
    * Use this prop to set the initially selected tab while letting the tabbed content component
    * control selection state internally
    */
-  initialSelectedTab?: EuiTabbedContentTab;
+  initialSelectedTab?: Tab;
   /** Called with the clicked tab. */
-  onTabClick?: (selectedTab: EuiTabbedContentTab) => void;
+  onTabClick?: (selectedTab: Tab) => void;
   /**
    * Use this prop if you want to control selection state within the owner component
    */
-  selectedTab?: EuiTabbedContentTab;
+  selectedTab?: Tab;
   /** Size of the tabs: `'s'`, `'m'`, `'l'` or `'xl'`. Defaults to `'m'`. */
   size?: EuiTabsSignature['Args']['size'];
   /**
    * Each tab needs id and content properties, so we can associate it with its panel for accessibility.
    * The name property (a node) is also required to display to the user.
    */
-  tabs: EuiTabbedContentTab[];
+  tabs: Tab[];
 };
 
-/** Tabs with their panels, managing the selected tab for you. For custom layouts use EuiTabs. */
-export interface EuiTabbedContentSignature {
+/**
+ * Tabs with their panels, managing the selected tab for you. For custom layouts use EuiTabs.
+ * `Tab` is the type of `@tabs`' items (an `EuiTabbedContentTab`), so the blocks yield your own tab type.
+ */
+export interface EuiTabbedContentSignature<
+  Tab extends EuiTabbedContentTab<unknown> = EuiTabbedContentTab
+> {
   Element: HTMLDivElement;
-  Args: EuiTabbedContentArgs;
+  Args: EuiTabbedContentArgs<Tab>;
   Blocks: {
     /** Unused. */
-    default: [EuiTabbedContentTab];
+    default: [Tab];
     /**
      * Renders the selected tab's panel (instead of its `content`); yields
      * the tab: `<:selectedTabContent as |tab|>{{#if (eq tab.id "a")}}…`.
      */
-    selectedTabContent: [EuiTabbedContentTab];
+    selectedTabContent: [Tab];
   };
 }
 
-export default class EuiTabbedContentComponent extends Component<EuiTabbedContentSignature> {
+export default class EuiTabbedContentComponent<
+  Tab extends EuiTabbedContentTab<unknown> = EuiTabbedContentTab
+> extends Component<EuiTabbedContentSignature<Tab>> {
   @tracked selectedTabId;
   @tracked inFocus: boolean = false;
   tabsRef?: Element;
@@ -126,7 +140,7 @@ export default class EuiTabbedContentComponent extends Component<EuiTabbedConten
     return this.args.autoFocus || 'initial';
   }
 
-  constructor(owner: Owner, args: EuiTabbedContentArgs) {
+  constructor(owner: Owner, args: EuiTabbedContentArgs<Tab>) {
     super(owner, args);
 
     const { initialSelectedTab, selectedTab, tabs } = this.args;
@@ -143,8 +157,20 @@ export default class EuiTabbedContentComponent extends Component<EuiTabbedConten
 
     return (
       externalSelectedTab ||
-      tabs.find((tab: EuiTabbedContentTab) => tab.id === this.selectedTabId)
+      tabs.find((tab: Tab) => tab.id === this.selectedTabId)
     );
+  }
+
+  /**
+   * The selected tab's `content`, rendered when there is no
+   * `<:selectedTabContent>` block: then it is a component, as it is only
+   * something else for the block to render.
+   */
+  get selectedTabComponent() {
+    const id = this.selectedTab?.id;
+    const tab = this.args.tabs.find((tab) => tab.id === id);
+
+    return tab?.content as ComponentLike | undefined;
   }
 
   setTabsRef = (element: Element) => {
@@ -175,7 +201,7 @@ export default class EuiTabbedContentComponent extends Component<EuiTabbedConten
     }
   };
 
-  onTabClick = (selectedTab: EuiTabbedContentTab) => {
+  onTabClick = (selectedTab: Tab) => {
     const { onTabClick, selectedTab: externalSelectedTab } = this.args;
 
     if (onTabClick) {
@@ -263,7 +289,7 @@ export default class EuiTabbedContentComponent extends Component<EuiTabbedConten
               {{#if (has-block "selectedTabContent")}}
                 {{yield currentTab to="selectedTabContent"}}
               {{else}}
-                {{currentTab.content}}
+                {{this.selectedTabComponent}}
               {{/if}}
             </div>
           {{/if}}

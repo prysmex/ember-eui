@@ -197,7 +197,8 @@ module('Integration | Component | eui-combo-box upstream parity', function (hook
         </template>
       );
       assert.dom(INPUT).hasValue('Titan', 'the label, not the block');
-      assert.dom('.euiComboBox__inputWrap .custom').doesNotExist();
+      // the block renders the selection over the input (not upstream)
+      assert.dom('.euiComboBoxPlainTextSelection__block .custom').hasText('Titan');
       assert.dom('.euiComboBoxPlainTextSelection__prepend').hasText('P');
       assert.dom('.euiComboBoxPlainTextSelection__append').hasText('A');
     });

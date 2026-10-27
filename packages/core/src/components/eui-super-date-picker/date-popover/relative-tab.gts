@@ -38,8 +38,8 @@ import type { LocaleSpecifier } from 'moment';
 interface RelativeTabArgs {
   /** moment format of absolute dates. */
   dateFormat: string;
-  /** moment locale. */
-  locale?: LocaleSpecifier;
+  /** moment locale; `'en'` when unset or `null`. */
+  locale?: LocaleSpecifier | null;
   /** The date (date math or ISO date). */
   value: string;
   /** Called with the new value. */

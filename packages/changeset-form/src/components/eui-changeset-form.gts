@@ -28,9 +28,8 @@ import FieldSwitchComponent from './eui-changeset-form/fields/field-switch.gts';
 import FieldTextComponent from './eui-changeset-form/fields/field-text.gts';
 import FieldTextAreaComponent from './eui-changeset-form/fields/field-text-area.gts';
 
-import type { ContextSignature } from './eui-changeset-form/context';
 import type { EuiFormSignature } from '@ember-eui/core/components/eui-form';
-import type { ComponentLike } from '@glint/template';
+import type { ComponentLike, WithBoundArgs } from '@glint/template';
 import type { BufferedChangeset } from 'ember-changeset/types';
 
 export interface IEuiChangesetFormTheme {
@@ -50,7 +49,7 @@ export interface IEuiChangesetFormTheme {
   FieldComboBox: ComponentLike<any>;
 }
 
-export const EuiChangesetFormDefaultTheme: IEuiChangesetFormTheme = {
+export const EuiChangesetFormDefaultTheme = {
   FieldBase: FieldBaseComponent,
   FieldText: FieldTextComponent,
   FieldTextArea: FieldTextAreaComponent,
@@ -65,7 +64,54 @@ export const EuiChangesetFormDefaultTheme: IEuiChangesetFormTheme = {
   FieldNumber: FieldNumberComponent,
   FieldSelect: FieldSelectComponent,
   FieldComboBox: FieldComboBoxComponent
-};
+} satisfies IEuiChangesetFormTheme;
+
+/**
+ * The field components of a theme, as typed by the default theme: a
+ * `@theme` field is expected to take the same args.
+ */
+export type EuiChangesetFormTheme = typeof EuiChangesetFormDefaultTheme;
+
+/** The args EuiChangesetForm passes every field it yields. */
+type FormArgs =
+  'changeset' | 'formId' | 'fullWidth' | 'hasSubmitted' | 'disabled';
+
+/**
+ * The fields EuiChangesetForm yields: the theme's components with the args
+ * the form passes them (`changeset`, `formId`, `fullWidth`, `hasSubmitted`
+ * and `disabled`) made optional, so they keep their own args, blocks and
+ * element.
+ */
+export interface EuiChangesetFormFields {
+  FieldBase: WithBoundArgs<typeof FieldBaseComponent, FormArgs>;
+  FieldText: WithBoundArgs<typeof FieldTextComponent, FormArgs>;
+  FieldTextArea: WithBoundArgs<typeof FieldTextAreaComponent, FormArgs>;
+  FieldPassword: WithBoundArgs<typeof FieldPasswordComponent, FormArgs>;
+  FieldRadio: WithBoundArgs<typeof FieldRadioComponent, FormArgs>;
+  // not in an EuiFormRow, so no `fullWidth`
+  FieldCheckbox: WithBoundArgs<
+    typeof FieldCheckboxComponent,
+    'changeset' | 'formId' | 'hasSubmitted' | 'disabled'
+  >;
+  FieldSwitch: WithBoundArgs<typeof FieldSwitchComponent, FormArgs>;
+  FieldRadioGroup: WithBoundArgs<typeof FieldRadioGroupComponent, FormArgs>;
+  FieldCheckboxGroup: WithBoundArgs<
+    typeof FieldCheckboxGroupComponent,
+    FormArgs
+  >;
+  FieldDualRangeSlider: WithBoundArgs<
+    typeof FieldDualRangeSliderComponent,
+    FormArgs
+  >;
+  FieldRangeSlider: WithBoundArgs<typeof FieldRangeSliderComponent, FormArgs>;
+  FieldNumber: WithBoundArgs<typeof FieldNumberComponent, FormArgs>;
+  FieldSelect: WithBoundArgs<typeof FieldSelectComponent, FormArgs>;
+  // gets `isDisabled`, EuiComboBox's name for it
+  FieldComboBox: WithBoundArgs<
+    typeof FieldComboBoxComponent,
+    'changeset' | 'formId' | 'fullWidth' | 'hasSubmitted' | 'isDisabled'
+  >;
+}
 
 /**
  * A form bound to an ember-changeset: each field reads and writes a
@@ -112,12 +158,7 @@ export interface EuiChangesetFormSignature {
      * `as |Form changeset hasSubmitted|` → `<Form.FieldText @fieldName="name"
      * @label="Name" />`.
      */
-    default: [
-      ...ContextSignature['Blocks']['default'],
-      BufferedChangeset,
-      boolean,
-      string
-    ];
+    default: [EuiChangesetFormFields, BufferedChangeset, boolean, string];
   };
 }
 
@@ -129,10 +170,14 @@ export default class EuiChangesetFormComponent extends Component<EuiChangesetFor
     assert('Must provide a changeset', this.args.changeset);
   }
 
-  get theme() {
+  get theme(): EuiChangesetFormTheme {
     const theme: Partial<IEuiChangesetFormTheme> = this.args.theme || {};
 
-    return { ...EuiChangesetFormDefaultTheme, ...theme };
+    // a `@theme` field is expected to take the default field's args
+    return {
+      ...EuiChangesetFormDefaultTheme,
+      ...theme
+    } as EuiChangesetFormTheme;
   }
 
   validateTimer: ReturnType<typeof later> | undefined;

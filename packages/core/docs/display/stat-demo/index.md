@@ -30,7 +30,7 @@ A key number with a description, e.g. on a dashboard.
 | Argument | Type | Default | Description |
 | --- | --- | --- | --- |
 | `@textAlign` | `EuiStatTextAlign` | `'left'` | `'left'`, `'center'` or `'right'` (logical, so left/right flip in RTL). |
-| `@title` | `string` |  | The number or value, e.g. "1,234". Use the `<:title>` block for markup. |
+| `@title` | `string \| number` |  | The number or value, e.g. `1234` or "1,234". Use the `<:title>` block for markup. |
 | `@description` | `string` |  | What it measures, e.g. "Total users". Use the `<:description>` block for markup. |
 | `@titleColor` | `EuiStatTitleColor \| string` | `'default'` | Color of the title: `'default'`, `'subdued'`, `'primary'`, `'success'`, `'warning'`, `'danger'`, `'accent'`, or any CSS color. |
 | `@titleSize` |  | `'l'` | Size of the title, any `EuiTitle` size. |

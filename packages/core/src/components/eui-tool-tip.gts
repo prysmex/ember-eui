@@ -201,9 +201,9 @@ export type EuiTooltipArgs = {
    */
   className?: string;
   /**
-   * The main content of your tooltip.
+   * The main content of your tooltip: text, or markup from `htmlSafe`.
    */
-  content?: string;
+  content?: string | SafeString;
   /**
    * Display of the anchor wrapper: `'inlineBlock'`, `'block'` or `'flex'`.
    * Defaults to `'inlineBlock'`.

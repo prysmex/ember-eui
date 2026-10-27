@@ -68,7 +68,7 @@ Generated from the components' TypeScript signatures by
 | `@isPaused` | `boolean` | `true` | Whether auto refresh is paused (with `@onRefreshChange`). |
 | `@width` | `'restricted' \| 'full' \| 'auto'` | `'restricted'` | Sets the overall width by adding sensible min and max widths. - `auto`: fits width to internal content / time string. - `restricted`: static width that fits the longest possible time string   (600px with the update button, 480px without). - `full`: expands to 100% of the container. `@isQuickSelectOnly` forces `'auto'`. |
 | `@compressed` | `boolean` |  | Reduces overall height to compressed form size |
-| `@locale` | `LocaleSpecifier` |  | Used to localize e.g. month names, passed to `moment` |
+| `@locale` | `LocaleSpecifier \| null` | `'en'`, also for `null` | Used to localize e.g. month names, passed to `moment`. |
 | `@onRefresh` |  |  | Called every `@refreshInterval` ms while not `@isPaused` (and by the update button when the range has not changed), with `{ start, end, refreshInterval }`. If it returns a promise, the next call waits for it; if the promise rejects, refreshing stops. |
 | `@onRefreshChange` | `ApplyRefreshInterval` |  | Adds the "Refresh every" section to the quick select popover; called with `{ refreshInterval, isPaused }` when the user changes them. |
 | `@onTimeChange` (required) |  |  | Callback for when the time changes. |

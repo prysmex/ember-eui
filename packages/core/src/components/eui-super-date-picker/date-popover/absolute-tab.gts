@@ -27,8 +27,8 @@ interface AbsoluteTabArgs {
   dateFormat?: string;
   /** moment format of times. */
   timeFormat?: string;
-  /** moment locale. */
-  locale?: LocaleSpecifier;
+  /** moment locale; `'en'` when unset or `null`. */
+  locale?: LocaleSpecifier | null;
   /** The date (date math or ISO date). */
   value: string;
   /** Called with the new value. */

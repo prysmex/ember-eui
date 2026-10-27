@@ -1,5 +1,11 @@
 # @ember-eui/pikaday
 
+## 16.1.3
+
+### Patch Changes
+
+- fixes in types
+
 ## 16.1.2
 
 ### Patch Changes

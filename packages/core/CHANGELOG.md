@@ -1,5 +1,23 @@
 # @ember-eui/core
 
+## 16.1.3
+
+### Patch Changes
+
+- 535066e: `EuiComboBox`: a selection given as an Ember array-like without `slice()` (e.g. ember-data's PromiseManyArray) shows its pills again. The component read it as a list, but handed it to ember-power-select as is, and the pills, rendered with `{{#each}}`, couldn't iterate it.
+- ef15079: `ember-modifier` is a peer dependency of `@ember-eui/core` (`^4.1.0`) instead of a dependency. As a dependency it installed its own copy next to the app's, so Glint saw core's modifiers (e.g. the one form controls use for validation) as coming from another `ember-modifier` and rejected them ("no Glint brand"). Apps need `ember-modifier` 4.1 or later in their own dependencies; Ember apps usually have it already.
+- 930c09d: Drop `remark-parse` from `@ember-eui/core`'s dependencies. Only the `remark-parse-no-trim` fork is used at runtime; `remark-parse` was left for a type import, and it pulled in `trim@0.0.1` (GHSA-w5p7-h5w8-2hfq, ReDoS) for every consumer. The `Parser` type now comes from the fork, whose types are identical.
+- fixes in types
+- 16123dd: `EuiModal`: `@focusTrapOptions.allowOutsideClick` accepts a function, `(event: MouseEvent | TouchEvent) => boolean`, as well as a boolean, e.g. `(hash allowOutsideClick=this.allowClick)`. The options already went to focus-trap as they were, which takes either, but the type only allowed a boolean, so Glint rejected a function.
+- 2da4ff9: Raise the minimum `@babel/runtime` (`^7.29.10`) and `lodash-es` (`^4.18.1`) versions to ones without known vulnerabilities (Babel RegExp complexity, lodash prototype pollution and code injection advisories).
+- 1ef5fa7: `EuiSelect`: `@value` accepts `null`, e.g. a record's id that is `string | null`. It already selected nothing for `null`, as for `undefined` (with `@hasNoInitialSelection`, the empty option), but the type didn't allow it, so Glint rejected it.
+- 7d2632a: `EuiStat`: `@title` accepts a number as well as a string, e.g. `@title={{this.count}}`. The stat already rendered it (a `0` too), but the type only allowed a string, so Glint rejected a number. Upstream EUI takes any node there.
+- 68581e6: `EuiSuperDatePicker`: `@locale` accepts `null`, e.g. a user's locale that is `string | null | undefined`. A `null` locale already fell back to `'en'`, as `undefined` does, but the type didn't allow it, so Glint rejected it.
+- 9cc7962: `EuiTab`: `@id` accepts a number as well as a string, e.g. `@id={{index}}` in an `{{#each}}`. It was already rendered as the `id` attribute, but the type only allowed a string, so Glint rejected a number. The tab objects of `EuiTabbedContent` and `EuiPageHeader` keep a string `id`.
+- c334853: `EuiTabbedContent`: a tab's `content` can be any value when the `<:selectedTabContent>` block renders it, e.g. a translation key. `EuiTabbedContent` is generic over the type of its `@tabs`' items, so `@tabs`, `@initialSelectedTab`, `@selectedTab` and `@onTabClick` take your own tab type and the blocks yield it: with `content: 'settings.general'` in every tab, the block's `tab.content` is a `string`. `EuiTabbedContentTab<Content>` types such a tab (`Content` defaults to a component, as before). Without the block, `content` is still a component rendered as the panel.
+- 907ba17: `EuiTextArea`: `@value` accepts `null`, e.g. an attribute that is `string | null`. A `null` value already rendered an empty textarea, as `undefined` does, but the type didn't allow it, so Glint rejected it.
+- e724ddf: `EuiToolTip`: `@content` accepts a `SafeString` as well as a string, e.g. `@content={{htmlSafe (t "some.key")}}`. The tooltip already rendered it as markup, but the type only allowed a string, so Glint rejected it.
+
 ## 16.1.2
 
 ### Patch Changes

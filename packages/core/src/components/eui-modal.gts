@@ -81,7 +81,9 @@ export interface EuiModalSignature {
      * clicks reach the mask and Escape is left to the modal by default.
      */
     focusTrapOptions?: {
-      allowOutsideClick?: boolean;
+      /** Lets clicks outside the modal through; a function decides per click. */
+      allowOutsideClick?:
+        boolean | ((event: MouseEvent | TouchEvent) => boolean);
       clickOutsideDeactivates?: boolean;
       initialFocus?: FocusTarget;
       fallbackFocus?: FocusTarget;

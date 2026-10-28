@@ -1,5 +1,11 @@
 # @ember-eui/pikaday
 
+## 16.1.4
+
+### Patch Changes
+
+- Released with `@ember-eui/changeset-form` 16.1.4 to keep all packages on the same version; no changes in this package.
+
 ## 16.1.3
 
 ### Patch Changes

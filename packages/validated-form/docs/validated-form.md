@@ -118,18 +118,18 @@ and extend the yielded fields with `(component Form.FieldText model=@model)`.
 The parent still registers only the wrapper's inner validated form.
 
 ```js
-import PrysmexModelForm from './prysmex-model-form';
+import ModelForm from './model-form';
 
 // Add this entry to the theme supplied to the parent form.
-const theme = { ...PrysmexTheme, FieldNestedForm: PrysmexModelForm };
+const theme = { FieldNestedForm: ModelForm };
 ```
 
 ```hbs
-<PrysmexModelForm @theme={{this.theme}} @model={{this.model}} as |form|>
+<ModelForm @theme={{this.theme}} @model={{this.model}} as |form|>
   <form.Form @model={{this.model.address}} as |address|>
     <address.FieldText @property="city" />
   </form.Form>
-</PrysmexModelForm>
+</ModelForm>
 ```
 
 The `@property` argument in this example belongs to the application's model-aware
@@ -138,7 +138,7 @@ field component. The base library does not interpret models or property names.
 The wrapper must forward these arguments to its underlying `ValidatedForm`:
 
 ```hbs
-<PUi::ValidatedForm
+<ValidatedForm
   @theme={{assign this.theme @theme}}
   @id={{@id}}
   @tagName={{@tagName}}
@@ -156,7 +156,7 @@ The wrapper must forward these arguments to its underlying `ValidatedForm`:
       FieldText=(component Form.FieldText model=@model)
     ))
   }}
-</PUi::ValidatedForm>
+</ValidatedForm>
 ```
 
 Preserving the inherited theme allows deeper nesting to use the same wrapper.

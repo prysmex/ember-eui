@@ -24,7 +24,7 @@
     "lint:fix": "concurrently \"npm:lint:*:fix\" --names \"fix:\" --prefixColors auto",
     "lint:js": "eslint .",
     "lint:js:fix": "eslint . --fix",
-    "lint:types": "ember-tsc --noEmit",
+    "lint:types": "ember-tsc --noEmit && ember-tsc --noEmit -p tsconfig.type-tests.json",
     "prepack": "pnpm run build",
     "start": "concurrently 'npm:start:*'",
     "start:js": "rollup --config --watch",

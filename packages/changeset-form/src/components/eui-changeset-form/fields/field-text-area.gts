@@ -19,7 +19,7 @@ export interface EuiChangesetFormFieldTextAreaSignature {
   Element: EuiTextAreaSignature['Element'];
   Args: BaseSignature['Args'] &
     EuiFormRowSignature['Args'] &
-    EuiTextAreaSignature['Args'] & {
+    Omit<EuiTextAreaSignature['Args'], 'value'> & {
       /** Called with the textarea's value and the event, after setting it on the changeset. */
       onInput?: (value: string, event: Event) => void;
       /** Classes for the control. */

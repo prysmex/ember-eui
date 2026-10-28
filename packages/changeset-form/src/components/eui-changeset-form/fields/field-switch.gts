@@ -20,7 +20,7 @@ export interface EuiChangesetFormFieldSwitchSignature {
   Element: EuiSwitchSignature['Element'];
   Args: BaseSignature['Args'] &
     EuiFormRowSignature['Args'] &
-    EuiSwitchSignature['Args'] & {
+    Omit<EuiSwitchSignature['Args'], 'checked' | 'onChange'> & {
       /** Called with the new checked state and the event, after setting it on the changeset. */
       onChange?: (value: boolean, event: Event) => void;
       /** Classes for the control. */

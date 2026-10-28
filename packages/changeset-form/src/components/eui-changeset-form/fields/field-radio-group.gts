@@ -18,7 +18,7 @@ export interface EuiChangesetFormFieldRadioGroupSignature {
   Element: EuiRadioGroupSignature['Element'];
   Args: BaseSignature['Args'] &
     EuiFormRowSignature['Args'] &
-    EuiRadioGroupSignature['Args'] & {
+    Omit<EuiRadioGroupSignature['Args'], 'idSelected' | 'onChange'> & {
       /** Called with the chosen option's id, after setting it on the changeset. */
       onChange?: (value: string) => void;
       /** Classes for the control. */

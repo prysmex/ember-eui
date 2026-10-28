@@ -18,7 +18,7 @@ export interface EuiChangesetFormFieldCheckboxGroupSignature {
   Element: EuiCheckboxGroupSignature['Element'];
   Args: BaseSignature['Args'] &
     EuiFormRowSignature['Args'] &
-    EuiCheckboxGroupSignature['Args'] & {
+    Omit<EuiCheckboxGroupSignature['Args'], 'idToSelectedMap' | 'onChange'> & {
       /** Called with the ids of the checked options, after setting them on the changeset. */
       onChange?: (value: string[]) => void;
       /** Classes for the control. */

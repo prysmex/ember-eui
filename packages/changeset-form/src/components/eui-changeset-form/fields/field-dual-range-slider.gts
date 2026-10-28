@@ -24,7 +24,7 @@ export interface EuiChangesetFormFieldDualRangeSliderSignature {
   Element: EuiDualRangeSignature['Element'];
   Args: BaseSignature['Args'] &
     EuiFormRowSignature['Args'] &
-    EuiDualRangeSignature['Args'] & {
+    Omit<EuiDualRangeSignature['Args'], 'value' | 'onChange'> & {
       /** Called with `[lower, upper]`, after setting it on the changeset. */
       onInput?: (value: [ValueMember, ValueMember]) => void;
       /** Classes for the control. */

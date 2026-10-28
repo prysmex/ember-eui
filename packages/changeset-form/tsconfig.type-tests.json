@@ -1,0 +1,15 @@
+/**
+ * Type-only tests (type-tests/): checked by `lint:types`, never built or run.
+ */
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "rootDir": ".",
+    "noEmit": true
+  },
+  "include": [
+    "src/**/*",
+    "type-tests/**/*",
+    "unpublished-development-types/**/*"
+  ]
+}

@@ -1,5 +1,5 @@
 /**
- * Type information for ESLint: the sources plus the tests. tsconfig.json
+ * Type information for ESLint: the sources plus the tests and type tests. tsconfig.json
  * stays the build config (Glint 1 emits declarations from it, src only).
  */
 {
@@ -9,5 +9,10 @@
     "noEmit": true,
     "types": ["ember-source/types", "vite/client", "@embroider/core/virtual"]
   },
-  "include": ["src/**/*", "tests/**/*", "unpublished-development-types/**/*"]
+  "include": [
+    "src/**/*",
+    "tests/**/*",
+    "type-tests/**/*",
+    "unpublished-development-types/**/*"
+  ]
 }

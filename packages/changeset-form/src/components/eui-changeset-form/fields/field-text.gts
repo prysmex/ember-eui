@@ -21,7 +21,7 @@ export interface EuiChangesetFormFieldTextSignature {
   Element: EuiFieldTextSignature['Element'];
   Args: BaseSignature['Args'] &
     EuiFormRowSignature['Args'] &
-    EuiFieldTextSignature['Args'] & {
+    Omit<EuiFieldTextSignature['Args'], 'value'> & {
       /** Called with the input's value and the event, after setting it on the changeset. */
       onInput?: (value: string, event: Event) => void;
       /** Classes for the control. */

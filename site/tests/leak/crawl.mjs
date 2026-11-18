@@ -6,7 +6,12 @@
 //
 // Common flags: --out=<dir> (JSON results + snapshots), --no-exercise,
 // --away=/docs/introduction (the page visited between repetitions).
-import { readFileSync, writeFileSync, mkdirSync, createWriteStream } from 'node:fs';
+import {
+  readFileSync,
+  writeFileSync,
+  mkdirSync,
+  createWriteStream,
+} from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -46,15 +51,32 @@ await client.send('Page.enable');
 await client.send('Performance.enable');
 await client.send('HeapProfiler.enable');
 client.on('Runtime.exceptionThrown', (p) =>
-  errors.push({ route: currentRoute, text: p.exceptionDetails.exception?.description?.split('\n')[0] ?? p.exceptionDetails.text }),
+  errors.push({
+    route: currentRoute,
+    text:
+      p.exceptionDetails.exception?.description?.split('\n')[0] ??
+      p.exceptionDetails.text,
+  }),
 );
 client.on('Runtime.consoleAPICalled', (p) => {
   if (p.type === 'error')
-    errors.push({ route: currentRoute, text: p.args.map((a) => a.value ?? a.description ?? '').join(' ').split('\n')[0].slice(0, 300) });
+    errors.push({
+      route: currentRoute,
+      text: p.args
+        .map((a) => a.value ?? a.description ?? '')
+        .join(' ')
+        .split('\n')[0]
+        .slice(0, 300),
+    });
 });
-client.on('Inspector.targetCrashed', () => { log('RENDERER CRASHED on', currentRoute); process.exit(2); });
+client.on('Inspector.targetCrashed', () => {
+  log('RENDERER CRASHED on', currentRoute);
+  process.exit(2);
+});
 await client.send('Inspector.enable');
-client.on('Page.javascriptDialogOpening', () => client.send('Page.handleJavaScriptDialog', { accept: true }));
+client.on('Page.javascriptDialogOpening', () =>
+  client.send('Page.handleJavaScriptDialog', { accept: true }),
+);
 await client.send('Page.addScriptToEvaluateOnNewDocument', {
   source: readFileSync(join(here, 'instrument.js'), 'utf8'),
 });
@@ -63,7 +85,9 @@ await client.send('Page.navigate', { url: `${BASE}/docs/introduction` });
 for (let i = 0; i < 100; i++) {
   await sleep(200);
   const ready = await client
-    .evaluate(`!!(globalThis.emberInspectorApps?.[0]?.app?._applicationInstances?.size) && !!document.querySelector('.euiSideNav')`)
+    .evaluate(
+      `!!(globalThis.emberInspectorApps?.[0]?.app?._applicationInstances?.size) && !!document.querySelector('.euiSideNav')`,
+    )
     .catch(() => false);
   if (ready) break;
 }
@@ -83,10 +107,17 @@ await client.evaluate(`(() => {
 })()`);
 
 log('router ready');
-const ROUTES = JSON.parse(readFileSync(join(here, '../../dist/docfy-urls.json'), 'utf8'))
+const ROUTES = JSON.parse(
+  readFileSync(join(here, '../../dist/docfy-urls.json'), 'utf8'),
+)
   .map((u) => u.replace(/\/$/, ''))
   .filter((u) => u.startsWith('/docs'))
-  .filter((u) => !String(args.skip ?? '').split(',').includes(u));
+  .filter(
+    (u) =>
+      !String(args.skip ?? '')
+        .split(',')
+        .includes(u),
+  );
 
 async function nav(url) {
   currentRoute = url;
@@ -111,11 +142,14 @@ async function pressEscape() {
 // snippets, not the site chrome), each followed by Escape. Buttons are
 // re-queried by index after every click because demos re-render.
 async function exercise(url, max = Number(args['max-buttons'] ?? 25)) {
-  const count = await client.evaluate(`window.__demoButtons = () => [...document.querySelectorAll('.docfy-demo__example button, .docfy-demo__example [role=button], .docfy-demo__example [role=switch]')]
+  const count =
+    await client.evaluate(`window.__demoButtons = () => [...document.querySelectorAll('.docfy-demo__example button, .docfy-demo__example [role=button], .docfy-demo__example [role=switch]')]
     .filter((b) => b.offsetParent !== null && !b.disabled && !/download|export|print/i.test(b.textContent || '')), window.__demoButtons().length`);
   const n = Math.min(count, max);
   for (let i = 0; i < n; i++) {
-    const clicked = await client.evaluate(`(() => {
+    const clicked = await client
+      .evaluate(
+        `(() => {
       const b = window.__demoButtons()[${i}];
       if (!b || !b.isConnected) return false;
       const o = { bubbles: true, cancelable: true, composed: true, view: window, button: 0 };
@@ -126,14 +160,18 @@ async function exercise(url, max = Number(args['max-buttons'] ?? 25)) {
       b.dispatchEvent(new MouseEvent('mouseup', o));
       b.click();
       return true;
-    })()`).catch(() => false);
+    })()`,
+      )
+      .catch(() => false);
     if (args.debug) log('  clicked', i, clicked);
     if (!clicked) continue;
     await sleep(60);
     await pressEscape();
     await sleep(40);
     // a demo button may have navigated
-    const here = await client.evaluate('window.__router.currentURL').catch(() => url);
+    const here = await client
+      .evaluate('window.__router.currentURL')
+      .catch(() => url);
     if (here.split('?')[0].replace(/\/$/, '') !== url) await nav(url);
   }
   return n;
@@ -145,7 +183,10 @@ async function exercise(url, max = Number(args['max-buttons'] ?? 25)) {
 const consoleLogs = {};
 client.on('Runtime.consoleAPICalled', (p) => {
   if (p.type === 'error') return;
-  const k = `${currentRoute} ${p.type}: ${p.args.map((a) => a.value ?? a.description ?? a.type).join(' ').slice(0, 120)}`;
+  const k = `${currentRoute} ${p.type}: ${p.args
+    .map((a) => a.value ?? a.description ?? a.type)
+    .join(' ')
+    .slice(0, 120)}`;
   consoleLogs[k] = (consoleLogs[k] ?? 0) + 1;
 });
 
@@ -176,10 +217,15 @@ async function measure(label) {
 
 async function snapshot(file) {
   const stream = createWriteStream(file);
-  const off = client.on('HeapProfiler.addHeapSnapshotChunk', ({ chunk }) => stream.write(chunk));
+  const off = client.on('HeapProfiler.addHeapSnapshotChunk', ({ chunk }) =>
+    stream.write(chunk),
+  );
   await client.send('Runtime.discardConsoleEntries');
   await client.send('HeapProfiler.collectGarbage');
-  await client.send('HeapProfiler.takeHeapSnapshot', { reportProgress: false, captureNumericValue: false });
+  await client.send('HeapProfiler.takeHeapSnapshot', {
+    reportProgress: false,
+    captureNumericValue: false,
+  });
   off();
   await new Promise((r) => stream.end(r));
   log('snapshot', file);
@@ -188,14 +234,25 @@ async function snapshot(file) {
 const fmt = (r) =>
   `${r.label.padEnd(28)} styles=${r.styleElements} heap=${r.jsHeapUsedMB}MB nodes=${r.nodes} listeners=${r.jsEventListeners} docs=${r.documents} attached=${r.attachedElements} rootL=${r.rootListeners} int=${r.intervals} to=${r.pendingTimeouts} raf=${r.pendingRafs} obs=${JSON.stringify(r.observers)} css=${r.cssRules} body=${r.bodyChildren.length}`;
 
-const results = { mode, base: BASE, exercise: EXERCISE, routes: ROUTES.length, rows: [], errors, consoleLogs };
+const results = {
+  mode,
+  base: BASE,
+  exercise: EXERCISE,
+  routes: ROUTES.length,
+  rows: [],
+  errors,
+  consoleLogs,
+};
 
 async function pass(label, { doExercise }) {
   let buttons = 0;
   for (const url of ROUTES) {
     const got = await nav(url);
     if (got?.replace(/\/$/, '') !== url) log('WARN', url, '->', got);
-    if (doExercise) buttons += await exercise(url).catch((e) => (log('exercise fail', url, e.message), 0));
+    if (doExercise)
+      buttons += await exercise(url).catch(
+        (e) => (log('exercise fail', url, e.message), 0),
+      );
   }
   await nav(AWAY);
   await sleep(500);
@@ -228,7 +285,8 @@ if (mode === 'passes') {
     await nav(AWAY);
     const before = await measure(`${route} before`);
     const slug = route.replace(/[^a-z0-9]+/gi, '_');
-    if (args.snapshots) await snapshot(join(OUT, `${slug}-before.heapsnapshot`));
+    if (args.snapshots)
+      await snapshot(join(OUT, `${slug}-before.heapsnapshot`));
     for (let i = 0; i < reps; i++) {
       await nav(route);
       if (EXERCISE) await exercise(route);
@@ -248,14 +306,24 @@ if (mode === 'passes') {
       dRootListeners: after.rootListeners - before.rootListeners,
       dIntervals: after.intervals - before.intervals,
       dTimeouts: after.pendingTimeouts - before.pendingTimeouts,
-      dObservers: Object.fromEntries(Object.keys(after.observers).map((k) => [k, after.observers[k] - before.observers[k]])),
+      dObservers: Object.fromEntries(
+        Object.keys(after.observers).map((k) => [
+          k,
+          after.observers[k] - before.observers[k],
+        ]),
+      ),
       dCssRules: after.cssRules - before.cssRules,
       dStyleElements: after.styleElements - before.styleElements,
       dBodyChildren: after.bodyChildren.length - before.bodyChildren.length,
-      newBodyChildren: after.bodyChildren.filter((x, i) => before.bodyChildren[i] !== x),
+      newBodyChildren: after.bodyChildren.filter(
+        (x, i) => before.bodyChildren[i] !== x,
+      ),
       listenerDiff: Object.fromEntries(
         Object.keys({ ...before.listeners, ...after.listeners })
-          .map((k) => [k, (after.listeners[k] ?? 0) - (before.listeners[k] ?? 0)])
+          .map((k) => [
+            k,
+            (after.listeners[k] ?? 0) - (before.listeners[k] ?? 0),
+          ])
           .filter(([, v]) => v),
       ),
       liveDiff: Object.fromEntries(
@@ -275,7 +343,9 @@ if (mode === 'css') {
   // as rules with per-instance values: ids, counters, measured sizes)
   const reps = Number(args.reps ?? 3);
   const rules = () =>
-    client.evaluate(`[...document.styleSheets].flatMap((s) => { try { return [...s.cssRules].map((r) => r.cssText) } catch { return [] } })`);
+    client.evaluate(
+      `[...document.styleSheets].flatMap((s) => { try { return [...s.cssRules].map((r) => r.cssText) } catch { return [] } })`,
+    );
   results.css = [];
   for (const route of String(args.routes).split(',')) {
     await nav(route);
@@ -294,7 +364,8 @@ if (mode === 'css') {
     const added = all.filter((r) => !before.has(r));
     results.css.push({ route, reps, perRep, added });
     log(route, `+${added.length} rules; per rep: ${perRep.join(', ')}`);
-    for (const r of added.slice(0, Number(args.show ?? 12))) console.log('   ', r.slice(0, 400));
+    for (const r of added.slice(0, Number(args.show ?? 12)))
+      console.log('   ', r.slice(0, 400));
   }
 }
 

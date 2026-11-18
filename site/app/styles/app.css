@@ -77,21 +77,18 @@ body.euiBody--headerIsFixed {
   min-height: calc(100vh - 48px);
 }
 
+/* Elastic UI docs specific */
+
+/*
+  padding-inline: the page's gutter, which prose and demos share (on the
+  template's main element)
+*/
 .pageBody {
   box-shadow:
     rgb(0 0 0 / 8%) 0 0.9px 4px,
     rgb(0 0 0 / 6%) 0 2.6px 8px,
     rgb(0 0 0 / 5%) 0 5.7px 12px,
     rgb(0 0 0 / 4%) 0 15px 15px;
-}
-
-/* Elastic UI docs specific */
-
-/*
-  the page's gutter, which prose and demos share (on the template's main
-  element)
-*/
-.pageBody {
   padding-inline: 24px;
 }
 

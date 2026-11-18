@@ -142,4 +142,17 @@ export default defineConfig([
       },
     },
   },
+  /**
+   * The leak crawler (tests/leak/README.md): command-line scripts for
+   * Node >= 22 (built-in fetch and WebSocket) that end with an exit code
+   */
+  {
+    files: ['tests/leak/**/*.mjs'],
+    settings: {
+      node: { version: '>=22.4.0' },
+    },
+    rules: {
+      'n/no-process-exit': 'off',
+    },
+  },
 ]);

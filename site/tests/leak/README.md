@@ -3,8 +3,9 @@
 Drives Chromium over the DevTools Protocol through the built docs site, with
 in-app (router service) navigation so the Ember app stays alive the way a
 real app does, and measures what survives a forced GC. No dependencies: Node
->= 22 (built-in `WebSocket`) and a Chromium binary (Playwright's is found
-automatically, or set `CHROME=/path/to/chrome`).
+
+> = 22 (built-in `WebSocket`) and a Chromium binary (Playwright's is found
+> automatically, or set `CHROME=/path/to/chrome`).
 
 Findings from the 2026-10 audit: `internal/memory-leak-audit/leak-site.md`.
 

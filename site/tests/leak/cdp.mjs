@@ -1,7 +1,13 @@
 // Tiny Chrome DevTools Protocol client: launches Chromium and talks to one
 // page target over the WebSocket that ships with Node >= 22. No dependencies.
 import { spawn } from 'node:child_process';
-import { mkdtempSync, readFileSync, readdirSync, rmSync, existsSync } from 'node:fs';
+import {
+  mkdtempSync,
+  readFileSync,
+  readdirSync,
+  rmSync,
+  existsSync,
+} from 'node:fs';
 import { tmpdir, homedir } from 'node:os';
 import { join } from 'node:path';
 
@@ -11,7 +17,9 @@ export function findChrome() {
   if (process.env.CHROME) return process.env.CHROME;
   const pw = join(homedir(), '.cache/ms-playwright');
   if (existsSync(pw)) {
-    const dirs = readdirSyncSafe(pw).filter((d) => d.startsWith('chromium-')).sort();
+    const dirs = readdirSyncSafe(pw)
+      .filter((d) => d.startsWith('chromium-'))
+      .sort();
     for (const d of dirs.reverse()) {
       const p = join(pw, d, 'chrome-linux/chrome');
       if (existsSync(p)) return p;
@@ -28,7 +36,11 @@ function readdirSyncSafe(dir) {
   }
 }
 
-export async function launch({ headless = true, width = 1400, height = 1000 } = {}) {
+export async function launch({
+  headless = true,
+  width = 1400,
+  height = 1000,
+} = {}) {
   const userDataDir = mkdtempSync(join(tmpdir(), 'eui-leak-chrome-'));
   const args = [
     `--user-data-dir=${userDataDir}`,
@@ -53,7 +65,9 @@ export async function launch({ headless = true, width = 1400, height = 1000 } = 
     ...(headless ? ['--headless=new'] : []),
     'about:blank',
   ];
-  const proc = spawn(findChrome(), args, { stdio: ['ignore', 'ignore', 'pipe'] });
+  const proc = spawn(findChrome(), args, {
+    stdio: ['ignore', 'ignore', 'pipe'],
+  });
   // never orphan Chromium when the crawler dies (timeouts, Ctrl-C)
   process.on('exit', () => proc.kill());
   let stderr = '';
@@ -65,11 +79,14 @@ export async function launch({ headless = true, width = 1400, height = 1000 } = 
 
   const portFile = join(userDataDir, 'DevToolsActivePort');
   for (let i = 0; i < 100 && !existsSync(portFile); i++) await sleep(100);
-  if (!existsSync(portFile)) throw new Error(`Chrome did not start:\n${stderr}`);
+  if (!existsSync(portFile))
+    throw new Error(`Chrome did not start:\n${stderr}`);
   await sleep(100);
   const port = Number(readFileSync(portFile, 'utf8').split('\n')[0]);
 
-  const targets = await (await fetch(`http://127.0.0.1:${port}/json/list`)).json();
+  const targets = await (
+    await fetch(`http://127.0.0.1:${port}/json/list`)
+  ).json();
   const page = targets.find((t) => t.type === 'page');
   const client = await connect(page.webSocketDebuggerUrl);
 
@@ -82,7 +99,12 @@ export async function launch({ headless = true, width = 1400, height = 1000 } = 
     proc.kill();
     await sleep(1000);
     try {
-      rmSync(userDataDir, { recursive: true, force: true, maxRetries: 5, retryDelay: 200 });
+      rmSync(userDataDir, {
+        recursive: true,
+        force: true,
+        maxRetries: 5,
+        retryDelay: 200,
+      });
     } catch {
       /* chrome still writing; a stray temp dir is harmless */
     }
@@ -97,7 +119,11 @@ export function connect(url) {
     const pending = new Map();
     const listeners = new Map();
     const client = {
-      send(method, params = {}, timeout = method === 'HeapProfiler.takeHeapSnapshot' ? 600000 : 180000) {
+      send(
+        method,
+        params = {},
+        timeout = method === 'HeapProfiler.takeHeapSnapshot' ? 600000 : 180000,
+      ) {
         const msgId = ++id;
         ws.send(JSON.stringify({ id: msgId, method, params }));
         return new Promise((res, rej) => {
@@ -115,7 +141,11 @@ export function connect(url) {
       on(event, fn) {
         if (!listeners.has(event)) listeners.set(event, []);
         listeners.get(event).push(fn);
-        return () => listeners.set(event, listeners.get(event).filter((f) => f !== fn));
+        return () =>
+          listeners.set(
+            event,
+            listeners.get(event).filter((f) => f !== fn),
+          );
       },
       async evaluate(expression, { awaitPromise = true } = {}) {
         const params = { expression, awaitPromise, returnByValue: true };
@@ -126,7 +156,9 @@ export function connect(url) {
           // the sandbox VM is sometimes suspended for minutes; give the page
           // one more chance before calling it hung
           if (!/no reply/.test(e.message)) throw e;
-          console.error(`[cdp] evaluate timed out, retrying once: ${expression.slice(0, 80)}`);
+          console.error(
+            `[cdp] evaluate timed out, retrying once: ${expression.slice(0, 80)}`,
+          );
           r = await client.send('Runtime.evaluate', params);
         }
         if (r.exceptionDetails) {
@@ -140,7 +172,9 @@ export function connect(url) {
     ws.addEventListener('open', () => resolveConn(client));
     ws.addEventListener('error', (e) => rejectConn(e));
     ws.addEventListener('message', (ev) => {
-      const msg = JSON.parse(typeof ev.data === 'string' ? ev.data : ev.data.toString());
+      const msg = JSON.parse(
+        typeof ev.data === 'string' ? ev.data : ev.data.toString(),
+      );
       if (msg.id) {
         const p = pending.get(msg.id);
         if (!p) return;

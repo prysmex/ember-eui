@@ -11,8 +11,16 @@
     timeouts: new Set(),
     rafs: new Set(),
     timeoutTokens: new Map(),
-    observers: { ResizeObserver: 0, MutationObserver: 0, IntersectionObserver: 0 },
-    observerCreated: { ResizeObserver: 0, MutationObserver: 0, IntersectionObserver: 0 },
+    observers: {
+      ResizeObserver: 0,
+      MutationObserver: 0,
+      IntersectionObserver: 0,
+    },
+    observerCreated: {
+      ResizeObserver: 0,
+      MutationObserver: 0,
+      IntersectionObserver: 0,
+    },
   });
 
   // creation stacks of live observers / root listeners, for attribution
@@ -22,7 +30,13 @@
     (new Error().stack || '')
       .split('\n')
       .slice(3, 11)
-      .map((l) => l.trim().replace(/^at /, '').replace(/https?:\/\/[^/]+\/assets\//, '').replace(/-[A-Za-z0-9_-]{8}\.js/, '.js'))
+      .map((l) =>
+        l
+          .trim()
+          .replace(/^at /, '')
+          .replace(/https?:\/\/[^/]+\/assets\//, '')
+          .replace(/-[A-Za-z0-9_-]{8}\.js/, '.js'),
+      )
       .join(' < ');
   const liveTokens = new WeakMap(); // observer / listener fn -> token
   const rootName = (t) =>
@@ -63,11 +77,16 @@
       }
       // { signal } removal
       if (opts && typeof opts === 'object' && opts.signal) {
-        opts.signal.addEventListener('abort', () => forget(key, fn), { once: true });
+        opts.signal.addEventListener('abort', () => forget(key, fn), {
+          once: true,
+        });
       }
       if (opts && typeof opts === 'object' && opts.once) {
         // approximate: once-listeners drop after the first event
-        add.call(this, type, () => forget(key, fn), { once: true, capture: capOf(opts) });
+        add.call(this, type, () => forget(key, fn), {
+          once: true,
+          capture: capOf(opts),
+        });
       }
     }
     return add.call(this, type, fn, opts);
@@ -106,7 +125,8 @@
     id = st.call(this, wrapped, ...rest);
     L.timeouts.add(id);
     // long timers are the ones that can outlive a component: keep their stack
-    if (Number(rest[0]) >= 500) L.timeoutTokens.set(id, `timeout(${rest[0]}ms) @ ${stack()}`);
+    if (Number(rest[0]) >= 500)
+      L.timeoutTokens.set(id, `timeout(${rest[0]}ms) @ ${stack()}`);
     return id;
   };
   window.clearTimeout = function (id) {
@@ -132,7 +152,11 @@
     return caf.call(this, id);
   };
 
-  for (const name of ['ResizeObserver', 'MutationObserver', 'IntersectionObserver']) {
+  for (const name of [
+    'ResizeObserver',
+    'MutationObserver',
+    'IntersectionObserver',
+  ]) {
     const Orig = window[name];
     if (!Orig) continue;
     // observer -> { targets: WeakSet, n } ; an observer counts as live while
@@ -146,7 +170,12 @@
       }
       observe(target, ...a) {
         const st = state.get(this);
-        if (st && target && typeof target === 'object' && !st.targets.has(target)) {
+        if (
+          st &&
+          target &&
+          typeof target === 'object' &&
+          !st.targets.has(target)
+        ) {
           st.targets.add(target);
           if (st.n++ === 0) {
             L.observers[name]++;
@@ -173,7 +202,8 @@
           L.observers[name]--;
           L.live.delete(st.token);
         }
-        if (st) state.set(this, { targets: new WeakSet(), n: 0, stack: st.stack });
+        if (st)
+          state.set(this, { targets: new WeakSet(), n: 0, stack: st.stack });
         return super.disconnect();
       }
     };
@@ -206,7 +236,8 @@
       }
     }
     const bodyChildren = [...(document.body?.children ?? [])].map(
-      (el) => `${el.tagName.toLowerCase()}${el.id ? '#' + el.id : ''}${el.className && typeof el.className === 'string' ? '.' + el.className.trim().split(/\s+/).slice(0, 2).join('.') : ''}`,
+      (el) =>
+        `${el.tagName.toLowerCase()}${el.id ? '#' + el.id : ''}${el.className && typeof el.className === 'string' ? '.' + el.className.trim().split(/\s+/).slice(0, 2).join('.') : ''}`,
     );
     return {
       attachedElements: document.getElementsByTagName('*').length,

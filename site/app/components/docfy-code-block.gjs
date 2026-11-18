@@ -33,9 +33,19 @@ export default class DocfyCodeBlock extends Component {
   }
 
   <template>
-    <div class="docsCodeBlock" data-test-id="code-block" data-language={{@language}} ...attributes>
+    <div
+      class="docsCodeBlock"
+      data-test-id="code-block"
+      data-language={{@language}}
+      ...attributes
+    >
       {{#if @title}}
-        <EuiText @size="xs" @color="subdued" class="docsCodeBlock__title" data-test-id="code-block-header">
+        <EuiText
+          @size="xs"
+          @color="subdued"
+          class="docsCodeBlock__title"
+          data-test-id="code-block-header"
+        >
           <strong>{{@title}}</strong>
         </EuiText>
       {{/if}}

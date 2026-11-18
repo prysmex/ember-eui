@@ -10,7 +10,9 @@
 import { readFileSync } from 'node:fs';
 
 const [cmd, fileA, fileB, ...rest] = process.argv.slice(2);
-const opts = Object.fromEntries(rest.map((a) => a.replace(/^--/, '').split('=')));
+const opts = Object.fromEntries(
+  rest.map((a) => a.replace(/^--/, '').split('=')),
+);
 const TOP = Number(opts.top ?? 40);
 const PATHS = Number(opts.paths ?? 3);
 let afterSummary;
@@ -56,7 +58,8 @@ const detOf = (g, i) => (g.nDet >= 0 ? g.nodes[i * g.NF + g.nDet] : 0);
 function label(g, i) {
   const t = typeOf(g, i);
   let n = nameOf(g, i);
-  if (t === 'string' || t === 'concatenated string' || t === 'sliced string') n = 'string';
+  if (t === 'string' || t === 'concatenated string' || t === 'sliced string')
+    n = 'string';
   if (t === 'number') n = 'number';
   if (t === 'code') n = `(code)`;
   if (t === 'array') n = `(${n || 'array'})`;
@@ -83,7 +86,12 @@ function retainerTree(g) {
       if (et === 'weak' || et === 'shortcut') continue;
       // WeakMap entries: V8 emits the value edge from both the backing
       // table and the key. Follow only the key's, so paths name the key.
-      if (et === 'internal' && typeOf(g, i) === 'array' && g.strings[g.edges[e + g.eName]].includes('part of key')) continue;
+      if (
+        et === 'internal' &&
+        typeOf(g, i) === 'array' &&
+        g.strings[g.edges[e + g.eName]].includes('part of key')
+      )
+        continue;
       const to = g.edges[e + g.eTo] / g.NF;
       if (seen[to]) continue;
       seen[to] = 1;
@@ -112,7 +120,12 @@ function pathTo(g, tree, i, max = Number(opts.maxpath ?? 18)) {
   if (cur !== 0) parts.push('(unreachable from root via strong edges)');
   parts.reverse();
   // keep the root side (who holds it) and the leaf
-  if (parts.length > max) return [...parts.slice(0, max - 4), `… ${parts.length - max + 2} more …`, ...parts.slice(-2)];
+  if (parts.length > max)
+    return [
+      ...parts.slice(0, max - 4),
+      `… ${parts.length - max + 2} more …`,
+      ...parts.slice(-2),
+    ];
   return parts;
 }
 
@@ -152,10 +165,14 @@ if (cmd === 'diff') {
   }
   const detB = countDetached(B);
   console.log(`# ${fileA} -> ${fileB}`);
-  console.log(`nodes: ${totalA} -> ${B.count}; new surviving objects: ${newCount} (${(newSize / 1024).toFixed(0)} KB self size)`);
+  console.log(
+    `nodes: ${totalA} -> ${B.count}; new surviving objects: ${newCount} (${(newSize / 1024).toFixed(0)} KB self size)`,
+  );
   console.log(`detached DOM nodes: ${detA.total} -> ${detB.total}`);
   const detTop = [...detB.byName].sort((a, b) => b[1] - a[1]).slice(0, 15);
-  console.log(`detached by name (after): ${detTop.map(([n, c]) => `${n}=${c}`).join(', ')}`);
+  console.log(
+    `detached by name (after): ${detTop.map(([n, c]) => `${n}=${c}`).join(', ')}`,
+  );
   // net growth: ids churn when objects are re-created, so the count delta
   // per constructor is the more honest signal
   const sizeB = new Map();
@@ -164,20 +181,33 @@ if (cmd === 'diff') {
     sizeB.set(k, (sizeB.get(k) ?? 0) + sizeOf(B, i));
   }
   summaryAfter(B, '');
-  const net = [...afterSummary].map(([k, c]) => [k, c - (summaryA.get(k) ?? 0), (sizeB.get(k) ?? 0) - (sizeA.get(k) ?? 0)]);
-  for (const [k, c] of summaryA) if (!afterSummary.has(k)) net.push([k, -c, -(sizeA.get(k) ?? 0)]);
-  console.log('\n## Net growth by constructor (count after - before), top by count');
+  const net = [...afterSummary].map(([k, c]) => [
+    k,
+    c - (summaryA.get(k) ?? 0),
+    (sizeB.get(k) ?? 0) - (sizeA.get(k) ?? 0),
+  ]);
+  for (const [k, c] of summaryA)
+    if (!afterSummary.has(k)) net.push([k, -c, -(sizeA.get(k) ?? 0)]);
+  console.log(
+    '\n## Net growth by constructor (count after - before), top by count',
+  );
   for (const [k, dc, ds] of net.sort((a, b) => b[1] - a[1]).slice(0, TOP)) {
-    console.log(`${String(dc).padStart(7)}  ${(ds / 1024).toFixed(1).padStart(9)} KB  ${k}`);
+    console.log(
+      `${String(dc).padStart(7)}  ${(ds / 1024).toFixed(1).padStart(9)} KB  ${k}`,
+    );
   }
   console.log('\n## Net growth by constructor, top by self size');
   for (const [k, dc, ds] of net.sort((a, b) => b[2] - a[2]).slice(0, 15)) {
-    console.log(`${String(dc).padStart(7)}  ${(ds / 1024).toFixed(1).padStart(9)} KB  ${k}`);
+    console.log(
+      `${String(dc).padStart(7)}  ${(ds / 1024).toFixed(1).padStart(9)} KB  ${k}`,
+    );
   }
   console.log('\n## New surviving objects by constructor (top by count)');
   const sorted = [...groups].sort((a, b) => b[1].count - a[1].count);
   for (const [k, v] of sorted.slice(0, TOP)) {
-    console.log(`${String(v.count).padStart(7)}  ${String((v.size / 1024).toFixed(1)).padStart(9)} KB  ${k}  (total after ${summaryAfter(B, k)}, before ${summaryA.get(k) ?? 0})`);
+    console.log(
+      `${String(v.count).padStart(7)}  ${String((v.size / 1024).toFixed(1)).padStart(9)} KB  ${k}  (total after ${summaryAfter(B, k)}, before ${summaryA.get(k) ?? 0})`,
+    );
   }
   if (PATHS > 0) {
     console.error('computing retainer tree');
@@ -186,18 +216,27 @@ if (cmd === 'diff') {
     const interesting = sorted.filter(([k]) =>
       re
         ? re.test(k)
-        : !/^(string|number|\(code\)|\(hidden\)|\(system\)|\(array\)|\(object properties\)|\(object elements\)|system |\(compiled code\)|\(concatenated string\))/.test(k),
+        : !/^(string|number|\(code\)|\(hidden\)|\(system\)|\(array\)|\(object properties\)|\(object elements\)|system |\(compiled code\)|\(concatenated string\))/.test(
+            k,
+          ),
     );
-    console.log('\n## Retainer paths (shortest strong path from GC root) for sample new objects');
+    console.log(
+      '\n## Retainer paths (shortest strong path from GC root) for sample new objects',
+    );
     for (const [k, v] of interesting.slice(0, Number(opts.groups ?? 12))) {
       console.log(`\n### ${k}  x${v.count}`);
       const seenPaths = new Set();
       let shown = 0;
-      const samples = opts.bysize ? [...v.samples].sort((a, b) => sizeOf(B, b) - sizeOf(B, a)) : v.samples;
+      const samples = opts.bysize
+        ? [...v.samples].sort((a, b) => sizeOf(B, b) - sizeOf(B, a))
+        : v.samples;
       for (const i of samples) {
-        if (opts.bysize) console.log(`  [${(sizeOf(B, i) / 1024).toFixed(0)} KB]`);
+        if (opts.bysize)
+          console.log(`  [${(sizeOf(B, i) / 1024).toFixed(0)} KB]`);
         const p = pathTo(B, tree, i);
-        const key = p.map((s) => s.replace(/\[\d+\]/g, '[n]').replace(/@\d+/g, '')).join('|');
+        const key = p
+          .map((s) => s.replace(/\[\d+\]/g, '[n]').replace(/@\d+/g, ''))
+          .join('|');
         if (seenPaths.has(key)) continue;
         seenPaths.add(key);
         console.log('  ' + p.join('\n    '));
@@ -214,7 +253,10 @@ if (cmd === 'diff') {
         if (detOf(B, i) !== 2 || idsA.has(idOf(B, i))) continue;
         const p = pathTo(B, tree, i);
         // collapse to the JS-side holder: drop the DOM-internal tail
-        const key = p.slice(0, 8).map((s) => s.replace(/\[\d+\]/g, '[n]')).join('|');
+        const key = p
+          .slice(0, 8)
+          .map((s) => s.replace(/\[\d+\]/g, '[n]'))
+          .join('|');
         if (seenPaths.has(key)) continue;
         seenPaths.add(key);
         console.log(`\n${label(B, i)}:\n  ` + p.join('\n    '));

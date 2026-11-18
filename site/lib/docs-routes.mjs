@@ -60,7 +60,10 @@ export default function docsPageRoutes() {
       )?.[1];
 
       if (custom) {
-        return [...urlPrefix.split('/'), ...custom.split('/').filter(Boolean)].join('.');
+        return [
+          ...urlPrefix.split('/'),
+          ...custom.split('/').filter(Boolean),
+        ].join('.');
       }
 
       const path = relative(root, file).replace(/\.md$/, '').split(sep);

@@ -42,7 +42,13 @@ module(
       );
       assert.dom('[role="tabpanel"]', document.body).exists();
 
-      await click('[data-test-subj="superDatePickerAbsoluteTab"]');
+      // the popover is rendered outside the test root, where a selector
+      // passed to click() is not looked up
+      await click(
+        document.querySelector(
+          '[data-test-subj="superDatePickerAbsoluteTab"]'
+        ) as Element
+      );
       assert.dom('[role="tabpanel"]', document.body).exists();
     });
 

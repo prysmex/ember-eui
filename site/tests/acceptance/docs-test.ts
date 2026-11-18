@@ -21,24 +21,32 @@ module('Acceptance | docs', function (hooks) {
       .exists({ count: 125 }, 'every docs section is listed');
   });
 
-  test('every docs page renders with its demos', async function (assert) {
-    const docfy = this.owner.lookup('service:docfy') as DocfyService;
-    const pages = docfy.flat.filter((page) => !page.frontmatter['disabled']);
+  // Every page loads its own bundle: the whole catalog took 290-310s in the
+  // ARM sandbox and on GitHub's ubuntu-26.04 runner (2026-11) in one test,
+  // over its 300s timeout. Split over a few tests, each with its own app and
+  // timeout, it takes ~80s: one app slows down as it visits more pages.
+  const PAGE_GROUPS = 4;
 
-    // every page loads its own bundle: ~80s for the catalog on an idle ARM
-    // sandbox, over twice that under load
-    assert.timeout(300_000);
+  for (let group = 0; group < PAGE_GROUPS; group++) {
+    test(`every docs page renders with its demos (${group + 1}/${PAGE_GROUPS})`, async function (assert) {
+      const docfy = this.owner.lookup('service:docfy') as DocfyService;
+      const pages = docfy.flat
+        .filter((page) => !page.frontmatter['disabled'])
+        .filter((_, index) => index % PAGE_GROUPS === group);
 
-    for (const page of pages) {
-      await visit(page.url);
+      assert.timeout(300_000);
 
-      assert.strictEqual(currentURL(), page.url, `${page.url} renders`);
-    }
+      for (const page of pages) {
+        await visit(page.url);
 
-    // demos with a fixed control bar or bottom bar clean up when leaving
-    await visit('/docs/introduction');
-    assert.strictEqual(document.body.style.paddingBottom, '');
-  });
+        assert.strictEqual(currentURL(), page.url, `${page.url} renders`);
+      }
+
+      // demos with a fixed control bar or bottom bar clean up when leaving
+      await visit('/docs/introduction');
+      assert.strictEqual(document.body.style.paddingBottom, '');
+    });
+  }
 
   test('tables scroll on their own, so narrow screens keep the page width', async function (assert) {
     await visit('/docs/core/docs/forms/combo-box');

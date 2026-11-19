@@ -15,9 +15,15 @@ sort and page changes back to it. Edits go to `@onChange`, which writes the
 store: inserts land in the right place of the whole array, although the
 sheet only saw one page, because each insert names its neighbour.
 
-The toolbar holds EmberSearchUi's own views, bound to the same driver: a
-search box, a sort menu, a filter bar and its chips. The footer has the
-default pagination and EmberSearchUi's paging info.
+The toolbar is the app's own, here EUI controls bound to the same
+driver: a search field (`driver.setQuery`), a sort select that reads and
+sets `driver.state.sort`, and two filters that replace the driver's filter
+tree. The demo subscribes to the driver (`driver.subscribe`) so the
+controls follow changes made elsewhere, such as a sort from a column menu.
+EmberSearchUi's own views (`ember-search-ui-views`) work here too, but
+their stylesheet is light only and global (it also restyles EUI's combo
+boxes on the page). The footer has the default pagination and a line
+computed from the driver's result.
 
 Try it:
 
@@ -33,7 +39,8 @@ Try it:
 - Add a record from the last row ("+ Add record") and type a name: it shows
   at once; after Re-apply it is wherever the sort puts it (or on another
   page).
-- Filter by Status in the filter bar: the chips show the filter.
+- Pick a status or a city in the filters: the driver filters, back to
+  page 1.
 
 </EuiText>
 
@@ -41,7 +48,15 @@ Try it:
 import Component from '@glimmer/component';
 import { tracked } from '@glimmer/tracking';
 import { registerDestructor } from '@ember/destroyable';
-import { EuiFlexGroup, EuiFlexItem, EuiText } from '@ember-eui/core/components';
+import { on } from '@ember/modifier';
+import {
+  EuiComboBox,
+  EuiFieldSearch,
+  EuiFlexGroup,
+  EuiFlexItem,
+  EuiSelect,
+  EuiText,
+} from '@ember-eui/core/components';
 import { applyChangeSet } from '@ember-eui/sheet';
 import { EuiSheetSearch } from '@ember-eui/sheet/search-ui';
 import {
@@ -49,10 +64,7 @@ import {
   defineProperty,
   memoryBackend,
   schemaFrom,
-  searchUiCompat,
 } from 'ember-search-ui-driver';
-import { Search } from 'ember-search-ui';
-import { FilterBar, FilterChips, PagingInfo, SearchBox, Sorting } from 'ember-search-ui-views';
 
 const STATUSES = [
   { value: 'todo', label: 'To do' },
@@ -73,7 +85,7 @@ const DOCS = Array.from({ length: 2000 }, (_, i) => ({
   active: i % 4 !== 0,
 }));
 
-// what the views and the driver know about each field
+// what the driver knows about each field (its schema)
 const PROPERTIES = [
   defineProperty({ label: 'Name', field: { path: 'name', type: 'text' } }),
   defineProperty({ label: 'Status', field: { path: 'status', type: 'keyword', options: STATUSES } }),
@@ -99,12 +111,23 @@ const FIELDS = [
   { id: 'active', label: 'Active', type: 'checkbox' },
 ];
 
+// the toolbar's sort select: a key per sort, '' for none
+const SORTS = {
+  '': [],
+  'name-asc': [{ field: 'name', direction: 'asc' }],
+  'name-desc': [{ field: 'name', direction: 'desc' }],
+  'hours-desc': [{ field: 'hours', direction: 'desc' }],
+};
 const SORT_OPTIONS = [
-  { name: 'Unsorted', value: '', direction: '' },
-  { name: 'Name A-Z', value: 'name', direction: 'asc' },
-  { name: 'Name Z-A', value: 'name', direction: 'desc' },
-  { name: 'Most hours', value: 'hours', direction: 'desc' },
+  { value: '', text: 'Unsorted' },
+  { value: 'name-asc', text: 'Name A-Z' },
+  { value: 'name-desc', text: 'Name Z-A' },
+  { value: 'hours-desc', text: 'Most hours' },
 ];
+const sortKey = (sort) => sort.map(({ field, direction }) => `${field}-${direction}`).join(',');
+
+const STATUS_OPTIONS = STATUSES.map(({ value, label }) => ({ value, label }));
+const CITY_OPTIONS = CITIES.map((city) => ({ value: city, label: city }));
 
 const getId = (record) => record.id;
 
@@ -123,12 +146,82 @@ export default class SheetWithSearchUi extends Component {
     schema: schemaFrom(PROPERTIES),
     initialState: { page: { kind: 'offset', page: 1, perPage: 50 } },
   });
-  // the search-ui shaped API that SearchBox, Sorting and PagingInfo read
-  compat = searchUiCompat(this.driver);
+  // the driver's state and result, kept tracked so the toolbar and the footer follow them
+  @tracked state = this.driver.state;
+  @tracked result = this.driver.result;
+  @tracked term = '';
+  @tracked statuses = [];
+  @tracked cities = [];
 
   constructor(owner, args) {
     super(owner, args);
-    registerDestructor(this, () => this.driver.destroy());
+    const unsubscribe = this.driver.subscribe((snapshot) => {
+      if (snapshot.state !== this.state) this.state = snapshot.state;
+      if (snapshot.result !== this.result) this.result = snapshot.result;
+    });
+    registerDestructor(this, () => {
+      unsubscribe();
+      this.driver.destroy();
+    });
+  }
+
+  get sortOptions() {
+    const key = sortKey(this.state.sort);
+    // a sort from a column menu that the select does not list
+    return key in SORTS ? SORT_OPTIONS : [...SORT_OPTIONS, { value: key, text: 'Custom (column menu)' }];
+  }
+
+  // "Showing 51–100 of 2,000", from the driver's page and the last result
+  get pagingText() {
+    const { page } = this.state;
+    const { total, results } = this.result;
+    if (!total) return 'No records';
+    const from = (page.page - 1) * page.perPage + 1;
+    return `Showing ${from}–${from + results.length - 1} of ${total.toLocaleString('en')}`;
+  }
+
+  get sortValue() {
+    return sortKey(this.state.sort);
+  }
+
+  search = (term) => {
+    this.term = term;
+    this.driver.setQuery(term, { debounceMs: 200 });
+  };
+
+  setSort = (event) => {
+    const sort = SORTS[event.target.value];
+    if (sort) this.driver.setSort(sort);
+  };
+
+  setStatuses = (selected) => {
+    this.statuses = selected;
+    this.applyFilter();
+  };
+
+  setCities = (selected) => {
+    this.cities = selected;
+    this.applyFilter();
+  };
+
+  removeStatus = (option) => this.setStatuses(this.statuses.filter((o) => o !== option));
+  removeCity = (option) => this.setCities(this.cities.filter((o) => o !== option));
+
+  // one condition per filter with values, all of them together
+  applyFilter() {
+    const children = [
+      ['status', this.statuses],
+      ['city', this.cities],
+    ]
+      .filter(([, selected]) => selected.length)
+      .map(([field, selected]) => ({
+        kind: 'condition',
+        field,
+        operator: 'in',
+        value: selected.map((option) => option.value),
+      }));
+    if (children.length) this.driver.replaceFilter({ kind: 'group', op: 'and', children });
+    else this.driver.clearFilter();
   }
 
   // "persist" the change set: here, the in-memory store
@@ -137,35 +230,79 @@ export default class SheetWithSearchUi extends Component {
   };
 
   <template>
-    <Search @driver={{this.driver}} as |search|>
-      <EuiSheetSearch
-        @driver={{this.driver}}
-        @getRecordId={{getId}}
-        @onChange={{this.write}}
-        @fields={{FIELDS}}
-        @height={{420}}
-      >
-        <:toolbar>
-          <div style='flex: 1 1 100%; min-width: 0'>
-            <EuiFlexGroup @gutterSize='m' @alignItems='center' @wrap={{true}} @responsive={{false}}>
-              <EuiFlexItem style='min-width: 240px'>
-                <SearchBox @driver={{this.compat}} @searchAsYouType={{true}} @debounceLength={{200}} />
-              </EuiFlexItem>
-              <EuiFlexItem @grow={{false}} style='min-width: 180px'>
-                <Sorting @driver={{this.compat}} @sortOptions={{SORT_OPTIONS}} />
-              </EuiFlexItem>
-            </EuiFlexGroup>
-            <FilterBar @search={{search}} @properties={{PROPERTIES}} />
-            <FilterChips @search={{search}} @properties={{PROPERTIES}} />
-          </div>
-        </:toolbar>
-        <:footer>
-          <EuiText @size='s' @color='subdued'>
-            <PagingInfo @driver={{this.compat}} />
-          </EuiText>
-        </:footer>
-      </EuiSheetSearch>
-    </Search>
+    <EuiSheetSearch
+      @driver={{this.driver}}
+      @getRecordId={{getId}}
+      @onChange={{this.write}}
+      @fields={{FIELDS}}
+      @height={{420}}
+    >
+      <:toolbar>
+        <EuiFlexGroup
+          style='flex: 1 1 100%; min-width: 0'
+          @gutterSize='s'
+          @alignItems='center'
+          @wrap={{true}}
+          @responsive={{false}}
+        >
+          <EuiFlexItem style='min-width: 220px'>
+            <EuiFieldSearch
+              @placeholder='Search names and cities'
+              @value={{this.term}}
+              @incremental={{true}}
+              @onSearch={{this.search}}
+              @compressed={{true}}
+              @fullWidth={{true}}
+              aria-label='Search'
+            />
+          </EuiFlexItem>
+          <EuiFlexItem @grow={{false}} style='min-width: 160px'>
+            <EuiComboBox
+              @options={{STATUS_OPTIONS}}
+              @selectedOptions={{this.statuses}}
+              @onChange={{this.setStatuses}}
+              @removeTag={{this.removeStatus}}
+              @searchField='label'
+              @placeholder='Status'
+              @compressed={{true}}
+              aria-label='Status'
+              as |option|
+            >
+              {{option.label}}
+            </EuiComboBox>
+          </EuiFlexItem>
+          <EuiFlexItem @grow={{false}} style='min-width: 160px'>
+            <EuiComboBox
+              @options={{CITY_OPTIONS}}
+              @selectedOptions={{this.cities}}
+              @onChange={{this.setCities}}
+              @removeTag={{this.removeCity}}
+              @searchField='label'
+              @placeholder='City'
+              @compressed={{true}}
+              aria-label='City'
+              as |option|
+            >
+              {{option.label}}
+            </EuiComboBox>
+          </EuiFlexItem>
+          <EuiFlexItem @grow={{false}} style='min-width: 170px'>
+            <EuiSelect
+              @options={{this.sortOptions}}
+              @value={{this.sortValue}}
+              @compressed={{true}}
+              aria-label='Sort'
+              {{on 'change' this.setSort}}
+            />
+          </EuiFlexItem>
+        </EuiFlexGroup>
+      </:toolbar>
+      <:footer>
+        <EuiText @size='s' @color='subdued'>
+          {{this.pagingText}}
+        </EuiText>
+      </:footer>
+    </EuiSheetSearch>
   </template>
 }
 ```

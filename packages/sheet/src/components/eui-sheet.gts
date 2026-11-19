@@ -30,7 +30,10 @@ import {
   commitText,
   commitValue,
   createMessages,
+  deleteRecords,
+  duplicateRecords,
   fillDown,
+  insertRecords,
   isReadOnly,
   mergeChangeSets,
   mergeErrors,
@@ -56,6 +59,17 @@ import {
   remapId,
   toIdMap
 } from '../-private/remap.ts';
+import {
+  clearRejections,
+  remapRejections,
+  restoreRejections
+} from '../-private/rejections.ts';
+import { RecordFlyout, RecordModal } from '../-private/record-shells.gts';
+import RowMenu from '../-private/row-menu.gts';
+import {
+  RowNumberCell,
+  RowNumberHeader
+} from '../-private/row-number-cell.gts';
 import SheetCell from '../-private/sheet-cell.gts';
 import { ensureStyles } from '../-private/styles.ts';
 import { sheetThemeVars } from '../-private/theme.ts';
@@ -68,8 +82,11 @@ import type {
   Range,
   RecordId,
   SheetContext,
+  RecordInsert,
   SheetMessages
 } from '../core/index.ts';
+import type { Rejection } from '../-private/rejections.ts';
+import type { RowMenuItem } from '../-private/row-menu.gts';
 import type {
   EuiSheetFieldType,
   EuiSheetSignature,
@@ -81,7 +98,9 @@ import type EuiI18n from '@ember-eui/core/services/eui-i18n';
 import type {
   EuiDataGridColumn,
   EuiDataGridColumnVisibility,
-  EuiDataGridRefProps
+  EuiDataGridControlColumn,
+  EuiDataGridRefProps,
+  EuiDataGridStyle
 } from '@ember-eui/core/utils/data-grid/types';
 import type Owner from '@ember/owner';
 
@@ -101,14 +120,14 @@ export interface CellView {
   readOnly: boolean;
 }
 
-interface Rejection {
-  /** recordId or tempId, as a string. */
-  id: string;
-  fieldId: string;
-  text: string;
-  message: string;
-  /** The record's value when the rejection was stored; another value means the owner changed it. */
-  seenValue: unknown;
+/**
+ * One undo entry: the change set a user action emitted, and the rejections
+ * it stored (with the value each cell had then), which undo clears and
+ * redo puts back.
+ */
+interface HistoryEntry {
+  changeSet: ChangeSet;
+  rejections: Rejection[];
 }
 
 /**
@@ -190,6 +209,81 @@ interface FocusedCell {
   viewportBelow: number;
 }
 
+/** Id of the row-number control column. */
+const ROW_COLUMN_ID = 'euiSheetRow';
+/** Its width without `@rowLabel`. */
+const ROW_COLUMN_WIDTH = 64;
+
+/** What a range covers (V02-DESIGN.md 5.4). */
+type RangeKind = 'cells' | 'rows' | 'columns';
+
+/** The open row menu: the row it was opened on and where, in the wrapper. */
+interface MenuState {
+  row: number;
+  /** The data column it was opened on; null on a row number. */
+  col: number | null;
+  top: number;
+  left: number;
+  /** The records it acts on, fixed when it opened. */
+  records: unknown[];
+}
+
+/** Where the expanded record was opened from, to focus it again on close. */
+interface ExpandedFrom {
+  recordId: RecordId;
+  /** null: the row-number cell. */
+  fieldId: string | null;
+}
+
+/** Menu items whose action moves focus itself. */
+const MENU_ITEMS_THAT_MOVE_FOCUS = new Set([
+  'insertAbove',
+  'insertBelow',
+  'duplicate',
+  'expand',
+  'delete'
+]);
+
+/** Shift+F10 or the ContextMenu key: the row menu. */
+function isMenuKey(event: KeyboardEvent): boolean {
+  return (
+    event.key === 'ContextMenu' ||
+    (event.key === 'F10' &&
+      event.shiftKey &&
+      !event.ctrlKey &&
+      !event.metaKey &&
+      !event.altKey)
+  );
+}
+
+/**
+ * Writes text to the clipboard: `navigator.clipboard.writeText`, else (or
+ * when it rejects) a hidden textarea and `execCommand('copy')`, appended to
+ * the body, outside the grid (its document copy handlers).
+ */
+function writeClipboard(text: string): void {
+  const fallback = () => {
+    const area = document.createElement('textarea');
+    area.value = text;
+    area.setAttribute('readonly', '');
+    area.style.position = 'fixed';
+    area.style.opacity = '0';
+    document.body.appendChild(area);
+    area.select();
+    try {
+      document.execCommand('copy');
+    } finally {
+      area.remove();
+    }
+  };
+  const clipboard = navigator.clipboard as Clipboard | undefined;
+  if (clipboard?.writeText) {
+    clipboard.writeText(text).catch(fallback);
+  } else {
+    fallback();
+  }
+}
+
 /** Undo entries kept per sheet. */
 const HISTORY_LIMIT = 100;
 
@@ -201,6 +295,18 @@ let tempIdCounter = 0;
 const nextTempId = (): string => `new-${++tempIdCounter}`;
 
 const validateWaiter = buildWaiter('@ember-eui/sheet:validate');
+
+const EMPTY_CHANGE_SET: ChangeSet = {
+  source: 'undo',
+  patches: [],
+  inserts: [],
+  rejected: [],
+  newOptions: []
+};
+
+function isModal(shell: string): boolean {
+  return shell === 'modal';
+}
 
 function samePos(a: Pos | null, b: Pos | null): boolean {
   return !!a && !!b && a.row === b.row && a.col === b.col;
@@ -279,6 +385,31 @@ export default class EuiSheet<T extends object> extends Component<
   @tracked validation: Validation | null = null;
   /** A drag over other cells is selecting a range (no text selection meanwhile). */
   @tracked dragging = false;
+  /** What the range covers: cells, whole rows (row numbers) or whole columns (headers). */
+  @tracked rangeKind: RangeKind = 'cells';
+  /** Checked rows without `@onCheckedChange`: record ids as strings. */
+  @tracked localChecked: ReadonlySet<string> = new Set();
+  /** The expanded record without `@onExpandedRecordChange`. */
+  @tracked localExpandedId: RecordId | null = null;
+  /** The open row menu. */
+  @tracked menu: MenuState | null = null;
+  /**
+   * An editor is open in the expanded record's form: the shell's focus
+   * trap is paused, so focus can reach a surface the editor renders
+   * outside the shell (a wormholed calendar; N3).
+   */
+  @tracked formEditorOpen = false;
+
+  /** The row whose checkbox was toggled last (Shift+click checks the rows between). */
+  lastToggledRow: number | null = null;
+  /** Where the expanded record was opened from. */
+  expandedFrom: ExpandedFrom | null = null;
+  /** Last row-number cell seen by `focusin`. */
+  rowCursor: number | null = null;
+  /** The next focus on a cell keeps the range (a press set it, or a right-click inside it). */
+  keepRangeOnFocus = false;
+  /** What a drag selects: cells, or rows (a press on a row number). */
+  dragKind: 'cells' | 'rows' = 'cells';
 
   /** Plain: the last text the editor reported, and whether it reported one. */
   draft = '';
@@ -293,8 +424,8 @@ export default class EuiSheet<T extends object> extends Component<
   wrapper: HTMLElement | null = null;
 
   /* Undo and redo: the change sets this sheet emitted for user actions */
-  undoStack: ChangeSet[] = [];
-  redoStack: ChangeSet[] = [];
+  undoStack: HistoryEntry[] = [];
+  redoStack: HistoryEntry[] = [];
 
   /** The cell a left-button press started on, while it may become a drag. */
   dragFrom: Pos | null = null;
@@ -321,7 +452,13 @@ export default class EuiSheet<T extends object> extends Component<
     redo: () => this.redo(),
     focusCell: (cell) => this.focusRecordCell(cell),
     remapIds: (ids) => this.remapIds(ids),
-    clearHistory: () => this.clearHistory()
+    clearHistory: () => this.clearHistory(),
+    expandRecord: (recordId) => {
+      if (recordId === null) this.closeExpanded();
+      else this.expandRecord(recordId, null);
+    },
+    insertRecord: (options = {}) => this.insertFromApi(options),
+    deleteRecords: (ids) => this.deleteRecordIds(ids, false)
   };
 
   /* `@validate` runs */
@@ -347,6 +484,7 @@ export default class EuiSheet<T extends object> extends Component<
     this.validateController?.abort();
     this.endValidateWaiter();
     this.stopWatchingRelease();
+    document.removeEventListener('mousedown', this.onDocumentMouseDown, true);
   }
 
   /* -------------------------------------------------------------------- */
@@ -420,18 +558,193 @@ export default class EuiSheet<T extends object> extends Component<
     return this.args.ariaLabel ?? 'Sheet';
   }
 
+  get showRowNumbers(): boolean {
+    return this.args.rowNumbers !== false;
+  }
+
+  get canInsert(): boolean {
+    return this.args.canInsert ?? !this.args.readOnly;
+  }
+
+  get canDelete(): boolean {
+    return this.args.canDelete ?? !this.args.readOnly;
+  }
+
   /**
    * Leading control columns of the grid (V02-DESIGN.md 3.2): positions
    * (`anchor`, `head`, `Range`) use data columns, the grid's column index
-   * is the data column plus this. None yet.
+   * is the data column plus this. One with row numbers.
    */
   get colOffset(): number {
-    return 0;
+    return this.showRowNumbers ? 1 : 0;
   }
 
-  /** Whether the grid has an "add" row after the records. Not yet. */
+  /** Whether the grid has an "add" row after the records. */
   get hasAddRow(): boolean {
-    return false;
+    return this.canInsert;
+  }
+
+  isAddRow(row: number): boolean {
+    return this.hasAddRow && row === this.args.records.length;
+  }
+
+  get hiddenFields(): EuiSheetField<T>[] {
+    return this.args.hiddenFields ?? [];
+  }
+
+  /** The visible fields, then `@hiddenFields`: the expanded record, duplicate, undo. */
+  @cached
+  get allFields(): EuiSheetField<T>[] {
+    return [...this.visibleFields, ...this.hiddenFields];
+  }
+
+  /** The row-number column: wider only for `@rowLabel` labels. */
+  @cached
+  get rowColumnWidth(): number {
+    const label = this.args.rowLabel;
+    if (!label) return ROW_COLUMN_WIDTH;
+    let longest = 0;
+    this.args.records.forEach((record, i) => {
+      longest = Math.max(longest, label(record, this.positionOf(i)).length);
+    });
+    return Math.max(ROW_COLUMN_WIDTH, 24 + 8 * longest);
+  }
+
+  @cached
+  get leadingControlColumns(): EuiDataGridControlColumn[] | undefined {
+    if (!this.showRowNumbers) return undefined;
+    return [{ id: ROW_COLUMN_ID, width: this.rowColumnWidth }];
+  }
+
+  /** The add row's class. */
+  @cached
+  get gridStyle(): EuiDataGridStyle | undefined {
+    if (!this.hasAddRow) return undefined;
+    return { rowClasses: { [this.args.records.length]: 'euiSheet__addRow' } };
+  }
+
+  get rowNumberOffset(): number {
+    return this.args.rowNumberOffset ?? 0;
+  }
+
+  /** The position a row shows: `@rowNumberOffset + row + 1`. */
+  positionOf(row: number): number {
+    return this.rowNumberOffset + row + 1;
+  }
+
+  /** What a row-number cell shows: `@rowLabel`, else the position. */
+  rowLabelOf(row: number): string {
+    const record = this.recordAt(row);
+    if (record === undefined) return '';
+    const position = this.positionOf(row);
+    return this.args.rowLabel
+      ? this.args.rowLabel(record, position)
+      : String(position);
+  }
+
+  /** A row of a `'rows'` range (its row number is drawn selected). */
+  isRowSelected(row: number): boolean {
+    const range = this.range;
+    return (
+      this.rangeKind === 'rows' &&
+      !!range &&
+      row >= range.top &&
+      row <= range.bottom
+    );
+  }
+
+  /* Checked rows: controlled with `@onCheckedChange`, else local */
+
+  @cached
+  get checkedIds(): ReadonlySet<string> {
+    if (!this.args.onCheckedChange) return this.localChecked;
+    return new Set((this.args.checkedRecordIds ?? []).map(String));
+  }
+
+  isChecked(row: number): boolean {
+    const record = this.recordAt(row);
+    return (
+      record !== undefined &&
+      this.checkedIds.has(String(this.args.getRecordId(record)))
+    );
+  }
+
+  /** The checked records of `@records`, in their order. */
+  get checkedRecords(): T[] {
+    const checked = this.checkedIds;
+    if (!checked.size) return [];
+    return this.args.records.filter((record) =>
+      checked.has(String(this.args.getRecordId(record)))
+    );
+  }
+
+  /** The header checkbox: every record of `@records` checked, some, or none. */
+  get checkedState(): 'all' | 'some' | 'none' {
+    const count = this.checkedRecords.length;
+    if (!count) return 'none';
+    return count === this.args.records.length ? 'all' : 'some';
+  }
+
+  /** Sets the checked ids (strings), through `@onCheckedChange` or locally. */
+  setChecked(ids: ReadonlySet<string>): void {
+    const handler = this.args.onCheckedChange;
+    if (!handler) {
+      this.localChecked = ids;
+      return;
+    }
+    // the owner's ids keep their type: from `@records`, else as passed
+    const known = new Map<string, RecordId>();
+    for (const id of this.args.checkedRecordIds ?? [])
+      known.set(String(id), id);
+    for (const record of this.args.records) {
+      const id = this.args.getRecordId(record);
+      known.set(String(id), id);
+    }
+    handler([...ids].map((id) => known.get(id) ?? id));
+  }
+
+  /** Toggles a row's checkbox; with `shift`, the rows from the last toggled one get the same state. */
+  toggleChecked(row: number, shift: boolean): void {
+    const record = this.recordAt(row);
+    if (record === undefined) return;
+    const getId = this.args.getRecordId;
+    const value = !this.checkedIds.has(String(getId(record)));
+    const from =
+      shift && this.lastToggledRow !== null
+        ? clamp(this.lastToggledRow, 0, this.args.records.length - 1)
+        : row;
+    const next = new Set(this.checkedIds);
+    for (let r = Math.min(from, row); r <= Math.max(from, row); r++) {
+      const id = String(getId(this.args.records[r]!));
+      if (value) next.add(id);
+      else next.delete(id);
+    }
+    this.lastToggledRow = row;
+    this.setChecked(next);
+  }
+
+  /** The header checkbox: checks every record, or none when all are checked. */
+  toggleAllChecked(): void {
+    const ids = this.args.records.map((record) =>
+      String(this.args.getRecordId(record))
+    );
+    const next = new Set(this.checkedIds);
+    if (this.checkedState === 'all') ids.forEach((id) => next.delete(id));
+    else ids.forEach((id) => next.add(id));
+    this.setChecked(next);
+  }
+
+  /** The records of the selection: the checked ones when any, else the range's rows. */
+  selectionRecords(): T[] {
+    const checked = this.checkedRecords;
+    if (checked.length) return checked;
+    const range = this.range;
+    if (!range) return [];
+    const records = this.args.records;
+    return records.slice(
+      Math.max(range.top, 0),
+      Math.min(range.bottom, records.length - 1) + 1
+    );
   }
 
   get rowCount(): number {
@@ -499,6 +812,11 @@ export default class EuiSheet<T extends object> extends Component<
     const record = this.recordAt(row);
     const field = this.visibleFields.find((f) => f.id === fieldId);
     if (record === undefined || !field) return null;
+    return this.cellViewFor(record, field, this.isSelected(row, col));
+  }
+
+  /** A record's field as a cell shows it: the grid's cells and the expanded record's boxes. */
+  cellViewFor(record: T, field: EuiSheetField<T>, selected = false): CellView {
     const ctx = this.context;
     const type = this.typeOf(field);
     const value = valueOf(record, field.id);
@@ -527,7 +845,7 @@ export default class EuiSheet<T extends object> extends Component<
       text,
       rejected: !!rejection,
       errors,
-      selected: this.isSelected(row, col),
+      selected,
       readOnly: isReadOnly(ctx, field, record)
     };
   }
@@ -600,6 +918,14 @@ export default class EuiSheet<T extends object> extends Component<
     ) {
       this.followRecords(previousIds, ids);
     }
+    // the expanded record left `@records` (deleted, or the owner re-queried)
+    const expanded = this.expandedId;
+    if (expanded !== null && !ids.includes(String(expanded))) {
+      this.expandedFrom = null;
+      this.setExpanded(null);
+    }
+    // a menu opened on rows that changed
+    if (this.menu && previous && !sameIds(previousIds, ids)) this.menu = null;
     this.applyPendingFocus();
   }
 
@@ -643,16 +969,19 @@ export default class EuiSheet<T extends object> extends Component<
     if (head) {
       const id = previousIds[head.row];
       const found = id === undefined ? undefined : indexOf.get(id);
+      // the last record, or the add row when there is none
+      const lastRow = ids.length ? ids.length - 1 : this.rowCount - 1;
       if (this.rowCount === 0) {
         this.anchor = null;
         this.head = null;
       } else {
         const pos = {
-          row: found ?? clamp(head.row, 0, this.rowCount - 1),
+          row: found ?? clamp(head.row, 0, lastRow),
           col: head.col
         };
         this.anchor = pos;
         this.head = pos;
+        this.rangeKind = 'cells';
         if ((hadCellFocus || hadEditorFocus) && !this.editing) {
           // onFocusIn sees the cell it already knows and keeps the range
           this.domCursor = pos;
@@ -678,6 +1007,7 @@ export default class EuiSheet<T extends object> extends Component<
     const pos = { row, col };
     this.anchor = pos;
     this.head = pos;
+    this.rangeKind = 'cells';
     this.domCursor = pos;
     this.focusGridCell(pos);
   }
@@ -715,6 +1045,555 @@ export default class EuiSheet<T extends object> extends Component<
       return null;
     }
     return cell;
+  }
+
+  /** The row-number cell an event belongs to, or null. */
+  rowNumberCell(target: EventTarget | null): HTMLElement | null {
+    if (!this.colOffset || !(target instanceof Element)) return null;
+    const cell = target.closest<HTMLElement>(
+      `[role=gridcell][data-gridcell-column-id="${ROW_COLUMN_ID}"]`
+    );
+    if (!cell || !this.wrapper?.contains(cell)) return null;
+    if (cell.classList.contains('euiDataGridFooterCell')) return null;
+    return cell;
+  }
+
+  /** The data column header an event belongs to, or null (not the control column's). */
+  headerCell(target: EventTarget | null): HTMLElement | null {
+    if (!(target instanceof Element)) return null;
+    const header = target.closest<HTMLElement>('[role=columnheader]');
+    if (!header || !this.wrapper?.contains(header)) return null;
+    if (header.dataset['gridcellColumnId'] === ROW_COLUMN_ID) return null;
+    return header;
+  }
+
+  /** The row of a grid cell (data or control), read from its markup. */
+  rowIndexOf(cell: HTMLElement): number {
+    return Number(cell.dataset['gridcellVisibleRowIndex']);
+  }
+
+  /** The rendered row-number cell of a row. */
+  rowNumberElement(row: number): HTMLElement | null {
+    return (
+      this.wrapper?.querySelector<HTMLElement>(
+        `[role=gridcell][data-gridcell-visible-row-index="${row}"][data-gridcell-column-id="${ROW_COLUMN_ID}"]`
+      ) ?? null
+    );
+  }
+
+  /** Focuses a row's row-number cell. */
+  focusRowNumberCell(row: number): void {
+    if (!this.colOffset) return;
+    this.gridApi?.setFocusedCell({ rowIndex: row, colIndex: 0 });
+  }
+
+  isInMenu(target: EventTarget | null): boolean {
+    return (
+      target instanceof Element && !!target.closest('[data-eui-sheet-menu]')
+    );
+  }
+
+  /** A viewport point in the wrapper's CSS px. */
+  pointInWrapper(x: number, y: number): { top: number; left: number } {
+    const wrapper = this.wrapper;
+    if (!wrapper) return { top: 0, left: 0 };
+    const origin = wrapper.getBoundingClientRect();
+    const scale = wrapper.offsetWidth ? origin.width / wrapper.offsetWidth : 1;
+    return { top: (y - origin.top) / scale, left: (x - origin.left) / scale };
+  }
+
+  /* -------------------------------------------------------------------- */
+  /* Records: insert, delete, duplicate, copy (V02-DESIGN.md 5.6)          */
+  /* -------------------------------------------------------------------- */
+
+  /** `@newRecordValues` for a record between `above` and `below`. */
+  newValues(
+    above: T | undefined,
+    below: T | undefined
+  ): Record<string, unknown> {
+    return this.args.newRecordValues?.({ above, below }) ?? {};
+  }
+
+  /**
+   * Emits the insert of one record at `index`, next to `anchor`; then, when
+   * `focusFieldId` is given, focuses that field of the new row once it is
+   * rendered.
+   */
+  insertOne(
+    index: number,
+    anchor: RecordInsert['anchor'] | undefined,
+    values: Record<string, unknown>,
+    focusFieldId: string | null
+  ): void {
+    const changeSet = insertRecords(this.context, {
+      at: index,
+      anchor,
+      values: [values],
+      nextTempId
+    });
+    if (this.editing) this.commit({ refocus: false });
+    this.emit(changeSet, []);
+    if (focusFieldId !== null) {
+      this.pendingFocus = {
+        id: changeSet.inserts[0]!.tempId,
+        fieldId: focusFieldId
+      };
+      afterRender(this, () => this.applyPendingFocus());
+    }
+  }
+
+  /** Insert above or below a row (Shift+Enter, the menu); focus goes to `fieldId` of the new row. */
+  insertNear(
+    row: number,
+    position: 'before' | 'after',
+    fieldId: string | null
+  ): void {
+    const records = this.args.records;
+    const record = records[row];
+    if (record === undefined) return;
+    const recordId = this.args.getRecordId(record);
+    const values =
+      position === 'after'
+        ? this.newValues(record, records[row + 1])
+        : this.newValues(records[row - 1], record);
+    this.insertOne(
+      position === 'after' ? row + 1 : row,
+      { recordId, position },
+      values,
+      fieldId ?? this.firstEditableField(values)
+    );
+  }
+
+  /** The add row: a record at the end; focus goes to its first editable field. */
+  appendRecord(): void {
+    if (!this.canInsert) return;
+    const records = this.args.records;
+    const last = records[records.length - 1];
+    const values = this.newValues(last, undefined);
+    this.insertOne(
+      records.length,
+      last === undefined
+        ? undefined
+        : { recordId: this.args.getRecordId(last), position: 'after' },
+      values,
+      this.firstEditableField(values)
+    );
+  }
+
+  /** The first visible field a new record with these values can edit. */
+  firstEditableField(values: Record<string, unknown>): string | null {
+    const fields = this.visibleFields;
+    const field =
+      fields.find((f) => !isReadOnly(this.context, f, values as T)) ??
+      fields[0];
+    return field?.id ?? null;
+  }
+
+  /** `SheetApi.insertRecord`: no focus change. */
+  insertFromApi(options: {
+    anchor?: RecordInsert['anchor'];
+    values?: Record<string, unknown>;
+  }): void {
+    const records = this.args.records;
+    const anchor = options.anchor;
+    const row = anchor ? this.rowOf(anchor.recordId, 0) : -1;
+    if (anchor && row >= 0) {
+      const index = anchor.position === 'after' ? row + 1 : row;
+      const values =
+        options.values ?? this.newValues(records[index - 1], records[index]);
+      this.insertOne(index, anchor, values, null);
+      return;
+    }
+    const last = records[records.length - 1];
+    this.insertOne(
+      records.length,
+      last === undefined
+        ? undefined
+        : { recordId: this.args.getRecordId(last), position: 'after' },
+      options.values ?? this.newValues(last, undefined),
+      null
+    );
+  }
+
+  /**
+   * Emits the delete of these records. With `refocus`, focus goes to that
+   * field of the record after them (or before them, at the end).
+   */
+  deleteRecordIds(
+    ids: readonly RecordId[],
+    refocus: false | { fieldId: string | null }
+  ): void {
+    const records = this.args.records;
+    const changeSet = deleteRecords(records, ids, this.args.getRecordId);
+    if (!changeSet) return;
+    if (this.editing) this.commit({ refocus: false });
+    if (refocus) {
+      const gone = new Set(changeSet.deletes!.map(String));
+      const removed = changeSet.removed!;
+      const lastIndex = removed[removed.length - 1]!.index;
+      const firstIndex = removed[0]!.index;
+      const keep = (record: T | undefined) =>
+        record !== undefined &&
+        !gone.has(String(this.args.getRecordId(record)));
+      let neighbour: T | undefined;
+      for (let i = lastIndex + 1; i < records.length && !neighbour; i++) {
+        if (keep(records[i])) neighbour = records[i];
+      }
+      for (let i = firstIndex - 1; i >= 0 && !neighbour; i--) {
+        if (keep(records[i])) neighbour = records[i];
+      }
+      const fieldId = refocus.fieldId ?? this.visibleFields[0]?.id;
+      this.pendingFocus =
+        neighbour && fieldId !== undefined
+          ? { id: String(this.args.getRecordId(neighbour)), fieldId }
+          : null;
+      this.anchor = null;
+      this.head = null;
+      this.rangeKind = 'cells';
+    }
+    this.emit(changeSet, []);
+  }
+
+  /** A copy of each record right after it: every writable field, visible and hidden. */
+  duplicate(records: readonly T[], fieldId: string | null): void {
+    const all = this.args.records;
+    const indexes = records
+      .map((record) =>
+        this.rowOf(this.args.getRecordId(record), all.indexOf(record))
+      )
+      .filter((index) => index >= 0);
+    const changeSet = duplicateRecords(
+      { ...this.context, fields: this.allFields, readOnly: false },
+      indexes,
+      { nextTempId }
+    );
+    if (!changeSet) return;
+    const focusField = fieldId ?? this.visibleFields[0]?.id;
+    this.emit(changeSet, []);
+    if (focusField !== undefined) {
+      this.pendingFocus = {
+        id: changeSet.inserts[0]!.tempId,
+        fieldId: focusField
+      };
+      afterRender(this, () => this.applyPendingFocus());
+    }
+  }
+
+  /** Copies the records' visible fields as TSV. */
+  copyRows(records: readonly T[]): void {
+    if (!records.length) return;
+    const matrix = rangeMatrix(
+      { ...this.context, records },
+      {
+        top: 0,
+        left: 0,
+        bottom: records.length - 1,
+        right: this.visibleFields.length - 1
+      }
+    );
+    writeClipboard(toTsv(matrix));
+  }
+
+  /* -------------------------------------------------------------------- */
+  /* The row menu                                                          */
+  /* -------------------------------------------------------------------- */
+
+  /** Opens the menu under a cell (Shift+F10, the ContextMenu key). */
+  openMenuAt(row: number, col: number | null, cell: HTMLElement): void {
+    const rect = this.rectOf(cell);
+    if (!rect) return;
+    // the keyboard path acts on the selection, or on this row
+    if (
+      col === null &&
+      !this.isRowSelected(row) &&
+      !this.checkedRecords.length
+    ) {
+      this.keepRangeOnFocus = true;
+      this.selectRows(row, false);
+    }
+    this.openMenu(row, col, { top: rect.top + rect.height, left: rect.left });
+  }
+
+  openMenu(
+    row: number,
+    col: number | null,
+    at: { top: number; left: number }
+  ): void {
+    if (this.editing) this.commit({ refocus: false });
+    const records = this.selectionRecords();
+    const record = this.recordAt(row);
+    this.menu = {
+      row,
+      col,
+      top: at.top,
+      left: at.left,
+      records: records.length ? records : record === undefined ? [] : [record]
+    };
+    document.addEventListener('mousedown', this.onDocumentMouseDown, true);
+  }
+
+  /** Closes the menu; `refocus` focuses the cell it was opened on. */
+  closeMenu(refocus: boolean): void {
+    const menu = this.menu;
+    document.removeEventListener('mousedown', this.onDocumentMouseDown, true);
+    if (!menu) return;
+    this.menu = null;
+    if (!refocus || menu.row >= this.rowCount) return;
+    if (menu.col === null) {
+      this.keepRangeOnFocus = true;
+      this.focusRowNumberCell(menu.row);
+    } else {
+      // onFocusIn sees the cell it already knows and keeps the range
+      this.domCursor = { row: menu.row, col: menu.col };
+      this.focusGridCell({ row: menu.row, col: menu.col });
+    }
+  }
+
+  /** A press outside the menu closes it. */
+  onDocumentMouseDown = (event: MouseEvent): void => {
+    if (this.isInMenu(event.target)) return;
+    this.closeMenu(false);
+  };
+
+  get menuItems(): RowMenuItem[] {
+    const menu = this.menu;
+    if (!menu) return [];
+    const records = menu.records as T[];
+    const count = records.length;
+    const messages = this.messages;
+    const items: RowMenuItem[] = [];
+    if (this.canInsert) {
+      items.push(
+        {
+          id: 'insertAbove',
+          label: messages.insertAbove(),
+          icon: 'sortUp',
+          onSelect: () =>
+            this.insertNear(menu.row, 'before', this.menuFieldId(menu))
+        },
+        {
+          id: 'insertBelow',
+          label: messages.insertBelow(),
+          icon: 'sortDown',
+          onSelect: () =>
+            this.insertNear(menu.row, 'after', this.menuFieldId(menu))
+        },
+        {
+          id: 'duplicate',
+          label:
+            count > 1
+              ? messages.duplicateRecords(count)
+              : messages.duplicateRecord(),
+          icon: 'copy',
+          disabled: !count,
+          onSelect: () => this.duplicate(records, this.menuFieldId(menu))
+        }
+      );
+    }
+    if (count === 1) {
+      items.push({
+        id: 'expand',
+        label: messages.expandRecord(),
+        icon: 'expand',
+        onSelect: () => {
+          const recordId = this.args.getRecordId(records[0]!);
+          this.expandRecord(recordId, {
+            recordId,
+            fieldId: this.menuFieldId(menu)
+          });
+        }
+      });
+    }
+    items.push({
+      id: 'copy',
+      label: count > 1 ? messages.copyRows(count) : messages.copyRow(),
+      icon: 'copyClipboard',
+      disabled: !count,
+      onSelect: () => this.copyRows(records)
+    });
+    for (const action of this.args.rowActions ?? []) {
+      items.push({
+        id: action.id,
+        label: action.label,
+        icon: action.icon,
+        color: action.color,
+        disabled: action.isDisabled?.(records) ?? false,
+        onSelect: () => action.onSelect(records)
+      });
+    }
+    if (this.canDelete) {
+      items.push({
+        id: 'delete',
+        label:
+          count > 1 ? messages.deleteRecords(count) : messages.deleteRecord(),
+        icon: 'trash',
+        color: 'danger',
+        disabled: !count,
+        onSelect: () =>
+          this.deleteRecordIds(
+            records.map((record) => this.args.getRecordId(record)),
+            { fieldId: this.menuFieldId(menu) }
+          )
+      });
+    }
+    return items;
+  }
+
+  /** The field the menu was opened on; the first one from a row number. */
+  menuFieldId(menu: MenuState): string | null {
+    const col = menu.col ?? 0;
+    return this.visibleFields[col]?.id ?? this.visibleFields[0]?.id ?? null;
+  }
+
+  onMenuSelect = (item: RowMenuItem): void => {
+    // focus goes back to the cell, unless the action moves it (to a new
+    // row, a remaining row, the expanded record)
+    this.closeMenu(!MENU_ITEMS_THAT_MOVE_FOCUS.has(item.id));
+    item.onSelect();
+  };
+
+  /* -------------------------------------------------------------------- */
+  /* The expanded record (V02-DESIGN.md 5.7)                               */
+  /* -------------------------------------------------------------------- */
+
+  /** Controlled with `@onExpandedRecordChange`, else local. */
+  get expandedId(): RecordId | null {
+    return this.args.onExpandedRecordChange
+      ? (this.args.expandedRecordId ?? null)
+      : this.localExpandedId;
+  }
+
+  setExpanded(id: RecordId | null): void {
+    if (id === null && this.formEditorOpen) this.formEditorOpen = false;
+    if (this.args.onExpandedRecordChange) this.args.onExpandedRecordChange(id);
+    else this.localExpandedId = id;
+  }
+
+  /** The expanded record, while it is in `@records`. */
+  get expandedRecordValue(): T | undefined {
+    const id = this.expandedId;
+    if (id === null) return undefined;
+    return this.args.records[this.rowOf(id, 0)];
+  }
+
+  get expandedShell(): 'flyout' | 'modal' {
+    return this.args.expandedRecord === 'modal' ? 'modal' : 'flyout';
+  }
+
+  /** Opens a record of `@records`; `from` is the cell focus returns to on close. */
+  expandRecord(recordId: RecordId, from: ExpandedFrom | null): void {
+    if (this.rowOf(recordId, this.head?.row ?? 0) < 0) return;
+    if (this.editing) this.commit({ refocus: false });
+    this.expandedFrom = from ?? this.expandedFrom;
+    this.setExpanded(recordId);
+  }
+
+  /** Closes it and focuses the cell it was opened from, when that row still exists. */
+  closeExpanded = (): void => {
+    const from = this.expandedFrom;
+    this.expandedFrom = null;
+    this.setExpanded(null);
+    if (!from) return;
+    afterRender(this, () => {
+      // a controlled owner may keep it open
+      if (this.expandedId !== null) {
+        this.expandedFrom ??= from;
+        return;
+      }
+      const row = this.rowOf(from.recordId, this.head?.row ?? 0);
+      if (row < 0) return;
+      if (from.fieldId === null) {
+        this.keepRangeOnFocus = true;
+        this.focusRowNumberCell(row);
+      } else {
+        this.focusRecordCell({
+          recordId: from.recordId,
+          fieldId: from.fieldId
+        });
+      }
+    });
+  };
+
+  /** The record `step` rows from the expanded one, or null at either end. */
+  expandedStep(step: number): T | null {
+    const id = this.expandedId;
+    if (id === null) return null;
+    const row = this.rowOf(id, 0);
+    if (row < 0) return null;
+    return this.args.records[row + step] ?? null;
+  }
+
+  stepExpanded(step: number): void {
+    const record = this.expandedStep(step);
+    if (record) this.setExpanded(this.args.getRecordId(record));
+  }
+
+  /** The expanded record's title: its first field's text, else "Record n". */
+  recordTitleOf(record: T): string {
+    const field = this.allFields[0];
+    const text = field
+      ? this.typeOf(field).format(valueOf(record, field.id), field, {
+          record,
+          messages: this.messages
+        })
+      : '';
+    if (text.trim()) return text;
+    const row = this.rowOf(this.args.getRecordId(record), 0);
+    return this.messages.recordTitle(this.positionOf(Math.max(row, 0)));
+  }
+
+  /** A one-record context for the form: every field, visible and hidden. */
+  formContext(record: T): { ctx: SheetContext<T>; record: T } | null {
+    // the current object of the record: the form may hold an older one
+    const row = this.rowOf(this.args.getRecordId(record), 0);
+    const current = this.args.records[row];
+    if (current === undefined) return null;
+    return {
+      ctx: { ...this.context, records: [current], fields: this.allFields },
+      record: current
+    };
+  }
+
+  /** A value saved from the form (a picked option, a toggled checkbox). */
+  commitFormValue(record: T, field: EuiSheetField<T>, value: unknown): void {
+    this.commitForm(record, field, (ctx, pos) => commitValue(ctx, pos, value));
+  }
+
+  /** A text typed in the form, parsed by the field's type. */
+  commitFormText(record: T, field: EuiSheetField<T>, text: string): void {
+    this.commitForm(record, field, (ctx, pos) => commitText(ctx, pos, text));
+  }
+
+  /** Delete or Backspace on a box: the type's empty value. */
+  clearFormField(record: T, field: EuiSheetField<T>): void {
+    this.commitForm(record, field, (ctx, pos) =>
+      clearRange(ctx, {
+        top: pos.row,
+        left: pos.col,
+        bottom: pos.row,
+        right: pos.col
+      })
+    );
+  }
+
+  commitForm(
+    record: T,
+    field: EuiSheetField<T>,
+    build: (ctx: SheetContext<T>, pos: Pos) => ChangeSet | null
+  ): void {
+    const form = this.formContext(record);
+    if (!form) return;
+    const col = this.allFields.indexOf(field);
+    if (col < 0) return;
+    const changeSet = build(form.ctx, { row: 0, col });
+    this.emit(changeSet, [
+      { id: this.args.getRecordId(form.record), fieldId: field.id }
+    ]);
+  }
+
+  /** Runs `fn` after the next render (the form focuses a box). */
+  afterFormRender(fn: () => void): void {
+    afterRender(this, fn);
   }
 
   /**
@@ -787,6 +1666,14 @@ export default class EuiSheet<T extends object> extends Component<
 
   @action
   onFocusIn(event: FocusEvent): void {
+    const keepRange = this.keepRangeOnFocus;
+    this.keepRangeOnFocus = false;
+    const rowCell = this.rowNumberCell(event.target);
+    if (rowCell) {
+      this.focused = null;
+      this.onRowNumberFocus(this.rowIndexOf(rowCell), keepRange);
+      return;
+    }
     const cell = this.dataCell(event.target);
     if (!cell) {
       // the header, a control or an editor: no error box (an open editor
@@ -795,17 +1682,47 @@ export default class EuiSheet<T extends object> extends Component<
       return;
     }
     const pos = this.cursor(cell);
+    this.rowCursor = null;
     this.trackFocusedCell(pos, cell);
     // the grid re-focuses the same cell when it re-mounts (scroll) and
     // after cancel(): that must not collapse a range
     if (samePos(pos, this.domCursor)) return;
+    this.domCursor = pos;
+    // a right-click inside the range keeps it for the menu
+    if (keepRange) return;
     if (this.extending && this.anchor) {
       this.head = pos;
     } else {
       this.anchor = pos;
       this.head = pos;
     }
-    this.domCursor = pos;
+    this.rangeKind = 'cells';
+  }
+
+  /**
+   * Focus on a row-number cell (C13): a press there already set the range
+   * (`keepRange`); Shift+ArrowUp/Down extends a `'rows'` range; any other
+   * keyboard focus clears the range, so Delete, copy and paste do nothing.
+   */
+  onRowNumberFocus(row: number, keepRange: boolean): void {
+    // the grid re-focuses the same cell when it re-mounts (scroll)
+    if (row === this.rowCursor) return;
+    const from = this.rowCursor;
+    this.rowCursor = row;
+    this.domCursor = null;
+    if (keepRange) return;
+    const last = this.visibleFields.length - 1;
+    if (this.extending && row < this.args.records.length) {
+      if (this.rangeKind !== 'rows' || !this.anchor) {
+        this.anchor = { row: from ?? row, col: 0 };
+        this.rangeKind = 'rows';
+      }
+      this.head = { row, col: last };
+      return;
+    }
+    this.anchor = null;
+    this.head = null;
+    this.rangeKind = 'cells';
   }
 
   /**
@@ -848,7 +1765,7 @@ export default class EuiSheet<T extends object> extends Component<
     style: ReturnType<typeof htmlSafe>;
   } | null {
     const focused = this.focused;
-    if (!focused || this.editing) return null;
+    if (!focused || this.editing || this.menu) return null;
     const field = this.visibleFields[focused.pos.col];
     if (!field) return null;
     const view = this.cellView(focused.pos.row, focused.pos.col, field.id);
@@ -879,41 +1796,118 @@ export default class EuiSheet<T extends object> extends Component<
   @action
   onMouseDown(event: MouseEvent): void {
     this.extending = event.shiftKey;
+    const target = event.target as Element;
     // before the press moves focus: was this cell the focused one?
-    const cell = this.dataCell(event.target);
+    const cell = this.dataCell(target);
     this.pressOnFocusedCell = !!cell && cell === document.activeElement;
     // a click after a drag that released outside the sheet never came
     this.suppressClick = false;
     this.endDrag();
+    if (this.menu && !this.isInMenu(target)) this.closeMenu(false);
+
+    const rowCell = this.rowNumberCell(target);
+    if (rowCell) {
+      // the range is the press's: focusin must not clear it
+      this.keepRangeOnFocus = true;
+      const row = this.rowIndexOf(rowCell);
+      if (row >= this.args.records.length || event.button !== 0) return;
+      // the checkbox and the expand icon are buttons, not a selection
+      if (
+        target.closest(
+          '[data-eui-sheet-row-check], [data-eui-sheet-row-expand]'
+        )
+      ) {
+        return;
+      }
+      this.selectRows(row, event.shiftKey);
+      if (!event.shiftKey && !this.editing) {
+        this.dragFrom = { row, col: 0 };
+        this.dragKind = 'rows';
+        document.addEventListener('mouseup', this.onRelease, true);
+      }
+      return;
+    }
+
+    if (!cell) return;
+    const pos = this.cursor(cell);
+    if (event.button === 2) {
+      // a right-click inside the range keeps it for the menu
+      this.keepRangeOnFocus = this.isSelected(pos.row, pos.col);
+      return;
+    }
     // a press that may become a drag (Shift+click extends instead)
     if (
-      cell &&
       event.button === 0 &&
       !event.shiftKey &&
       !this.editing &&
-      !(event.target as Element).closest('[data-eui-sheet-opener]')
+      pos.row < this.args.records.length &&
+      !target.closest('[data-eui-sheet-opener]')
     ) {
-      this.dragFrom = this.cursor(cell);
+      this.dragFrom = pos;
+      this.dragKind = 'cells';
       document.addEventListener('mouseup', this.onRelease, true);
     }
+  }
+
+  /** Selects whole rows: from `row`, or from the range's anchor with `extend`. */
+  selectRows(row: number, extend: boolean): void {
+    const last = this.visibleFields.length - 1;
+    const anchorRow =
+      extend && this.anchor
+        ? clamp(this.anchor.row, 0, this.args.records.length - 1)
+        : row;
+    this.anchor = { row: anchorRow, col: 0 };
+    this.head = { row, col: last };
+    this.rangeKind = 'rows';
+  }
+
+  /** Selects whole columns of the records: from `col`, or from the range's anchor with `extend`. */
+  selectColumns(col: number, extend: boolean): void {
+    const lastRow = this.args.records.length - 1;
+    if (lastRow < 0) return;
+    const anchorCol =
+      extend && this.anchor && this.rangeKind === 'columns'
+        ? this.anchor.col
+        : col;
+    this.anchor = { row: 0, col: anchorCol };
+    this.head = { row: lastRow, col };
+    this.rangeKind = 'columns';
   }
 
   /**
    * Drag to select: once the pointer is over another data cell, the pressed
    * cell is the anchor and the hovered one the head. Nothing changes while
-   * the pointer stays on the pressed cell, so a click is only a click.
+   * the pointer stays on the pressed cell, so a click is only a click. A
+   * press on a row number drags whole rows.
    */
   @action
   onMouseOver(event: MouseEvent): void {
     const from = this.dragFrom;
     if (!from) return;
+    if (this.dragKind === 'rows') {
+      const target =
+        this.rowNumberCell(event.target) ?? this.dataCell(event.target);
+      if (!target) return;
+      const row = this.rowIndexOf(target);
+      if (row >= this.args.records.length) return;
+      if (!this.dragging) {
+        if (row === from.row) return;
+        this.dragging = true;
+      }
+      this.selectRows(row, true);
+      window.getSelection()?.removeAllRanges();
+      return;
+    }
     const cell = this.dataCell(event.target);
     if (!cell) return;
     const pos = this.cursor(cell);
+    // the add row is never part of a range
+    if (pos.row >= this.args.records.length) return;
     if (!this.dragging) {
       if (samePos(pos, from)) return;
       this.dragging = true;
       this.anchor = from;
+      this.rangeKind = 'cells';
     }
     if (!samePos(pos, this.head)) this.head = pos;
     // text the press may have started to select
@@ -923,12 +1917,18 @@ export default class EuiSheet<T extends object> extends Component<
   /** The release ends a drag (anywhere on the page): focus goes to the head, keeping the anchor. */
   onRelease = (): void => {
     const dragged = this.dragging;
+    const kind = this.dragKind;
     this.endDrag();
     if (!dragged) return;
     const head = this.head;
     if (!head || samePos(head, this.anchor)) return;
     // the click that follows is the end of the drag, not a click on a cell
     this.suppressClick = true;
+    if (kind === 'rows') {
+      this.keepRangeOnFocus = true;
+      this.focusRowNumberCell(head.row);
+      return;
+    }
     // onFocusIn keeps the anchor, so Shift+arrows continue from here
     this.extending = true;
     if (head.row < this.rowCount) {
@@ -952,25 +1952,33 @@ export default class EuiSheet<T extends object> extends Component<
    * Airtable-style clicks: the first click selects (the grid focuses the
    * cell); a click on the selected cell edits; the type's opener button
    * opens the editor in one click; a type with `onCellClick` (the checkbox)
-   * saves on any click.
+   * saves on any click. Before those: the row-number column (checkbox,
+   * expand icon), a column header (selects the column) and the add row.
    */
   @action
   onClick(event: MouseEvent): void {
     const pressOnFocusedCell = this.pressOnFocusedCell;
     this.pressOnFocusedCell = false;
+    this.keepRangeOnFocus = false;
     if (this.suppressClick) {
       this.suppressClick = false;
       return;
     }
+    const target = event.target as Element;
+    if (this.isInMenu(target)) return;
+    if (this.onControlClick(event, target)) return;
     if (event.shiftKey || this.editing) return;
-    const cell = this.dataCell(event.target);
+    const cell = this.dataCell(target);
     if (!cell) return;
     const pos = this.cursor(cell);
+    if (this.isAddRow(pos.row)) {
+      this.appendRecord();
+      return;
+    }
     const record = this.recordAt(pos.row);
     const field = this.visibleFields[pos.col];
     if (record === undefined || !field) return;
     const type = this.typeOf(field);
-    const target = event.target as Element;
     if (target.closest('[data-eui-sheet-opener]')) {
       if (this.canEdit(pos)) this.startEdit(pos, cell, null);
       return;
@@ -988,6 +1996,41 @@ export default class EuiSheet<T extends object> extends Component<
     if (pressOnFocusedCell && this.canEdit(pos)) {
       this.startEdit(pos, cell, null);
     }
+  }
+
+  /** Clicks on the row-number column and the column headers; true when handled. */
+  onControlClick(event: MouseEvent, target: Element): boolean {
+    if (target.closest('[data-eui-sheet-row-check-all]')) {
+      this.toggleAllChecked();
+      return true;
+    }
+    const rowCell = this.rowNumberCell(target);
+    if (rowCell) {
+      const row = this.rowIndexOf(rowCell);
+      if (this.isAddRow(row)) {
+        this.appendRecord();
+      } else if (target.closest('[data-eui-sheet-row-check]')) {
+        this.toggleChecked(row, event.shiftKey);
+      } else if (target.closest('[data-eui-sheet-row-expand]')) {
+        const record = this.recordAt(row);
+        if (record !== undefined) {
+          const recordId = this.args.getRecordId(record);
+          this.expandRecord(recordId, { recordId, fieldId: null });
+        }
+      }
+      return true;
+    }
+    // a header's title (not its actions button or resizer) selects the column
+    const header = this.headerCell(target);
+    if (header && target.closest('.euiDataGridHeaderCell__content')) {
+      const col =
+        Number(header.dataset['gridcellColumnIndex']) - this.colOffset;
+      if (col >= 0 && col < this.visibleFields.length) {
+        this.selectColumns(col, event.shiftKey);
+      }
+      return true;
+    }
+    return false;
   }
 
   /** Whether the cell at `pos` opens an editor. */
@@ -1010,6 +2053,42 @@ export default class EuiSheet<T extends object> extends Component<
     if (this.canEdit(pos)) this.startEdit(pos, cell, null);
   }
 
+  /** Right-click on a data cell or a row number: the row menu. */
+  @action
+  onContextMenu(event: MouseEvent): void {
+    const target = event.target as Element;
+    // the ContextMenu key's own event, once focus is in the menu: not the
+    // browser's menu over it
+    if (this.isInMenu(target)) {
+      event.preventDefault();
+      return;
+    }
+    if (this.editing) return;
+    const rowCell = this.rowNumberCell(target);
+    const cell = rowCell ? null : this.dataCell(target);
+    const row = rowCell
+      ? this.rowIndexOf(rowCell)
+      : cell
+        ? this.cursor(cell).row
+        : -1;
+    if (row < 0 || row >= this.args.records.length) return;
+    event.preventDefault();
+    let col: number | null = null;
+    if (rowCell) {
+      if (!this.isRowSelected(row)) this.selectRows(row, false);
+    } else if (cell) {
+      const pos = this.cursor(cell);
+      col = pos.col;
+      if (!this.isSelected(pos.row, pos.col)) {
+        this.anchor = pos;
+        this.head = pos;
+        this.rangeKind = 'cells';
+      }
+    }
+    const rect = this.pointInWrapper(event.clientX, event.clientY);
+    this.openMenu(row, col, rect);
+  }
+
   /* -------------------------------------------------------------------- */
   /* Keys and clipboard                                                    */
   /* -------------------------------------------------------------------- */
@@ -1017,14 +2096,47 @@ export default class EuiSheet<T extends object> extends Component<
   @action
   onKeyDown(event: KeyboardEvent): void {
     this.extending = event.shiftKey && ARROWS.has(event.key);
+    this.keepRangeOnFocus = false;
     const target = event.target;
     if (this.editing && this.isInEditor(target)) {
       this.onEditKeyDown(event);
       return;
     }
+    if (this.menu && this.isInMenu(target)) {
+      // the panel has ArrowUp/Down and Enter; Escape is the sheet's
+      if (event.key === 'Escape' || event.key === 'Tab') {
+        stop(event);
+        this.closeMenu(true);
+      }
+      return;
+    }
+    const rowCell = this.rowNumberCell(target);
+    if (rowCell && target === rowCell) {
+      this.onRowNumberKeyDown(event, this.rowIndexOf(rowCell));
+      return;
+    }
+    const header = this.headerCell(target);
+    if (header && target === header) {
+      // a selected column: Delete clears it (other keys are the header's)
+      if (
+        this.rangeKind === 'columns' &&
+        this.range &&
+        (event.key === 'Delete' || event.key === 'Backspace')
+      ) {
+        stop(event);
+        this.clearSelection();
+      }
+      return;
+    }
     const cell = this.dataCell(target);
     if (!cell || target !== cell) return;
     const pos = this.cursor(cell);
+    if (this.handleCommandKey(event)) return;
+    if (this.handleHomeKey(event, pos.row)) return;
+    if (this.isAddRow(pos.row)) {
+      this.onAddRowKeyDown(event);
+      return;
+    }
     const record = this.recordAt(pos.row);
     const field = this.visibleFields[pos.col];
     if (record === undefined || !field) return;
@@ -1034,38 +2146,11 @@ export default class EuiSheet<T extends object> extends Component<
     const { key } = event;
     const plain = !event.ctrlKey && !event.metaKey && !event.altKey;
 
-    if ((event.ctrlKey || event.metaKey) && !event.altKey) {
-      // with Shift, `key` is upper case
-      const letter = key.toLowerCase();
-      if (letter === 'z') {
-        stop(event);
-        if (event.shiftKey) this.redo();
-        else this.undo();
-        return;
-      }
-      if (letter === 'y' && event.ctrlKey && !event.shiftKey) {
-        stop(event);
-        this.redo();
-        return;
-      }
-      if (letter === 'd' && !event.shiftKey) {
-        // also keeps the browser from bookmarking the page
-        stop(event);
-        this.fill();
-        return;
-      }
-      if (letter === 'a' && !event.shiftKey) {
-        // every cell; focus stays where it is
-        stop(event);
-        this.anchor = { row: 0, col: 0 };
-        this.head = {
-          row: this.args.records.length - 1,
-          col: this.visibleFields.length - 1
-        };
-        return;
-      }
+    if (isMenuKey(event)) {
+      stop(event);
+      this.openMenuAt(pos.row, pos.col, cell);
+      return;
     }
-
     // navKey first: a checkbox's Space (PACKAGE-DESIGN.md 7.4)
     if (plain && !readOnly && type.navKey) {
       const result = type.navKey(key, valueOf(record, field.id), field);
@@ -1076,8 +2161,16 @@ export default class EuiSheet<T extends object> extends Component<
       }
     }
     if (key === ' ' && plain) {
-      // reserved (P8); also keeps the page from scrolling
+      // C9: Space expands the record (also keeps the page from scrolling)
       stop(event);
+      const recordId = this.args.getRecordId(record);
+      this.expandRecord(recordId, { recordId, fieldId: field.id });
+      return;
+    }
+    if (key === 'Enter' && event.shiftKey && plain && this.canInsert) {
+      // C10: Shift+Enter inserts a record below
+      stop(event);
+      this.insertNear(pos.row, 'after', field.id);
       return;
     }
     if (key === 'Enter' || key === 'F2') {
@@ -1095,19 +2188,117 @@ export default class EuiSheet<T extends object> extends Component<
       return;
     }
     if (key === 'Delete' || key === 'Backspace') {
-      const range = this.range;
-      if (!range) return;
+      if (!this.range) return;
       stop(event);
-      this.emit(clearRange(ctx, range), this.touchedIn(range, true));
+      this.clearSelection();
     }
-    // arrows, Home/End, PageUp/Down (with or without Shift), Tab, Escape,
+    // arrows, End, PageUp/Down (with or without Shift), Tab, Escape,
     // Ctrl/Meta combos: the grid's own handling
+  }
+
+  /** Ctrl/Cmd+Z, Ctrl/Cmd+Shift+Z, Ctrl+Y, Ctrl/Cmd+D, Ctrl/Cmd+A on a cell or row number; true when handled. */
+  handleCommandKey(event: KeyboardEvent): boolean {
+    if (!(event.ctrlKey || event.metaKey) || event.altKey) return false;
+    // with Shift, `key` is upper case
+    const letter = event.key.toLowerCase();
+    if (letter === 'z') {
+      stop(event);
+      if (event.shiftKey) this.redo();
+      else this.undo();
+      return true;
+    }
+    if (letter === 'y' && event.ctrlKey && !event.shiftKey) {
+      stop(event);
+      this.redo();
+      return true;
+    }
+    if (letter === 'd' && !event.shiftKey) {
+      // also keeps the browser from bookmarking the page
+      stop(event);
+      this.fill();
+      return true;
+    }
+    if (letter === 'a' && !event.shiftKey) {
+      // every cell; focus stays where it is
+      stop(event);
+      this.anchor = { row: 0, col: 0 };
+      this.head = {
+        row: this.args.records.length - 1,
+        col: this.visibleFields.length - 1
+      };
+      this.rangeKind = 'cells';
+      return true;
+    }
+    return false;
+  }
+
+  /**
+   * C13: with row numbers, Home and Ctrl+Home on a data cell land on the
+   * first field (the grid would go to the row-number column).
+   */
+  handleHomeKey(event: KeyboardEvent, row: number): boolean {
+    if (event.key !== 'Home' || !this.colOffset) return false;
+    if (event.altKey || event.shiftKey || event.metaKey) return false;
+    stop(event);
+    this.focusGridCell({ row: event.ctrlKey ? 0 : row, col: 0 });
+    return true;
+  }
+
+  /** The add row: Enter inserts; Space, typing and Delete do nothing (V02-DESIGN.md 5.5). */
+  onAddRowKeyDown(event: KeyboardEvent): void {
+    const plain = !event.ctrlKey && !event.metaKey && !event.altKey;
+    if (event.key === 'Enter' && plain) {
+      stop(event);
+      this.appendRecord();
+      return;
+    }
+    if (event.key === ' ' && plain) stop(event);
+  }
+
+  /** Keys of a row-number cell (V02-DESIGN.md 5.5). */
+  onRowNumberKeyDown(event: KeyboardEvent, row: number): void {
+    if (this.handleCommandKey(event)) return;
+    if (this.isAddRow(row)) {
+      this.onAddRowKeyDown(event);
+      return;
+    }
+    const record = this.recordAt(row);
+    if (record === undefined) return;
+    const plain = !event.ctrlKey && !event.metaKey && !event.altKey;
+    if (isMenuKey(event)) {
+      stop(event);
+      const cell = this.rowNumberElement(row);
+      if (cell) this.openMenuAt(row, null, cell);
+      return;
+    }
+    if (event.key === ' ' && plain) {
+      stop(event);
+      this.toggleChecked(row, event.shiftKey);
+      return;
+    }
+    if (event.key === 'Enter' && plain && !event.shiftKey) {
+      stop(event);
+      const recordId = this.args.getRecordId(record);
+      this.expandRecord(recordId, { recordId, fieldId: null });
+      return;
+    }
+    if ((event.key === 'Delete' || event.key === 'Backspace') && this.range) {
+      stop(event);
+      this.clearSelection();
+    }
+  }
+
+  /** Delete and Backspace: the range's writable cells get their empty value. */
+  clearSelection(): void {
+    const range = this.range;
+    if (!range) return;
+    this.emit(clearRange(this.context, range), this.touchedIn(range, true));
   }
 
   /** Ctrl/Cmd+D: fill the range down, or the cell from the one above. */
   fill(): void {
     const range = this.range;
-    if (!range) return;
+    if (!range || range.top >= this.args.records.length) return;
     // the cells written: below the top row, or the row itself (from above)
     const targets =
       range.bottom > range.top ? { ...range, top: range.top + 1 } : range;
@@ -1118,40 +2309,57 @@ export default class EuiSheet<T extends object> extends Component<
   /* Undo and redo                                                         */
   /* -------------------------------------------------------------------- */
 
-  /** What undo and redo need besides the records: every field id (a restored record's values). */
+  /** What undo and redo need besides the records: every field id, visible and hidden (a restored record's values). */
   get historyOptions(): { fieldIds: string[] } {
-    return { fieldIds: this.args.fields.map((field) => field.id) };
+    return {
+      fieldIds: [...this.args.fields, ...this.hiddenFields].map(
+        (field) => field.id
+      )
+    };
   }
 
-  /** Emits the inverse of the last entry, without the cells changed since. */
-  undo(): void {
+  /**
+   * Emits the inverse of the last entry, without the cells changed since,
+   * and clears the texts it rejected. `focus: false` keeps DOM focus where
+   * it is (the expanded record's form).
+   */
+  undo({ focus = true }: { focus?: boolean } = {}): void {
     if (this.args.readOnly) return;
     const entry = this.undoStack.pop();
     if (!entry) return;
     this.redoStack.push(entry);
     this.applyHistory(
       undoChangeSet(
-        entry,
+        entry.changeSet,
         this.args.records,
         this.args.getRecordId,
         this.historyOptions
-      )
+      ),
+      entry,
+      'undo',
+      focus
     );
   }
 
-  /** Emits the last undone entry again, without the cells changed since. */
-  redo(): void {
+  /**
+   * Emits the last undone entry again, without the cells changed since,
+   * and shows its rejected texts again.
+   */
+  redo({ focus = true }: { focus?: boolean } = {}): void {
     if (this.args.readOnly) return;
     const entry = this.redoStack.pop();
     if (!entry) return;
     this.undoStack.push(entry);
     this.applyHistory(
       redoChangeSet(
-        entry,
+        entry.changeSet,
         this.args.records,
         this.args.getRecordId,
         this.historyOptions
-      )
+      ),
+      entry,
+      'redo',
+      focus
     );
   }
 
@@ -1174,6 +2382,7 @@ export default class EuiSheet<T extends object> extends Component<
     const pos = { row, col };
     this.anchor = pos;
     this.head = pos;
+    this.rangeKind = 'cells';
     this.domCursor = pos;
     this.focusGridCell(pos);
   }
@@ -1186,8 +2395,12 @@ export default class EuiSheet<T extends object> extends Component<
     const map = toIdMap(ids);
     if (!map.size) return;
     this.remapped = composeIdMaps(this.remapped, map);
-    this.undoStack = this.undoStack.map((entry) => remapChangeSet(entry, map));
-    this.redoStack = this.redoStack.map((entry) => remapChangeSet(entry, map));
+    const remapEntry = (entry: HistoryEntry): HistoryEntry => ({
+      changeSet: remapChangeSet(entry.changeSet, map),
+      rejections: remapRejections(entry.rejections, (id) => remapId(id, map))
+    });
+    this.undoStack = this.undoStack.map(remapEntry);
+    this.redoStack = this.redoStack.map(remapEntry);
     if (this.rejections.size) {
       const next = new Map<string, Rejection>();
       for (const entry of this.rejections.values()) {
@@ -1205,6 +2418,20 @@ export default class EuiSheet<T extends object> extends Component<
     if (this.editing) {
       this.editing.recordId = remapId(this.editing.recordId, map);
     }
+    if ([...this.checkedIds].some((id) => map.has(id))) {
+      this.setChecked(
+        new Set([...this.checkedIds].map((id) => String(remapId(id, map))))
+      );
+    }
+    if (this.localExpandedId !== null) {
+      this.localExpandedId = remapId(this.localExpandedId, map);
+    }
+    if (this.expandedFrom) {
+      this.expandedFrom = {
+        ...this.expandedFrom,
+        recordId: remapId(this.expandedFrom.recordId, map)
+      };
+    }
     // a `@records` that only carries the new ids is not a change of rows
     this.lastIds = this.lastIds.map((id) => String(remapId(id, map)));
     const deletes = [...this.pendingOwn.deletes].map((id) =>
@@ -1213,18 +2440,70 @@ export default class EuiSheet<T extends object> extends Component<
     this.pendingOwn = { ...this.pendingOwn, deletes: new Set(deletes) };
   }
 
-  /** Emits an undo or redo (if anything is left of it) and selects what it changed. */
-  applyHistory(changeSet: ChangeSet | null): void {
-    if (!changeSet) return;
+  /**
+   * Emits an undo or redo (if anything is left of it), clears (undo) or
+   * restores (redo) the entry's rejected texts, and selects what changed.
+   * An entry with only rejections emits nothing: the data does not change.
+   */
+  applyHistory(
+    changeSet: ChangeSet | null,
+    entry: HistoryEntry,
+    direction: 'undo' | 'redo',
+    focus: boolean
+  ): void {
     const before = this.args.records.length;
-    this.emit(
-      changeSet,
-      changeSet.patches.map((patch) => ({
-        id: patch.recordId,
-        fieldId: patch.fieldId
-      }))
+    let shown: Rejection[] = [];
+    if (direction === 'undo' && entry.rejections.length) {
+      const next = clearRejections(this.rejections, entry.rejections);
+      if (next) {
+        shown = entry.rejections.filter(
+          (rejection) => !next.has(cellKey(rejection.id, rejection.fieldId))
+        );
+        this.rejections = next;
+      }
+    }
+    if (changeSet) {
+      this.emit(
+        changeSet,
+        changeSet.patches.map((patch) => ({
+          id: patch.recordId,
+          fieldId: patch.fieldId
+        }))
+      );
+    }
+    if (direction === 'redo' && entry.rejections.length) {
+      // after emit: the owner may have put back the rows they are on
+      const byId = new Map(
+        this.args.records.map((record) => [
+          String(this.args.getRecordId(record)),
+          record
+        ])
+      );
+      const next = restoreRejections(
+        this.rejections,
+        entry.rejections,
+        (id, fieldId) => ({
+          found: byId.has(id),
+          value: valueOf(byId.get(id), fieldId)
+        })
+      );
+      if (next) {
+        shown = entry.rejections.filter((rejection) =>
+          next.has(cellKey(rejection.id, rejection.fieldId))
+        );
+        this.rejections = next;
+      }
+    }
+    if (!changeSet && !shown.length) return;
+    this.selectChanged(
+      changeSet ?? { ...EMPTY_CHANGE_SET, source: direction },
+      before,
+      shown.map((rejection) => ({
+        id: rejection.id,
+        fieldId: rejection.fieldId
+      })),
+      focus
     );
-    this.selectChanged(changeSet, before);
   }
 
   /**
@@ -1234,7 +2513,12 @@ export default class EuiSheet<T extends object> extends Component<
    * for a row past its last one. A change that only inserts (an undone
    * delete) focuses the first inserted record once it is rendered.
    */
-  selectChanged(changeSet: ChangeSet, rowsBefore: number): void {
+  selectChanged(
+    changeSet: ChangeSet,
+    rowsBefore: number,
+    extraCells: Touched = [],
+    focusCell = true
+  ): void {
     // the owner's records after it applied the change set, if it did at once
     const records = this.args.records;
     const rows = Math.min(rowsBefore, records.length);
@@ -1242,11 +2526,16 @@ export default class EuiSheet<T extends object> extends Component<
       records.map((record, i) => [String(this.args.getRecordId(record)), i])
     );
     let box: Range | null = null;
-    for (const patch of changeSet.patches) {
-      const row = indexOf.get(String(patch.recordId));
-      const col = this.visibleFields.findIndex(
-        (field) => field.id === patch.fieldId
-      );
+    const cells: Touched = [
+      ...changeSet.patches.map((patch) => ({
+        id: patch.recordId,
+        fieldId: patch.fieldId
+      })),
+      ...extraCells
+    ];
+    for (const { id, fieldId } of cells) {
+      const row = indexOf.get(String(id));
+      const col = this.visibleFields.findIndex((field) => field.id === fieldId);
       if (row === undefined || row >= rows || col < 0) continue;
       box = box
         ? {
@@ -1263,7 +2552,7 @@ export default class EuiSheet<T extends object> extends Component<
       this.anchor = { row: box.bottom, col: box.right };
     } else if (changeSet.inserts.length) {
       const field = this.visibleFields[this.head?.col ?? 0];
-      if (!field) return;
+      if (!field || !focusCell) return;
       this.pendingFocus = {
         id: changeSet.inserts[0]!.tempId,
         fieldId: field.id
@@ -1280,6 +2569,7 @@ export default class EuiSheet<T extends object> extends Component<
       this.anchor = focus;
     }
     this.head = focus;
+    if (!focusCell) return;
     // onFocusIn sees the cell it already knows and keeps the range
     this.domCursor = focus;
     this.focusGridCell(focus);
@@ -1309,8 +2599,7 @@ export default class EuiSheet<T extends object> extends Component<
   onCopy(event: ClipboardEvent): void {
     const target = event.target;
     if (this.editing && this.isInEditor(target)) return;
-    const cell = this.dataCell(target);
-    if (!cell || !this.isClipboardTarget(target, cell)) return;
+    if (!this.isRangeTarget(target)) return;
     const range = this.range;
     if (!range || !event.clipboardData) return;
     event.clipboardData.setData(
@@ -1326,8 +2615,7 @@ export default class EuiSheet<T extends object> extends Component<
     if (this.args.readOnly) return;
     const target = event.target;
     if (this.editing && this.isInEditor(target)) return;
-    const cell = this.dataCell(target);
-    if (!cell || !this.isClipboardTarget(target, cell)) return;
+    if (!this.isRangeTarget(target)) return;
     const data = event.clipboardData;
     if (!data || !Array.from(data.types).includes('text/plain')) return;
     const range = this.range;
@@ -1335,11 +2623,19 @@ export default class EuiSheet<T extends object> extends Component<
     stop(event);
     const anchor = { row: range.top, col: range.left };
     // a block that fits the selection a whole number of times fills it
-    const matrix = tileMatrix(
+    let matrix = tileMatrix(
       parseTsv(data.getData('text/plain')),
       range.bottom - range.top + 1,
       range.right - range.left + 1
     );
+    // without inserting, lines past the last record are dropped (5.8)
+    if (!this.canInsert) {
+      matrix = matrix.slice(
+        0,
+        Math.max(this.args.records.length - anchor.row, 0)
+      );
+      if (!matrix.length) return;
+    }
     const width = Math.max(...matrix.map((line) => line.length));
     const pasted = {
       top: anchor.row,
@@ -1354,6 +2650,29 @@ export default class EuiSheet<T extends object> extends Component<
     // no setFocusedCell: inserted rows exist only after the next render
     this.anchor = anchor;
     this.head = { row: pasted.bottom, col: pasted.right };
+    this.rangeKind = 'cells';
+  }
+
+  /**
+   * Whether a clipboard event is on the range: a data cell, a row number
+   * while whole rows are selected, a header while whole columns are.
+   */
+  isRangeTarget(target: EventTarget | null): boolean {
+    const cell = this.dataCell(target);
+    if (cell) return this.isClipboardTarget(target, cell);
+    const rowCell = this.rowNumberCell(target);
+    if (rowCell) {
+      return (
+        this.rangeKind === 'rows' && this.isClipboardTarget(target, rowCell)
+      );
+    }
+    const header = this.headerCell(target);
+    if (header) {
+      return (
+        this.rangeKind === 'columns' && this.isClipboardTarget(target, header)
+      );
+    }
+    return false;
   }
 
   @action
@@ -1363,6 +2682,7 @@ export default class EuiSheet<T extends object> extends Component<
     // removes the editor before a stale position shows, and before the
     // re-mounted focused cell can pull focus
     if (this.editing) this.commit({ refocus: false });
+    if (this.menu) this.closeMenu(false);
     // the error box follows its cell, or hides while the cell is not rendered
     const focused = this.focused;
     if (focused) {
@@ -1541,8 +2861,13 @@ export default class EuiSheet<T extends object> extends Component<
       if (next.delete(cellKey(id, fieldId))) changed = true;
     }
     if (changeSet?.deletes?.length) {
-      // the removed records' texts go with them
+      // the removed records' texts and checkboxes go with them
       const gone = new Set(changeSet.deletes.map(String));
+      if ([...gone].some((id) => this.checkedIds.has(id))) {
+        this.setChecked(
+          new Set([...this.checkedIds].filter((id) => !gone.has(id)))
+        );
+      }
       for (const [key, entry] of next) {
         if (gone.has(entry.id)) {
           next.delete(key);
@@ -1561,6 +2886,7 @@ export default class EuiSheet<T extends object> extends Component<
         }
       }
     }
+    const stored: Rejection[] = [];
     if (changeSet) {
       const byId = new Map(
         this.args.records.map((record) => [
@@ -1570,19 +2896,21 @@ export default class EuiSheet<T extends object> extends Component<
       );
       for (const rejection of changeSet.rejected) {
         const id = String(rejection.recordId ?? rejection.tempId);
-        next.set(cellKey(id, rejection.fieldId), {
+        const entry: Rejection = {
           id,
           fieldId: rejection.fieldId,
           text: rejection.text,
           message: rejection.message,
           seenValue: valueOf(byId.get(id), rejection.fieldId)
-        });
+        };
+        next.set(cellKey(id, rejection.fieldId), entry);
+        stored.push(entry);
         changed = true;
       }
     }
     if (changed) this.rejections = next;
     if (!changeSet) return;
-    this.recordHistory(changeSet);
+    this.recordHistory(changeSet, stored);
     // the rows the owner's next `@records` gains or loses because of it
     if (changeSet.inserts.length || changeSet.deletes?.length) {
       this.pendingOwn.inserts += changeSet.inserts.length;
@@ -1607,23 +2935,32 @@ export default class EuiSheet<T extends object> extends Component<
 
   /**
    * A user action's change set becomes an undo entry (not an undo or redo,
-   * and not one with only rejections or new options); a new entry clears
+   * and not one with only new options), with the rejections it stored: a
+   * paste whose every cell was rejected is undone too. A new entry clears
    * the redo stack. A bulk resolve (`'resolve'`) joins the last entry, the
    * paste that asked for it, so one undo reverts both.
    */
-  recordHistory(changeSet: ChangeSet): void {
+  recordHistory(changeSet: ChangeSet, rejections: Rejection[]): void {
     if (changeSet.source === 'undo' || changeSet.source === 'redo') return;
     if (
       !changeSet.patches.length &&
       !changeSet.inserts.length &&
-      !changeSet.deletes?.length
+      !changeSet.deletes?.length &&
+      !rejections.length
     ) {
       return;
     }
-    const entry = remapChangeSet(changeSet, this.remapped);
+    const remap = (id: RecordId) => remapId(id, this.remapped);
+    const entry: HistoryEntry = {
+      changeSet: remapChangeSet(changeSet, this.remapped),
+      rejections: remapRejections(rejections, remap)
+    };
     const last = this.undoStack[this.undoStack.length - 1];
-    if (entry.source === 'resolve' && last) {
-      this.undoStack[this.undoStack.length - 1] = mergeChangeSets(last, entry);
+    if (entry.changeSet.source === 'resolve' && last) {
+      this.undoStack[this.undoStack.length - 1] = {
+        changeSet: mergeChangeSets(last.changeSet, entry.changeSet),
+        rejections: [...last.rejections, ...entry.rejections]
+      };
       return;
     }
     this.undoStack.push(entry);
@@ -1712,18 +3049,47 @@ export default class EuiSheet<T extends object> extends Component<
       {{on "mouseover" this.onMouseOver}}
       {{on "click" this.onClick}}
       {{on "dblclick" this.onDoubleClick}}
+      {{on "contextmenu" this.onContextMenu}}
     >
       <EuiDataGrid
         aria-label={{this.ariaLabel}}
         @columns={{this.columns}}
         @columnVisibility={{this.columnVisibility}}
+        @leadingControlColumns={{this.leadingControlColumns}}
+        @gridStyle={{this.gridStyle}}
         @rowCount={{this.rowCount}}
         @renderCellValue={{SheetCell}}
         @cellContext={{this.cellContext}}
         @registerApi={{this.registerGridApi}}
         @toolbarVisibility={{false}}
         @height={{@height}}
-      />
+      >
+        <:controlHeaderCell><RowNumberHeader
+            @sheet={{this}}
+          /></:controlHeaderCell>
+        <:controlCell as |cell|>
+          <RowNumberCell
+            @sheet={{this}}
+            @rowIndex={{cell.rowIndex}}
+            @setCellProps={{cell.setCellProps}}
+          />
+        </:controlCell>
+      </EuiDataGrid>
+      {{#if this.menu}}
+        <RowMenu
+          @top={{this.menu.top}}
+          @left={{this.menu.left}}
+          @items={{this.menuItems}}
+          @onSelect={{this.onMenuSelect}}
+        />
+      {{/if}}
+      {{#if this.expandedRecordValue}}
+        {{#if (isModal this.expandedShell)}}
+          <RecordModal @sheet={{this}} @record={{this.expandedRecordValue}} />
+        {{else}}
+          <RecordFlyout @sheet={{this}} @record={{this.expandedRecordValue}} />
+        {{/if}}
+      {{/if}}
       {{#each this.editingList key="@identity" as |editing|}}
         <EditorFrame
           @rect={{editing.rect}}

@@ -59,6 +59,14 @@ export default class SheetCell extends Component<{
     return '';
   }
 
+  /** The add row's first data cell shows "+ Add record"; its other cells nothing. */
+  get addRecordLabel(): string | undefined {
+    if (this.col !== 0 || !this.sheet.isAddRow(this.args.rowIndex)) {
+      return undefined;
+    }
+    return this.sheet.messages.addRecord();
+  }
+
   get cellComponent() {
     const view = this.view;
     return view && !view.rejected ? view.type.cell : undefined;
@@ -77,7 +85,12 @@ export default class SheetCell extends Component<{
 
   <template>
     {{this.cellProps}}
-    {{#if this.view}}
+    {{#if this.addRecordLabel}}
+      <span class="euiSheet__addRecord" data-test-subj="euiSheetAddRecord">
+        <EuiIcon @type="plus" @size="s" />
+        {{this.addRecordLabel}}
+      </span>
+    {{else if this.view}}
       {{#if this.cellComponent}}
         <this.cellComponent
           @value={{this.view.value}}

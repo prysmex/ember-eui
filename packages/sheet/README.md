@@ -80,19 +80,26 @@ export default class Tasks extends Component {
 
 Arguments of `EuiSheet`:
 
-| Argument                |                                                                                                                                                                    |
-| ----------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| `@fields`               | The columns, in order: `{ id, label?, type?, readOnly?, required?, validate?, ...options of the type }`. `readOnly` and `required` can be functions of the record. |
-| `@records`              | The rows. Pass a new array when they change.                                                                                                                       |
-| `@getRecordId`          | `(record) => id`.                                                                                                                                                  |
-| `@onChange`             | `(changeSet) => void`. Apply it to your records.                                                                                                                   |
-| `@cellErrors`           | Your own errors: `{ [recordId]: { [fieldId]: message \| messages } }`. Shown last.                                                                                 |
-| `@validate`             | Record, cross-row and server rules (below).                                                                                                                        |
-| `@fieldTypes`           | Your field types, merged over the built-in ones. Keep the object stable.                                                                                           |
-| `@readOnly`             | Every cell read-only (copy still works).                                                                                                                           |
-| `@messages`             | Overrides of the built-in messages (below).                                                                                                                        |
-| `@height`, `@ariaLabel` | The grid's height; its accessible name (default `Sheet`).                                                                                                          |
-| `@registerApi`          | `(api) => void`: the sheet's API, once, after the first render (below).                                                                                            |
+| Argument                                                          |                                                                                                                                                                    |
+| ----------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `@fields`                                                         | The columns, in order: `{ id, label?, type?, readOnly?, required?, validate?, ...options of the type }`. `readOnly` and `required` can be functions of the record. |
+| `@records`                                                        | The rows. Pass a new array when they change.                                                                                                                       |
+| `@getRecordId`                                                    | `(record) => id`.                                                                                                                                                  |
+| `@onChange`                                                       | `(changeSet) => void`. Apply it to your records.                                                                                                                   |
+| `@cellErrors`                                                     | Your own errors: `{ [recordId]: { [fieldId]: message \| messages } }`. Shown last.                                                                                 |
+| `@validate`                                                       | Record, cross-row and server rules (below).                                                                                                                        |
+| `@fieldTypes`                                                     | Your field types, merged over the built-in ones. Keep the object stable.                                                                                           |
+| `@readOnly`                                                       | Every cell read-only (copy still works).                                                                                                                           |
+| `@messages`                                                       | Overrides of the built-in messages (below).                                                                                                                        |
+| `@height`, `@ariaLabel`                                           | The grid's height; its accessible name (default `Sheet`).                                                                                                          |
+| `@registerApi`                                                    | `(api) => void`: the sheet's API, once, after the first render (below).                                                                                            |
+| `@hiddenFields`                                                   | Fields that are not columns: listed in the expanded record, copied by duplicate.                                                                                   |
+| `@rowNumbers`, `@rowLabel`, `@rowNumberOffset`                    | The row-number column (default on); `(record, position) => text` to show something else than the position; the first record's position on a page.                  |
+| `@canInsert`, `@canDelete`                                        | Adding (add row, Shift+Enter, menu) and deleting (menu) records. Default `!@readOnly`.                                                                             |
+| `@newRecordValues`                                                | `({ above, below }) => values` of a new record.                                                                                                                    |
+| `@checkedRecordIds`, `@onCheckedChange`                           | Checked rows; controlled with the handler, local without it.                                                                                                       |
+| `@expandedRecordId`, `@onExpandedRecordChange`, `@expandedRecord` | The expanded record (controlled the same way), in a `'flyout'` (default) or a `'modal'`.                                                                           |
+| `@rowActions`                                                     | Your row menu items: `{ id, label, icon?, color?, isDisabled?(records), onSelect(records) }`.                                                                      |
 
 ## Your own store
 
@@ -176,6 +183,10 @@ usual):
   when the records were re-sorted since. A change whose records are not in
   `@records` (another page) is skipped; `api.clearHistory()` drops the
   history when your data changes wholesale.
+- A change's rejected texts are part of it: undoing a paste removes the
+  texts it could not read too (also a paste where every cell was rejected),
+  and redo shows them again where the cell still holds the value it had.
+  The owner gets no change set for that part.
 - Options created on paste (`createOnPaste`) are not removed by undo.
 - Changes you make to `@records` are not history; a new change clears the
   redo history; with `@readOnly`, undo and redo do nothing. In an open
@@ -184,19 +195,22 @@ usual):
 The pure parts are exported: `invertChangeSet`, `withoutConflicts`,
 `undoChangeSet`, `redoChangeSet`, `mergeChangeSets`, for ranges
 `fillDown` and `tileMatrix`, and for records `insertRecords`,
-`deleteRecords` and `duplicateRecords` (change sets that insert, delete or
-copy records; the sheet has no buttons for them yet).
+`deleteRecords` and `duplicateRecords` (the change sets the add row and the
+row menu emit).
 
 ## The sheet's API
 
 `@registerApi={{this.registerApi}}` receives one object:
 
-| Method                             |                                                                                                                       |
-| ---------------------------------- | --------------------------------------------------------------------------------------------------------------------- |
-| `undo()`, `redo()`                 | As Ctrl/Cmd+Z and Ctrl/Cmd+Shift+Z.                                                                                   |
-| `focusCell({ recordId, fieldId })` | Focuses that cell; nothing when the record is not in `@records` or the field is not shown.                            |
-| `remapIds({ [tempId]: id })`       | The ids your store gave to inserted or restored records: the undo history, rejected texts and a pending focus follow. |
-| `clearHistory()`                   | Drops the undo and redo history.                                                                                      |
+| Method                               |                                                                                                                       |
+| ------------------------------------ | --------------------------------------------------------------------------------------------------------------------- |
+| `undo()`, `redo()`                   | As Ctrl/Cmd+Z and Ctrl/Cmd+Shift+Z.                                                                                   |
+| `focusCell({ recordId, fieldId })`   | Focuses that cell; nothing when the record is not in `@records` or the field is not shown.                            |
+| `remapIds({ [tempId]: id })`         | The ids your store gave to inserted or restored records: the undo history, rejected texts and a pending focus follow. |
+| `clearHistory()`                     | Drops the undo and redo history.                                                                                      |
+| `expandRecord(id)`                   | Opens the expanded record (`null` closes it).                                                                         |
+| `insertRecord({ anchor?, values? })` | Emits the insert of one record, next to `anchor` or at the end.                                                       |
+| `deleteRecords(ids)`                 | Emits the delete of those records.                                                                                    |
 
 When you replace `@records` with records the sheet did not change (a new
 sort, another page, a reload), the selection collapses to the focused
@@ -221,6 +235,30 @@ get that class as
 `@themeClass`: an editor that renders part of itself elsewhere (a
 wormholed list) adds it there, or that part falls back to light colours.
 
+## Records
+
+The first column shows each row's position (`@rowNumberOffset + index + 1`,
+or `@rowLabel`'s text), and on hover a checkbox and an expand icon. A click
+on a row number selects the row (Shift+click, a drag: more rows); a click on
+a column's title selects the column. Checked rows (click, Shift+click for a
+run, the header box for all) are what the row menu acts on, else the
+selected rows. The last grid row adds a record (click or Enter; a paste
+there adds its lines); Shift+Enter adds one below the cell. Right-click,
+Shift+F10 or the ContextMenu key open the row menu: insert above/below,
+duplicate, expand, copy the rows, your `@rowActions`, delete. Each is one
+change set and one undo step. Delete and Backspace never delete rows.
+
+## Expanded record
+
+Space on a cell, Enter on a row number, the expand icon or the menu open
+the record in a flyout (`@expandedRecord="modal"`: a modal): `@fields`, then
+`@hiddenFields`, each with the grid's cell in a box. A click, Enter, F2 or
+typing on a box opens the field's editor in place; Enter saves and goes to
+the next field, Tab moves on, Escape cancels; Escape on a box closes, and
+focus returns to the cell. Saves are change sets like grid edits (validated,
+undoable with Ctrl/Cmd+Z there too). While an editor is open the shell's
+focus trap is off, so a wormholed calendar works.
+
 ## Field types
 
 | Type             | Value                         | Accepted text                                                                           | Options                                                           |
@@ -241,7 +279,10 @@ Dates are shown as `DD/MM/YYYY` (or `MM/DD/YYYY`) and copied as ISO.
 | Enter, F2, double-click              | Opens the editor on the current value (a date: the browser's date input)                                    | Enter saves and goes down   |
 | Tab, Shift+Tab                       | The grid's                                                                                                  | Saves and goes right / left |
 | Escape                               | The grid's                                                                                                  | Closes without saving       |
-| Space                                | Toggles a checkbox; does nothing elsewhere                                                                  | Types                       |
+| Space                                | Toggles a checkbox; elsewhere expands the record                                                            | Types                       |
+| Shift+Enter                          | Adds a record below (as Enter when inserting is off)                                                        | Saves and goes down         |
+| Shift+F10, ContextMenu               | Opens the row menu                                                                                          |                             |
+| Home, Ctrl+Home                      | The first field of the row, of the sheet (ArrowLeft from it: the row number)                                | Native                      |
 | Delete, Backspace                    | Clears the selected range                                                                                   | Deletes                     |
 | Shift+arrows                         | Selects a range                                                                                             | Moves in the text           |
 | Ctrl/Cmd+A                           | Selects every cell (focus stays)                                                                            | Native                      |
@@ -263,7 +304,10 @@ parsing) and also skips read-only cells.
 ## Mouse
 
 As in Airtable: a click selects a cell, a click on the selected cell edits
-it, a double-click edits at once, and Shift+click extends the range.
+it, a double-click edits at once, and Shift+click extends the range. A click
+on a row number or a column title selects the row or column, the row's
+checkbox and expand icon do what they show, a click on the last row adds a
+record, and a right-click opens the row menu (see Records).
 Pressing on a cell and dragging over others selects that range; the release
 neither edits nor toggles a checkbox, and Shift+arrows continue from it (no
 scrolling at the grid's edge yet). Select
@@ -334,7 +378,12 @@ like EUI's own, with English defaults and these tokens:
 `euiSheet.notACheckbox` (`{text}`), `euiSheet.notAnOption` (`{text}`),
 `euiSheet.notADate` (`{text}`), `euiSheet.min` (`{min}`), `euiSheet.max`
 (`{max}`), `euiSheet.maxLength` (`{max}`), `euiSheet.pattern`,
-`euiSheet.unresolved` (`{text}`).
+`euiSheet.unresolved` (`{text}`), and for records `euiSheet.addRecord`,
+`insertAbove`, `insertBelow`, `duplicateRecord`, `duplicateRecords`
+(`{count}`), `expandRecord`, `copyRow`, `copyRows` (`{count}`),
+`deleteRecord`, `deleteRecords` (`{count}`), `selectRow`, `selectAllRows`,
+`rowNumber` (`{n}`), `recordTitle` (`{n}`), `previousRecord`, `nextRecord`,
+`close` (all under `euiSheet.`).
 
 ```ts
 this.euiI18n.addTranslations({
@@ -462,6 +511,6 @@ version you use; this package does not depend on it.
 ## Limits
 
 No cut, fill handle, fill right, auto-scroll while dragging, sorting or
-filtering UI, fullscreen, row insert or delete buttons, IME composition or
-control columns yet. Pasted text in a field whose type returns
+filtering UI, hiding columns from the sheet, fullscreen or IME composition
+yet. Pasted text in a field whose type returns
 `{ unresolved }` is a rejection (bulk resolve on paste is planned).

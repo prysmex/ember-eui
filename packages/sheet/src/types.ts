@@ -5,6 +5,7 @@ import type {
   EuiSheetField,
   FieldType,
   RecordId,
+  RecordInsert,
   SheetMessages,
   ValidateContext
 } from './core/index.ts';
@@ -115,6 +116,31 @@ export interface SheetApi {
   remapIds(ids: Record<string, RecordId>): void;
   /** Drops the undo and redo stacks (call it when your data changed wholesale). */
   clearHistory(): void;
+  /** Opens the expanded record of a record in `@records` (`null` closes it). */
+  expandRecord(recordId: RecordId | null): void;
+  /**
+   * Emits the insert of one record: next to `anchor` when given (a record
+   * in `@records`), else at the end. `values` default to `@newRecordValues`.
+   */
+  insertRecord(options?: {
+    anchor?: RecordInsert['anchor'];
+    values?: Record<string, unknown>;
+  }): void;
+  /** Emits the delete of these records (ids not in `@records` are ignored). */
+  deleteRecords(ids: RecordId[]): void;
+}
+
+/** An app item of the row menu (`@rowActions`). */
+export interface SheetRowAction<T = any> {
+  id: string;
+  label: string;
+  /** An EUI icon type. */
+  icon?: string;
+  color?: 'danger';
+  /** Disables the item for these records. */
+  isDisabled?: (records: T[]) => boolean;
+  /** The records of the selection: the checked ones when any is checked, else the selected rows. */
+  onSelect: (records: T[]) => void;
 }
 
 /** The cell's box relative to the sheet's wrapper, in CSS px. */
@@ -155,7 +181,38 @@ export interface EuiSheetSignature<T> {
     validate?: (
       context: ValidateContext<T>
     ) => CellErrors | Promise<CellErrors>;
-    /** Receives the sheet's API (`undo`, `redo`, `focusCell`, `remapIds`, `clearHistory`) once, after the first render. */
+    /** Receives the sheet's API (`undo`, `redo`, `focusCell`, `remapIds`, `clearHistory`, `expandRecord`, `insertRecord`, `deleteRecords`) once, after the first render. */
     registerApi?: (api: SheetApi) => void;
+    /**
+     * Fields that exist but are not shown in the grid: listed in the
+     * expanded record after `@fields`, copied by duplicate, restored by
+     * undo. (Hiding and showing them from the sheet is v0.2 batch 3.)
+     */
+    hiddenFields?: EuiSheetField<T>[];
+    /** The leading row-number column (position, checkbox, expand icon). Default true. */
+    rowNumbers?: boolean;
+    /** What the row-number cell shows. Default: the position, `rowNumberOffset + index + 1`. */
+    rowLabel?: (record: T, position: number) => string;
+    /** Position of the first record (paged data): row numbers start at offset + 1. Default 0. */
+    rowNumberOffset?: number;
+    /** Inserting records (the add row, Shift+Enter, the menu). Default `!@readOnly`. */
+    canInsert?: boolean;
+    /** Deleting records (the menu). Default `!@readOnly`. */
+    canDelete?: boolean;
+    /** Values of a new record, from its neighbours. Default `{}`. */
+    newRecordValues?: (context: {
+      above: T | undefined;
+      below: T | undefined;
+    }) => Record<string, unknown>;
+    /** Checked rows. With `@onCheckedChange` the sheet shows exactly these; without it, it keeps its own. */
+    checkedRecordIds?: RecordId[];
+    onCheckedChange?: (ids: RecordId[]) => void;
+    /** The expanded record. With `@onExpandedRecordChange` the sheet shows exactly this; without it, it keeps its own. */
+    expandedRecordId?: RecordId | null;
+    onExpandedRecordChange?: (id: RecordId | null) => void;
+    /** How the expanded record is shown. Default 'flyout'. */
+    expandedRecord?: 'flyout' | 'modal';
+    /** Extra items of the row menu, before "Delete". */
+    rowActions?: SheetRowAction<T>[];
   };
 }

@@ -15,10 +15,10 @@ export function el(selector: string, root: ParentNode = document): HTMLElement {
 }
 
 /**
- * Leading control columns of the sheet's grid (none yet; row numbers in
- * v0.2 batch 2): `cell(row, col)` takes the data column.
+ * Leading control columns of the sheet's grid: the row-number column
+ * (v0.2 batch 2, C8). `cell(row, col)` takes the data column.
  */
-export const COL_OFFSET = 0;
+export const COL_OFFSET = 1;
 
 export function cell(
   row: number,

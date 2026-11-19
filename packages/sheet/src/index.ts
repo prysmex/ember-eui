@@ -24,5 +24,6 @@ export type {
   SheetCellSignature,
   SheetEditorRect,
   SheetEditorResult,
-  SheetEditorSignature
+  SheetEditorSignature,
+  SheetRowAction
 } from './types.ts';

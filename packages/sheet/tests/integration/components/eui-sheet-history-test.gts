@@ -2,7 +2,13 @@
 import { module, test } from 'qunit';
 import { setupRenderingTest } from 'ember-qunit';
 import { tracked } from '@glimmer/tracking';
-import { fillIn, render, settled } from '@ember/test-helpers';
+import {
+  click,
+  fillIn,
+  render,
+  settled,
+  triggerEvent
+} from '@ember/test-helpers';
 
 import EuiSheet from '#src/components/eui-sheet.gts';
 import { localRecords } from '#src/local-records.ts';
@@ -10,6 +16,7 @@ import {
   cell,
   clipboard,
   editor,
+  el,
   focusCell,
   isInvalid,
   press,
@@ -20,6 +27,7 @@ import {
 } from '../../helpers/sheet.ts';
 
 import type { CellErrors, EuiSheetField } from '#src/core/index.ts';
+import type { SheetApi } from '#src/types.ts';
 
 interface Row {
   id: string;
@@ -49,6 +57,8 @@ const getId = (row: { id: string }) => row.id;
 
 class State {
   @tracked readOnly = false;
+  api: SheetApi | null = null;
+  register = (api: SheetApi) => (this.api = api);
 }
 
 /** `@validate`: a name of "bad" is an error. */
@@ -77,6 +87,7 @@ module('Integration | Component | EuiSheet undo and redo', function (hooks) {
             @onChange={{store.apply}}
             @readOnly={{state.readOnly}}
             @validate={{validate}}
+            @registerApi={{state.register}}
           />
         </div>
       </template>
@@ -213,7 +224,7 @@ module('Integration | Component | EuiSheet undo and redo', function (hooks) {
     assert.strictEqual(text(2, 0), 'name2', 'the earlier paste is undone');
   });
 
-  test('U4 a new edit clears the redo stack; rejections are not history', async function (assert) {
+  test('U4 a new edit clears the redo stack; a rejection is its own entry', async function (assert) {
     const store = await renderSheet();
     await focusCell(0, 0);
     await clipboard('paste', 'A');
@@ -227,15 +238,18 @@ module('Integration | Component | EuiSheet undo and redo', function (hooks) {
     assert.strictEqual(store.log.length, count, 'no redo after a new edit');
     assert.strictEqual(text(0, 0), 'name0', 'A is not re-applied');
 
+    // batch 2: a rejection is history, so the first Ctrl+Z clears it
+    // (and emits nothing), the second undoes B
     await focusCell(0, 2);
     await clipboard('paste', 'abc');
     assert.strictEqual(store.log.at(-1)!.rejected.length, 1, 'a rejection');
+    const afterReject = store.log.length;
     await undo();
-    assert.strictEqual(
-      store.log.at(-1)!.source,
-      'undo',
-      'Ctrl+Z undoes the last change, not the rejection'
-    );
+    assert.strictEqual(store.log.length, afterReject, 'nothing emitted');
+    assert.false(isInvalid(0, 2), 'the rejection is undone');
+    assert.strictEqual(text(1, 0), 'B', 'B is still there');
+    await undo();
+    assert.strictEqual(store.log.at(-1)!.source, 'undo');
     assert.strictEqual(text(1, 0), 'name1', 'B is undone');
   });
 
@@ -345,8 +359,219 @@ module('Integration | Component | EuiSheet undo and redo', function (hooks) {
     await clipboard('paste', 'abc');
     assert.true(isInvalid(0, 2), 'the rejected text');
     assert.strictEqual(text(0, 2), 'abc');
+    // batch 2: the rejected paste is the last entry: its undo clears it
+    await undo();
+    assert.strictEqual(text(0, 2), '5', 'the value before the rejected paste');
+    assert.false(isInvalid(0, 2), 'the rejection is gone');
     await undo();
     assert.strictEqual(text(0, 2), '0', 'the value before the paste of 5');
-    assert.false(isInvalid(0, 2), 'the rejection is gone');
+    assert.false(isInvalid(0, 2));
+  });
+
+  test('U11 a paste with rejected cells: undo removes all of it, redo brings it back', async function (assert) {
+    const store = await renderSheet();
+    await focusCell(0, 1);
+    await clipboard('paste', 'c\tabc\nd\t7');
+    assert.deepEqual(
+      [text(0, 1), text(0, 2), text(1, 1), text(1, 2)],
+      ['c', 'abc', 'd', '7']
+    );
+    assert.true(isInvalid(0, 2), 'abc is rejected');
+
+    await focusCell(2, 0);
+    await undo();
+    assert.deepEqual(
+      [text(0, 1), text(0, 2), text(1, 1), text(1, 2)],
+      ['city0', '0', 'city1', '1'],
+      'the rejected cell shows its value again'
+    );
+    assert.false(isInvalid(0, 2), 'no red');
+    assert.deepEqual(
+      store.log.at(-1)!.rejected,
+      [],
+      'the owner gets no rejections'
+    );
+    assert.deepEqual(
+      selected(),
+      ['0:1', '0:2', '1:1', '1:2'],
+      'the whole paste'
+    );
+
+    await redo();
+    assert.deepEqual(
+      [text(0, 1), text(0, 2), text(1, 1), text(1, 2)],
+      ['c', 'abc', 'd', '7'],
+      'the rejected text again'
+    );
+    assert.true(isInvalid(0, 2));
+    assert.deepEqual(store.log.at(-1)!.rejected, []);
+  });
+
+  test('U12 a paste whose every cell is rejected: Ctrl+Z clears it, Ctrl+Shift+Z brings it back', async function (assert) {
+    const store = await renderSheet();
+    await focusCell(0, 2);
+    await clipboard('paste', 'abc\nxyz');
+    assert.strictEqual(store.log.length, 1);
+    assert.deepEqual([text(0, 2), text(1, 2)], ['abc', 'xyz']);
+
+    await focusCell(2, 0);
+    assert.true(await undo(), 'prevented');
+    assert.strictEqual(store.log.length, 1, 'nothing emitted: no data changed');
+    assert.deepEqual([text(0, 2), text(1, 2)], ['0', '1']);
+    assert.false(isInvalid(0, 2) || isInvalid(1, 2), 'no red');
+    assert.deepEqual(selected(), ['0:2', '1:2'], 'the cells are selected');
+    assert.strictEqual(document.activeElement, cell(0, 2), 'and focused');
+
+    await focusCell(2, 0);
+    await redo();
+    assert.strictEqual(store.log.length, 1);
+    assert.deepEqual([text(0, 2), text(1, 2)], ['abc', 'xyz']);
+    assert.true(isInvalid(0, 2) && isInvalid(1, 2));
+    assert.strictEqual(document.activeElement, cell(0, 2));
+
+    // an owner change since: the redo does not put the text back there
+    await undo();
+    await ownerSets(store, 'r0', { hours: 9 });
+    await redo();
+    assert.deepEqual([text(0, 2), text(1, 2)], ['9', 'xyz']);
+    assert.false(isInvalid(0, 2));
+  });
+
+  test('U13 each rejection is undone by its own entry, last first', async function (assert) {
+    // The nearest sequence the UI allows to "a later rejection on the same
+    // cell survives undoing the paste": a later rejection is a later entry,
+    // so it is always undone first. The guard itself (only a rejection with
+    // the entry's text and message is cleared) is unit test RJ1.
+    const store = await renderSheet();
+    await focusCell(0, 1);
+    await clipboard('paste', 'c\tabc');
+    await focusCell(0, 2);
+    await type('x');
+    await fillIn(editor()!, 'xyz');
+    await press('Enter');
+    assert.strictEqual(text(0, 2), 'xyz', 'the later rejection');
+
+    await undo();
+    assert.strictEqual(text(0, 2), '0', 'its undo clears it');
+    assert.strictEqual(text(0, 1), 'c', 'the paste is still there');
+    await undo();
+    assert.deepEqual([text(0, 1), text(0, 2)], ['city0', '0']);
+    assert.false(isInvalid(0, 2));
+    await redo();
+    assert.deepEqual([text(0, 1), text(0, 2)], ['c', 'abc'], 'the paste again');
+    await redo();
+    assert.strictEqual(text(0, 2), 'xyz', 'then the later rejection');
+    assert.strictEqual(
+      store.log.filter((set) => set.source === 'redo').length,
+      1
+    );
+  });
+
+  test('U14 rejected cells on rows the paste inserted go with the rows', async function (assert) {
+    const store = await renderSheet(2);
+    await focusCell(1, 2);
+    await clipboard('paste', '5\nabc\n6');
+    assert.strictEqual(store.records.length, 4, 'two rows inserted');
+    const tempId = store.log[0]!.inserts[0]!.tempId;
+    assert.deepEqual(
+      store.log[0]!.rejected.map((r) => r.tempId),
+      [tempId]
+    );
+    assert.strictEqual(text(2, 2), 'abc');
+    assert.true(isInvalid(2, 2));
+
+    await focusCell(0, 0);
+    await undo();
+    assert.strictEqual(store.records.length, 2, 'the rows are removed');
+    assert.strictEqual(text(1, 2), '1');
+
+    await redo();
+    assert.strictEqual(store.records.length, 4, 'the rows are back');
+    assert.strictEqual(store.records[2]!.id, tempId);
+    assert.strictEqual(text(2, 2), 'abc', 'with the rejected text');
+    assert.true(isInvalid(2, 2));
+    assert.strictEqual(text(3, 2), '6');
+  });
+  test('U9 an insert: undo removes the row, redo puts it back', async function (assert) {
+    const store = await renderSheet(3);
+    await focusCell(0, 0);
+    await pressed('Enter', { shiftKey: true });
+    const insert = store.log[0]!;
+    const tempId = insert.inserts[0]!.tempId;
+    assert.deepEqual(
+      store.records.map((row) => row.id),
+      ['r0', tempId, 'r1', 'r2']
+    );
+    await undo();
+    assert.deepEqual(store.log[1]!.deletes, [tempId]);
+    assert.deepEqual(
+      store.records.map((row) => row.id),
+      ['r0', 'r1', 'r2']
+    );
+    await redo();
+    assert.strictEqual(store.log[2]!.source, 'redo');
+    assert.deepEqual(
+      store.records.map((row) => row.id),
+      ['r0', tempId, 'r1', 'r2'],
+      'at its position again'
+    );
+  });
+
+  test('U10 a delete of 3 rows in the middle: undo keeps their order', async function (assert) {
+    const store = await renderSheet(6);
+    const before = [...store.records];
+    const rowCell = (row: number) =>
+      el(
+        `[role=gridcell][data-gridcell-visible-row-index="${row}"][data-gridcell-column-index="0"]`
+      );
+    await click(rowCell(1));
+    await click(rowCell(3), { shiftKey: true });
+    await triggerEvent(rowCell(2), 'contextmenu');
+    await click(el('[data-test-subj=euiSheetRowMenu-delete]'));
+    assert.deepEqual(
+      store.records.map((row) => row.id),
+      ['r0', 'r4', 'r5']
+    );
+    await undo();
+    assert.deepEqual(
+      store.records.map((row) => row.id),
+      ['r0', 'r1', 'r2', 'r3', 'r4', 'r5'],
+      'in their order'
+    );
+    assert.true(
+      store.records.every((row, i) => row === before[i]),
+      'the same objects'
+    );
+    await redo();
+    assert.deepEqual(
+      store.records.map((row) => row.id),
+      ['r0', 'r4', 'r5']
+    );
+  });
+  test('U15 remapIds keeps the rejected cells of inserted rows in the history', async function (assert) {
+    const state = new State();
+    const store = await renderSheet(2, state);
+    await focusCell(1, 2);
+    await clipboard('paste', '5\nabc');
+    const tempId = store.log[0]!.inserts[0]!.tempId;
+    assert.strictEqual(text(2, 2), 'abc');
+
+    // the owner's server gives the row another id
+    state.api!.remapIds({ [tempId]: 'srv-1' });
+    store.records = store.records.map((row) =>
+      row.id === tempId ? { ...row, id: 'srv-1' } : row
+    );
+    await settled();
+    assert.strictEqual(text(2, 2), 'abc', 'the rejection follows the new id');
+    assert.true(isInvalid(2, 2));
+
+    await focusCell(0, 0);
+    await undo();
+    assert.deepEqual(store.log.at(-1)!.deletes, ['srv-1'], 'the remapped id');
+    assert.strictEqual(store.records.length, 2);
+    await redo();
+    assert.strictEqual(store.records[2]!.id, 'srv-1');
+    assert.strictEqual(text(2, 2), 'abc', 'the rejected text is back');
+    assert.true(isInvalid(2, 2));
   });
 });

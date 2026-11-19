@@ -20,6 +20,7 @@ import {
   cell,
   changeSet,
   clipboard,
+  COL_OFFSET,
   editor,
   editorFrame,
   el,
@@ -285,7 +286,8 @@ module('Integration | Component | EuiSheet', function (hooks) {
     assert.deepEqual(set.newOptions, []);
 
     await settled();
-    assert.dom('[role=grid]').hasAttribute('aria-rowcount', '6');
+    // 6 records and the add row (v0.2 batch 2)
+    assert.dom('[role=grid]').hasAttribute('aria-rowcount', '7');
     assert.deepEqual([text(5, 0), text(5, 1), text(5, 2)], ['d', 'e', 'f']);
     assert.deepEqual(selected(), ['4:0', '4:1', '4:2', '5:0', '5:1', '5:2']);
     assert.strictEqual(
@@ -451,7 +453,10 @@ module('Integration | Component | EuiSheet', function (hooks) {
 
   test('T13 header cells keep their keys', async function (assert) {
     const store = await renderSheet();
-    await focus('[role=columnheader][data-gridcell-column-index="0"]');
+    // the first field's header: grid column 0 is the row-number column (C8)
+    await focus(
+      `[role=columnheader][data-gridcell-column-index="${COL_OFFSET}"]`
+    );
     await type('x');
     await press('Delete');
     const result = await clipboard('paste', 'a');

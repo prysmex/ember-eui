@@ -1,7 +1,9 @@
 /**
  * Positions the open editor over its cell ('cell') or beside it ('panel'),
- * inside the sheet's wrapper, and turns focus leaving it into a commit
- * (PACKAGE-DESIGN.md 8.1). Not a popover: no `euiPopover__panel` class.
+ * inside the sheet's wrapper, or in flow ('inline': the expanded record's
+ * form), and turns focus leaving it into a commit (PACKAGE-DESIGN.md 8.1).
+ * The grid and the form share this focus-out logic. Not a popover: no
+ * `euiPopover__panel` class.
  */
 import Component from '@glimmer/component';
 import { action } from '@ember/object';
@@ -29,9 +31,10 @@ const FOCUSABLE_SELECTOR =
 
 interface EditorFrameSignature {
   Args: {
-    rect: SheetEditorRect;
-    layout: 'cell' | 'panel';
-    placement: 'below' | 'above';
+    /** Not used by 'inline'. */
+    rect?: SheetEditorRect;
+    layout: 'cell' | 'panel' | 'inline';
+    placement?: 'below' | 'above';
     onFocusOut: () => void;
   };
   Blocks: { default: [] };
@@ -39,12 +42,11 @@ interface EditorFrameSignature {
 
 export default class EditorFrame extends Component<EditorFrameSignature> {
   get layoutClass(): string {
-    return this.args.layout === 'panel'
-      ? 'euiSheet__editor--panel'
-      : 'euiSheet__editor--cell';
+    return `euiSheet__editor--${this.args.layout}`;
   }
 
   get style() {
+    if (this.args.layout === 'inline' || !this.args.rect) return undefined;
     const { top, left, width, height, wrapperHeight } = this.args.rect;
     if (this.args.layout === 'cell') {
       return htmlSafe(

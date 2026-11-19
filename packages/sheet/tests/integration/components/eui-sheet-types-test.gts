@@ -7,6 +7,7 @@ import {
   fillIn,
   render,
   settled,
+  triggerKeyEvent,
   waitUntil
 } from '@ember/test-helpers';
 import { tracked } from '@glimmer/tracking';
@@ -18,6 +19,7 @@ import {
   cellTitle,
   changeSet,
   clipboard,
+  COL_OFFSET,
   editor,
   editorFrame,
   el,
@@ -330,12 +332,16 @@ module('Integration | Component | EuiSheet field types', function (hooks) {
     assert.true(isInvalid(2, 2));
   });
 
-  test('N9 Space on a text cell does nothing', async function (assert) {
+  test('N9 Space on a text cell expands the record, without an edit', async function (assert) {
+    // v0.1: Space did nothing (P8); v0.2 batch 2 (C9): it expands the record
     const store = await renderSheet();
     await focusCell(0, 0);
     assert.true(await pressed(' '), 'prevented');
     assert.strictEqual(editor(), null);
     assert.strictEqual(store.log.length, 0);
+    assert
+      .dom('[data-test-subj=euiSheetRecord]', document.body)
+      .exists('the expanded record');
   });
 
   test('N10 select: the cell shows a chip', async function (assert) {
@@ -493,7 +499,8 @@ module('Integration | Component | EuiSheet field types', function (hooks) {
 
     const visible = Array.from(
       document.querySelectorAll<HTMLElement>(
-        '[role=gridcell][data-gridcell-column-index="3"]'
+        // the status field (data column 3), after the row-number column (C8)
+        `[role=gridcell][data-gridcell-column-index="${3 + COL_OFFSET}"]`
       )
     ).map((element) => Number(element.dataset['gridcellVisibleRowIndex']));
     const wrapper = el('[data-test-subj=euiSheet]').getBoundingClientRect();
@@ -744,7 +751,15 @@ module('Integration | Component | EuiSheet field types', function (hooks) {
     await type('x');
     assert.strictEqual(editor(), null, 'no editor');
     await focusCell(0, 2);
+    // C9 (v0.2 batch 2): Space opens the expanded record, read-only too
     await pressed(' ');
+    const shell = document.querySelector<HTMLElement>(
+      '[data-test-subj=euiSheetRecord]'
+    );
+    assert.ok(shell, 'Space expands the record');
+    assert.dom('[role=button]', shell!).doesNotExist('its boxes are read-only');
+    await triggerKeyEvent(shell!, 'keydown', 'Escape');
+    assert.dom('[data-test-subj=euiSheetRecord]', document.body).doesNotExist();
     await click(el('[data-test-subj=euiSheetCheckbox]', cell(0, 2)));
     await focusCell(0, 0);
     await press('Delete');

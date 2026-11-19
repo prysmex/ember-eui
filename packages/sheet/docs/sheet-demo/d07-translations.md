@@ -53,6 +53,23 @@ const SPANISH = {
   maxLength: 'Debe tener {max} caracteres o menos',
   pattern: 'Formato no válido',
   unresolved: 'No se encontró "{text}"',
+  addRecord: 'Agregar registro',
+  insertAbove: 'Insertar registro arriba',
+  insertBelow: 'Insertar registro abajo',
+  duplicateRecord: 'Duplicar registro',
+  duplicateRecords: 'Duplicar {count} registros',
+  expandRecord: 'Abrir registro',
+  copyRow: 'Copiar fila',
+  copyRows: 'Copiar {count} filas',
+  deleteRecord: 'Eliminar registro',
+  deleteRecords: 'Eliminar {count} registros',
+  selectRow: 'Seleccionar fila',
+  selectAllRows: 'Seleccionar todas las filas',
+  rowNumber: 'Fila {n}',
+  recordTitle: 'Registro {n}',
+  previousRecord: 'Registro anterior',
+  nextRecord: 'Registro siguiente',
+  close: 'Cerrar',
 };
 
 // the English defaults, to put back

@@ -265,3 +265,183 @@ Screenshot: `sheet-demo.png` (the test container renders at 50%).
 
 Not checked: the native `<input type="date">` path (Enter/F2 on a date
 cell; its calendar is browser UI), `createOnPaste`, Firefox, Safari, IME.
+
+## 12. Docs (docs-site page, 2026-11-19)
+
+Logs are in `$S` (the scratchpad above). Nothing committed. The
+packages' `dist` folders in scratch were rebuilt for the last site build
+and are kept (about 26 MB), so the site can be rebuilt there.
+
+### Pages
+
+Following the flatpickr and validated-form convention, the demos are
+files in `packages/sheet/docs/sheet-demo/`, which docfy renders **on the
+landing page**, not as separate pages. There is one new URL:
+**`/docs/sheet/docs/sheet`** (side nav label "Sheet", read in the
+real-input pass). Its "Examples"
+heading is placed with `[[demos-all]]` after the prose, as on the icons
+page.
+
+| File | What |
+| --- | --- |
+| `packages/sheet/docs/sheet.md` | Landing: what it is, install, records in / change sets out, `localRecords`, `applyChangeSet` / `applyNewOptions`, an arguments table, the field types table, the keyboard table, the error model, "Not yet". |
+| `sheet-demo/d01-basics.md` | 20 records in `localRecords`, a panel with the last 3 change sets (`patches`, `inserts`, `rejected`). |
+| `sheet-demo/d02-field-types.md` | Text (`maxLength`), number (`min`/`max`), checkbox, singleSelect with coloured options, date (`min`), `required`; two rows start with errors. |
+| `sheet-demo/d03-validation.md` | `@validate`: record rule (End before Start), cross-row rule (unique email), a fake 800 ms server check (blocked domains) that rejects on abort; a list of runs shows "discarded" / "applied"; **Save** sets `@cellErrors`. |
+| `sheet-demo/d04-custom-cells.md` | App type `zone` with an async `EuiSelectable` editor (fake API, 400 ms, `@isPreFiltered`, `@isLoading`, `@errorMessage`, type `fail` for the error), zones by the row's Site; Position with `options(record)` by Area; Company `readOnly`/`required` as functions of Contractor. |
+| `sheet-demo/d05-paste-rules.md` | Strict select (unknown value rejected) vs `createOnPaste` (shows `newOptions` and the grown option list); a block to copy and a copy button. |
+| `sheet-demo/d06-date-picker.md` | `{ ...dateType, editor: FlatpickrDateEditor }` with `@ember-eui/flatpickr`; a digit still opens `SheetInputEditor`. |
+| `sheet-demo/d07-translations.md` | English / Español through `euiI18n.addTranslations` (English put back from `sheetMessageTokens` on switch-back and on destroy; the sheet is re-created on a switch), and an `@messages` switch. |
+| `sheet-demo/d08-large-data.md` | 10,000 generated rows; shows how long each change set took to apply. |
+
+The editor in d04 copies the built-in select editor's V5 handling: Enter
+with a typed search and no current option picks the first result.
+
+### Site wiring (repo-relative)
+
+- `site/docfy.config.mjs`: `'sheet'` added to the package sources. No
+  `labels` entry needed (humanized to "Sheet").
+- `site/package.json`: `"@ember-eui/sheet": "workspace:*"`.
+- `scripts/generate-llms-txt.mjs`: `'sheet'` in `PACKAGES`.
+- `site/lib/demo-playgrounds.mjs` (+ its test): `@ember-eui/sheet` is
+  added to a playground when a demo uses `EuiSheet`. Whether
+  `@ember-eui/sheet` is on npm was not checked; if it is not, "Open in
+  StackBlitz" on these demos will not install.
+- `site/tests/acceptance/docs-test.ts`: side nav count 125 → 126 (the new
+  item; `$S/docs-site-test-1.log` failed only on that count).
+- No style import: the sheet adds its own `<style>`. No
+  `scripts/api-docs-pages.json` entry (below). `docs/` needed nothing.
+
+### Lockfile: not copied back
+
+One non-frozen install in scratch (`$S/docs-install.log`); diff in
+`$S/docs-lock.diff`. Two hunks:
+
+1. The wanted one: `@ember-eui/sheet: link:../packages/sheet` under the
+   `site` importer (the siblings are `link:` too).
+2. **Outside it**: in the `packages/sheet` importer,
+   `@ember-eui/core: file:packages/core(b756b225…)` →
+   `link:../core` (what the sibling packages have).
+
+A control run without the `site/package.json` change
+(`--lockfile-only`, `$S/docs-install-control.log`) changes nothing
+(`$S/docs-lock-control.diff` is empty), so adding the site dependency
+makes pnpm 12.6 re-resolve the sheet's core. Per the brief the repo's
+`pnpm-lock.yaml` is unchanged; the full resulting lockfile is
+`$S/docs-lock.after.yaml`. **Until `pnpm install` runs on the Mac, a
+`--frozen-lockfile` install fails** (the site's specifiers changed).
+
+### Tests and lint
+
+| Check | Result | Log |
+| --- | --- | --- |
+| Site tests (testem, development build, long config): `Acceptance \| docs` (incl. the four "every docs page renders" groups, which visit `/docs/sheet/docs/sheet`) and `Acceptance \| code splitting`, final files | **14/14** | `$S/docs-site-test-final.log` |
+| Earlier run with all eight demos, before the flatpickr fix | 14/14 | `$S/docs-site-test-2.log` |
+| `node --test site/lib/*.test.mjs` | 8/8 | `$S/docs-site-lib-tests.log` |
+| Prettier + ESLint on the touched site files | clean | `$S/docs-site-lint-files-1.log` |
+| `pnpm lint` in `packages/sheet` | exit 0 (eslint, stylelint, ember-tsc) | `$S/docs-sheet-lint.log` |
+| `pnpm docs:api:check` (`node scripts/generate-api-docs.mjs --check`) | exit 0 | `$S/docs-api-check-docs.log` |
+| Leak crawler, `routes` mode, 20 reps, production build | 0 listeners, nodes, timers, observers left; heap +1.06 MB (data-grid basics: +4.57 MB) | `$S/docs-leak-3.log` |
+| Real input over CDP (trusted keys, clicks, Ctrl+C/V with the real clipboard) on the final production build served by `vite preview`, `$S/docs-real-input.mjs` | **41/41** | `$S/docs-real-input-final-4.log` (first runs: `-1` crashed on a virtualized row, `-2` 31/37 from smooth-scroll misclicks in the script and the flatpickr bug below) |
+
+The real-input pass covers every demo: typing, a rejected `abc`, range
++ Delete, a 2-row paste that inserts, select type-to-filter + Enter,
+Space on a checkbox, the three `@validate` rules and a discarded run,
+`@cellErrors`, the zone editor (load, pick, error state, typed search +
+Enter, paste rejected as unresolved), record-dependent options,
+conditional read-only, `createOnPaste`, the flatpickr calendar (open,
+pick a day) and the digit path, Spanish, `@messages`, and a 21-cell
+clear on 10,000 rows, a 303-row Shift+click range cleared, Ctrl+End to
+the last cell, and the side nav label ("Sheet"). Tab on a cell moves
+focus out of the grid, to the next element on the page (recorded in the
+log; the keyboard table says so). Not checked: Firefox,
+Safari, touch, the dark theme, screen readers.
+
+Not run by the scratch build: `scripts/sync-injected.mjs` fails with
+ENOENT on the orphan injected-core snapshot (as in section 10); the
+site consumes the packages as links, so the build steps were run one by
+one (`$S/docs-site-build.sh`). docfy prints an `ERR_INVALID_ARG_TYPE`
+from its repo-info step because the scratch copy has no `.git`; the
+pages are generated anyway.
+
+### Package bugs and API gaps found by the demos
+
+1. **Bug: a focused editor surface element removed from the DOM closes
+   the editor.** `src/-private/editor-frame.gts` (`watchSurfaces` /
+   `onFocusOut`) treats a `focusout` with `relatedTarget === null` from
+   an `euiSheetEditorSurface` element as leaving the editor. flatpickr
+   focuses the clicked day and then redraws the days, so the focused
+   day is removed: the sheet commits (nothing) and closes the editor,
+   and flatpickr's `onChange` then finds no edit. Repro: the README's
+   flatpickr example (or d06 without its `mousedown` handler), Enter on
+   a date cell, click a day: the date is not saved
+   (`$S/docs-flatpickr-repro.log`: without the handler the cell keeps
+   its value; the focusout log shows `flatpickr-day -> null`). The demo
+   works around it like the built-in select editor: `mousedown`
+   `preventDefault` on the calendar keeps focus in the input. **The
+   README's flatpickr example has this bug** and should get the same
+   line (and `@date` coalesced to `null`: EuiFlatpickr asserts on
+   `undefined`, which `@value` is for a record without the field). A package fix: on a `focusout` without a
+   `relatedTarget`, check `document.activeElement` after a frame
+   instead of closing at once.
+2. **`eui-i18n` translations are not tracked** (from the source, not
+   run: core's `translations` is a plain field), so `addTranslations` after a sheet rendered does
+   not update its cells; the demo re-creates its sheet. The service is
+   also global: while Español is on, any other sheet on the page uses
+   it (said in the demo).
+3. **No API reference section**: `scripts/generate-api-docs.mjs` throws
+   "No signature found for EuiSheet" because `EuiSheetSignature` lives
+   in `src/types.ts`, not in the component file. The arguments table in
+   `sheet.md` is hand-written, without `api:` markers.
+4. **Range keys** (from the source, not run, except Shift+arrows and
+   Shift+click, which the real-input pass uses): only Shift+arrows and
+   Shift+click extend a range (`onKeyDown` sets `extending` for arrows
+   only). Shift+Home/End, Ctrl+Shift+End and Page Up/Down do not (the
+   grid's Page Up/Down do nothing without pagination). On 10,000 rows a large
+   range needs Shift+click.
+5. **Error messages are only in the cell's `title`** (hover). There is
+   no visible or keyboard-reachable message (the cell has
+   `aria-invalid`).
+6. From the source, not run: no Shift+Enter (Enter always moves down)
+   and no cut. The keyboard table in `sheet.md` lists what the code
+   does.
+
+### Serving the built site
+
+`site/dist` in the scratch copy is a production build of the final
+files (`$S/docs-site-build-prod-final-3.log`); the real-input pass ran
+against it with this command (`$S/docs-vite-preview.log`): `cd $S/ember-eui/site && pnpm exec vite preview --outDir dist
+--host 0.0.0.0 --port 4173`, then `/docs/sheet/docs/sheet`.
+
+## 13. Fix: an editor that removes its own focused element (2026-11-19)
+
+The bug found by the docs (section 12): `src/-private/editor-frame.gts`
+closed the editor on any `focusout` whose `relatedTarget` was not in the
+editor, including `null`. A `null` target also means the focused element was
+removed from the DOM: flatpickr redraws its days when one is picked, so the
+editor committed the old draft and closed before the pick was saved.
+
+Fix: a `focusout` with no `relatedTarget` (on the frame or on an editor
+surface) is decided one run-loop tick later (`next`). If focus is still in
+the editor, or the element that lost focus was removed (`!isConnected`), the
+editor stays open and focus goes back to its first focusable element;
+otherwise it commits as before (a click on the page). A `focusout` to a known
+element outside the editor still commits at once. Side effect: switching to
+another window while editing (focus stays on the input) no longer commits.
+
+- New tests in `eui-sheet-custom-type-test.gts`: **C5** (a pick that redraws
+  and removes the focused day is saved) and **C6** (a redraw of the focused
+  day keeps the editor open and gives focus back; a plain blur still closes
+  it). With the old `editor-frame.gts` restored in scratch, C5 fails (the
+  close happens during the render: an Ember "updated `editing` after it was
+  consumed" assertion), so the tests catch the bug.
+- The full sheet suite passes **83/83**; `pnpm lint` (stylelint, ESLint,
+  ember-tsc) exits 0; Prettier is clean on the changed source and test.
+- The docs demo's workaround (`mousedown` `preventDefault` on the calendar)
+  is removed. Real input on the production docs build: Enter on an empty
+  date, a click on day 20 in the flatpickr calendar saves `20/11/2026`,
+  closes the calendar and the editor, and focus returns to the cell. The
+  README's flatpickr example (which never had the workaround) now works as
+  written.
+- Not re-run: the site's acceptance tests (the demo only lost the
+  workaround; the page was visited and works).

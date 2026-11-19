@@ -39,6 +39,7 @@ test('a core demo omits optional date, form, and translation dependencies', () =
   for (const name of [
     '@ember-eui/flatpickr',
     '@ember-eui/pikaday',
+    '@ember-eui/sheet',
     '@ember-eui/validated-form',
     '@ember-eui/changeset-form',
     'flatpickr',
@@ -62,7 +63,7 @@ test('specialized demos retain their packages and setup', () => {
     [
       {
         ext: 'hbs',
-        code: '<EuiFlatpickr /><EuiPikaday /><ValidatedForm /><EuiChangesetForm />{{t "label"}}',
+        code: '<EuiFlatpickr /><EuiPikaday /><EuiSheet /><ValidatedForm /><EuiChangesetForm />{{t "label"}}',
       },
     ],
     starter,
@@ -71,6 +72,7 @@ test('specialized demos retain their packages and setup', () => {
   for (const name of [
     '@ember-eui/flatpickr',
     '@ember-eui/pikaday',
+    '@ember-eui/sheet',
     '@ember-eui/validated-form',
     '@ember-eui/changeset-form',
     'flatpickr',

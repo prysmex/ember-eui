@@ -18,7 +18,7 @@ import { fileURLToPath } from 'node:url';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 const SITE = 'https://ember-eui.vercel.app';
-const PACKAGES = ['core', 'changeset-form', 'validated-form', 'pikaday', 'flatpickr'];
+const PACKAGES = ['core', 'changeset-form', 'validated-form', 'pikaday', 'flatpickr', 'sheet'];
 
 function walk(dir) {
   return readdirSync(dir).flatMap((name) => {

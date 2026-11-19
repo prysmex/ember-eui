@@ -25,13 +25,18 @@ export default {
       pattern: '**/*.md',
       urlPrefix: 'docs',
     },
-    ...['core', 'pikaday', 'validated-form', 'flatpickr', 'changeset-form'].map(
-      (pkgName) => ({
-        root: resolve(root, `../packages/${pkgName}`),
-        pattern: 'docs/**/*.md',
-        urlPrefix: `docs/${pkgName}`,
-      }),
-    ),
+    ...[
+      'core',
+      'pikaday',
+      'validated-form',
+      'flatpickr',
+      'changeset-form',
+      'sheet',
+    ].map((pkgName) => ({
+      root: resolve(root, `../packages/${pkgName}`),
+      pattern: 'docs/**/*.md',
+      urlPrefix: `docs/${pkgName}`,
+    })),
   ],
   labels: {
     docs: 'Documentation',

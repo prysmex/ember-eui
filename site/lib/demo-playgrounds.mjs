@@ -134,6 +134,7 @@ export function playgroundOverrides(chunks, starter) {
       /ValidatedForm|@ember-eui\/validated-form/.test(source),
     '@ember-eui/flatpickr': /EuiFlatpickr|@ember-eui\/flatpickr/.test(source),
     '@ember-eui/pikaday': /EuiPikaday|@ember-eui\/pikaday/.test(source),
+    '@ember-eui/sheet': /EuiSheet|@ember-eui\/sheet/.test(source),
     'ember-changeset': /EuiChangesetForm|\bchangeset\b/.test(source),
     'ember-changeset-validations':
       /EuiChangesetForm|ember-changeset-validations/.test(source),

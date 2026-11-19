@@ -41,6 +41,7 @@
     "@ember-eui/core": "workspace:*",
     "@ember-eui/flatpickr": "workspace:*",
     "@ember-eui/pikaday": "workspace:*",
+    "@ember-eui/sheet": "workspace:*",
     "@ember-eui/validated-form": "workspace:*",
     "@ember/app-tsconfig": "^2.0.0",
     "@ember/optional-features": "^3.0.0",

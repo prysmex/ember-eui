@@ -1051,3 +1051,197 @@ keys (`playwright-core` on the system Chromium, clipboard permissions):
   rows 0 and 1. No page errors.
 
 Not checked: Firefox, Safari, a Mac keyboard (⌘C).
+
+## Batch 3b, stage 1: the header-row gate
+
+Built 2026-11-19 on `6c8842a6`, in the repository (tested in a Linux
+copy). Scope: the gate of V03-DESIGN.md 9.3, with the mechanism of 9.1.
+Not committed.
+
+**Result: the gate passes.** GH1 to GH6 pass in headless Chrome 156 with
+the 9.1 mechanism (`:first-child`, sticky, `!important`). Fallbacks A, B
+and C are not needed.
+
+### What was built
+
+- **Types.** `SheetGroupBy` and `SheetGroup` (8.1, in full) in
+  `src/core/types.ts`, as 4.4 says. `@groups?: SheetGroup[]` on
+  `EuiSheetSignature['Args']`.
+- **Row model.** `@groups` goes into `buildRowModel`. One new method,
+  `headerRowOf(group)`: the grid row of a group's header, -1 outside
+  `@groups` and always -1 in the identity model. `gridStyle` needs it to
+  give the header rows their class without walking every row.
+- **Component** (`eui-sheet.gts`):
+  - `groups`, `isGrouped`, and `groupHeaderAt(row)`, which returns the
+    group whose header row this is, or undefined.
+  - `gridStyle`: each header row gets `euiSheet__groupRow
+    euiSheet__groupRow--depthN`. The add row's class is set as before.
+  - `gridVars` replaces `frozenStyle` on `.euiSheet__grid`. Without
+    groups it is `frozenStyle`, unchanged. While grouped it adds
+    `--euiSheetGroupMin` (row-number column + first field width) and
+    `--euiSheetGroupMax` (the scroll element's `clientWidth`, `none`
+    until measured).
+  - `measureGroupWidth`: a `ResizeObserver` on `.euiSheet__grid`. It
+    runs only while grouped and sets a tracked `groupMaxWidth`.
+  - `onFocusIn` on a header cell: focus only. `anchor`, `head` and
+    `domCursor` are cleared, as on a row number. With no range, nothing
+    is cleared, filled or pasted over. Paste would otherwise have written
+    into the next record through `coreRowOf`.
+  - `isGroupHeaderTarget`: copy and cut on a header cell are taken with
+    an empty clipboard, as on the add row. Without it the grid's own copy
+    handler copied the cell's visible text (GH5 saw `sum 1`).
+- **Cells.** `SheetCell` and `RowNumberCell` render `GroupLabel` on a
+  header row. They pass no frozen, selection or error props there. The
+  row-number cell keeps only `euiSheet__rowCell`.
+- **`src/-private/group-label.gts` (new).** The label (indent
+  `depth × 16px`, title, count) and, in a field's cell, its
+  `summary[fieldId]`. The label is `group.label`, or the value when it is
+  a string, number or boolean.
+- **CSS** (`styles.ts`, at the end of the main block):
+  - the 9.1 block, with stronger selectors (below);
+  - `.euiSheet__groupLabel`, `__groupTitle` (ellipsis), `__groupCount`
+    and `__groupSummary` (subdued, right-aligned).
+- **Theme.** `--euiSheet-group` is `backgroundBaseSubdued` (4.6). Without
+  it TH3 fails.
+- **Keys.** No code was needed. On a header cell the sheet's `onKeyDown`
+  returns at `recordAt` (undefined), so plain ArrowDown and ArrowUp are
+  the grid's own and keep the column.
+
+The CSS differs from 9.1's sketch in four ways:
+
+1. The selectors are `.euiSheet .euiDataGridRow.euiSheet__groupRow >
+   .euiDataGridRowCell` (0,4,0), and the background is set again under
+   `:hover`. 9.1's (0,3,0) loses to the row-hover rule (0,4,0).
+2. The cells' `::after` is `content: none`, as on the add row, so the
+   grid's cell outline does not draw a second ring.
+3. Cell `outline` and `box-shadow` are `none` on `:focus` and
+   `:focus-visible`. The row's `::after` is the only ring.
+4. `min-width` and `max-width` read the vars with fallbacks
+   (`0px`, `none`).
+
+### The gate, check by check
+
+The test is `eui-sheet-group-header-test.gts`. It has 12 fields of
+150 px at 600 px width, 60 records in 3 groups of 20, and height 400.
+`@canInsert={{false}}`, so a header directly follows the previous group's
+last record. The test container is scaled by 0.5. The numbers below are
+screen px; CSS px are twice that. Run `tests/index.html?report` to print
+every test's measurements.
+
+| # | Result | Measured |
+| --- | --- | --- |
+| GH1 | pass | Each of the 3 header rows was scrolled into view in turn. The label's cell is column 0, the row's first child, sticky, z-index 2, left 769.0 against the scroll element's 769.0. |
+| GH2 | pass | At `scrollLeft` 700 the row has no column-0 cell; its first cell is column 4. That cell is at left 769.0 (edge 769.0) and top 448.5 (row 448.5). `elementFromPoint` at the label's centre is `.euiSheet__groupTitle`. Extra: f6's cell shows its summary `sum 0`, on top; it is the only summary displayed. The 3 header rows, each scrolled into view at 700, have their label in column 4 at the left edge, with the same widths as at 0 (below). |
+| GH3 | pass | Row 21 is at 433.0-452.5, under the column header at 428.0-448.7. At `scrollLeft` 0 and 700, `elementFromPoint` over the label's cell and 40 px to its right returns the column header (`__content`, or `__button` at 700). |
+| GH4 | pass | `@frozenFields={{1}}`, `scrollLeft` 700. The first cell is column 0 (every column is rendered) at 769.0 / 448.5. At 3/4 of the label, at its right edge and at 3/4 of its cell, the hit is in the label's cell. The first field's cell in the header row is `position: absolute` and scrolled away (left 451.0). |
+| GH5 | pass | At `scrollLeft` 700, row 20 column 7, ArrowDown focuses row 21 column 7 (the header) and the scroll stays 700. The row's `::after` has content `""`, a 2px solid outline in `rgb(1, 2, 3)` (`--euiSheet-primary` set on the sheet) and z-index 3. ArrowDown focuses row 22 column 7, and the ring is gone. ArrowUp twice goes back through the header to row 20. Extra, on the header: a letter, Enter, Space, Delete, Backspace, Ctrl+D, a paste (not taken), a copy (taken, empty), a click and a double-click on the label. No editor, no selected cell, focus stays, no change set. |
+| GH6 | pass | At `scrollLeft` 0, all 6 rendered cells have background `rgb(246, 249, 252)` in light and `rgb(11, 22, 40)` in dark. Every cell has `border-left` and `border-right` `0px none`. |
+
+How a check was read, where 9.3 leaves room:
+
+- "Its left edge" (GH1, GH2) is the left edge of the label's cell. The
+  label sits inside the cell's padding.
+- `scrollTo({ scrollLeft: 700 })` (GH2) is done as the frozen tests do
+  it: `scrollLeft` on `.euiDataGrid__virtualized`, then a `scroll` event.
+- GH4 repeats GH2's checks except "no row-number cell". With a frozen
+  field every column is rendered (9.1), so the test asserts the opposite:
+  column 0 is the first cell and carries the label.
+- GH5 also checks ArrowUp back through the header and that the header is
+  inert. 9.3 does not ask for these, but the task does.
+
+### 9.2, what turned out
+
+- **Sticky from a stylesheet with `!important`.** It works like the
+  frozen cell's inline sticky: computed `position: sticky`, at the left
+  edge, at the row's top (GH1, GH2, GH4).
+- **Stacking under the sticky column header.** The column header paints
+  over a header row's label (z-index 2) on vertical scroll (GH3). Not
+  checked: the focus ring of a header row under the column header. The
+  ring is the row's `::after` with z-index 3, the same as the frozen
+  header cells, and `pointer-events: none`, so `elementFromPoint` cannot
+  see it.
+- **`width: max-content` through the cell's wrappers.** Honoured, both
+  for the row-number cell (GH1, `scrollLeft` 0) and for a data cell
+  (GH2, column 4 at 700). The labels have three widths:
+  - a short label gives the minimum, 214 CSS px (64 + 150);
+  - a longer one widens its cell to 443.6 CSS px, without clipping;
+  - one wider than the grid stops at `--euiSheetGroupMax`, 590 CSS px
+    (the scroll element's `clientWidth`), with an ellipsis.
+- **The cell's root.** `cell.gts` was read to its end. The
+  `role="gridcell"` div is the template's only root, and the row's only
+  children are its cells, so `:first-child` is the lowest rendered column.
+
+### Decisions and open points
+
+- **`border-inline: 0` makes a 1 px notch.** It follows 9.1 and GH6. It
+  also removes the grid frame's outer edges on header rows: the first
+  cell's left border and the last column's right border. The add row
+  keeps them (5.2). Keeping them on header rows means GH6 checks inner
+  dividers only. The user decides.
+- **Group add rows are not drawn yet.** With `canInsert` the model puts
+  one after each expanded leaf group. They render as empty rows, with no
+  class and no label, and a click does nothing (`isAddRow` matches only
+  the sheet's own add row). Their class, label and insert come with the
+  per-group add-row stage.
+- **No toggle, no messages.** No chevron, no Enter or Space, and no
+  `groupLabel`, `groupEmpty`, `groupCount` or `groupContinued`: the count
+  is a bare number and `continued` is not shown.
+- **Not done yet.** The `groups-loaded-mismatch` warn, `watchRecords
+  @groups`, and finding stored positions again by group key.
+
+### For stage 3
+
+- A header cell takes focus, but the sheet then keeps no range or cursor
+  (`anchor`, `head` and `domCursor` are null). Enter and Space on a
+  header must take the row from the focused cell (`cursor(cell)`), not
+  from `anchor`.
+- A click on a header row's label focuses the row's first rendered cell:
+  the row-number cell at `scrollLeft` 0, column 4 at 700. It does not
+  focus the column under the pointer. ArrowLeft and ArrowRight move focus
+  between cells hidden under the label, and only the row ring shows.
+- These moves can still land on a header: PageUp and PageDown, the move
+  after Enter or Tab commits, and Ctrl+End. Shift+arrows step over
+  headers (3a).
+- `numberOf` ignores `rowNumberStart`.
+- `headerRowOf` has no unit test, because `rows-test.ts` was not to be
+  edited. GH1 covers it through the row classes. Add an RM test.
+- `--euiSheetGroupMax` is `none` until the first `ResizeObserver`
+  callback. It is measured on `.euiSheet__grid` and read from the scroll
+  element, so a vertical scroll bar that appears without a resize is not
+  seen.
+- `groupHeaderAt` does a binary search per cell per render, and only
+  while grouped.
+- `--euiSheetGroupMin` uses `frozenWidth` for the first field: its given,
+  resized or kept width, else a default. A first field with no width
+  that the grid sizes itself can get a wrong minimum.
+- Cut on a header is taken by the same code as copy, but no test covers
+  it (the `clipboard` helper sends copy and paste only).
+
+### Not checked
+
+- Hover with a real pointer on a header row. The CSS sets the background
+  again under `:hover`.
+- Firefox, Safari, and a real keyboard.
+
+### Files
+
+- `packages/sheet/src/core/types.ts`: `SheetGroupBy`, `SheetGroup`
+- `packages/sheet/src/core/rows.ts`: `headerRowOf`
+- `packages/sheet/src/types.ts`: `groups` argument
+- `packages/sheet/src/components/eui-sheet.gts`
+- `packages/sheet/src/-private/group-label.gts` (new)
+- `packages/sheet/src/-private/sheet-cell.gts`
+- `packages/sheet/src/-private/row-number-cell.gts`
+- `packages/sheet/src/-private/styles.ts`
+- `packages/sheet/src/-private/theme.ts`: `--euiSheet-group`
+- `packages/sheet/tests/integration/components/eui-sheet-group-header-test.gts` (new)
+
+`packages/core/src` is unchanged. No existing test file was edited.
+
+### Tests
+
+GH1-GH6 are new. Full suite: **441/441** (435 + 6), in one run on the
+final code. GH alone: 6/6. `eslint` and `prettier --check` are clean on the changed files.
+`pnpm lint:types` (src) has no error. The tests' `ember-tsc`
+(`tsconfig.eslint.json`) has the baseline's 19 errors, the same ones.
+`docs:api:check` passes.

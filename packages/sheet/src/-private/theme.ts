@@ -40,6 +40,8 @@ export const sheetThemeVars = ({
     '--euiSheet-hover': colors.backgroundBaseInteractiveHover,
     '--euiSheet-plain': colors.backgroundBasePlain,
     '--euiSheet-subdued': colors.backgroundBaseSubdued,
+    // V03 batch 3b: group header rows (opaque)
+    '--euiSheet-group': colors.backgroundBaseSubdued,
     '--euiSheet-text': colors.textParagraph,
     '--euiSheet-textSubdued': colors.textSubdued,
     '--euiSheet-danger': colors.danger,

@@ -213,6 +213,17 @@ li:has([data-test-subj^="euiSheetEditField-"]), li:has([data-test-subj^="euiShee
 .euiSheet .euiDataGridRowCell.euiSheet__cell--fillPreview { outline: 1px dashed var(--euiSheet-primary, #0B64DD); outline-offset: -2px; }
 .euiSheet__ime { position: absolute; top: 0; left: 0; z-index: -1; width: 1px; height: 1px; margin: 0; padding: 0; border: 0; opacity: 0; pointer-events: none; }
 .euiSheet__ime.euiSheet__ime--active { z-index: 2; padding: 0 6px; border: 2px solid var(--euiSheet-primary, #0B64DD); opacity: 1; pointer-events: auto; }
+/* group header rows (V03 8.4, 9.1): one opaque background on every cell, hover included, no dividers, no outline or grid ::after of a cell (the row draws one ring); the row's first rendered cell carries the label, sticky at the left edge and as wide as the label (!important: over the grid's inline position, left and width; only here); the other cells show their summary */
+.euiSheet .euiDataGridRow.euiSheet__groupRow > .euiDataGridRowCell, .euiSheet .euiDataGridRow.euiSheet__groupRow:hover > .euiDataGridRowCell { background-color: var(--euiSheet-group, #F7F8FC); background-image: none; border-inline: 0; color: var(--euiSheet-text, #343741); cursor: default; }
+.euiSheet .euiDataGridRow.euiSheet__groupRow > .euiDataGridRowCell:focus, .euiSheet .euiDataGridRow.euiSheet__groupRow > .euiDataGridRowCell:focus-visible { outline: none; box-shadow: none; }
+.euiSheet .euiDataGridRow.euiSheet__groupRow > .euiDataGridRowCell::after { content: none; }
+.euiSheet .euiDataGridRow.euiSheet__groupRow > .euiDataGridRowCell:first-child { position: sticky !important; left: 0 !important; float: left; width: max-content !important; min-width: var(--euiSheetGroupMin, 0px); max-width: var(--euiSheetGroupMax, none); z-index: 2; }
+.euiSheet .euiDataGridRow.euiSheet__groupRow > .euiDataGridRowCell:not(:first-child) .euiSheet__groupLabel, .euiSheet .euiDataGridRow.euiSheet__groupRow > .euiDataGridRowCell:first-child .euiSheet__groupSummary { display: none; }
+.euiSheet .euiDataGridRow.euiSheet__groupRow:focus-within::after { content: ''; position: absolute; inset: 0; z-index: 3; pointer-events: none; outline: 2px solid var(--euiSheet-primary, #0B64DD); outline-offset: -2px; }
+.euiSheet__groupLabel { display: inline-flex; align-items: baseline; gap: 8px; min-width: 0; max-width: 100%; overflow: hidden; white-space: nowrap; font-weight: 600; }
+.euiSheet__groupTitle { overflow: hidden; text-overflow: ellipsis; }
+.euiSheet__groupCount { font-weight: 400; color: var(--euiSheet-textSubdued, #69707D); }
+.euiSheet__groupSummary { display: block; width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; text-align: end; color: var(--euiSheet-textSubdued, #69707D); }
 @media (pointer: coarse) { .euiSheet__fillHandle { display: none; } }
 @media (hover: none) {
   .euiSheet__opener, .euiSheet__rowExpand { visibility: visible; }

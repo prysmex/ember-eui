@@ -9,8 +9,11 @@ import { cached } from '@glimmer/tracking';
 import EuiHighlight from '@ember-eui/core/components/eui-highlight';
 import EuiIcon from '@ember-eui/core/components/eui-icon';
 
+import GroupLabel from './group-label.gts';
+
 import type EuiSheet from '../components/eui-sheet.gts';
 import type { CellView } from '../components/eui-sheet.gts';
+import type { SheetGroup } from '../core/index.ts';
 import type { EuiDataGridCellValueElementProps } from '@ember-eui/core/utils/data-grid/types';
 
 interface SheetCellContext {
@@ -29,6 +32,11 @@ export default class SheetCell extends Component<{
     return this.args.colIndex - this.sheet.colOffset;
   }
 
+  /** The group when this cell is in a group header row (V03 9.1). */
+  get group(): SheetGroup | undefined {
+    return this.sheet.groupHeaderAt(this.args.rowIndex);
+  }
+
   @cached
   get view(): CellView | null {
     return this.sheet.cellView(
@@ -43,6 +51,12 @@ export default class SheetCell extends Component<{
   // render), so calling it here is allowed. The grid replaces the whole
   // props object, so everything goes in one call.
   get cellProps(): string {
+    // a group header's cell: no frozen, selection or error props; the
+    // header row's CSS places the label (V03 9.1)
+    if (this.group) {
+      this.args.setCellProps({});
+      return '';
+    }
     const view = this.view;
     const props: Record<string, unknown> = {};
     const classes: string[] = [];
@@ -114,7 +128,9 @@ export default class SheetCell extends Component<{
 
   <template>
     {{this.cellProps}}
-    {{#if this.addRecordLabel}}
+    {{#if this.group}}
+      <GroupLabel @group={{this.group}} @fieldId={{@columnId}} />
+    {{else if this.addRecordLabel}}
       <span class="euiSheet__addRecord" data-test-subj="euiSheetAddRecord">
         {{#if this.addRecordIcon}}<EuiIcon @type="plus" @size="s" />{{/if}}
         {{this.addRecordLabel}}

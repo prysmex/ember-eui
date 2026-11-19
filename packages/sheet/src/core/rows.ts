@@ -43,6 +43,8 @@ export interface RowModel {
   groupAt(gridRow: number): number;
   /** The add row of a group (or of the sheet with -1); -1 when it has none. */
   addRowOf(group: number): number;
+  /** The header row of a group; -1 outside `@groups` (and always without groups). */
+  headerRowOf(group: number): number;
 }
 
 export function buildRowModel(input: {
@@ -86,7 +88,8 @@ function identityModel(count: number, addRow: boolean): RowModel {
       return row < 0 ? -1 : Math.min(row, count - 1);
     },
     groupAt: () => -1,
-    addRowOf: (group) => (group === -1 && addRow ? count : -1)
+    addRowOf: (group) => (group === -1 && addRow ? count : -1),
+    headerRowOf: () => -1
   };
 }
 
@@ -120,6 +123,7 @@ function groupedModel(
   const rowToRecord = new Int32Array(length).fill(-1);
   const recordToRow = new Int32Array(count);
   const addRows = new Int32Array(groups.length).fill(-1);
+  const headerRows = new Int32Array(groups.length);
   /** The non-record rows, ascending, with their group: for `at` and `groupAt`. */
   const otherRows: number[] = [];
   const otherGroups: number[] = [];
@@ -128,6 +132,7 @@ function groupedModel(
   let row = 0;
   let record = 0;
   groups.forEach((_, i) => {
+    headerRows[i] = row;
     otherRows.push(row);
     otherGroups.push(i);
     otherKinds.push('group');
@@ -214,6 +219,8 @@ function groupedModel(
       return k >= 0 ? otherGroups[k]! : -1;
     },
     addRowOf: (group) =>
-      group >= 0 && group < groups.length ? addRows[group]! : -1
+      group >= 0 && group < groups.length ? addRows[group]! : -1,
+    headerRowOf: (group) =>
+      group >= 0 && group < groups.length ? headerRows[group]! : -1
   };
 }

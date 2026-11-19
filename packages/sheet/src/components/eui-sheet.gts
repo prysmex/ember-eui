@@ -117,6 +117,7 @@ import type {
   SheetContext,
   RecordInsert,
   SheetFieldDraft,
+  SheetGroup,
   SheetMessages
 } from '../core/index.ts';
 import type { Rejection } from '../-private/rejections.ts';
@@ -1357,6 +1358,43 @@ export default class EuiSheet<T extends object> extends Component<
     );
   }
 
+  /**
+   * The custom properties on the grid's container: the frozen header
+   * cells' `left`s and, while grouped, the header label's width bounds
+   * (V03 9.1): at least the row numbers and the first field, at most the
+   * grid's visible width once measured.
+   */
+  @cached
+  get gridVars(): ReturnType<typeof htmlSafe> | undefined {
+    const frozen = this.frozenStyle;
+    if (!this.isGrouped) return frozen;
+    const first = this.visibleFields[0];
+    const min =
+      (this.colOffset ? this.rowColumnWidth : 0) +
+      (first ? this.frozenWidth(first) : 0);
+    const max = this.groupMaxWidth;
+    const vars = [
+      `--euiSheetGroupMin:${min}px`,
+      `--euiSheetGroupMax:${max ? `${max}px` : 'none'}`
+    ].join(';');
+    return htmlSafe(frozen ? `${String(frozen)};${vars}` : vars);
+  }
+
+  /** The grid's visible width while grouped (`measureGroupWidth`); 0 before it is measured. */
+  @tracked groupMaxWidth = 0;
+
+  /** While grouped: the scroll element's client width, for `--euiSheetGroupMax`. */
+  measureGroupWidth = modifier((element: HTMLElement, [grouped]: [boolean]) => {
+    if (!grouped || typeof ResizeObserver === 'undefined') return;
+    const observer = new ResizeObserver(() => {
+      if (isDestroying(this) || isDestroyed(this)) return;
+      const width = this.scrollElement()?.clientWidth ?? 0;
+      if (width && width !== this.groupMaxWidth) this.groupMaxWidth = width;
+    });
+    observer.observe(element);
+    return () => observer.disconnect();
+  });
+
   /** While a field is frozen every column of a rendered row is rendered (9.1): a frozen cell must not unmount. */
   @cached
   get virtualizationOptions(): EuiDataGridVirtualizationOptions | undefined {
@@ -1659,12 +1697,21 @@ export default class EuiSheet<T extends object> extends Component<
   isAddFieldColumn = (columnId: string | undefined): boolean =>
     columnId === ADD_FIELD_COLUMN_ID;
 
-  /** The add row's class. */
+  /** The add row's class, and each group header row's (V03 9.1). */
   @cached
   get gridStyle(): EuiDataGridStyle | undefined {
-    const addRow = this.rowModel.addRowOf(-1);
-    if (addRow < 0) return undefined;
-    return { rowClasses: { [addRow]: 'euiSheet__addRow' } };
+    const model = this.rowModel;
+    const rowClasses: Record<number, string> = {};
+    const addRow = model.addRowOf(-1);
+    if (addRow >= 0) rowClasses[addRow] = 'euiSheet__addRow';
+    this.groups.forEach((group, i) => {
+      const row = model.headerRowOf(i);
+      if (row < 0) return;
+      const depth = Math.max(0, Math.floor(group.depth));
+      rowClasses[row] = `euiSheet__groupRow euiSheet__groupRow--depth${depth}`;
+    });
+    if (!Object.keys(rowClasses).length) return undefined;
+    return { rowClasses };
   }
 
   get rowNumberOffset(): number {
@@ -1831,13 +1878,30 @@ export default class EuiSheet<T extends object> extends Component<
   /* Rows (V03-DESIGN.md 4.2, 7.3): grid rows are positions, focus and the
      DOM; record rows index `@records` and are what the core gets */
 
-  /** Which grid row is a record, the add row (or, in 3b, a group header). */
+  /** `@groups`, or none. */
+  get groups(): readonly SheetGroup[] {
+    return this.args.groups ?? [];
+  }
+
+  get isGrouped(): boolean {
+    return this.groups.length > 0;
+  }
+
+  /** Which grid row is a record, an add row or a group header. */
   @cached
   get rowModel(): RowModel {
     return buildRowModel({
       recordCount: this.args.records.length,
-      addRow: this.hasAddRow
+      addRow: this.hasAddRow,
+      groups: this.args.groups
     });
+  }
+
+  /** The group a grid row is the header of; undefined for any other row. */
+  groupHeaderAt(row: number): SheetGroup | undefined {
+    if (!this.isGrouped) return undefined;
+    const at = this.rowModel.at(row);
+    return at?.kind === 'group' ? this.groups[at.group] : undefined;
   }
 
   get rowCount(): number {
@@ -2606,6 +2670,21 @@ export default class EuiSheet<T extends object> extends Component<
    * event is on a row number or on the header checkbox, where focus is
    * after a checkbox click. A copy on a data cell copies the range.
    */
+  /**
+   * Whether a clipboard event is on a group header's cell (V03 9.1): the
+   * sheet takes it with nothing in it, as on the add row, so the grid's
+   * own handler does not copy the header's text.
+   */
+  isGroupHeaderTarget(target: EventTarget | null): boolean {
+    if (!this.isGrouped) return false;
+    const cell = this.dataCell(target) ?? this.rowNumberCell(target);
+    return (
+      !!cell &&
+      this.isClipboardTarget(target, cell) &&
+      this.rowKind(this.rowIndexOf(cell)) === 'group'
+    );
+  }
+
   isCheckedRowsTarget(target: EventTarget | null): boolean {
     if (!this.checkedRecords.length || !(target instanceof Element)) {
       return false;
@@ -3056,6 +3135,20 @@ export default class EuiSheet<T extends object> extends Component<
     }
     const pos = this.cursor(cell);
     this.rowCursor = null;
+    // a group header (V03 9.1): focus only, no range to copy, clear or
+    // paste over; the arrows move on through the grid
+    if (this.rowKind(pos.row) === 'group') {
+      this.scrollLeftBeforeFocus = null;
+      this.focused = null;
+      this.readOnlyCue = null;
+      this.domCursor = null;
+      if (!keepRange) {
+        this.anchor = null;
+        this.head = null;
+        this.rangeKind = 'cells';
+      }
+      return;
+    }
     this.gridHadFocus = true;
     if (this.readOnlyCue && !samePos(this.readOnlyCue, pos)) {
       this.readOnlyCue = null;
@@ -5138,6 +5231,11 @@ export default class EuiSheet<T extends object> extends Component<
       stop(event);
       return;
     }
+    if (this.isGroupHeaderTarget(target)) {
+      event.clipboardData?.setData('text/plain', '');
+      stop(event);
+      return;
+    }
     if (!this.isRangeTarget(target)) return;
     const range = this.range;
     if (!range || !event.clipboardData) return;
@@ -5163,6 +5261,11 @@ export default class EuiSheet<T extends object> extends Component<
   onCut(event: ClipboardEvent): void {
     const target = event.target;
     if (this.editing && this.isInEditor(target)) return;
+    if (this.isGroupHeaderTarget(target)) {
+      event.clipboardData?.setData('text/plain', '');
+      stop(event);
+      return;
+    }
     if (!this.isRangeTarget(target)) return;
     const range = this.range;
     if (!range || !event.clipboardData) return;
@@ -6657,7 +6760,11 @@ export default class EuiSheet<T extends object> extends Component<
           {{yield this.blockApi to="toolbar"}}
         </div>
       {{/if}}
-      <div class="euiSheet__grid" style={{this.frozenStyle}}>
+      <div
+        class="euiSheet__grid"
+        style={{this.gridVars}}
+        {{this.measureGroupWidth this.isGrouped}}
+      >
         {{#if @isLoading}}
           <EuiProgress
             @size="xs"

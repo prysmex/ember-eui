@@ -216,6 +216,40 @@ export interface SheetFieldDraft {
   [option: string]: unknown;
 }
 
+/** One level of the owner's group-by (V03 8.1). Outermost first. */
+export interface SheetGroupBy {
+  field: string;
+  direction: 'asc' | 'desc';
+}
+
+/**
+ * One group header (V03 8.1). `@groups` lists them depth-first, in display
+ * order; the sheet places them by position (8.2): each header takes its
+ * next `loaded` records of `@records`. Nothing is read from the records.
+ */
+export interface SheetGroup {
+  /** The owner's id for the group: unique in `@groups`, the same after a re-query. */
+  key: string;
+  /** 0 for the outermost level; the group belongs to `@groupBy[depth]`. */
+  depth: number;
+  /** The value of `@groupBy[depth].field` its records share. A record added to the group, or dragged into it, gets it. */
+  value: unknown;
+  /** Default: `type.format(value)` of that field, or `messages.groupEmpty()` for an empty value. */
+  label?: string;
+  /** Records in the group in the owner's whole data (all pages, collapsed or not). */
+  count: number;
+  /** How many of `@records`, taken in order, are directly under this header. Default 0. */
+  loaded?: number;
+  /** Drawn closed. Its records are not in `@records` and its child groups are not in `@groups`. */
+  collapsed?: boolean;
+  /** Text per field id, drawn in the header row under that column. */
+  summary?: Record<string, string>;
+  /** The row number of its first loaded record. Default: one more than the record before it. */
+  rowNumberStart?: number;
+  /** The group began on an earlier page: the label says so. */
+  continued?: boolean;
+}
+
 export interface TypeContext<T = any> {
   /** The record the cell belongs to. For a row being inserted: the values accepted so far. */
   record: T | undefined;

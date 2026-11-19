@@ -9,7 +9,10 @@ import Component from '@glimmer/component';
 
 import EuiIcon from '@ember-eui/core/components/eui-icon';
 
+import GroupLabel from './group-label.gts';
+
 import type EuiSheet from '../components/eui-sheet.gts';
+import type { SheetGroup } from '../core/index.ts';
 import type { EuiDataGridSetCellProps } from '@ember-eui/core/utils/data-grid/types';
 
 interface RowNumberCellSignature {
@@ -27,6 +30,11 @@ export class RowNumberCell extends Component<RowNumberCellSignature> {
 
   get isAddRow(): boolean {
     return this.sheet.isAddRow(this.args.rowIndex);
+  }
+
+  /** The group when this is a group header row's cell (V03 9.1). */
+  get group(): SheetGroup | undefined {
+    return this.sheet.groupHeaderAt(this.args.rowIndex);
   }
 
   get hasRecord(): boolean {
@@ -57,6 +65,13 @@ export class RowNumberCell extends Component<RowNumberCellSignature> {
   get cellProps(): string {
     const props: Record<string, unknown> = {};
     const classes = ['euiSheet__rowCell'];
+    // a group header: not frozen (its first rendered cell is made sticky
+    // by the row's CSS, V03 9.1), no number
+    if (this.group) {
+      props['className'] = classes.join(' ');
+      this.args.setCellProps(props);
+      return '';
+    }
     // frozen with the first field (V02-DESIGN.md 6.7)
     const frozen = this.sheet.frozenCellProps(0);
     if (frozen) {
@@ -88,7 +103,9 @@ export class RowNumberCell extends Component<RowNumberCellSignature> {
 
   <template>
     {{this.cellProps}}
-    {{#if this.isAddRow}}
+    {{#if this.group}}
+      <GroupLabel @group={{this.group}} />
+    {{else if this.isAddRow}}
       <span
         class="euiSheet__rowAdd"
         data-test-subj="euiSheetRowAdd"

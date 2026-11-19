@@ -9,6 +9,7 @@ import type {
   ResolveRequest,
   ResolveResult,
   SheetFieldDraft,
+  SheetGroup,
   SheetMessages,
   ValidateContext
 } from './core/index.ts';
@@ -378,6 +379,12 @@ export interface EuiSheetSignature<T> {
     rowLabel?: (record: T, position: number) => string;
     /** Position of the first record (paged data): row numbers start at offset + 1. Default 0. */
     rowNumberOffset?: number;
+    /**
+     * Group headers (V03 8.1, 8.2), depth-first in display order: each
+     * takes its next `loaded` records of `@records`, in order. Absent or
+     * empty: no groups.
+     */
+    groups?: SheetGroup[];
     /** Inserting records (the add row, Shift+Enter, the menu). Default `!@readOnly`. */
     canInsert?: boolean;
     /** Deleting records (the menu). Default `!@readOnly`. */

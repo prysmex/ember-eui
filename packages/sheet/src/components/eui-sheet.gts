@@ -29,6 +29,7 @@ import {
 } from '@ember-eui/core/theming';
 
 import {
+  buildRowModel,
   cellKey,
   clearRange,
   commitText,
@@ -62,6 +63,7 @@ import {
   valueOf,
   withoutField
 } from '../core/index.ts';
+import type { RowModel, SheetRow } from '../core/index.ts';
 import { builtInSheetFieldTypes } from '../field-types.ts';
 import AutoScroll from '../-private/auto-scroll.ts';
 import FieldEditor, {
@@ -802,6 +804,8 @@ export default class EuiSheet<T extends object> extends Component<
   /** The `@records` of the last render, and their ids. */
   lastRecords: readonly T[] | null = null;
   lastIds: string[] = [];
+  /** The row model of that render: the stored positions are its grid rows. */
+  lastRowModel: RowModel | null = null;
   /** What emitted change sets insert and delete, until `@records` changes. */
   pendingOwn: PendingOwn = { deletes: new Set(), inserts: 0 };
   /** Every id `remapIds` was told about, old (as a string) → new. */
@@ -1600,7 +1604,7 @@ export default class EuiSheet<T extends object> extends Component<
   }
 
   isAddRow(row: number): boolean {
-    return this.hasAddRow && row === this.args.records.length;
+    return row >= 0 && row === this.rowModel.addRowOf(-1);
   }
 
   /** The visible fields, then the hidden ones: the expanded record, duplicate, undo. */
@@ -1616,7 +1620,7 @@ export default class EuiSheet<T extends object> extends Component<
     if (!label) return ROW_COLUMN_WIDTH;
     let longest = 0;
     this.args.records.forEach((record, i) => {
-      longest = Math.max(longest, label(record, this.positionOf(i)).length);
+      longest = Math.max(longest, label(record, this.numberOf(i)).length);
     });
     return Math.max(ROW_COLUMN_WIDTH, 24 + 8 * longest);
   }
@@ -1658,17 +1662,23 @@ export default class EuiSheet<T extends object> extends Component<
   /** The add row's class. */
   @cached
   get gridStyle(): EuiDataGridStyle | undefined {
-    if (!this.hasAddRow) return undefined;
-    return { rowClasses: { [this.args.records.length]: 'euiSheet__addRow' } };
+    const addRow = this.rowModel.addRowOf(-1);
+    if (addRow < 0) return undefined;
+    return { rowClasses: { [addRow]: 'euiSheet__addRow' } };
   }
 
   get rowNumberOffset(): number {
     return this.args.rowNumberOffset ?? 0;
   }
 
-  /** The position a row shows: `@rowNumberOffset + row + 1`. */
+  /** The number a record row shows: `@rowNumberOffset + recordRow + 1`. */
+  numberOf(recordRow: number): number {
+    return this.rowNumberOffset + recordRow + 1;
+  }
+
+  /** The position a grid row shows: its record's number. */
   positionOf(row: number): number {
-    return this.rowNumberOffset + row + 1;
+    return this.numberOf(this.recordRowAt(row));
   }
 
   /** What a row-number cell shows: `@rowLabel`, else the position. */
@@ -1690,7 +1700,7 @@ export default class EuiSheet<T extends object> extends Component<
       !!range &&
       row >= range.top &&
       row <= range.bottom &&
-      row < this.args.records.length
+      this.isRecordRow(row)
     );
   }
 
@@ -1780,11 +1790,16 @@ export default class EuiSheet<T extends object> extends Component<
     const getId = this.args.getRecordId;
     const value = !this.checkedIds.has(String(getId(record)));
     const from =
-      shift && this.lastToggledRow !== null
-        ? clamp(this.lastToggledRow, 0, this.args.records.length - 1)
-        : row;
+      shift && this.lastToggledRow !== null ? this.lastToggledRow : row;
+    // the records between the two rows (grid rows); never empty, `row` is one
+    const span = this.recordRange({
+      top: Math.min(from, row),
+      bottom: Math.max(from, row),
+      left: 0,
+      right: 0
+    })!;
     const next = new Set(this.checkedIds);
-    for (let r = Math.min(from, row); r <= Math.max(from, row); r++) {
+    for (let r = span.top; r <= span.bottom; r++) {
       const id = String(getId(this.args.records[r]!));
       if (value) next.add(id);
       else next.delete(id);
@@ -1808,22 +1823,85 @@ export default class EuiSheet<T extends object> extends Component<
   selectionRecords(): T[] {
     const checked = this.checkedRecords;
     if (checked.length) return checked;
-    const range = this.range;
+    const range = this.range && this.recordRange(this.range);
     if (!range) return [];
-    const records = this.args.records;
-    return records.slice(
-      Math.max(range.top, 0),
-      Math.min(range.bottom, records.length - 1) + 1
-    );
+    return this.args.records.slice(range.top, range.bottom + 1);
+  }
+
+  /* Rows (V03-DESIGN.md 4.2, 7.3): grid rows are positions, focus and the
+     DOM; record rows index `@records` and are what the core gets */
+
+  /** Which grid row is a record, the add row (or, in 3b, a group header). */
+  @cached
+  get rowModel(): RowModel {
+    return buildRowModel({
+      recordCount: this.args.records.length,
+      addRow: this.hasAddRow
+    });
   }
 
   get rowCount(): number {
-    return this.args.records.length + (this.hasAddRow ? 1 : 0);
+    return this.rowModel.length;
   }
 
-  /** The record of a row; `undefined` for the add row. */
+  /** The record of a grid row; `undefined` for the add row. */
   recordAt(row: number): T | undefined {
-    return this.args.records[row];
+    const r = this.rowModel.recordRowAt(row);
+    return r < 0 ? undefined : this.args.records[r];
+  }
+
+  /** The record row of a grid row; -1 for a row that is not a record. */
+  recordRowAt(row: number): number {
+    return this.rowModel.recordRowAt(row);
+  }
+
+  /** The grid row of a record row; -1 outside `@records`. */
+  gridRowOf(recordRow: number): number {
+    return this.rowModel.gridRowOf(recordRow);
+  }
+
+  /** The records inside a grid range, as a record range; null when it holds none. */
+  recordRange(range: Range): Range | null {
+    return this.rowModel.recordRange(range);
+  }
+
+  /** A grid position as a record position; `row` -1 when it is not on a record. */
+  recordPos(pos: Pos): Pos {
+    return { row: this.recordRowAt(pos.row), col: pos.col };
+  }
+
+  /**
+   * A grid row as the core sees it: its record row; for an add row (or a
+   * header), the record row after the records above it, as v0.2 passed
+   * `records.length` for the add row.
+   */
+  coreRowOf(row: number): number {
+    const r = this.recordRowAt(row);
+    if (r >= 0) return r;
+    const above = this.rowModel.nearestRecordRow(row, -1);
+    return above < 0 ? 0 : this.recordRowAt(above) + 1;
+  }
+
+  /** A record position (from the core) as a grid position. */
+  gridPos(pos: Pos): Pos {
+    return { row: this.gridRowOf(pos.row), col: pos.col };
+  }
+
+  rowKind(row: number): SheetRow['kind'] | undefined {
+    return this.rowModel.at(row)?.kind;
+  }
+
+  isRecordRow(row: number): boolean {
+    return this.recordRowAt(row) >= 0;
+  }
+
+  /** The record row nearest a grid row, looking up first (the v0.2 clamp to the last record); `fallback` without records. */
+  clampToRecordRow(row: number, fallback: number): number {
+    const model = this.rowModel;
+    const up = model.nearestRecordRow(row, -1);
+    if (up >= 0) return up;
+    const down = model.nearestRecordRow(row, 1);
+    return down >= 0 ? down : fallback;
   }
 
   /** The class that defines the `--euiSheet-*` colours from the EUI theme. */
@@ -1959,11 +2037,12 @@ export default class EuiSheet<T extends object> extends Component<
     return sameFieldValue(this.typeOf(field), a, b);
   }
 
-  /** A cell component's `@onCommit(value)`. */
+  /** A cell component's `@onCommit(value)`, at a grid row. */
   commitCellValue(row: number, col: number, value: unknown): void {
     const pos = { row, col };
     const touched = this.touchedAt(pos);
-    this.emit(commitValue(this.context, pos, value), touched);
+    // off a record: row -1, which the core answers with null, as before
+    this.emit(commitValue(this.context, this.recordPos(pos), value), touched);
   }
 
   /* -------------------------------------------------------------------- */
@@ -2033,10 +2112,12 @@ export default class EuiSheet<T extends object> extends Component<
     if (records === this.lastRecords) return;
     const previous = this.lastRecords;
     const previousIds = this.lastIds;
+    const previousModel = this.lastRowModel;
     const ids = records.map((record) => String(this.args.getRecordId(record)));
     const pending = this.pendingOwn;
     this.lastRecords = records;
     this.lastIds = ids;
+    this.lastRowModel = this.rowModel;
     this.pendingOwn = { deletes: new Set(), inserts: 0 };
     // a pending cell whose record left `@records` (an owner's re-query) is
     // dropped; one on a row not inserted yet (an async owner) is kept
@@ -2050,7 +2131,7 @@ export default class EuiSheet<T extends object> extends Component<
       !sameIds(previousIds, ids) &&
       !isOwnChange(previousIds, ids, pending)
     ) {
-      this.followRecords(previousIds, ids);
+      this.followRecords(previousIds, ids, previousModel ?? this.rowModel);
     }
     // the expanded record left `@records` (deleted, or the owner re-queried)
     const expanded = this.expandedId;
@@ -2070,7 +2151,11 @@ export default class EuiSheet<T extends object> extends Component<
    * without a change set when the record is gone; a drag ends. A data cell
    * that had focus is focused again at the new position.
    */
-  followRecords(previousIds: readonly string[], ids: readonly string[]): void {
+  followRecords(
+    previousIds: readonly string[],
+    ids: readonly string[],
+    previousModel: RowModel
+  ): void {
     const indexOf = new Map(ids.map((id, i) => [id, i]));
     const active = document.activeElement;
     // a data cell has focus, or had it until this render removed its row
@@ -2087,7 +2172,7 @@ export default class EuiSheet<T extends object> extends Component<
         hadEditorFocus = this.isInEditor(active);
         this.editing = null;
       } else {
-        editing.pos = { row, col: editing.pos.col };
+        editing.pos = { row: this.gridRowOf(row), col: editing.pos.col };
         const cell = this.cellElement(editing.pos);
         const rect = cell && this.rectOf(cell);
         if (rect) {
@@ -2105,16 +2190,21 @@ export default class EuiSheet<T extends object> extends Component<
     // the copy mark's cells are other records now
     if (this.copied) this.copied = null;
     if (head) {
-      const id = previousIds[head.row];
+      const id = previousIds[previousModel.recordRowAt(head.row)];
       const found = id === undefined ? undefined : indexOf.get(id);
       // the last record, or the add row when there is none
-      const lastRow = ids.length ? ids.length - 1 : this.rowCount - 1;
-      if (this.rowCount === 0) {
+      const model = this.rowModel;
+      const lastRow =
+        model.lastRecordRow >= 0 ? model.lastRecordRow : model.length - 1;
+      if (model.length === 0) {
         this.anchor = null;
         this.head = null;
       } else {
         const pos = {
-          row: found ?? clamp(head.row, 0, lastRow),
+          row:
+            found === undefined
+              ? clamp(head.row, 0, lastRow)
+              : this.gridRowOf(found),
           col: head.col
         };
         this.anchor = pos;
@@ -2135,7 +2225,9 @@ export default class EuiSheet<T extends object> extends Component<
   applyPendingFocus(): void {
     const pending = this.pendingFocus;
     if (!pending) return;
-    const row = this.lastIds.indexOf(pending.id);
+    // `lastIds` and `lastRowModel` are of the same render
+    const model = this.lastRowModel ?? this.rowModel;
+    const row = model.gridRowOf(this.lastIds.indexOf(pending.id));
     if (row < 0) return;
     this.pendingFocus = null;
     const col = Math.max(
@@ -2159,7 +2251,10 @@ export default class EuiSheet<T extends object> extends Component<
     );
   }
 
-  /** The row of a record now, trying `hint` first; -1 when it is gone. */
+  /**
+   * The record row of a record now, trying `hint` (a record row) first; -1
+   * when it is gone. Callers that focus or select convert with `gridRowOf`.
+   */
   rowOf(recordId: RecordId, hint: number): number {
     const records = this.args.records;
     const getId = this.args.getRecordId;
@@ -2167,6 +2262,11 @@ export default class EuiSheet<T extends object> extends Component<
     const atHint = records[hint];
     if (atHint !== undefined && String(getId(atHint)) === id) return hint;
     return records.findIndex((record) => String(getId(record)) === id);
+  }
+
+  /** A `rowOf` hint from a grid row: its record row, else 0. */
+  hintOf(gridRow: number | undefined): number {
+    return Math.max(this.recordRowAt(gridRow ?? 0), 0);
   }
 
   /** The data cell an event belongs to, or null (header, footer, control column, toolbar, editor). */
@@ -2341,13 +2441,15 @@ export default class EuiSheet<T extends object> extends Component<
     }
   }
 
-  /** Insert above or below a row (Shift+Enter, the menu); focus goes to `fieldId` of the new row. */
+  /** Insert above or below a grid row (Shift+Enter, the menu); focus goes to `fieldId` of the new row. */
   insertNear(
-    row: number,
+    gridRow: number,
     position: 'before' | 'after',
     fieldId: string | null
   ): void {
     const records = this.args.records;
+    // the neighbours are records: ± 1 in `@records`
+    const row = this.recordRowAt(gridRow);
     const record = records[row];
     if (record === undefined) return;
     const recordId = this.args.getRecordId(record);
@@ -2728,7 +2830,7 @@ export default class EuiSheet<T extends object> extends Component<
 
   /** Opens a record of `@records`; `from` is the cell focus returns to on close. */
   expandRecord(recordId: RecordId, from: ExpandedFrom | null): void {
-    if (this.rowOf(recordId, this.head?.row ?? 0) < 0) return;
+    if (this.rowOf(recordId, this.hintOf(this.head?.row)) < 0) return;
     if (this.editing) this.commit({ refocus: false });
     this.expandedFrom = from ?? this.expandedFrom;
     this.setExpanded(recordId);
@@ -2746,11 +2848,11 @@ export default class EuiSheet<T extends object> extends Component<
         this.expandedFrom ??= from;
         return;
       }
-      const row = this.rowOf(from.recordId, this.head?.row ?? 0);
+      const row = this.rowOf(from.recordId, this.hintOf(this.head?.row));
       if (row < 0) return;
       if (from.fieldId === null) {
         this.keepRangeOnFocus = true;
-        this.focusRowNumberCell(row);
+        this.focusRowNumberCell(this.gridRowOf(row));
       } else {
         this.focusRecordCell({
           recordId: from.recordId,
@@ -2785,7 +2887,7 @@ export default class EuiSheet<T extends object> extends Component<
       : '';
     if (text.trim()) return text;
     const row = this.rowOf(this.args.getRecordId(record), 0);
-    return this.messages.recordTitle(this.positionOf(Math.max(row, 0)));
+    return this.messages.recordTitle(this.numberOf(Math.max(row, 0)));
   }
 
   /** A one-record context for the form: every field, visible and hidden. */
@@ -2888,8 +2990,14 @@ export default class EuiSheet<T extends object> extends Component<
     return [{ id: this.args.getRecordId(record), fieldId: field.id }];
   }
 
-  /** Every existing cell of a range (clamped), optionally only the writable ones. */
-  touchedIn(range: Range, writableOnly: boolean): Touched {
+  /** Every existing cell of a grid range (its records), optionally only the writable ones. */
+  touchedIn(gridRange: Range, writableOnly: boolean): Touched {
+    const range = this.recordRange(gridRange);
+    return range ? this.touchedInRecords(range, writableOnly) : [];
+  }
+
+  /** Every existing cell of a record range (clamped), optionally only the writable ones. */
+  touchedInRecords(range: Range, writableOnly: boolean): Touched {
     const touched: Touched = [];
     const records = this.args.records;
     const fields = this.visibleFields;
@@ -2986,7 +3094,7 @@ export default class EuiSheet<T extends object> extends Component<
     this.domCursor = null;
     if (keepRange) return;
     const last = this.visibleFields.length - 1;
-    if (this.extending && row < this.args.records.length) {
+    if (this.extending && this.isRecordRow(row)) {
       if (this.rangeKind !== 'rows' || !this.anchor) {
         this.anchor = { row: from ?? row, col: 0 };
         this.rangeKind = 'rows';
@@ -3131,7 +3239,7 @@ export default class EuiSheet<T extends object> extends Component<
       // the range is the press's: focusin must not clear it
       this.keepRangeOnFocus = true;
       const row = this.rowIndexOf(rowCell);
-      if (row >= this.args.records.length || event.button !== 0) return;
+      if (!this.isRecordRow(row) || event.button !== 0) return;
       // the checkbox and the expand icon are buttons, not a selection
       if (
         target.closest(
@@ -3167,7 +3275,7 @@ export default class EuiSheet<T extends object> extends Component<
       event.shiftKey &&
       !this.editing &&
       this.rangeKind === 'cells' &&
-      pos.row < this.args.records.length &&
+      this.isRecordRow(pos.row) &&
       this.dataCell(document.activeElement)
     ) {
       event.preventDefault();
@@ -3181,7 +3289,7 @@ export default class EuiSheet<T extends object> extends Component<
       !event.shiftKey &&
       !this.editing &&
       this.lastPointerType !== 'touch' &&
-      pos.row < this.args.records.length &&
+      this.isRecordRow(pos.row) &&
       !target.closest('[data-eui-sheet-opener]')
     ) {
       this.dragFrom = pos;
@@ -3240,9 +3348,7 @@ export default class EuiSheet<T extends object> extends Component<
   selectRows(row: number, extend: boolean): void {
     const last = this.visibleFields.length - 1;
     const anchorRow =
-      extend && this.anchor
-        ? clamp(this.anchor.row, 0, this.args.records.length - 1)
-        : row;
+      extend && this.anchor ? this.clampToRecordRow(this.anchor.row, row) : row;
     this.anchor = { row: anchorRow, col: 0 };
     this.head = { row, col: last };
     this.rangeKind = 'rows';
@@ -3250,13 +3356,13 @@ export default class EuiSheet<T extends object> extends Component<
 
   /** Selects whole columns of the records: from `col`, or from the range's anchor with `extend`. */
   selectColumns(col: number, extend: boolean): void {
-    const lastRow = this.args.records.length - 1;
+    const lastRow = this.rowModel.lastRecordRow;
     if (lastRow < 0) return;
     const anchorCol =
       extend && this.anchor && this.rangeKind === 'columns'
         ? this.anchor.col
         : col;
-    this.anchor = { row: 0, col: anchorCol };
+    this.anchor = { row: this.rowModel.firstRecordRow, col: anchorCol };
     this.head = { row: lastRow, col };
     this.rangeKind = 'columns';
   }
@@ -3280,7 +3386,7 @@ export default class EuiSheet<T extends object> extends Component<
       const target = this.rowNumberCell(element) ?? this.dataCell(element);
       if (!target) return;
       const row = this.rowIndexOf(target);
-      if (row >= this.args.records.length) return;
+      if (!this.isRecordRow(row)) return;
       if (!this.dragging) {
         if (row === from.row) return;
         this.dragging = true;
@@ -3293,7 +3399,7 @@ export default class EuiSheet<T extends object> extends Component<
     if (!cell) return;
     const pos = this.cursor(cell);
     // the add row is never part of a range
-    if (pos.row >= this.args.records.length) return;
+    if (!this.isRecordRow(pos.row)) return;
     if (!this.dragging) {
       if (samePos(pos, from)) return;
       this.dragging = true;
@@ -3374,17 +3480,19 @@ export default class EuiSheet<T extends object> extends Component<
     const range = this.range;
     if (!range || this.args.readOnly || this.editing) return null;
     if (this.rangeKind !== 'cells') return null;
-    if (range.top >= this.args.records.length) return null;
+    if (!this.recordRange(range)) return null;
     return range;
   }
 
   /** Puts the handle at the corner of the range's last cell, or hides it while that corner is not in view. */
   placeFillHandle(element: HTMLElement, range: Range): void {
+    // the range's last record row
+    const records = this.recordRange(range);
     const corner = {
-      row: Math.min(range.bottom, this.args.records.length - 1),
+      row: records ? this.gridRowOf(records.bottom) : -1,
       col: range.right
     };
-    const cell = this.cellElement(corner);
+    const cell = records ? this.cellElement(corner) : null;
     const bounds = cell && this.scrollBounds();
     const rect = cell && this.rectOf(cell);
     let shown = false;
@@ -3419,8 +3527,9 @@ export default class EuiSheet<T extends object> extends Component<
   get rangeOutline(): Range | null {
     const range = this.range;
     if (!range || this.editing) return null;
-    const bottom = Math.min(range.bottom, this.args.records.length - 1);
-    if (bottom < range.top) return null;
+    const records = this.recordRange(range);
+    if (!records) return null;
+    const bottom = this.gridRowOf(records.bottom);
     if (bottom === range.top && range.left === range.right) return null;
     return range;
   }
@@ -3440,7 +3549,10 @@ export default class EuiSheet<T extends object> extends Component<
       element.style.display = 'none';
     };
     if (!wrapper || !bounds || !outline) return hide();
-    const bottom = Math.min(range.bottom, this.args.records.length - 1);
+    // the range's last record row
+    const records = this.recordRange(range);
+    if (!records) return hide();
+    const bottom = this.gridRowOf(records.bottom);
     let left = Infinity;
     let top = Infinity;
     let right = -Infinity;
@@ -3537,7 +3649,7 @@ export default class EuiSheet<T extends object> extends Component<
     if (!source || !cell) return;
     const pos = this.cursor(cell);
     // a fill never reaches the add row
-    const row = Math.min(pos.row, this.args.records.length - 1);
+    const row = this.clampToRecordRow(pos.row, pos.row);
     const down = row - source.bottom;
     const up = source.top - row;
     const right = pos.col - source.right;
@@ -3580,8 +3692,11 @@ export default class EuiSheet<T extends object> extends Component<
     // the click that may follow is the end of the drag
     this.suppressClick = true;
     if (!source || !target || sameRange(source, target)) return;
+    const recordSource = this.recordRange(source);
+    const recordTarget = this.recordRange(target);
+    if (!recordSource || !recordTarget) return;
     this.emit(
-      fillRange(this.context, source, target, {
+      fillRange(this.context, recordSource, recordTarget, {
         copy: event.ctrlKey || event.altKey
       }),
       this.touchedIn(this.fillWritten(source, target), true)
@@ -3713,7 +3828,7 @@ export default class EuiSheet<T extends object> extends Component<
     stop(event);
   }
 
-  /** The record row of a data cell or a row-number cell; -1 elsewhere. */
+  /** The grid row of a data cell or a row-number cell on a record; -1 elsewhere. */
   menuRowOf(target: Element): number {
     const rowCell = this.rowNumberCell(target);
     const cell = rowCell ? null : this.dataCell(target);
@@ -3722,7 +3837,7 @@ export default class EuiSheet<T extends object> extends Component<
       : cell
         ? this.cursor(cell).row
         : -1;
-    return row >= 0 && row < this.args.records.length ? row : -1;
+    return this.isRecordRow(row) ? row : -1;
   }
 
   /* -------------------------------------------------------------------- */
@@ -4053,7 +4168,7 @@ export default class EuiSheet<T extends object> extends Component<
       : cell
         ? this.cursor(cell).row
         : -1;
-    if (row < 0 || row >= this.args.records.length) return false;
+    if (!this.isRecordRow(row)) return false;
     let col: number | null = null;
     if (rowCell) {
       if (!this.isRowSelected(row)) this.selectRows(row, false);
@@ -4203,7 +4318,10 @@ export default class EuiSheet<T extends object> extends Component<
       const result = type.navKey(key, valueOf(record, field.id), field);
       if (result) {
         stop(event);
-        this.emit(commitValue(ctx, pos, result.value), this.touchedAt(pos));
+        this.emit(
+          commitValue(ctx, this.recordPos(pos), result.value),
+          this.touchedAt(pos)
+        );
         return;
       }
     }
@@ -4293,9 +4411,10 @@ export default class EuiSheet<T extends object> extends Component<
     if (letter === 'a' && !event.shiftKey) {
       // every cell; focus stays where it is
       stop(event);
-      this.anchor = { row: 0, col: 0 };
+      const model = this.rowModel;
+      this.anchor = { row: Math.max(model.firstRecordRow, 0), col: 0 };
       this.head = {
-        row: this.args.records.length - 1,
+        row: model.lastRecordRow,
         col: this.visibleFields.length - 1
       };
       this.rangeKind = 'cells';
@@ -4320,29 +4439,44 @@ export default class EuiSheet<T extends object> extends Component<
     const lastCol = this.visibleFields.length - 1;
     // with Shift the range's head moves and focus stays on the active cell
     // (V03 batch 1): every target is computed from the head
-    const extend = event.shiftKey && !this.isAddRow(pos.row);
+    const extend = event.shiftKey && this.isRecordRow(pos.row);
     const from =
       extend && this.head && this.anchor && this.rangeKind === 'cells'
         ? this.head
         : pos;
+    const model = this.rowModel;
     let target: Pos;
     if (command && key in ARROW_DIRECTIONS) {
       const direction = ARROW_DIRECTIONS[key as keyof typeof ARROW_DIRECTIONS];
-      target = edgeTarget(this.context, from, direction);
+      // in record rows; the add row is the row after the records above it
+      const core = { row: this.coreRowOf(from.row), col: from.col };
+      const edge = edgeTarget(this.context, core, direction);
+      target =
+        edge.row === core.row
+          ? { row: from.row, col: edge.col }
+          : this.gridPos(edge);
     } else if (extend && key in ARROW_DIRECTIONS) {
       const [dRow, dCol] = ARROW_STEPS[key as keyof typeof ARROW_STEPS];
+      const row = clamp(
+        from.row + dRow,
+        model.firstRecordRow,
+        model.lastRecordRow
+      );
       target = {
-        row: clamp(from.row + dRow, 0, records - 1),
+        // a header or an add row in the way is stepped over (3b)
+        row: this.isRecordRow(row)
+          ? row
+          : model.nearestRecordRow(row, dRow < 0 ? -1 : 1),
         col: clamp(from.col + dCol, 0, lastCol)
       };
     } else if (event.shiftKey && (key === 'Home' || key === 'End')) {
       target =
         key === 'Home'
-          ? { row: command ? 0 : from.row, col: 0 }
-          : { row: command ? records - 1 : from.row, col: lastCol };
+          ? { row: command ? model.firstRecordRow : from.row, col: 0 }
+          : { row: command ? model.lastRecordRow : from.row, col: lastCol };
     } else if ((key === 'PageDown' || key === 'PageUp') && !command) {
       const page = this.pageRows();
-      const last = event.shiftKey ? records - 1 : this.rowCount - 1;
+      const last = event.shiftKey ? model.lastRecordRow : model.length - 1;
       target = {
         row: clamp(from.row + (key === 'PageDown' ? page : -page), 0, last),
         col: from.col
@@ -4490,7 +4624,7 @@ export default class EuiSheet<T extends object> extends Component<
    * the range is set here, so the focus that comes later keeps it.
    */
   moveFocus(target: Pos, extend: boolean): void {
-    if (extend && this.anchor && !this.isAddRow(target.row)) {
+    if (extend && this.anchor && this.isRecordRow(target.row)) {
       this.head = target;
     } else {
       this.anchor = target;
@@ -4556,7 +4690,9 @@ export default class EuiSheet<T extends object> extends Component<
     if (event.key !== 'Home' || !this.colOffset) return false;
     if (event.altKey || event.shiftKey || event.metaKey) return false;
     stop(event);
-    this.focusGridCell({ row: event.ctrlKey ? 0 : row, col: 0 });
+    // Ctrl+Home: the first record (the add row when there is none)
+    const first = Math.max(this.rowModel.firstRecordRow, 0);
+    this.focusGridCell({ row: event.ctrlKey ? first : row, col: 0 });
     // Home also scrolls to the left edge (the frozen field is in view anyway)
     if (this.frozenCount) this.scrollLeftBeforeFocus = 0;
     return true;
@@ -4609,28 +4745,37 @@ export default class EuiSheet<T extends object> extends Component<
 
   /** Delete and Backspace: the range's writable cells get their empty value. */
   clearSelection(): void {
-    const range = this.range;
+    const range = this.range && this.recordRange(this.range);
     if (!range) return;
-    this.emit(clearRange(this.context, range), this.touchedIn(range, true));
+    this.emit(
+      clearRange(this.context, range),
+      this.touchedInRecords(range, true)
+    );
   }
 
   /** Ctrl/Cmd+R: fill the range right, or the cell from the one to its left. */
   fillRightSelection(): void {
-    const range = this.range;
-    if (!range || range.top >= this.args.records.length) return;
+    const range = this.range && this.recordRange(this.range);
+    if (!range) return;
     const targets =
       range.right > range.left ? { ...range, left: range.left + 1 } : range;
-    this.emit(fillRight(this.context, range), this.touchedIn(targets, true));
+    this.emit(
+      fillRight(this.context, range),
+      this.touchedInRecords(targets, true)
+    );
   }
 
   /** Ctrl/Cmd+D: fill the range down, or the cell from the one above. */
   fill(): void {
-    const range = this.range;
-    if (!range || range.top >= this.args.records.length) return;
-    // the cells written: below the top row, or the row itself (from above)
+    const range = this.range && this.recordRange(this.range);
+    if (!range) return;
+    // the cells written: below the top record, or the record itself (from above)
     const targets =
       range.bottom > range.top ? { ...range, top: range.top + 1 } : range;
-    this.emit(fillDown(this.context, range), this.touchedIn(targets, true));
+    this.emit(
+      fillDown(this.context, range),
+      this.touchedInRecords(targets, true)
+    );
   }
 
   /* -------------------------------------------------------------------- */
@@ -4718,10 +4863,10 @@ export default class EuiSheet<T extends object> extends Component<
     recordId: RecordId;
     fieldId: string;
   }): void {
-    const row = this.rowOf(recordId, this.head?.row ?? 0);
+    const row = this.rowOf(recordId, this.hintOf(this.head?.row));
     const col = this.visibleFields.findIndex((field) => field.id === fieldId);
     if (row < 0 || col < 0) return;
-    const pos = { row, col };
+    const pos = { row: this.gridRowOf(row), col };
     this.anchor = pos;
     this.head = pos;
     this.rangeKind = 'cells';
@@ -4932,8 +5077,9 @@ export default class EuiSheet<T extends object> extends Component<
     }
     let focus: Pos;
     if (box) {
-      focus = { row: box.top, col: box.left };
-      this.anchor = { row: box.bottom, col: box.right };
+      // the box is in record rows
+      focus = this.gridPos({ row: box.top, col: box.left });
+      this.anchor = this.gridPos({ row: box.bottom, col: box.right });
     } else if (changeSet.inserts.length) {
       const field = this.visibleFields[this.head?.col ?? 0];
       if (!field || !focusCell) return;
@@ -4948,8 +5094,8 @@ export default class EuiSheet<T extends object> extends Component<
       // nothing patched (an undo that only removed rows): keep focus on a
       // row that still exists
       const head = this.head;
-      if (!head || head.row < rows || rows === 0) return;
-      focus = { row: rows - 1, col: head.col };
+      if (!head || rows === 0 || head.row <= this.gridRowOf(rows - 1)) return;
+      focus = { row: this.gridRowOf(rows - 1), col: head.col };
       this.anchor = focus;
     }
     this.head = focus;
@@ -4995,13 +5141,16 @@ export default class EuiSheet<T extends object> extends Component<
     if (!this.isRangeTarget(target)) return;
     const range = this.range;
     if (!range || !event.clipboardData) return;
-    event.clipboardData.setData(
-      'text/plain',
-      toTsv(rangeMatrix(this.context, range))
-    );
+    event.clipboardData.setData('text/plain', this.rangeTsv(range));
     // stopPropagation is required: the grid's document copy handlers
     stop(event);
     this.copied = range;
+  }
+
+  /** The records of a grid range as TSV; '' when it holds none (the add row). */
+  rangeTsv(range: Range): string {
+    const records = this.recordRange(range);
+    return toTsv(records ? rangeMatrix(this.context, records) : []);
   }
 
   /**
@@ -5017,20 +5166,20 @@ export default class EuiSheet<T extends object> extends Component<
     if (!this.isRangeTarget(target)) return;
     const range = this.range;
     if (!range || !event.clipboardData) return;
-    event.clipboardData.setData(
-      'text/plain',
-      toTsv(rangeMatrix(this.context, range))
-    );
+    event.clipboardData.setData('text/plain', this.rangeTsv(range));
     // stopPropagation: the grid's document clipboard handlers
     stop(event);
     if (this.args.readOnly) {
       this.copied = range;
       return;
     }
-    this.emit(
-      clearRange(this.context, range, { source: 'cut' }),
-      this.touchedIn(range, true)
-    );
+    const records = this.recordRange(range);
+    if (records) {
+      this.emit(
+        clearRange(this.context, records, { source: 'cut' }),
+        this.touchedInRecords(records, true)
+      );
+    }
     // after the emit, which clears the mark of an older copy
     this.copied = range;
   }
@@ -5062,6 +5211,8 @@ export default class EuiSheet<T extends object> extends Component<
     if (!range) return;
     stop(event);
     const anchor = { row: range.top, col: range.left };
+    // the core's anchor: its record row, or `records.length` on the add row
+    const at = { row: this.coreRowOf(anchor.row), col: anchor.col };
     // a block that fits the selection a whole number of times fills it
     let matrix = tileMatrix(
       parseTsv(data.getData('text/plain')),
@@ -5070,34 +5221,33 @@ export default class EuiSheet<T extends object> extends Component<
     );
     // without inserting, lines past the last record are dropped (5.8)
     if (!this.canInsert) {
-      matrix = matrix.slice(
-        0,
-        Math.max(this.args.records.length - anchor.row, 0)
-      );
+      matrix = matrix.slice(0, Math.max(this.args.records.length - at.row, 0));
       if (!matrix.length) return;
     }
     const width = Math.max(...matrix.map((line) => line.length));
+    const right = Math.min(
+      anchor.col + width - 1,
+      this.visibleFields.length - 1
+    );
+    // in record rows: the records written (inserted ones are not there yet)
     const pasted = {
-      top: anchor.row,
+      top: at.row,
       left: anchor.col,
-      bottom: anchor.row + matrix.length - 1,
-      right: Math.min(anchor.col + width - 1, this.visibleFields.length - 1)
+      bottom: at.row + matrix.length - 1,
+      right
     };
-    const touched = this.touchedIn(pasted, false);
+    const touched = this.touchedInRecords(pasted, false);
     if (this.args.onResolve) {
       // V9: the synchronous part at once, the resolved part later
-      const plan = planPaste(this.context, anchor, matrix, { nextTempId });
+      const plan = planPaste(this.context, at, matrix, { nextTempId });
       const entry = this.emit(plan.changeSet, touched);
       this.startResolve(plan, entry);
     } else {
-      this.emit(
-        pasteMatrix(this.context, anchor, matrix, { nextTempId }),
-        touched
-      );
+      this.emit(pasteMatrix(this.context, at, matrix, { nextTempId }), touched);
     }
     // no setFocusedCell: inserted rows exist only after the next render
     this.anchor = anchor;
-    this.head = { row: pasted.bottom, col: pasted.right };
+    this.head = { row: anchor.row + matrix.length - 1, col: right };
     this.rangeKind = 'cells';
   }
 
@@ -5263,7 +5413,9 @@ export default class EuiSheet<T extends object> extends Component<
 
   /** The edited record, by id: the owner may have moved it (V02-DESIGN.md 3.2). */
   editorRecord = (editing: Editing): T | undefined =>
-    this.args.records[this.rowOf(editing.recordId, editing.pos.row)];
+    this.args.records[
+      this.rowOf(editing.recordId, this.hintOf(editing.pos.row))
+    ];
 
   editorValue = (editing: Editing): unknown =>
     valueOf(this.editorRecord(editing), editing.field.id);
@@ -5283,7 +5435,7 @@ export default class EuiSheet<T extends object> extends Component<
     // editor leaving the DOM) finds editing === null and returns.
     this.editing = null;
     // the edited record's row now; gone: nothing to save
-    const row = this.rowOf(editing.recordId, editing.pos.row);
+    const row = this.rowOf(editing.recordId, this.hintOf(editing.pos.row));
     if (row < 0) return;
     const pos = { row, col: editing.pos.col };
     const ctx = this.context;
@@ -5299,8 +5451,13 @@ export default class EuiSheet<T extends object> extends Component<
     }
     if (refocus) {
       // synchronous is safe: the target row already exists
+      const model = this.rowModel;
       this.focusGridCell({
-        row: clamp(pos.row + move[0], 0, this.args.records.length - 1),
+        row: clamp(
+          this.gridRowOf(pos.row) + move[0],
+          model.firstRecordRow,
+          model.lastRecordRow
+        ),
         col: clamp(pos.col + move[1], 0, this.visibleFields.length - 1)
       });
     }
@@ -5310,9 +5467,9 @@ export default class EuiSheet<T extends object> extends Component<
     const editing = this.editing;
     if (!editing) return;
     this.editing = null;
-    const row = this.rowOf(editing.recordId, editing.pos.row);
+    const row = this.rowOf(editing.recordId, this.hintOf(editing.pos.row));
     if (row < 0) return;
-    this.focusGridCell({ row, col: editing.pos.col });
+    this.focusGridCell({ row: this.gridRowOf(row), col: editing.pos.col });
   };
 
   /* Editor callbacks, bound once */
@@ -5333,7 +5490,7 @@ export default class EuiSheet<T extends object> extends Component<
   onEditorSave = (value: unknown): void => {
     const editing = this.editing;
     if (!editing) return;
-    const row = this.rowOf(editing.recordId, editing.pos.row);
+    const row = this.rowOf(editing.recordId, this.hintOf(editing.pos.row));
     if (row < 0) return;
     this.emit(commitValue(this.context, { row, col: editing.pos.col }, value), [
       { id: editing.recordId, fieldId: editing.field.id }
@@ -5993,7 +6150,12 @@ export default class EuiSheet<T extends object> extends Component<
         : { top: row, bottom: row, left: col, right: col };
     }
     if (!range) return;
-    this.flash = range;
+    // drawn in grid rows
+    this.flash = {
+      ...range,
+      top: this.gridRowOf(range.top),
+      bottom: this.gridRowOf(range.bottom)
+    };
     if (this.flashTimer) clearTimeout(this.flashTimer);
     // a plain timer: tests' settled() does not wait for a decoration
     this.flashTimer = setTimeout(() => {
@@ -6227,7 +6389,9 @@ export default class EuiSheet<T extends object> extends Component<
   pasteFiles(files: FileList): boolean {
     const range = this.range;
     if (!range) return false;
-    const record = this.recordAt(range.top);
+    // the range's first record
+    const records = this.recordRange(range);
+    const record = records ? this.args.records[records.top] : undefined;
     const field = this.visibleFields[range.left];
     if (record === undefined || !field || !uploadOf(field)) return false;
     if (isReadOnly(this.context, field, record)) return true;

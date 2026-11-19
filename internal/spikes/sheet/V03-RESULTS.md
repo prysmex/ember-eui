@@ -872,3 +872,163 @@ And `v03-b2/*-layer-*.png`, and this section.
   pipeline), not a person at a Mac.
 - **The P7 fix keys on `document.hasFocus()`**: with the window not
   focused, the old rule applies.
+
+## Batch 3a: the row model
+
+Built 2026-11-19 on `94b8e52f`, in the repository (tested in a Linux
+copy). Scope: V03-DESIGN.md section 7. Nothing a user or a test can see
+changes: the only model is the identity one. Baseline before any change:
+423/423. After: **435/435** (423 + RM1-RM12), in one full run; RM1-RM12
+again alone after a last cleanup of `rows.ts` (12/12). No existing test
+file was edited. `eslint` and `prettier --check` are clean on the changed
+files; `pnpm lint:types` (src) has no error; `docs:api:check` passes; the
+tests' `ember-tsc` has the baseline's 19 errors, none new.
+`packages/core/src` is unchanged.
+
+### What was built
+
+- **`src/core/rows.ts` (new)**: `SheetRow`, `RowModel`, `buildRowModel`,
+  exported from the core index like the other core modules.
+  - Identity model (no groups): closed-form. `recordRowAt(g)` is `g` below
+    the record count, else -1; `gridRowOf(r)` is `r` inside `@records`,
+    else -1. No arrays.
+  - Grouped model: one pass over the groups. Two `Int32Array`s
+    (`rowToRecord`, `recordToRow`), one small `Int32Array` of each group's
+    add row, and three small arrays of the non-record rows (row, group,
+    kind). `recordRange` and `nearestRecordRow` are binary searches over
+    `recordToRow`; `at` and `groupAt` over the non-record rows.
+  - Placement as 8.2: each header takes its next `loaded` records,
+    clamped to what is left; the rest go to the last group, before its add
+    row. An add row for an expanded leaf (the next group is not deeper)
+    when `addRow` is true. No add row at the end while there are groups
+    (D15).
+- **Component**: `@cached rowModel` (from `@records.length` and
+  `hasAddRow`); `rowCount` is `rowModel.length`; `recordAt` answers
+  through the model. New helpers: `recordRowAt`, `gridRowOf`,
+  `recordRange`, `recordPos`, `gridPos`, `rowKind`, `isRecordRow`,
+  `numberOf`, and three not named in 7.3:
+  - `coreRowOf(g)`: the row the core gets for a grid row. A record's row;
+    for the add row, the record row after the records above it, which is
+    `records.length` in the identity model, what v0.2 passed. Used by
+    `edgeTarget` and paste.
+  - `clampToRecordRow(g, fallback)`: the nearest record row looking up,
+    else down (the v0.2 clamp to the last record). `selectRows`, `fillTo`.
+  - `hintOf(g)`: a `rowOf` hint from a grid row (its record row, else 0).
+- `lastRowModel` is kept next to `lastIds`: `followRecords` reads the old
+  head's id through the old model, and `applyPendingFocus` converts a
+  `lastIds` index with the model of the same render.
+- `touchedIn(gridRange)` now converts and calls the new
+  `touchedInRecords(recordRange)`; callers that already hold a record
+  range call the second.
+- `rangeTsv(gridRange)`: copy and cut. A range with no record gives '',
+  as `rangeMatrix` gave for the add row, so the event is still taken.
+
+### Sites changed, against 7.4
+
+Methods changed per cluster (methods of the cluster that needed no change
+are left as they were; they go through `recordAt`, `isAddRow`, `rowOf` or
+`cellView`).
+
+| Cluster | Changed | Unchanged |
+| --- | --- | --- |
+| Row helpers | 3: `isAddRow`, `rowCount`, `recordAt` | `hasAddRow` (feeds the model) |
+| Add-row class | 1: `gridStyle` (`addRowOf(-1)`) | |
+| Row numbers | 3: `positionOf` (= `numberOf(recordRowAt)`), `rowColumnWidth` and `recordTitleOf` (`numberOf`, they hold record rows) | `rowLabelOf` |
+| Drawn selection | 0 | `isSelected`, `isRowSelected`, `cellView`, `isFillPreview` (grid) |
+| Checked rows | 2: `toggleChecked` (Shift range through `recordRange`), `selectionRecords` | `isChecked`, `checkedState` |
+| Focus and following | 4: `followRecords`, `applyPendingFocus`, `focusRecordCell` (`gridRowOf`), `onRowNumberFocus` (`isRecordRow`); `rowOf` documented as record space; `recordsRendered` keeps `lastRowModel` | `focusGridCell`, `rowIndexOf`, `focusRowNumberCell`, `cursor` (assert kept), `onFocusIn` |
+| Insert, delete, duplicate | 1: `insertNear` (`recordRowAt`, then ± 1 in `@records`) | `appendRecord`, `insertFromApi`, `deleteRecordIds`, `duplicate`, `copyRows` (record space already) |
+| Row menu | 2: `menuRowOf`, `openContextMenu` (`isRecordRow`) | `openMenu`, `closeMenu`, `menuItems`, `menuLink` |
+| Expanded record | 2: `expandRecord` (hint), `closeExpanded` (hint, `gridRowOf` for the row-number focus) | `expandedRecordValue`, `expandedStep`, `formContext` |
+| Touched cells | 1: `touchedIn` (+ `touchedInRecords`) | `touchedAt` |
+| Mouse | 4: `onMouseDown` (3 checks), `selectRows` (`clampToRecordRow`), `selectColumns` (`firstRecordRow … lastRecordRow`), `dragOver` (2 checks) | `onRelease` |
+| Fill | 6: `fillHandleRange`, `placeFillHandle` (corner on the last record row), `fillTo`, `onFillRelease` (record ranges to `fillRange`), `fillRightSelection`, `fill` | |
+| Clicks | 0 | `editInRecord`, `onClick`, `onControlClick`, `canEdit`, `onDoubleClick` |
+| Keys | 5: `onKeyDown` (`navKey` commit gets `recordPos`), `handleCommandKey` (Ctrl+A), `handleNavKey` (all four branches), `moveFocus`, `handleHomeKey` | `pageRows`, `onAddRowKeyDown`, `onRowNumberKeyDown`, `handleLastFieldKey` (Ctrl+End is the grid's last row) |
+| Clipboard | 4: `onCopy` (range path only; the checked-rows branch is as `94b8e52f` left it), `onCut`, `onPaste`, `clearSelection` | `isRangeTarget` |
+| History | 1: `selectChanged` (the box and the "row that still exists" go through `gridRowOf`) | `applyHistory` (counts) |
+| Editing | 5: `commit` (hint; the move after commit clamps to `firstRecordRow … lastRecordRow`), `cancel`, `editorRecord`, `onEditorSave` (hints), `commitCellValue` (`recordPos`) | `startEdit` |
+| Files | 1: `pasteFiles` (the range's first record) | `uploadFiles`, `dropCellAt` |
+| Template, stored positions, private cells, core, connector | 0 | as 7.4 says |
+
+That is 45 methods changed. Four sites are not in 7.4 and were changed
+too: `flashCells` (its box is in record rows; the flash is drawn in grid
+rows), `isRowMarked`, `rangeOutline` and `placeRangeOutline` (each
+clamped to `records.length - 1`).
+
+### `args.records[` after the rewrite (7.7)
+
+Every remaining index is a record row by construction:
+
+| Line | Method | Why it is a record row |
+| --- | --- | --- |
+| 1803 | `toggleChecked` | `r` loops a range from `recordRange` |
+| 1850 | `recordAt` | `r` from `recordRowAt`, only when `r >= 0` |
+| 2824 | `expandedRecordValue` | `rowOf(id)` |
+| 2871 | `expandedStep` | `rowOf(id) ± step`: the next record in `@records` |
+| 2897 | `formContext` | `rowOf(id)` |
+| 5416 | `editorRecord` | `rowOf(editing.recordId)` |
+| 6394 | `pasteFiles` | `recordRange(range).top` |
+| 6419 | `uploadFiles` | `rowOf(recordId)` |
+| 6458 | `uploadFiles` (settled) | `rowOf(recordId)` |
+
+The alias `const records = this.args.records` was checked the same way
+(`grep -nE 'records\.length|[^s]records\['`): `rowOf` (its hint is a
+record row), `insertNear` (`recordRowAt` ± 1), `appendRecord` and
+`insertFromApi` (`records.length - 1`, an index from `rowOf`),
+`deleteRecordIds` (indexes from the core's `removed`), `touchedInRecords`
+(a record range), `rowsTsv` (its own list). The remaining
+`records.length` hits are counts (`checkedState`, `headerMarkCss`, the
+empty state, `applyHistory`, `selectChanged`, the paste slice, which now
+takes `records.length - coreRow`).
+
+### Tests
+
+New: RM1-RM12 (`tests/unit/rows-test.ts`). RM12 times `buildRowModel` for
+100,000 records after a warm-up call and logs it ("0.000 ms" in headless
+Chromium, whose `performance.now()` is coarse), and also checks that no
+own property of the identity model is an array or a typed array.
+
+### Deviations from the design
+
+1. **The unit tests are in `tests/unit/rows-test.ts`**, not
+   `tests/unit/core/` (no such folder; batch 2 did the same).
+2. **`buildRowModel` takes `RowModelGroup` (`depth`, `loaded?`,
+   `collapsed?`)**, defined in `rows.ts`, not
+   `Pick<SheetGroup, …>`: `SheetGroup` is added in 3b (4.4). A
+   `SheetGroup` fits it structurally.
+3. **The `groups-loaded-mismatch` warn is not in the core** (no Ember
+   imports there, B1). The component gives it in 3b.
+4. **`gridRowOf` returns -1 outside `@records`** in the identity model
+   too, where 7.2 writes `gridRowOf(r) = r`. Every caller passes a record
+   row, so nothing changes; the two models now agree.
+5. **A collapsed group with `loaded` > 0 takes those records** (positions
+   rule, nothing hidden). The contract says it has none.
+6. **The add row reaches the core as `records.length`** (`coreRowOf`),
+   for `edgeTarget` as well as paste (7.4 names only paste). With
+   `recordPos`, Ctrl+Up from the add row would stop working. When
+   `edgeTarget` returns the same row (an edge), the grid row is kept.
+7. **Ctrl+A and Ctrl+Home with no records** keep row 0 (the add row), as
+   v0.2: `Math.max(firstRecordRow, 0)`.
+8. **A Shift+arrow onto a non-record row steps on to the next record**
+   (`nearestRecordRow` in the key's direction). Never reached in 3a.
+9. **Paste**: the touched cells are computed in record rows; the head
+   after a paste is still `anchor + lines - 1` in grid rows (the inserted
+   records have no grid row before the render).
+
+### Left for 3b
+
+- `@groups` into `rowModel` and `watchRecords`; header and group add rows
+  drawn; `gridStyle` classes for them.
+- Stored positions re-found by record id or group key when `@groups`
+  changes (`anchor`, `head`, `editing.pos`); `lastToggledRow` and
+  `rowCursor` as record ids; drag, fill, IME, drop target and menu ended.
+  `followRecords` still clamps the head by grid row when its record is
+  gone.
+- `numberOf` with `rowNumberStart` (8.4).
+- Moves that should step over a header: the move after commit (Enter,
+  Tab) only clamps to the first and last record; `fillTo` measures the
+  drag in grid rows; the range outline is drawn across headers;
+  PageUp/PageDown can land on a header.
+- The paste head and focus with groups (9 above).
+- The GR tests that repeat one case per cluster under groups (8.10).

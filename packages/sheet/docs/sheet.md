@@ -179,7 +179,7 @@ your own store, remove those records.
 | `@highlight` | A term you searched for: matching text is marked in cells (any case, every match). |
 | `@isLoading` | A thin progress bar over the grid; the grid stays usable. |
 | `@summary` | `{ [fieldId]: text }` (and `''` for the row-number column): shows the summary bar (below). |
-| `@frozenFields` | Leading fields kept in view on horizontal scroll, with the row numbers. Default `1`; `0` turns it off. |
+| `@frozenFields` | Leading fields kept in view on horizontal scroll, with the row numbers. Default `0` (off); `1` freezes the first field. |
 | `@rowNumbers` | The row-number column. Default `true`; `false` hides it. |
 | `@rowLabel` | `(record, position) => string`: what a row number shows instead of its position (for example the record's id). The column widens to fit. |
 | `@rowNumberOffset` | The position of the first record when `@records` is one page of your data: page 2 of 50 passes `50`. Default `0`. |
@@ -359,9 +359,10 @@ or `<:footer>`.
 
 ## Frozen field
 
-The first field stays in view when the grid scrolls sideways, and so do
-the row numbers, its header and its summary cell. `@frozenFields={{2}}`
-freezes two fields; `@frozenFields={{0}}` none. A frozen field always has a
+With `@frozenFields={{1}}` the first field stays in view when the grid
+scrolls sideways, and so do the row numbers, its header and its summary
+cell. `@frozenFields={{2}}` freezes two fields. It is off by default
+because of its cost (below). A frozen field always has a
 width (200 px unless `@fieldWidths` or `field.width` say otherwise), and
 resizing it moves the frozen edge. Keyboard focus that would land under
 the frozen columns scrolls the cell clear, and focusing a frozen cell

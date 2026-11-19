@@ -279,7 +279,7 @@ export interface EuiSheetSignature<T> {
     isLoading?: boolean;
     /** Text per field id for the summary bar (`''`: the row-number column). Passing it, even `{}`, shows the bar. */
     summary?: Record<string, string>;
-    /** Leading fields kept in view on horizontal scroll (the row numbers with them). Default 1; 0 turns it off. */
+    /** Leading fields kept in view on horizontal scroll (the row numbers with them). Default 0 (off); 1 freezes the first field. Costs rendering every column of the rows in view. */
     frozenFields?: number;
     /** The leading row-number column (position, checkbox, expand icon). Default true. */
     rowNumbers?: boolean;

@@ -233,12 +233,13 @@ module('Integration | Component | EuiSheet theme', function (hooks) {
             @fields={{FIELDS}}
             @getRecordId={{getId}}
             @onChange={{store.apply}}
+            @frozenFields={{1}}
           />
         </div>
       </template>
     );
     await focusCell(0, 0);
-    // the first field is frozen (v0.2 C7): its selection is drawn as an
+    // the first field is frozen here (v0.2 C7): its selection is drawn as an
     // image over its opaque background
     assert.strictEqual(
       css(cell(0, 0)).backgroundImage,

@@ -120,7 +120,12 @@ module(
   function (hooks) {
     setupRenderingTest(hooks);
 
-    async function renderSheet(fields: EuiSheetField<Row>[], records: Row[]) {
+    async function renderSheet(
+      fields: EuiSheetField<Row>[],
+      records: Row[],
+      // frozen: every column of a rendered row is in the DOM
+      frozenFields?: number
+    ) {
       const store = localRecords<Row>(records, { getRecordId: getId, fields });
       await render(
         <template>
@@ -130,6 +135,7 @@ module(
               @fields={{store.fields}}
               @getRecordId={{getId}}
               @onChange={{store.apply}}
+              @frozenFields={{frozenFields}}
             />
           </div>
         </template>
@@ -699,7 +705,7 @@ module(
     });
 
     test('A4 no cell of the new types holds a tabbable element (P9, N12)', async function (assert) {
-      await renderSheet(allFields(), [fullRow()]);
+      await renderSheet(allFields(), [fullRow()], 1);
       const cells = Array.from(
         document.querySelectorAll<HTMLElement>(
           '[role=gridcell][data-gridcell-visible-row-index="0"]:not([data-gridcell-column-id=euiSheetRow])'
@@ -854,7 +860,7 @@ module(
     });
 
     test('LT1 long text: Shift+Enter adds a line, the frame grows, Enter saves; copy is quoted', async function (assert) {
-      const store = await renderSheet(allFields(), [fullRow()]);
+      const store = await renderSheet(allFields(), [fullRow()], 1);
       assert.strictEqual(text(0, 12), 'one\ntwo');
       await focusCell(0, 12);
       // the grid scrolls the last column into view; its scroll event comes

@@ -18,7 +18,8 @@ component) does the work with its own array:
   and dragging a column's edge, call `@onHiddenFieldsChange`,
   `@onFieldOrderChange` and `@onFieldWidthChange`; the owner updates
   `@fields`, `@hiddenFields` and `@fieldWidths`. The first field cannot be
-  hidden or moved, and stays in view when you scroll right (it is frozen).
+  hidden or moved, and stays in view when you scroll right (it is frozen,
+  `@frozenFields={{1}}`).
 - **The toolbar** is the app's, in the sheet's `<:toolbar>` block: a search
   box (the owner filters its records and passes the term as `@highlight`),
   the row height (the block's `setRowHeight`, which calls
@@ -206,6 +207,7 @@ export default class SheetViewIntents extends Component {
           @onFilterByField={{this.onFilterByField}}
           @highlight={{this.query}}
           @isLoading={{this.isLoading}}
+          @frozenFields={{1}}
           @height={{380}}
           @ariaLabel='Workers'
         >

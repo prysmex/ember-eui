@@ -48,7 +48,7 @@ const rowsOf = (count: number, fields: number): Row[] =>
 const getId = (row: Row) => row['id']!;
 
 class State {
-  @tracked frozenFields: number | undefined = undefined;
+  @tracked frozenFields: number | undefined = 1;
   @tracked summary: Record<string, string> | undefined = undefined;
   @tracked records: Row[] = rowsOf(200, 12);
   @tracked fields = fieldsOf(12, 150);
@@ -385,9 +385,9 @@ module('Integration | Component | EuiSheet frozen field', function (hooks) {
     );
   });
 
-  test('FZ8 @frozenFields={{0}}: cells are absolute, columns virtualized again', async function (assert) {
+  test('FZ8 without @frozenFields (the default) or with 0: cells are absolute, columns virtualized again', async function (assert) {
     const state = new State();
-    state.frozenFields = 0;
+    state.frozenFields = undefined;
     await renderSheet(state);
     assert.strictEqual(cell(3, 0).style.position, 'absolute');
     assert.strictEqual(rowNumberCell(3).style.position, 'absolute');

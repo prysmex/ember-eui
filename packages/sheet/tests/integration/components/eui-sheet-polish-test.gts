@@ -159,12 +159,18 @@ module('Integration | Component | EuiSheet editing polish', function (hooks) {
   async function renderSheet(
     fields: EuiSheetField<Row>[],
     records: Row[],
-    options: { width?: number; height?: number; readOnly?: boolean } = {}
+    options: {
+      width?: number;
+      height?: number;
+      readOnly?: boolean;
+      frozenFields?: number;
+    } = {}
   ) {
     const store = localRecords<Row>(records, { getRecordId: getId, fields });
     const style = htmlSafe(`width:${options.width ?? 1100}px`);
     const height = options.height;
     const readOnly = options.readOnly;
+    const frozenFields = options.frozenFields;
     await render(
       <template>
         <div style={{style}}>
@@ -175,6 +181,7 @@ module('Integration | Component | EuiSheet editing polish', function (hooks) {
             @onChange={{store.apply}}
             @height={{height}}
             @readOnly={{readOnly}}
+            @frozenFields={{frozenFields}}
           />
         </div>
       </template>
@@ -597,7 +604,11 @@ module('Integration | Component | EuiSheet editing polish', function (hooks) {
   });
 
   test('ED1 an editor opened on a far column right after its focus stays open', async function (assert) {
-    await renderSheet(wideFields(14), wideRows(5, 14), { width: 600 });
+    // frozen: the far cell is in the DOM before it is scrolled into view
+    await renderSheet(wideFields(14), wideRows(5, 14), {
+      width: 600,
+      frozenFields: 1
+    });
     const outer = el('.euiDataGrid__virtualized');
     await focusCell(0, 12);
     assert.true(outer.scrollLeft > 0, 'the grid scrolled to the column');
@@ -617,6 +628,32 @@ module('Integration | Component | EuiSheet editing polish', function (hooks) {
     );
   });
 
+  test('ED1b columns virtualized (the default): End, then Enter at once, keeps the editor open', async function (assert) {
+    await renderSheet(wideFields(14), wideRows(5, 14), { width: 600 });
+    const outer = el('.euiDataGrid__virtualized');
+    await focusCell(0, 0);
+    assert
+      .dom(
+        '[role=gridcell][data-gridcell-visible-row-index="0"][data-gridcell-column-index="14"]'
+      )
+      .doesNotExist('the last column is not rendered yet');
+    await press('End');
+    assert.true(outer.scrollLeft > 0, 'the grid scrolled to the last column');
+    // no frame waited: the focus's scroll event has not come yet
+    await press('Enter');
+    assert.dom(editorFrame()).exists('the editor opened');
+    await frames(2);
+    assert.dom(editorFrame()).exists('still open after the scroll event');
+    await triggerEvent(outer, 'scroll');
+    assert.dom(editorFrame()).exists('a scroll that keeps the cell in view');
+    const frame = editorFrame()!.getBoundingClientRect();
+    const box = cell(0, 13).getBoundingClientRect();
+    assert.true(
+      Math.abs(frame.left - box.left) < 2 && Math.abs(frame.top - box.top) < 2,
+      'the editor is over its cell'
+    );
+  });
+
   test('ED2 a scroll that takes the cell out of view saves the editor', async function (assert) {
     const store = await renderSheet(wideFields(14), wideRows(5, 14), {
       width: 600
@@ -630,7 +667,7 @@ module('Integration | Component | EuiSheet editing polish', function (hooks) {
     ) as HTMLInputElement;
     input.value = 'moved';
     await triggerEvent(input, 'input');
-    // the frozen first field keeps every column rendered: only the view counts
+    // the cell leaves the view (and, columns being virtualized, the DOM)
     outer.scrollLeft = 1200;
     await triggerEvent(outer, 'scroll');
     assert.strictEqual(editorFrame(), null, 'saved and closed');

@@ -13,12 +13,13 @@ clears the range in one change set, and Ctrl/Cmd+C copies it. Ctrl+End
 jumps to the last cell. The line under the sheet shows how long the last
 change set took to apply.
 
-The first field ("Code") is frozen: scroll right and it stays, with the
-row numbers. That has a cost. While a field is frozen the grid renders
-every column of the rows in view (not only the columns in view), so a
-frozen cell never unmounts: here 31 cells per row instead of the few
-in view. Turn "Freeze the first field" off to compare the scrolling; above
-50 visible fields the sheet does not freeze.
+Turn on "Freeze the first field" (`@frozenFields={{1}}`) and "Code"
+stays in view when you scroll right, with the row numbers. That has a
+cost, which is why it is off by default: while a field is frozen the grid
+renders every column of the rows in view (not only the columns in view),
+so a frozen cell never unmounts: here 31 cells per row instead of the few
+in view. Scroll down with it on and off to compare; above 50 visible
+fields the sheet does not freeze.
 
 </EuiText>
 
@@ -70,7 +71,7 @@ export default class SheetLargeData extends Component {
   store = localRecords(generate(10_000), { getRecordId: this.getId });
 
   @tracked last = null;
-  @tracked frozen = true;
+  @tracked frozen = false;
 
   toggleFrozen = (event) => {
     this.frozen = event.target.checked;

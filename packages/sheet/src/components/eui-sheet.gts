@@ -1037,11 +1037,11 @@ export default class EuiSheet<T extends object> extends Component<
 
   /* The frozen field (V02-DESIGN.md 6.7, 9.2) */
 
-  /** How many leading fields are frozen: `@frozenFields` (default 1), 0 above FROZEN_MAX_COLUMNS fields. */
+  /** How many leading fields are frozen: `@frozenFields` (default 0, opt-in), 0 above FROZEN_MAX_COLUMNS fields. */
   @cached
   get frozenCount(): number {
     const count = this.visibleFields.length;
-    const wanted = this.args.frozenFields ?? 1;
+    const wanted = this.args.frozenFields ?? 0;
     if (wanted <= 0 || count === 0) return 0;
     if (count > FROZEN_MAX_COLUMNS) {
       warn(

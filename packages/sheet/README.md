@@ -102,7 +102,7 @@ Arguments of `EuiSheet`:
 | `@onFilterByField`                                                | Adds "Filter by this field" to the column menu: `(fieldId) => void`.                                                                                                                                                   |
 | `@highlight`, `@isLoading`                                        | A searched term, marked in cells; a progress bar over the grid.                                                                                                                                                        |
 | `@summary`                                                        | `{ [fieldId]: text }` (`''`: the row-number column): the summary bar.                                                                                                                                                  |
-| `@frozenFields`                                                   | Leading fields kept in view on horizontal scroll, with the row numbers. Default `1`; `0` off.                                                                                                                          |
+| `@frozenFields`                                                   | Leading fields kept in view on horizontal scroll, with the row numbers. Default `0` (off); `1` freezes the first field.                                                                                                |
 | `@rowNumbers`, `@rowLabel`, `@rowNumberOffset`                    | The row-number column (default on); `(record, position) => text` to show something else than the position; the first record's position on a page.                                                                      |
 | `@canInsert`, `@canDelete`                                        | Adding (add row, Shift+Enter, menu) and deleting (menu) records. Default `!@readOnly`.                                                                                                                                 |
 | `@newRecordValues`                                                | `({ above, below }) => values` of a new record.                                                                                                                                                                        |
@@ -136,9 +136,9 @@ or over every record with `summarize(ctx, records, field, kind)` (`count`,
 `filled`, `empty`, `percentFilled`, `unique`, `sum`, `average`, `min`,
 `max`, `checked`, `unchecked`; sums use the type's `toNumber`).
 
-The first field is frozen by default (`@frozenFields={{0}}` turns it
-off): it, its header, its summary cell and the row numbers stay in view on
-horizontal scroll. While a field is frozen the grid renders every column of
+`@frozenFields={{1}}` freezes the first field (off by default): it, its
+header, its summary cell and the row numbers stay in view on horizontal
+scroll. While a field is frozen the grid renders every column of
 the rows in view (rows stay virtualized); above 50 visible fields the sheet
 does not freeze.
 

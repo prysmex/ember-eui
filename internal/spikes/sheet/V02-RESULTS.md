@@ -2225,3 +2225,40 @@ These checks ran on the production docs site (`vite preview`) with Playwright re
 - **Misleading page measurements.** Measuring `window.scrollY` around clicks on the docs page gave large jumps while the page's lazy demos were still laying out. Once the layout had settled, a click did not move the grid on the page.
 
 Not checked with real input: Firefox, Safari, a real touch device, real IMEs and dead-key layouts (the design's 8.6 asked to confirm the old dead-key behaviour on the Mac first), the sideways fill (fill handle dragged right), and dark mode.
+
+## Decision: the frozen field is opt-in (2026-11-19)
+
+The user chose to make the frozen first field opt-in. `@frozenFields` now
+defaults to `0`, which overrides the design's default of 1 (section 9). The
+reason is its cost: while a field is frozen, the grid renders every column of
+the rows in view, about 2–4 times the work per scroll step in FZ9. Without
+`@frozenFields`, columns are virtualized again.
+
+- **Code:** `frozenCount` reads `@frozenFields ?? 0`, and the argument's
+  documentation in `src/types.ts` says so.
+- **Tests:**
+  - The frozen module's `State` now passes `1`, so FZ1–FZ11 still test a
+    frozen sheet.
+  - FZ8 now checks that a sheet without `@frozenFields` is not frozen.
+  - TH5 passes `@frozenFields={{1}}`, because it tests the selection drawn
+    over a frozen cell's opaque background.
+  - ED2's comment no longer assumes every column is rendered.
+- **Docs:** the README, `docs/sheet.md` (the arguments table and "Frozen
+  field") and d12, which now passes `@frozenFields={{1}}` because its text
+  says the first field stays in view. d08 already passed it.
+- **d08 "Large data"** now starts with "Freeze the first field" off. The user
+  noticed that scrolling it had become slow. Batch 3 had added 24 week
+  columns (31 per row) to the demo and frozen its first field, so each
+  scroll step rendered 372 cells instead of 72. FZ9 (10,000 rows × 30
+  fields, run with `?report`) measured 196 ms per step frozen and 48 ms
+  unfrozen at batch 3 (`b3-fz9-report.log`), and 182–189 ms and 38–49 ms
+  at HEAD (`fz-fz9-head-{1,2,3}.log`). So batches 4–6 added no cost; the
+  slowdown was the frozen field alone.
+- **The 4 tests that failed with the new default:** IM7, ED1, LT1 and A4
+  failed (`fz-test.log`, 330/334). They took a far cell, or every cell of a
+  row, straight from the DOM, which only works when nothing is frozen out
+  of the column window. They now pass `@frozenFields` 1, which keeps that
+  premise.
+- **New test ED1b** covers the default mode: with virtualized columns,
+  End and then Enter at once keep the editor open over the last column.
+- **Run:** 335/335 (`fz-test2.log`), lint clean.

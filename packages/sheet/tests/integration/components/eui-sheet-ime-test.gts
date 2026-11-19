@@ -214,6 +214,7 @@ module(
               @fields={{store.fields}}
               @getRecordId={{getId}}
               @onChange={{store.apply}}
+              @frozenFields={{1}}
             />
           </div>
         </template>

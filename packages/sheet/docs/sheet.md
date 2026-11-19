@@ -134,7 +134,9 @@ end become inserts.
 
 ## Errors
 
-A cell with an error has a red border; hover it to read its messages.
+A cell with an error has a red border. When it has focus, its messages
+show in a box under it (and are announced to screen readers); hovering
+it shows them too.
 There are three kinds:
 
 - **Rejected text**: a text the type cannot read, such as `abc` in a

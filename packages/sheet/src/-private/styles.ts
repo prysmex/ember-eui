@@ -7,6 +7,7 @@ const CSS = `
 .euiSheet { position: relative; }
 .euiSheet__cell--selected { background: rgba(0, 119, 204, 0.12); }
 .euiSheet__cell--invalid { color: #BD271E; box-shadow: inset 0 0 0 1px #BD271E; }
+.euiSheet__cellError { position: absolute; z-index: 4; box-sizing: border-box; padding: 4px 8px; border-radius: 4px; background: #BD271E; color: #FFF; font-size: 12px; line-height: 16px; pointer-events: none; box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2); }
 .euiSheet__editor { position: absolute; box-sizing: border-box; }
 .euiSheet__editor--cell { z-index: 2; }
 .euiSheet__editor--panel { z-index: 3; }

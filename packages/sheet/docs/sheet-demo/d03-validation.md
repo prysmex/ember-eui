@@ -17,7 +17,7 @@ cells quickly and watch the runs list.
 
 **Save** stands in for your API: it answers with errors for names that
 start with "Test", passed as `@cellErrors`, which are shown after the
-other messages. Hover a red cell to read its messages.
+other messages. Click a red cell to read its messages under it.
 
 </EuiText>
 

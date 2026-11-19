@@ -155,6 +155,11 @@ saves the editor's text and closes it.
 
 ## Errors
 
+A cell with errors has a red border and the messages as its title. While
+it has focus (and no editor is open), the messages also show in a box
+under the cell, inside a `role="status"` region so screen readers
+announce them.
+
 - **Rejections**: a text the type cannot read. No patch; the cell shows the
   text, marked invalid, with the message as its title.
 - **Validation errors**: a stored value that breaks a rule: `required`, the

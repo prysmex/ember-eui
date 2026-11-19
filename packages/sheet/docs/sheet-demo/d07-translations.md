@@ -23,12 +23,15 @@ this.euiI18n.addTranslations({
 <EuiSheet @messages={{hash required=this.missing}} … />
 ```
 
+Field labels and option labels are the app's own: it translates them
+like the rest of its texts (here, a label table per language).
+
 The service is global, so this demo adds the Spanish texts while
 **Español** is on and puts the English ones back when it is off (and
 when you leave the page); another sheet on the page also uses them
 meanwhile. The service's translations are not tracked: the demo
-re-creates its sheet when the language changes. Hover the red cells,
-or paste `abc` on Quantity.
+re-creates its sheet when the language changes. Click a red cell to see
+its message under it, or paste `abc` on Quantity.
 
 </EuiText>
 
@@ -57,20 +60,31 @@ const ENGLISH = Object.fromEntries(
   Object.entries(sheetMessageTokens).map(([name, { defaultMessage }]) => [name, defaultMessage]),
 );
 
-const FIELDS = [
-  { id: 'item', label: 'Item', required: true },
-  { id: 'quantity', label: 'Quantity', type: 'number', min: 1, max: 50 },
-  {
-    id: 'unit',
-    label: 'Unit',
-    type: 'singleSelect',
-    options: [
-      { value: 'pz', label: 'Pieces' },
-      { value: 'box', label: 'Boxes' },
-    ],
-  },
-  { id: 'due', label: 'Due', type: 'date', max: '2026-12-31' },
-];
+// the app's own labels, per language
+const LABELS = {
+  en: { item: 'Item', quantity: 'Quantity', unit: 'Unit', due: 'Due', pz: 'Pieces', box: 'Boxes' },
+  es: { item: 'Artículo', quantity: 'Cantidad', unit: 'Unidad', due: 'Vence', pz: 'Piezas', box: 'Cajas' },
+};
+
+function fieldsFor(language) {
+  const label = LABELS[language];
+  return [
+    { id: 'item', label: label.item, required: true },
+    { id: 'quantity', label: label.quantity, type: 'number', min: 1, max: 50 },
+    {
+      id: 'unit',
+      label: label.unit,
+      type: 'singleSelect',
+      options: [
+        { value: 'pz', label: label.pz },
+        { value: 'box', label: label.box },
+      ],
+    },
+    { id: 'due', label: label.due, type: 'date', max: '2026-12-31' },
+  ];
+}
+
+const FIELDS = { en: fieldsFor('en'), es: fieldsFor('es') };
 
 const RECORDS = [
   { id: 't1', item: 'Gloves', quantity: 0, unit: 'pz', due: '2026-11-30' },
@@ -97,6 +111,10 @@ export default class SheetTranslations extends Component {
   // one item per language: a new language re-creates the sheet
   get sheets() {
     return [this.language];
+  }
+
+  get fields() {
+    return FIELDS[this.language];
   }
 
   get messages() {
@@ -141,7 +159,7 @@ export default class SheetTranslations extends Component {
     {{#each this.sheets key='@identity' as |language|}}
       <EuiSheet
         lang={{language}}
-        @fields={{FIELDS}}
+        @fields={{this.fields}}
         @records={{this.store.records}}
         @getRecordId={{this.getId}}
         @onChange={{this.store.apply}}

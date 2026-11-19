@@ -445,3 +445,30 @@ another window while editing (focus stays on the input) no longer commits.
   written.
 - Not re-run: the site's acceptance tests (the demo only lost the
   workaround; the page was visited and works).
+
+## 14. The focused cell's errors are visible (2026-11-19)
+
+Reported by the user: the translations demo's language switch "does not
+work". It did work (checked on a production build: the five messages
+switch between English and Spanish, and `@messages` wins), but the only
+translated texts were the cells' `title`s, shown on hover, so nothing
+visible changed.
+
+- Package: while a data cell with errors has focus and no editor is open,
+  its messages show in a box under the cell (`.euiSheet__cellError`,
+  `data-test-subj="euiSheetCellError"`), inside an always-rendered
+  `role="status"` region so screen readers announce them. The box flips
+  above the cell only near the window's bottom (it may hang below the
+  sheet), follows the cell on scroll, and hides while editing and when
+  focus leaves the grid's data cells. The `title` stays.
+- Tests: new `eui-sheet-cell-error-test.gts`, E1 to E3 (position, valid
+  cells, editing and Escape, blur, `@cellErrors`, `@messages`, a rejected
+  paste). Full sheet suite **86/86**; `pnpm lint` exit 0; Prettier clean
+  on `src`, `tests/integration` and the README.
+- Docs: the translations demo translates its own field and option labels
+  per language; the landing page, the validation demo and the README say
+  the messages show under the focused cell.
+- Real input on the production docs build: Español switches the headers
+  (Artículo, Cantidad, Unidad, Vence) and options (Piezas, Cajas); focusing
+  the empty Artículo cell shows "Obligatorio" under it, and the Unidad cell
+  shows `"kg" no es una opción`. Screenshot: `sheet-cell-error-es.png`.

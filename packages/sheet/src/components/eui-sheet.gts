@@ -12,6 +12,7 @@ import { on } from '@ember/modifier';
 import { assert } from '@ember/debug';
 import { cancel, debounce } from '@ember/runloop';
 import { service } from '@ember/service';
+import { htmlSafe } from '@ember/template';
 import { buildWaiter } from '@ember/test-waiters';
 import { modifier } from 'ember-modifier';
 
@@ -115,6 +116,20 @@ const ARROWS = new Set(['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight']);
 /** A panel editor opens above the cell when less than this is free below it. */
 const PANEL_SPACE = 280;
 
+/** Room the focused cell's error box needs below the cell before it flips above. */
+const CELL_ERROR_SPACE = 48;
+/** The error box's widest size. */
+const CELL_ERROR_MAX_WIDTH = 320;
+
+/** A focused data cell and its box, relative to the wrapper. */
+interface FocusedCell {
+  pos: Pos;
+  rect: SheetEditorRect;
+  wrapperWidth: number;
+  /** Viewport px between the cell's bottom and the window's bottom. */
+  viewportBelow: number;
+}
+
 /** Debounce of `@validate` runs, in ms. */
 const VALIDATE_DEBOUNCE = 50;
 
@@ -151,6 +166,8 @@ export default class EuiSheet<T extends object> extends Component<
   @tracked anchor: Pos | null = null;
   @tracked head: Pos | null = null;
   @tracked editing: Editing | null = null;
+  /** The data cell that has DOM focus, for its error box; null when focus is elsewhere. */
+  @tracked focused: FocusedCell | null = null;
   /** Texts a type could not read, by cellKey (PACKAGE-DESIGN.md 6, 7.5). */
   @tracked rejections: ReadonlyMap<string, Rejection> = new Map();
   /** Column order set through the grid; null: the order of `@fields`. */
@@ -464,8 +481,14 @@ export default class EuiSheet<T extends object> extends Component<
   @action
   onFocusIn(event: FocusEvent): void {
     const cell = this.dataCell(event.target);
-    if (!cell) return;
+    if (!cell) {
+      // the header, a control or an editor: no error box (an open editor
+      // hides it anyway)
+      if (!this.isInEditor(event.target)) this.focused = null;
+      return;
+    }
     const pos = this.cursor(cell);
+    this.trackFocusedCell(pos, cell);
     // the grid re-focuses the same cell when it re-mounts (scroll) and
     // after cancel(): that must not collapse a range
     if (samePos(pos, this.domCursor)) return;
@@ -476,6 +499,60 @@ export default class EuiSheet<T extends object> extends Component<
       this.head = pos;
     }
     this.domCursor = pos;
+  }
+
+  /** Focus leaving the grid's data cells hides the error box. */
+  @action
+  onFocusOut(event: FocusEvent): void {
+    const next = event.relatedTarget;
+    if (this.dataCell(next) || this.isInEditor(next)) return;
+    this.focused = null;
+  }
+
+  trackFocusedCell(pos: Pos, cell: HTMLElement): void {
+    const rect = this.rectOf(cell);
+    if (!rect || !this.wrapper) return;
+    this.focused = {
+      pos,
+      rect,
+      wrapperWidth: this.wrapper.offsetWidth,
+      viewportBelow: window.innerHeight - cell.getBoundingClientRect().bottom
+    };
+  }
+
+  /**
+   * The focused cell's errors, shown next to it while it has focus and no
+   * editor is open (the cell's `title` has them too, on hover).
+   */
+  get cellError(): {
+    messages: string[];
+    placement: 'below' | 'above';
+    style: ReturnType<typeof htmlSafe>;
+  } | null {
+    const focused = this.focused;
+    if (!focused || this.editing) return null;
+    const field = this.visibleFields[focused.pos.col];
+    if (!field) return null;
+    const view = this.cellView(focused.pos.row, focused.pos.col, field.id);
+    if (!view || view.errors.length === 0) return null;
+    const { rect, wrapperWidth, viewportBelow } = focused;
+    // the box may hang below the sheet; it flips only near the window's bottom
+    const placement = viewportBelow < CELL_ERROR_SPACE ? 'above' : 'below';
+    const vertical =
+      placement === 'above'
+        ? `bottom:${rect.wrapperHeight - rect.top + 2}px;`
+        : `top:${rect.top + rect.height + 2}px;`;
+    const left = Math.max(
+      0,
+      Math.min(rect.left, wrapperWidth - CELL_ERROR_MAX_WIDTH)
+    );
+    return {
+      messages: view.errors,
+      placement,
+      style: htmlSafe(
+        `left:${left}px;max-width:${CELL_ERROR_MAX_WIDTH}px;${vertical}`
+      )
+    };
   }
 
   @action
@@ -636,11 +713,40 @@ export default class EuiSheet<T extends object> extends Component<
     // removes the editor before a stale position shows, and before the
     // re-mounted focused cell can pull focus
     if (this.editing) this.commit({ refocus: false });
+    // the error box follows its cell, or hides while the cell is not rendered
+    const focused = this.focused;
+    if (focused) {
+      const cell = this.dataCell(document.activeElement);
+      if (cell && samePos(this.cursor(cell), focused.pos)) {
+        this.trackFocusedCell(focused.pos, cell);
+      } else {
+        this.focused = null;
+      }
+    }
   }
 
   /* -------------------------------------------------------------------- */
   /* Edit lifecycle                                                        */
   /* -------------------------------------------------------------------- */
+
+  /** A cell's box relative to the wrapper, in the wrapper's CSS px. */
+  rectOf(cell: HTMLElement): SheetEditorRect | null {
+    const wrapper = this.wrapper;
+    if (!wrapper) return null;
+    const box = cell.getBoundingClientRect();
+    const origin = wrapper.getBoundingClientRect();
+    // client rects are in screen px; an ancestor transform (the test
+    // container is scaled to 50%) makes them differ from the CSS px the
+    // editor is positioned in
+    const scale = wrapper.offsetWidth ? origin.width / wrapper.offsetWidth : 1;
+    return {
+      top: (box.top - origin.top) / scale,
+      left: (box.left - origin.left) / scale,
+      width: box.width / scale,
+      height: box.height / scale,
+      wrapperHeight: wrapper.offsetHeight
+    };
+  }
 
   startEdit(pos: Pos, cell: HTMLElement, initialKey: string | null): void {
     const wrapper = this.wrapper;
@@ -649,19 +755,8 @@ export default class EuiSheet<T extends object> extends Component<
     if (!wrapper || record === undefined || !field) return;
     const type = this.typeOf(field);
     const recordId = this.args.getRecordId(record);
-    const box = cell.getBoundingClientRect();
-    const origin = wrapper.getBoundingClientRect();
-    // client rects are in screen px; an ancestor transform (the test
-    // container is scaled to 50%) makes them differ from the CSS px the
-    // editor is positioned in
-    const scale = wrapper.offsetWidth ? origin.width / wrapper.offsetWidth : 1;
-    const rect: SheetEditorRect = {
-      top: (box.top - origin.top) / scale,
-      left: (box.left - origin.left) / scale,
-      width: box.width / scale,
-      height: box.height / scale,
-      wrapperHeight: wrapper.offsetHeight
-    };
+    const rect = this.rectOf(cell);
+    if (!rect) return;
     const layout = type.editorLayout ?? 'cell';
     const below = rect.wrapperHeight - (rect.top + rect.height);
     const placement =
@@ -919,6 +1014,7 @@ export default class EuiSheet<T extends object> extends Component<
       {{on "scroll" this.onScroll capture=true}}
       {{on "mousedown" this.onMouseDown capture=true}}
       {{on "focusin" this.onFocusIn}}
+      {{on "focusout" this.onFocusOut}}
       {{on "dblclick" this.onDoubleClick}}
     >
       <EuiDataGrid
@@ -954,6 +1050,20 @@ export default class EuiSheet<T extends object> extends Component<
           {{/if}}
         </EditorFrame>
       {{/each}}
+      {{! always rendered, so a screen reader announces an error when it appears }}
+      <div class="euiSheet__cellErrorRegion" role="status">
+        {{#if this.cellError}}
+          <div
+            class="euiSheet__cellError euiSheet__cellError--{{this.cellError.placement}}"
+            data-test-subj="euiSheetCellError"
+            style={{this.cellError.style}}
+          >
+            {{#each this.cellError.messages as |message|}}
+              <div>{{message}}</div>
+            {{/each}}
+          </div>
+        {{/if}}
+      </div>
     </div>
   </template>
 }

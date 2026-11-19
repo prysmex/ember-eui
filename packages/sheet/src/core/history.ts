@@ -4,14 +4,50 @@
  */
 import { valueOf } from './fields.ts';
 
-import type { CellPatch, ChangeSet, RecordId, RecordInsert } from './types.ts';
+import type {
+  CellPatch,
+  ChangeSet,
+  RecordId,
+  RecordInsert,
+  RecordRemoval
+} from './types.ts';
+
+/** Compares a cell's value with the value a change left there. Default `Object.is`. */
+export type ValueEquals = (fieldId: string, a: unknown, b: unknown) => boolean;
+
+const sameValue: ValueEquals = (_fieldId, a, b) => Object.is(a, b);
 
 /**
  * The inverse of a change set (no checks against the records): each patch
- * with `from` and `to` swapped, each insert a deletion of its `tempId`.
- * Source 'undo'; no inserts, rejections or new options.
+ * with `from` and `to` swapped, each insert a deletion of its `tempId`, and
+ * each `removed` record an insert that puts it back (`restore`), at its old
+ * index and after its old neighbour, in ascending index. A restore's
+ * `values` are the record's values for `fieldIds` (none without them).
+ * Source 'undo'; no rejections or new options.
  */
-export function invertChangeSet(changeSet: ChangeSet): ChangeSet {
+export function invertChangeSet(
+  changeSet: ChangeSet,
+  fieldIds?: readonly string[]
+): ChangeSet {
+  const inserts: RecordInsert[] = [...(changeSet.removed ?? [])]
+    .sort((a, b) => a.index - b.index)
+    .map((removal) => {
+      const values: Record<string, unknown> = {};
+      for (const fieldId of fieldIds ?? []) {
+        const value = valueOf(removal.record, fieldId);
+        if (value !== undefined) values[fieldId] = value;
+      }
+      const insert: RecordInsert = {
+        tempId: String(removal.recordId),
+        index: removal.index,
+        values,
+        restore: { recordId: removal.recordId, record: removal.record }
+      };
+      if (removal.after !== undefined) {
+        insert.anchor = { recordId: removal.after, position: 'after' };
+      }
+      return insert;
+    });
   return {
     source: 'undo',
     patches: changeSet.patches.map((patch) => ({
@@ -20,7 +56,7 @@ export function invertChangeSet(changeSet: ChangeSet): ChangeSet {
       from: patch.to,
       to: patch.from
     })),
-    inserts: [],
+    inserts,
     deletes: changeSet.inserts.map((insert) => insert.tempId),
     rejected: [],
     newOptions: []
@@ -32,20 +68,24 @@ export function invertChangeSet(changeSet: ChangeSet): ChangeSet {
  * (last write wins elsewhere, so this is how undo and redo avoid it):
  *
  * - a patch is kept when its record exists and the cell still holds its
- *   `from` (`Object.is`);
+ *   `from` (`equals`, default `Object.is`);
  * - a deletion is kept when the record exists and, given `inserted` (the
  *   inserts being undone), still holds every value its insert set;
- * - an insert is kept when no record has its `tempId` yet (it re-inserts a
- *   row an undo removed), at the end of the records.
+ * - an insert is kept when no record has its `tempId` (or its restored
+ *   record's id) yet. It keeps its position: right after (or before) its
+ *   anchor's current index when the anchor exists, else `index`, clamped
+ *   to the end.
  *
- * `null` when nothing is left. `rejected` and `newOptions` are dropped.
+ * `removed` follows the kept deletions. `null` when nothing is left.
+ * `rejected` and `newOptions` are dropped.
  */
 export function withoutConflicts<T>(
   changeSet: ChangeSet,
   records: readonly T[],
   getRecordId: (record: T) => RecordId,
-  options: { inserted?: readonly RecordInsert[] } = {}
+  options: { inserted?: readonly RecordInsert[]; equals?: ValueEquals } = {}
 ): ChangeSet | null {
+  const equals = options.equals ?? sameValue;
   const byId = new Map<string, T>();
   for (const record of records) byId.set(String(getRecordId(record)), record);
 
@@ -53,7 +93,7 @@ export function withoutConflicts<T>(
     const id = String(patch.recordId);
     return (
       byId.has(id) &&
-      Object.is(valueOf(byId.get(id), patch.fieldId), patch.from)
+      equals(patch.fieldId, valueOf(byId.get(id), patch.fieldId), patch.from)
     );
   });
 
@@ -64,13 +104,18 @@ export function withoutConflicts<T>(
     if (!insert) return true;
     const record = byId.get(id);
     return Object.entries(insert.values).every(([fieldId, value]) =>
-      Object.is(valueOf(record, fieldId), value)
+      equals(fieldId, valueOf(record, fieldId), value)
     );
   });
 
-  const inserts: RecordInsert[] = changeSet.inserts
-    .filter((insert) => !byId.has(insert.tempId))
-    .map((insert, i) => ({ ...insert, index: records.length + i }));
+  const inserts = placeInserts(
+    changeSet.inserts.filter(
+      (insert) =>
+        !byId.has(insert.tempId) &&
+        !(insert.restore && byId.has(String(insert.restore.recordId)))
+    ),
+    records.map((record) => String(getRecordId(record)))
+  );
 
   if (!patches.length && !deletes.length && !inserts.length) return null;
   const result: ChangeSet = {
@@ -81,7 +126,51 @@ export function withoutConflicts<T>(
     newOptions: []
   };
   if (deletes.length) result.deletes = deletes;
+  if (changeSet.removed && deletes.length) {
+    const kept = new Set(deletes.map(String));
+    const removed = changeSet.removed.filter((removal: RecordRemoval) =>
+      kept.has(String(removal.recordId))
+    );
+    if (removed.length) result.removed = removed;
+  }
   return result;
+}
+
+/**
+ * The inserts (ascending `index`) with the index each gets now, placed as
+ * `applyChangeSet` places them over records with these ids: after (or
+ * before) the anchor when it exists or was placed earlier, else at `index`
+ * clamped to the end.
+ */
+function placeInserts(
+  inserts: readonly RecordInsert[],
+  ids: string[]
+): RecordInsert[] {
+  let lastAt = -1;
+  return [...inserts]
+    .sort((a, b) => a.index - b.index)
+    .map((insert) => {
+      let at = -1;
+      if (insert.anchor) {
+        const anchor = String(insert.anchor.recordId);
+        const found = ids[lastAt] === anchor ? lastAt : ids.lastIndexOf(anchor);
+        if (found >= 0) {
+          at = insert.anchor.position === 'after' ? found + 1 : found;
+        }
+      }
+      if (at < 0) at = Math.min(Math.max(insert.index, 0), ids.length);
+      ids.splice(at, 0, insert.tempId);
+      lastAt = at;
+      return { ...insert, index: at };
+    });
+}
+
+/** Options of `undoChangeSet` and `redoChangeSet`. */
+export interface HistoryOptions {
+  /** Every field id (visible and hidden): the values a restored record's insert lists. */
+  fieldIds?: readonly string[];
+  /** How a cell's value is compared with the value the change left there. Default `Object.is`. */
+  equals?: ValueEquals;
 }
 
 /**
@@ -91,32 +180,91 @@ export function withoutConflicts<T>(
 export function undoChangeSet<T>(
   entry: ChangeSet,
   records: readonly T[],
-  getRecordId: (record: T) => RecordId
+  getRecordId: (record: T) => RecordId,
+  options: HistoryOptions = {}
 ): ChangeSet | null {
-  return withoutConflicts(invertChangeSet(entry), records, getRecordId, {
-    inserted: entry.inserts
-  });
+  return withoutConflicts(
+    invertChangeSet(entry, options.fieldIds),
+    records,
+    getRecordId,
+    { inserted: entry.inserts, equals: options.equals }
+  );
 }
 
 /**
- * What redoing `entry` writes now: its patches and inserts again (same
- * `tempId`s and values), source 'redo', without the cells changed since the
- * undo. `null` when nothing is left.
+ * What redoing `entry` writes now: its patches, inserts (same `tempId`s and
+ * values), deletes and `removed` again, source 'redo', without the cells
+ * changed since the undo. `null` when nothing is left.
  */
 export function redoChangeSet<T>(
   entry: ChangeSet,
   records: readonly T[],
-  getRecordId: (record: T) => RecordId
+  getRecordId: (record: T) => RecordId,
+  options: HistoryOptions = {}
 ): ChangeSet | null {
-  return withoutConflicts(
-    {
-      source: 'redo',
-      patches: entry.patches,
-      inserts: entry.inserts,
-      rejected: [],
-      newOptions: []
-    },
-    records,
-    getRecordId
+  const redo: ChangeSet = {
+    source: 'redo',
+    patches: entry.patches,
+    inserts: entry.inserts,
+    rejected: [],
+    newOptions: []
+  };
+  if (entry.deletes) redo.deletes = entry.deletes;
+  if (entry.removed) redo.removed = entry.removed;
+  return withoutConflicts(redo, records, getRecordId, {
+    equals: options.equals
+  });
+}
+
+/**
+ * Two change sets as one history entry (a paste and the bulk resolve it
+ * asked for): patches of the same cell collapse to `first.from` →
+ * `second.to`; a patch of `second` on a record `first` inserts is folded
+ * into that insert's `values`; inserts, deletes, removed, rejections and
+ * new options are concatenated. Source of `first`.
+ */
+export function mergeChangeSets(
+  first: ChangeSet,
+  second: ChangeSet
+): ChangeSet {
+  const inserts = first.inserts.map((insert) => ({
+    ...insert,
+    values: { ...insert.values }
+  }));
+  const insertById = new Map(inserts.map((insert) => [insert.tempId, insert]));
+  const patches = first.patches.map((patch) => ({ ...patch }));
+  const patchByCell = new Map(
+    patches.map((patch) => [cellOf(patch), patch] as const)
   );
+  for (const patch of second.patches) {
+    const insert = insertById.get(String(patch.recordId));
+    if (insert) {
+      insert.values[patch.fieldId] = patch.to;
+      continue;
+    }
+    const existing = patchByCell.get(cellOf(patch));
+    if (existing) {
+      existing.to = patch.to;
+      continue;
+    }
+    const copy = { ...patch };
+    patches.push(copy);
+    patchByCell.set(cellOf(copy), copy);
+  }
+  const result: ChangeSet = {
+    source: first.source,
+    patches,
+    inserts: [...inserts, ...second.inserts],
+    rejected: [...first.rejected, ...second.rejected],
+    newOptions: [...first.newOptions, ...second.newOptions]
+  };
+  const deletes = [...(first.deletes ?? []), ...(second.deletes ?? [])];
+  if (deletes.length) result.deletes = deletes;
+  const removed = [...(first.removed ?? []), ...(second.removed ?? [])];
+  if (removed.length) result.removed = removed;
+  return result;
+}
+
+function cellOf(patch: CellPatch): string {
+  return JSON.stringify([String(patch.recordId), patch.fieldId]);
 }

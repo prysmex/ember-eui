@@ -92,6 +92,7 @@ Arguments of `EuiSheet`:
 | `@readOnly`             | Every cell read-only (copy still works).                                                                                                                           |
 | `@messages`             | Overrides of the built-in messages (below).                                                                                                                        |
 | `@height`, `@ariaLabel` | The grid's height; its accessible name (default `Sheet`).                                                                                                          |
+| `@registerApi`          | `(api) => void`: the sheet's API, once, after the first render (below).                                                                                            |
 
 ## Your own store
 
@@ -100,19 +101,46 @@ your own store, apply the change set yourself:
 
 ```ts
 interface ChangeSet {
-  source: 'edit' | 'paste' | 'clear' | 'fill' | 'undo' | 'redo';
+  source:
+    | 'edit'
+    | 'paste'
+    | 'clear'
+    | 'fill'
+    | 'undo'
+    | 'redo'
+    | 'insert' // coming: row buttons
+    | 'delete'
+    | 'cut'
+    | 'resolve'; // coming: bulk resolve of pasted text
   patches: { recordId; fieldId; from; to }[]; // cells of existing records
-  inserts: { tempId; index; values }[]; // rows pasted past the end
-  deletes?: recordId[]; // only in an undo of a paste that inserted rows
+  inserts: {
+    tempId;
+    index; // position in @records, inserts applied in ascending order
+    values;
+    anchor?: { recordId; position: 'before' | 'after' }; // its neighbour then
+    restore?: { recordId; record }; // an undone delete: the record it was
+  }[];
+  deletes?: recordId[]; // records to remove
+  removed?: { recordId; index; after?; record }[]; // what a delete removed
   rejected: { recordId?; tempId?; fieldId; text; message }[];
   newOptions: { fieldId; option }[]; // options created on paste
 }
 ```
 
-- `applyChangeSet(records, changeSet, { getRecordId, createRecord? })`
-  returns the new records (patched records are new objects; the others
-  keep their identity; records whose id is in `deletes` are removed). The
-  default `createRecord` uses the `tempId` as the new record's `id`.
+- `applyChangeSet(records, changeSet, { getRecordId, createRecord?,
+restoreRecord? })` returns the new records (patched records are new
+  objects; the others keep their identity; records whose id is in
+  `deletes` are removed). The default `createRecord` uses the `tempId` as
+  the new record's `id`. An insert goes right after (or before) its
+  `anchor` when that record is there, else at `index` (past the end: at
+  the end). A pasted row is anchored after the last record, so a store
+  whose data is larger than `@records` (one page, sorted elsewhere) can
+  position it by the anchor. An insert with `restore` (an undone delete)
+  puts back `restore.record` as it is, or what `restoreRecord(insert)`
+  returns (`insert.values` has its field values).
+- When your store gives a new record another id, call
+  `api.remapIds({ [tempId]: newId })` before (or with) the `@records` that
+  carry it, so that undo still finds the row.
 - `applyNewOptions(fields, changeSet)` returns the fields with the options
   created on paste (`createOnPaste`). Pass the result as `@fields`.
 - `rejected` lists texts a field type could not read (`abc` in a number
@@ -141,16 +169,57 @@ usual):
   a cell changed since (by your store, a server, another user) is skipped.
   When nothing is left, nothing is emitted.
 - An inserted row is found by its `tempId`: if your store gives the new
-  record another id, undo cannot remove it (the deletion is skipped). A row
-  changed since it was inserted is not removed either.
+  record another id, call `api.remapIds` (below); without it undo cannot
+  remove the row (the deletion is skipped). A row changed since it was
+  inserted is not removed either.
+- An undone delete puts each record back after the neighbour it had, even
+  when the records were re-sorted since. A change whose records are not in
+  `@records` (another page) is skipped; `api.clearHistory()` drops the
+  history when your data changes wholesale.
 - Options created on paste (`createOnPaste`) are not removed by undo.
 - Changes you make to `@records` are not history; a new change clears the
   redo history; with `@readOnly`, undo and redo do nothing. In an open
   editor, Ctrl/Cmd+Z is the input's own undo.
 
 The pure parts are exported: `invertChangeSet`, `withoutConflicts`,
-`undoChangeSet`, `redoChangeSet`, and for ranges `fillDown` and
-`tileMatrix`.
+`undoChangeSet`, `redoChangeSet`, `mergeChangeSets`, for ranges
+`fillDown` and `tileMatrix`, and for records `insertRecords`,
+`deleteRecords` and `duplicateRecords` (change sets that insert, delete or
+copy records; the sheet has no buttons for them yet).
+
+## The sheet's API
+
+`@registerApi={{this.registerApi}}` receives one object:
+
+| Method                             |                                                                                                                       |
+| ---------------------------------- | --------------------------------------------------------------------------------------------------------------------- |
+| `undo()`, `redo()`                 | As Ctrl/Cmd+Z and Ctrl/Cmd+Shift+Z.                                                                                   |
+| `focusCell({ recordId, fieldId })` | Focuses that cell; nothing when the record is not in `@records` or the field is not shown.                            |
+| `remapIds({ [tempId]: id })`       | The ids your store gave to inserted or restored records: the undo history, rejected texts and a pending focus follow. |
+| `clearHistory()`                   | Drops the undo and redo history.                                                                                      |
+
+When you replace `@records` with records the sheet did not change (a new
+sort, another page, a reload), the selection collapses to the focused
+cell's record wherever it is now (the same row when it is gone), and an
+open editor stays on its record (closed without saving when it is gone).
+
+## Theme
+
+The colours (selection, focus, errors, the editor's input, the checkbox)
+come from the EUI theme, so the sheet follows light and dark: put it in an
+`EuiEmotionProvider @colorMode="dark"`, or set the `eui-emotion` service's
+`colorMode`. They are custom properties (`--euiSheet-primary`,
+`--euiSheet-selected`, `--euiSheet-hover`, `--euiSheet-plain`,
+`--euiSheet-text`, `--euiSheet-textSubdued`, `--euiSheet-danger`,
+`--euiSheet-textDanger`, `--euiSheet-dangerFilled`,
+`--euiSheet-textInverse`, `--euiSheet-shadow`, `--euiSheet-subdued`,
+`--euiSheet-border`, `--euiSheet-highlight`) set by a class on the sheet's
+wrapper. To change one, set it on the sheet itself (`<EuiSheet
+style="--euiSheet-selected: #E6F0FF" …>`) or with a more specific
+selector: set on a parent element it loses to the sheet's class. Editors
+get that class as
+`@themeClass`: an editor that renders part of itself elsewhere (a
+wormholed list) adds it there, or that part falls back to light colours.
 
 ## Field types
 
@@ -176,7 +245,7 @@ Dates are shown as `DD/MM/YYYY` (or `MM/DD/YYYY`) and copied as ISO.
 | Delete, Backspace                    | Clears the selected range                                                                                   | Deletes                     |
 | Shift+arrows                         | Selects a range                                                                                             | Moves in the text           |
 | Ctrl/Cmd+A                           | Selects every cell (focus stays)                                                                            | Native                      |
-| Ctrl/Cmd+C, Ctrl/Cmd+V               | Copies / pastes the range as TSV                                                                            | Native                      |
+| Ctrl/Cmd+C, Ctrl/Cmd+V               | Copies / pastes the range as TSV (cells with tabs or line breaks quoted, as Excel does)                     | Native                      |
 | Ctrl/Cmd+D                           | Fill down: each column's top value into the range's cells below it; on one row, the value of the cell above | Native                      |
 | Ctrl/Cmd+Z; Ctrl/Cmd+Shift+Z, Ctrl+Y | Undo; redo                                                                                                  | Native                      |
 
@@ -284,13 +353,13 @@ field, context)` gives the cell's text; optional `copyText`, `validate`,
 `isEmpty`, `compare`, `navKey` (a key that sets the value without an
 editor). The Ember layer adds optional components and key rules:
 
-| Key                 |                                                                                                                                                                       |
-| ------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `cell`              | Display component: `@value @text @field @record @errors @readOnly @onCommit(value)`. It must not render a tabbable element.                                           |
-| `editor`            | Editor component: `@value @field @record @draft @initialKey @onDraftChange(text) @onCommit(result?, { move? }) @onCancel @messages`. It focuses itself when inserted. |
-| `editorLayout`      | `'cell'` (over the cell, default) or `'panel'` (a panel below or above it).                                                                                           |
-| `opensOnKey(key)`   | Whether a printable key opens the editor.                                                                                                                             |
-| `handlesKey(event)` | Keys the open editor handles itself (the sheet then leaves them alone; Enter, Tab and Escape are otherwise the sheet's).                                              |
+| Key                 |                                                                                                                                                                                   |
+| ------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `cell`              | Display component: `@value @text @field @record @errors @readOnly @onCommit(value)`. It must not render a tabbable element.                                                       |
+| `editor`            | Editor component: `@value @field @record @draft @initialKey @onDraftChange(text) @onCommit(result?, { move? }) @onCancel @messages @themeClass`. It focuses itself when inserted. |
+| `editorLayout`      | `'cell'` (over the cell, default) or `'panel'` (a panel below or above it).                                                                                                       |
+| `opensOnKey(key)`   | Whether a printable key opens the editor.                                                                                                                                         |
+| `handlesKey(event)` | Keys the open editor handles itself (the sheet then leaves them alone; Enter, Tab and Escape are otherwise the sheet's).                                                          |
 
 Register types with `@fieldTypes={{this.fieldTypes}}` and use them with
 `type: 'name'`. An editor that renders part of itself elsewhere (a
@@ -363,6 +432,7 @@ class FlatpickrDateEditor extends Component<
         @onCommit={{@onCommit}}
         @onCancel={{@onCancel}}
         @messages={{@messages}}
+        @themeClass={{@themeClass}}
       />
     {{else}}
       <EuiFlatpickr
@@ -389,10 +459,9 @@ The value stays an ISO date, so parsing, display, copy and paste are the
 date type's. Check the argument names against the `@ember-eui/flatpickr`
 version you use; this package does not depend on it.
 
-## Limits (v0.1)
+## Limits
 
 No cut, fill handle, fill right, auto-scroll while dragging, sorting or
-filtering UI, fullscreen, row insert or delete buttons, IME composition,
-quoted TSV cells or control columns. Pasted text in a field whose type returns
-`{ unresolved }` is a rejection (bulk resolve on paste is planned). Colours
-are fixed (no dark mode yet).
+filtering UI, fullscreen, row insert or delete buttons, IME composition or
+control columns yet. Pasted text in a field whose type returns
+`{ unresolved }` is a rejection (bulk resolve on paste is planned).

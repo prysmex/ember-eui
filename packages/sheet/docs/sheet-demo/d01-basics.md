@@ -15,14 +15,18 @@ fills the whole range. Ctrl/Cmd+Z undoes any of these and Ctrl/Cmd+Shift+Z
 redoes it. The panel shows the last change sets, with their `source`
 (`edit`, `paste`, `clear`, `fill`, `undo`, `redo`), `patches`, `inserts`,
 `deletes` (an undone paste's new rows) and `rejected` texts (paste `abc`
-on Hours).
+on Hours). A cell with a line break or a tab (type one in Excel with
+Alt+Enter) is copied quoted, as Excel does, and pastes back as one cell.
+The switch puts the sheet in a dark `EuiEmotionProvider`: the sheet takes
+its colours from the theme.
 
 </EuiText>
 
 ```gjs component
 import Component from '@glimmer/component';
 import { tracked } from '@glimmer/tracking';
-import { EuiCodeBlock, EuiFlexGroup, EuiFlexItem, EuiTitle } from '@ember-eui/core/components';
+import EuiEmotionProvider from '@ember-eui/core/components/eui-emotion-provider';
+import { EuiCodeBlock, EuiFlexGroup, EuiFlexItem, EuiSpacer, EuiSwitch, EuiTitle } from '@ember-eui/core/components';
 import { EuiSheet, localRecords } from '@ember-eui/sheet';
 
 const FIELDS = [
@@ -48,6 +52,15 @@ export default class SheetBasics extends Component {
   store = localRecords(RECORDS, { getRecordId: this.getId, fields: FIELDS });
 
   @tracked changeSets = [];
+  @tracked dark = false;
+
+  get colorMode() {
+    return this.dark ? 'dark' : 'light';
+  }
+
+  toggleDark = (event) => {
+    this.dark = event.target.checked;
+  };
 
   onChange = (changeSet) => {
     this.store.apply(changeSet);
@@ -63,14 +76,18 @@ export default class SheetBasics extends Component {
   <template>
     <EuiFlexGroup @gutterSize='l' @wrap={{true}}>
       <EuiFlexItem @grow={{2}}>
-        <EuiSheet
-          @fields={{this.store.fields}}
-          @records={{this.store.records}}
-          @getRecordId={{this.getId}}
-          @onChange={{this.onChange}}
-          @height={{360}}
-          @ariaLabel='People'
-        />
+        <EuiSwitch @label='Dark' @checked={{this.dark}} @onChange={{this.toggleDark}} />
+        <EuiSpacer @size='s' />
+        <EuiEmotionProvider @colorMode={{this.colorMode}}>
+          <EuiSheet
+            @fields={{this.store.fields}}
+            @records={{this.store.records}}
+            @getRecordId={{this.getId}}
+            @onChange={{this.onChange}}
+            @height={{360}}
+            @ariaLabel='People'
+          />
+        </EuiEmotionProvider>
       </EuiFlexItem>
       <EuiFlexItem @grow={{1}}>
         <EuiTitle @size='xxs'><h4>Last change sets ({{this.store.records.length}} records)</h4></EuiTitle>

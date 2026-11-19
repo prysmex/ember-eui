@@ -30,14 +30,24 @@ calls `@onChange` with a change set, and you apply it to your own store:
 
 ```ts
 interface ChangeSet {
-  source: 'edit' | 'paste' | 'clear' | 'fill' | 'undo' | 'redo';
+  source: 'edit' | 'paste' | 'clear' | 'fill' | 'undo' | 'redo'
+    | 'insert' | 'delete' | 'cut' | 'resolve';
   patches: { recordId; fieldId; from; to }[]; // cells of existing records
-  inserts: { tempId; index; values }[]; // rows pasted past the end
-  deletes?: recordId[]; // only an undo of a paste that inserted rows
+  inserts: {
+    tempId; index; values; // rows pasted past the end, restored rows
+    anchor?: { recordId; position: 'before' | 'after' }; // its neighbour
+    restore?: { recordId; record }; // an undone delete: the record it was
+  }[];
+  deletes?: recordId[]; // records to remove
+  removed?: { recordId; index; after?; record }[]; // what a delete removed
   rejected: { recordId?; tempId?; fieldId; text; message }[];
   newOptions: { fieldId; option }[]; // options created on paste
 }
 ```
+
+The `insert`, `delete`, `cut` and `resolve` sources are for features
+that are coming (row buttons, cut, bulk resolve); your code should accept
+them already.
 
 For local data, or a page without a store, `localRecords` is a small
 tracked store that applies change sets for you:
@@ -72,14 +82,33 @@ export default class Tasks extends Component {
 ```
 
 With your own store, `applyChangeSet(records, changeSet, { getRecordId,
-createRecord? })` returns the new records (patched records are new
-objects, the others keep their identity), and `applyNewOptions(fields,
-changeSet)` returns the fields with the options created on paste. Both
-are pure, and are also exported from `@ember-eui/sheet/core`, which has
-no Ember imports.
+createRecord?, restoreRecord? })` returns the new records (patched
+records are new objects, the others keep their identity), and
+`applyNewOptions(fields, changeSet)` returns the fields with the options
+created on paste. Both are pure, and are also exported from
+`@ember-eui/sheet/core`, which has no Ember imports.
 
 A pasted row past the end comes as an insert with a `tempId`. By default
-`applyChangeSet` uses the `tempId` as the new record's `id`.
+`applyChangeSet` uses the `tempId` as the new record's `id`. Where it
+goes:
+
+- `index` is the record's position in the records the sheet was given
+  (`@records`), counted after the change set's deletes and with the
+  inserts applied in ascending `index`. An index past the end appends.
+- `anchor` is its neighbour in `@records` when the insert was made: a
+  pasted row is anchored after the last record (and each next one after
+  the previous). If your data is larger than what the sheet shows (one
+  page of it, sorted elsewhere), position by the anchor: `applyChangeSet`
+  does, before the index, and it also finds an anchor that is the
+  `tempId` of an insert earlier in the same change set.
+- `restore` is set when an undo puts back a deleted record: `record` is
+  the object it was, which `applyChangeSet` puts back as it is (pass
+  `restoreRecord(insert)` to build it yourself, for example when your
+  server gives it a new id; `insert.values` has its field values).
+
+When your store gives a new record another id (a server's id), tell the
+sheet with `api.remapIds({ [tempId]: newId })` (below), so that undo
+still finds it.
 
 ## Undo and redo
 
@@ -95,9 +124,18 @@ your own store, remove those records.
 - An undo or redo only writes cells that still hold the value the change
   left there. A cell you changed since (from your store, a server or
   another user) is skipped; if nothing is left, nothing is emitted.
-- An inserted row is found by its `tempId`, so a store that gives the
-  new record another id cannot have it removed by undo (it is skipped).
-  A row changed since it was inserted is not removed either.
+- An inserted row is found by its `tempId`. If your store gives the new
+  record another id, call `api.remapIds({ [tempId]: newId })`, before or
+  with the `@records` that carry the new id, and undo finds it again;
+  without it, the row is not removed by undo (it is skipped). A row
+  changed since it was inserted is not removed either.
+- An undo of a delete puts each record back after the neighbour it had,
+  even when your records were re-sorted since. A redo of a delete names
+  the record's id; if your server gave the restored record a new id,
+  call `remapIds` for it too.
+- A change whose records are not in `@records` any more (another page, a
+  filter) is skipped. Call `api.clearHistory()` when your data changes
+  wholesale.
 - Options created on paste (`createOnPaste`) stay after an undo.
 - Changes to `@records` made outside the sheet are not undone, a new
   change clears the redo history, and with `@readOnly` undo and redo do
@@ -118,6 +156,44 @@ your own store, remove those records.
 | `@messages` | Overrides of the built-in messages, for this sheet. |
 | `@height` | The grid's height. |
 | `@ariaLabel` | The grid's accessible name. Default `Sheet`. |
+| `@registerApi` | `(api) => void`: receives the sheet's API once, after the first render (below). |
+
+## The sheet's API
+
+`@registerApi` gives you one object to call from your own controls or
+store:
+
+| Method | |
+| --- | --- |
+| `undo()`, `redo()` | Ctrl/Cmd+Z and Ctrl/Cmd+Shift+Z, from outside the sheet. |
+| `focusCell({ recordId, fieldId })` | Focuses that cell. Nothing happens when the record is not in `@records` or the field is not shown. |
+| `remapIds({ [tempId]: id })` | The ids your store gave to inserted (or restored) records. The undo history, rejected texts and a pending focus are rewritten. |
+| `clearHistory()` | Drops the undo and redo history. |
+
+When you replace `@records` with records the sheet did not change
+(another sort, another page, a reload), the selection follows its record:
+it collapses to the focused cell's record, wherever it is now (or the same
+row, when that record is gone), and an open editor stays on its record (it
+is closed without saving when the record is gone).
+
+## Theme
+
+The sheet takes its colours (selection, focus, errors, the editor's input
+and the checkbox) from the EUI theme, so it follows light and dark: put
+it inside an `EuiEmotionProvider` with `@colorMode="dark"` (or set the
+`eui-emotion` service's `colorMode`). The colours are CSS custom
+properties set by a class on the sheet's wrapper (`--euiSheet-primary`,
+`--euiSheet-selected`, `--euiSheet-hover`, `--euiSheet-plain`,
+`--euiSheet-text`, `--euiSheet-textSubdued`, `--euiSheet-danger`,
+`--euiSheet-textDanger`, `--euiSheet-dangerFilled`,
+`--euiSheet-textInverse`, `--euiSheet-shadow`, and `--euiSheet-subdued`,
+`--euiSheet-border`, `--euiSheet-highlight` for what is coming). To change
+one, set it on the sheet itself, which takes attributes
+(`<EuiSheet style="--euiSheet-selected: #E6F0FF" …>`) or a more specific
+selector; set on a parent element, it loses to the sheet's class. An
+editor gets that class as `@themeClass`: one that renders a part of
+itself outside the sheet (a wormholed list) adds it there; without it
+that part uses the light colours.
 
 ## Field types
 
@@ -144,7 +220,7 @@ Dates are shown as `DD/MM/YYYY` (or `MM/DD/YYYY`) and copied as ISO.
 | Escape | The grid's | Closes without saving |
 | Space | Toggles a checkbox; does nothing elsewhere | Types |
 | Delete, Backspace | Clear the selected range | Delete text |
-| Ctrl/Cmd+C, Ctrl/Cmd+V | Copy / paste the range as tab-separated text | The input's own |
+| Ctrl/Cmd+C, Ctrl/Cmd+V | Copy / paste the range as tab-separated text (a cell with a tab or a line break is quoted, as Excel does) | The input's own |
 | Ctrl/Cmd+D | Fill down: the top row of the range into the cells below it; on one row, the row above into it | The browser's |
 | Ctrl/Cmd+Z; Ctrl/Cmd+Shift+Z, Ctrl+Y | Undo; redo | The input's own |
 
@@ -195,7 +271,7 @@ value.
 
 ## Not yet
 
-These are not in v0.1:
+These are not in yet:
 
 - Cut (Ctrl/Cmd+X), a fill handle, and fill right (Ctrl/Cmd+R).
 - Scrolling the grid while a drag reaches its edge: drag within the
@@ -206,10 +282,7 @@ These are not in v0.1:
 - Resolving pasted text through your API (bulk resolve). A pasted text
   in a field whose type returns `{ unresolved }`, such as the zone
   picker below, is rejected.
-- Cells that contain tabs or line breaks: copied and pasted text is
-  split on every tab and line break (no quoted cells).
-- IME composition, and colours for the dark theme: the selection and
-  error colours are fixed.
+- IME composition.
 
 </EuiText>
 

@@ -10,13 +10,19 @@ import { cached, tracked } from '@glimmer/tracking';
 import { action } from '@ember/object';
 import { on } from '@ember/modifier';
 import { assert } from '@ember/debug';
-import { cancel, debounce } from '@ember/runloop';
+import { isDestroyed, isDestroying } from '@ember/destroyable';
+import { cancel, debounce, next, schedule } from '@ember/runloop';
 import { service } from '@ember/service';
 import { htmlSafe } from '@ember/template';
 import { buildWaiter } from '@ember/test-waiters';
 import { modifier } from 'ember-modifier';
 
 import EuiDataGrid from '@ember-eui/core/components/eui-data-grid';
+import {
+  euiClass,
+  getEuiThemeContext,
+  useEuiBorealisStyles
+} from '@ember-eui/core/theming';
 
 import {
   cellKey,
@@ -26,6 +32,7 @@ import {
   createMessages,
   fillDown,
   isReadOnly,
+  mergeChangeSets,
   mergeErrors,
   parseTsv,
   pasteMatrix,
@@ -43,8 +50,15 @@ import { builtInSheetFieldTypes } from '../field-types.ts';
 import EditorFrame, {
   EDITOR_SURFACE_SELECTOR
 } from '../-private/editor-frame.gts';
+import {
+  composeIdMaps,
+  remapChangeSet,
+  remapId,
+  toIdMap
+} from '../-private/remap.ts';
 import SheetCell from '../-private/sheet-cell.gts';
 import { ensureStyles } from '../-private/styles.ts';
+import { sheetThemeVars } from '../-private/theme.ts';
 
 import type {
   CellErrors,
@@ -59,6 +73,7 @@ import type {
 import type {
   EuiSheetFieldType,
   EuiSheetSignature,
+  SheetApi,
   SheetEditorRect,
   SheetEditorResult
 } from '../types.ts';
@@ -89,22 +104,63 @@ export interface CellView {
 interface Rejection {
   /** recordId or tempId, as a string. */
   id: string;
+  fieldId: string;
   text: string;
   message: string;
   /** The record's value when the rejection was stored; another value means the owner changed it. */
   seenValue: unknown;
 }
 
-interface Editing {
-  pos: Pos;
+/**
+ * The open editor. One object per edit (the editor is keyed by it), so
+ * when the owner moves the record (V02-DESIGN.md 3.2) its position and box
+ * change in place and the editor keeps its draft.
+ */
+class Editing {
+  @tracked pos: Pos;
   recordId: RecordId;
   field: EuiSheetField;
   type: EuiSheetFieldType;
-  rect: SheetEditorRect;
+  @tracked rect: SheetEditorRect;
   layout: 'cell' | 'panel';
-  placement: 'below' | 'above';
+  @tracked placement: 'below' | 'above';
   initialKey: string | null;
   draft: string;
+
+  constructor(init: {
+    pos: Pos;
+    recordId: RecordId;
+    field: EuiSheetField;
+    type: EuiSheetFieldType;
+    rect: SheetEditorRect;
+    layout: 'cell' | 'panel';
+    placement: 'below' | 'above';
+    initialKey: string | null;
+    draft: string;
+  }) {
+    this.pos = init.pos;
+    this.recordId = init.recordId;
+    this.field = init.field;
+    this.type = init.type;
+    this.rect = init.rect;
+    this.layout = init.layout;
+    this.placement = init.placement;
+    this.initialKey = init.initialKey;
+    this.draft = init.draft;
+  }
+}
+
+/** A cell to focus once its record is rendered (V02-DESIGN.md 3.3). */
+interface PendingFocus {
+  /** The record's id, as a string. */
+  id: string;
+  fieldId: string;
+}
+
+/** What this sheet emitted that the owner has not applied yet, as far as `@records` shows. */
+interface PendingOwn {
+  deletes: Set<string>;
+  inserts: number;
 }
 
 interface Validation {
@@ -164,6 +220,46 @@ function isPromise<V>(value: unknown): value is Promise<V> {
   return !!value && typeof (value as { then?: unknown }).then === 'function';
 }
 
+/** Runs `fn` after the current render (modifiers run inside it: no tracked writes there). */
+function afterRender(owner: object, fn: () => void): void {
+  schedule('afterRender', () => {
+    if (isDestroying(owner) || isDestroyed(owner)) return;
+    fn();
+  });
+}
+
+function sameIds(a: readonly string[], b: readonly string[]): boolean {
+  if (a.length !== b.length) return false;
+  for (let i = 0; i < a.length; i++) if (a[i] !== b[i]) return false;
+  return true;
+}
+
+/**
+ * Whether `next` is `previous` with only what this sheet emitted applied:
+ * the ids kept in the same order, the pending deletes gone, and no more
+ * new ids than the pending inserts (an owner may give them other ids).
+ */
+function isOwnChange(
+  previous: readonly string[],
+  next: readonly string[],
+  pending: PendingOwn
+): boolean {
+  if (!pending.inserts && !pending.deletes.size) return false;
+  const before = new Set(previous);
+  const kept = previous.filter((id) => !pending.deletes.has(id));
+  let k = 0;
+  let added = 0;
+  for (const id of next) {
+    if (!before.has(id)) {
+      added++;
+      continue;
+    }
+    if (kept[k] !== id) return false;
+    k++;
+  }
+  return k === kept.length && added <= pending.inserts;
+}
+
 export default class EuiSheet<T extends object> extends Component<
   EuiSheetSignature<T>
 > {
@@ -188,7 +284,8 @@ export default class EuiSheet<T extends object> extends Component<
   draft = '';
   draftDirty = false;
 
-  api: EuiDataGridRefProps | null = null;
+  /** The grid's API (not the sheet's: that is `sheetApi`). */
+  gridApi: EuiDataGridRefProps | null = null;
   /** Last data cell seen by `focusin`. */
   domCursor: Pos | null = null;
   /** The next focus move extends the range. */
@@ -206,6 +303,26 @@ export default class EuiSheet<T extends object> extends Component<
 
   /** Stable object: the grid passes it to every cell renderer. */
   cellContext = { sheet: this as unknown as EuiSheet<object> };
+
+  /* Following `@records` (V02-DESIGN.md 3.2, 3.3) */
+  /** A cell to focus once its record is rendered (inserted rows). */
+  pendingFocus: PendingFocus | null = null;
+  /** The `@records` of the last render, and their ids. */
+  lastRecords: readonly T[] | null = null;
+  lastIds: string[] = [];
+  /** What emitted change sets insert and delete, until `@records` changes. */
+  pendingOwn: PendingOwn = { deletes: new Set(), inserts: 0 };
+  /** Every id `remapIds` was told about, old (as a string) → new. */
+  remapped: Map<string, RecordId> = new Map();
+
+  /** The sheet's API for its owner (`@registerApi`): one stable object. */
+  sheetApi: SheetApi = {
+    undo: () => this.undo(),
+    redo: () => this.redo(),
+    focusCell: (cell) => this.focusRecordCell(cell),
+    remapIds: (ids) => this.remapIds(ids),
+    clearHistory: () => this.clearHistory()
+  };
 
   /* `@validate` runs */
   validateTimer: ReturnType<typeof debounce> | null = null;
@@ -303,6 +420,36 @@ export default class EuiSheet<T extends object> extends Component<
     return this.args.ariaLabel ?? 'Sheet';
   }
 
+  /**
+   * Leading control columns of the grid (V02-DESIGN.md 3.2): positions
+   * (`anchor`, `head`, `Range`) use data columns, the grid's column index
+   * is the data column plus this. None yet.
+   */
+  get colOffset(): number {
+    return 0;
+  }
+
+  /** Whether the grid has an "add" row after the records. Not yet. */
+  get hasAddRow(): boolean {
+    return false;
+  }
+
+  get rowCount(): number {
+    return this.args.records.length + (this.hasAddRow ? 1 : 0);
+  }
+
+  /** The record of a row; `undefined` for the add row. */
+  recordAt(row: number): T | undefined {
+    return this.args.records[row];
+  }
+
+  /** The class that defines the `--euiSheet-*` colours from the EUI theme. */
+  @cached
+  get themeClass(): string {
+    const context = getEuiThemeContext(this);
+    return euiClass(context, useEuiBorealisStyles(context, sheetThemeVars));
+  }
+
   typeOf(field: EuiSheetField): EuiSheetFieldType {
     return resolveType(this.types, field) as EuiSheetFieldType;
   }
@@ -349,7 +496,7 @@ export default class EuiSheet<T extends object> extends Component<
   }
 
   cellView(row: number, col: number, fieldId: string): CellView | null {
-    const record = this.args.records[row];
+    const record = this.recordAt(row);
     const field = this.visibleFields.find((f) => f.id === fieldId);
     if (record === undefined || !field) return null;
     const ctx = this.context;
@@ -396,9 +543,22 @@ export default class EuiSheet<T extends object> extends Component<
   /* Grid wiring                                                           */
   /* -------------------------------------------------------------------- */
 
-  registerApi = (api: EuiDataGridRefProps): void => {
-    this.api = api;
+  registerGridApi = (api: EuiDataGridRefProps): void => {
+    this.gridApi = api;
   };
+
+  /** Focuses a cell by its position (data column). */
+  focusGridCell(pos: Pos): void {
+    this.gridApi?.setFocusedCell({
+      rowIndex: pos.row,
+      colIndex: pos.col + this.colOffset
+    });
+  }
+
+  /** Gives the owner the sheet's API, once, after the first render. */
+  registerSheetApi = modifier(() => {
+    afterRender(this, () => this.args.registerApi?.(this.sheetApi));
+  });
 
   setupWrapper = modifier((element: HTMLElement) => {
     this.wrapper = element;
@@ -407,11 +567,139 @@ export default class EuiSheet<T extends object> extends Component<
     };
   });
 
-  /** Schedules a `@validate` run whenever `@records` is a new array (and on insert). */
+  /**
+   * Whenever `@records` is a new array: schedules a `@validate` run and,
+   * after the render, follows the records (`recordsRendered`).
+   */
   watchRecords = modifier((_element: HTMLElement, [records]: [unknown]) => {
     void records;
     this.scheduleValidate();
+    afterRender(this, () => this.recordsRendered());
   });
+
+  /**
+   * After a render with a new `@records` (V02-DESIGN.md 3.2, 3.3). A change
+   * that is not the sheet's own (the owner re-sorted, re-queried, reloaded)
+   * moves the selection, focus and an open editor to their record; then a
+   * pending focus whose record is now rendered is applied.
+   */
+  recordsRendered(): void {
+    const records = this.args.records;
+    if (records === this.lastRecords) return;
+    const previous = this.lastRecords;
+    const previousIds = this.lastIds;
+    const ids = records.map((record) => String(this.args.getRecordId(record)));
+    const pending = this.pendingOwn;
+    this.lastRecords = records;
+    this.lastIds = ids;
+    this.pendingOwn = { deletes: new Set(), inserts: 0 };
+    if (
+      previous &&
+      !sameIds(previousIds, ids) &&
+      !isOwnChange(previousIds, ids, pending)
+    ) {
+      this.followRecords(previousIds, ids);
+    }
+    this.applyPendingFocus();
+  }
+
+  /**
+   * The owner replaced `@records`: the selection collapses to the head's
+   * cell, found again by record id (or the same row, clamped, when that
+   * record is gone); an open editor stays on its record, or is cancelled
+   * without a change set when the record is gone; a drag ends. A data cell
+   * that had focus is focused again at the new position.
+   */
+  followRecords(previousIds: readonly string[], ids: readonly string[]): void {
+    const indexOf = new Map(ids.map((id, i) => [id, i]));
+    const active = document.activeElement;
+    // a data cell has focus, or had it until this render removed its row
+    const hadCellFocus =
+      !!this.dataCell(active) ||
+      (this.focusDropped && (!active || active === document.body));
+    let hadEditorFocus = false;
+    if (this.dragging || this.dragFrom) this.endDrag();
+
+    const editing = this.editing;
+    if (editing) {
+      const row = indexOf.get(String(editing.recordId));
+      if (row === undefined) {
+        hadEditorFocus = this.isInEditor(active);
+        this.editing = null;
+      } else {
+        editing.pos = { row, col: editing.pos.col };
+        const cell = this.cellElement(editing.pos);
+        const rect = cell && this.rectOf(cell);
+        if (rect) {
+          editing.rect = rect;
+        } else {
+          // the row is not rendered: as on scroll
+          this.commit({ refocus: false });
+        }
+      }
+    }
+
+    const head = this.head;
+    if (head) {
+      const id = previousIds[head.row];
+      const found = id === undefined ? undefined : indexOf.get(id);
+      if (this.rowCount === 0) {
+        this.anchor = null;
+        this.head = null;
+      } else {
+        const pos = {
+          row: found ?? clamp(head.row, 0, this.rowCount - 1),
+          col: head.col
+        };
+        this.anchor = pos;
+        this.head = pos;
+        if ((hadCellFocus || hadEditorFocus) && !this.editing) {
+          // onFocusIn sees the cell it already knows and keeps the range
+          this.domCursor = pos;
+          this.focusGridCell(pos);
+        }
+      }
+    }
+    // the error box is placed again when its cell gets focus
+    if (!hadCellFocus) this.focused = null;
+  }
+
+  /** Focuses the pending cell once its record is in `@records` (it is rendered by now). */
+  applyPendingFocus(): void {
+    const pending = this.pendingFocus;
+    if (!pending) return;
+    const row = this.lastIds.indexOf(pending.id);
+    if (row < 0) return;
+    this.pendingFocus = null;
+    const col = Math.max(
+      0,
+      this.visibleFields.findIndex((field) => field.id === pending.fieldId)
+    );
+    const pos = { row, col };
+    this.anchor = pos;
+    this.head = pos;
+    this.domCursor = pos;
+    this.focusGridCell(pos);
+  }
+
+  /** The rendered grid cell at a position, if it is rendered. */
+  cellElement(pos: Pos): HTMLElement | null {
+    return (
+      this.wrapper?.querySelector<HTMLElement>(
+        `[role=gridcell][data-gridcell-visible-row-index="${pos.row}"][data-gridcell-column-index="${pos.col + this.colOffset}"]`
+      ) ?? null
+    );
+  }
+
+  /** The row of a record now, trying `hint` first; -1 when it is gone. */
+  rowOf(recordId: RecordId, hint: number): number {
+    const records = this.args.records;
+    const getId = this.args.getRecordId;
+    const id = String(recordId);
+    const atHint = records[hint];
+    if (atHint !== undefined && String(getId(atHint)) === id) return hint;
+    return records.findIndex((record) => String(getId(record)) === id);
+  }
 
   /** The data cell an event belongs to, or null (header, footer, control column, toolbar, editor). */
   dataCell(target: EventTarget | null): HTMLElement | null {
@@ -449,10 +737,10 @@ export default class EuiSheet<T extends object> extends Component<
     );
   }
 
-  /** The cell's position, read from its markup. */
+  /** The cell's position (data column), read from its markup. */
   cursor(cell: HTMLElement): Pos {
     const row = Number(cell.dataset['gridcellVisibleRowIndex']);
-    const col = Number(cell.dataset['gridcellColumnIndex']);
+    const col = Number(cell.dataset['gridcellColumnIndex']) - this.colOffset;
     // the sheet passes no sorting/pagination/row tree
     assert(
       'EuiSheet: data and visible row indexes differ',
@@ -463,7 +751,7 @@ export default class EuiSheet<T extends object> extends Component<
   }
 
   touchedAt(pos: Pos): Touched {
-    const record = this.args.records[pos.row];
+    const record = this.recordAt(pos.row);
     const field = this.visibleFields[pos.col];
     if (record === undefined || !field) return [];
     return [{ id: this.args.getRecordId(record), fieldId: field.id }];
@@ -520,12 +808,23 @@ export default class EuiSheet<T extends object> extends Component<
     this.domCursor = pos;
   }
 
+  /**
+   * A data cell lost focus to nowhere in this run loop: a render removed
+   * it (the owner dropped its row), or a click outside. `followRecords`
+   * re-focuses the grid only in the first case.
+   */
+  focusDropped = false;
+
   /** Focus leaving the grid's data cells hides the error box. */
   @action
   onFocusOut(event: FocusEvent): void {
-    const next = event.relatedTarget;
-    if (this.dataCell(next) || this.isInEditor(next)) return;
+    const to = event.relatedTarget;
+    if (this.dataCell(to) || this.isInEditor(to)) return;
     this.focused = null;
+    if (!to && this.dataCell(event.target)) {
+      this.focusDropped = true;
+      next(() => (this.focusDropped = false));
+    }
   }
 
   trackFocusedCell(pos: Pos, cell: HTMLElement): void {
@@ -632,9 +931,9 @@ export default class EuiSheet<T extends object> extends Component<
     this.suppressClick = true;
     // onFocusIn keeps the anchor, so Shift+arrows continue from here
     this.extending = true;
-    if (head.row < this.args.records.length) {
+    if (head.row < this.rowCount) {
       // the head is rendered (it was hovered): the grid focuses it at once
-      this.api?.setFocusedCell({ rowIndex: head.row, colIndex: head.col });
+      this.focusGridCell(head);
     }
     this.extending = false;
   };
@@ -667,7 +966,7 @@ export default class EuiSheet<T extends object> extends Component<
     const cell = this.dataCell(event.target);
     if (!cell) return;
     const pos = this.cursor(cell);
-    const record = this.args.records[pos.row];
+    const record = this.recordAt(pos.row);
     const field = this.visibleFields[pos.col];
     if (record === undefined || !field) return;
     const type = this.typeOf(field);
@@ -693,7 +992,7 @@ export default class EuiSheet<T extends object> extends Component<
 
   /** Whether the cell at `pos` opens an editor. */
   canEdit(pos: Pos): boolean {
-    const record = this.args.records[pos.row];
+    const record = this.recordAt(pos.row);
     const field = this.visibleFields[pos.col];
     if (record === undefined || !field) return false;
     return (
@@ -726,7 +1025,7 @@ export default class EuiSheet<T extends object> extends Component<
     const cell = this.dataCell(target);
     if (!cell || target !== cell) return;
     const pos = this.cursor(cell);
-    const record = this.args.records[pos.row];
+    const record = this.recordAt(pos.row);
     const field = this.visibleFields[pos.col];
     if (record === undefined || !field) return;
     const ctx = this.context;
@@ -819,6 +1118,11 @@ export default class EuiSheet<T extends object> extends Component<
   /* Undo and redo                                                         */
   /* -------------------------------------------------------------------- */
 
+  /** What undo and redo need besides the records: every field id (a restored record's values). */
+  get historyOptions(): { fieldIds: string[] } {
+    return { fieldIds: this.args.fields.map((field) => field.id) };
+  }
+
   /** Emits the inverse of the last entry, without the cells changed since. */
   undo(): void {
     if (this.args.readOnly) return;
@@ -826,7 +1130,12 @@ export default class EuiSheet<T extends object> extends Component<
     if (!entry) return;
     this.redoStack.push(entry);
     this.applyHistory(
-      undoChangeSet(entry, this.args.records, this.args.getRecordId)
+      undoChangeSet(
+        entry,
+        this.args.records,
+        this.args.getRecordId,
+        this.historyOptions
+      )
     );
   }
 
@@ -837,8 +1146,71 @@ export default class EuiSheet<T extends object> extends Component<
     if (!entry) return;
     this.undoStack.push(entry);
     this.applyHistory(
-      redoChangeSet(entry, this.args.records, this.args.getRecordId)
+      redoChangeSet(
+        entry,
+        this.args.records,
+        this.args.getRecordId,
+        this.historyOptions
+      )
     );
+  }
+
+  clearHistory(): void {
+    this.undoStack = [];
+    this.redoStack = [];
+  }
+
+  /** `SheetApi.focusCell`. */
+  focusRecordCell({
+    recordId,
+    fieldId
+  }: {
+    recordId: RecordId;
+    fieldId: string;
+  }): void {
+    const row = this.rowOf(recordId, this.head?.row ?? 0);
+    const col = this.visibleFields.findIndex((field) => field.id === fieldId);
+    if (row < 0 || col < 0) return;
+    const pos = { row, col };
+    this.anchor = pos;
+    this.head = pos;
+    this.domCursor = pos;
+    this.focusGridCell(pos);
+  }
+
+  /**
+   * `SheetApi.remapIds`: rewrites the history, the rejections, a pending
+   * focus, an open editor's record and the ids of the last `@records`.
+   */
+  remapIds(ids: Record<string, RecordId>): void {
+    const map = toIdMap(ids);
+    if (!map.size) return;
+    this.remapped = composeIdMaps(this.remapped, map);
+    this.undoStack = this.undoStack.map((entry) => remapChangeSet(entry, map));
+    this.redoStack = this.redoStack.map((entry) => remapChangeSet(entry, map));
+    if (this.rejections.size) {
+      const next = new Map<string, Rejection>();
+      for (const entry of this.rejections.values()) {
+        const id = String(remapId(entry.id, map));
+        next.set(cellKey(id, entry.fieldId), { ...entry, id });
+      }
+      this.rejections = next;
+    }
+    if (this.pendingFocus) {
+      this.pendingFocus = {
+        ...this.pendingFocus,
+        id: String(remapId(this.pendingFocus.id, map))
+      };
+    }
+    if (this.editing) {
+      this.editing.recordId = remapId(this.editing.recordId, map);
+    }
+    // a `@records` that only carries the new ids is not a change of rows
+    this.lastIds = this.lastIds.map((id) => String(remapId(id, map)));
+    const deletes = [...this.pendingOwn.deletes].map((id) =>
+      String(remapId(id, map))
+    );
+    this.pendingOwn = { ...this.pendingOwn, deletes: new Set(deletes) };
   }
 
   /** Emits an undo or redo (if anything is left of it) and selects what it changed. */
@@ -859,7 +1231,8 @@ export default class EuiSheet<T extends object> extends Component<
    * Selects the bounding box of the patched cells and focuses its top-left
    * cell. Only rows that exist both before and after the change are used:
    * inserted rows are rendered only on the next render, and the grid throws
-   * for a row past its last one.
+   * for a row past its last one. A change that only inserts (an undone
+   * delete) focuses the first inserted record once it is rendered.
    */
   selectChanged(changeSet: ChangeSet, rowsBefore: number): void {
     // the owner's records after it applied the change set, if it did at once
@@ -888,6 +1261,16 @@ export default class EuiSheet<T extends object> extends Component<
     if (box) {
       focus = { row: box.top, col: box.left };
       this.anchor = { row: box.bottom, col: box.right };
+    } else if (changeSet.inserts.length) {
+      const field = this.visibleFields[this.head?.col ?? 0];
+      if (!field) return;
+      this.pendingFocus = {
+        id: changeSet.inserts[0]!.tempId,
+        fieldId: field.id
+      };
+      // the owner may have applied it already; else the next render does
+      afterRender(this, () => this.applyPendingFocus());
+      return;
     } else {
       // nothing patched (an undo that only removed rows): keep focus on a
       // row that still exists
@@ -899,7 +1282,7 @@ export default class EuiSheet<T extends object> extends Component<
     this.head = focus;
     // onFocusIn sees the cell it already knows and keeps the range
     this.domCursor = focus;
-    this.api?.setFocusedCell({ rowIndex: focus.row, colIndex: focus.col });
+    this.focusGridCell(focus);
   }
 
   onEditKeyDown(event: KeyboardEvent): void {
@@ -1017,7 +1400,7 @@ export default class EuiSheet<T extends object> extends Component<
 
   startEdit(pos: Pos, cell: HTMLElement, initialKey: string | null): void {
     const wrapper = this.wrapper;
-    const record = this.args.records[pos.row];
+    const record = this.recordAt(pos.row);
     const field = this.visibleFields[pos.col];
     if (!wrapper || record === undefined || !field) return;
     const type = this.typeOf(field);
@@ -1040,7 +1423,7 @@ export default class EuiSheet<T extends object> extends Component<
       });
     this.draft = draft;
     this.draftDirty = false;
-    this.editing = {
+    this.editing = new Editing({
       pos,
       recordId,
       field,
@@ -1050,7 +1433,7 @@ export default class EuiSheet<T extends object> extends Component<
       placement,
       initialKey,
       draft
-    };
+    });
   }
 
   /**
@@ -1064,11 +1447,12 @@ export default class EuiSheet<T extends object> extends Component<
     return this.editing ? [this.editing] : [];
   }
 
+  /** The edited record, by id: the owner may have moved it (V02-DESIGN.md 3.2). */
   editorRecord = (editing: Editing): T | undefined =>
-    this.args.records[editing.pos.row];
+    this.args.records[this.rowOf(editing.recordId, editing.pos.row)];
 
   editorValue = (editing: Editing): unknown =>
-    valueOf(this.args.records[editing.pos.row], editing.field.id);
+    valueOf(this.editorRecord(editing), editing.field.id);
 
   commit({
     move = [0, 0],
@@ -1083,8 +1467,11 @@ export default class EuiSheet<T extends object> extends Component<
     if (!editing) return;
     // first: the re-entrancy guard. The focusout caused below (or by the
     // editor leaving the DOM) finds editing === null and returns.
-    const { pos } = editing;
     this.editing = null;
+    // the edited record's row now; gone: nothing to save
+    const row = this.rowOf(editing.recordId, editing.pos.row);
+    if (row < 0) return;
+    const pos = { row, col: editing.pos.col };
     const ctx = this.context;
     let ran = true;
     let changeSet: ChangeSet | null = null;
@@ -1103,18 +1490,11 @@ export default class EuiSheet<T extends object> extends Component<
       ]);
     }
     if (refocus) {
-      const rowIndex = clamp(
-        pos.row + move[0],
-        0,
-        this.args.records.length - 1
-      );
-      const colIndex = clamp(
-        pos.col + move[1],
-        0,
-        this.visibleFields.length - 1
-      );
       // synchronous is safe: the target row already exists
-      this.api?.setFocusedCell({ rowIndex, colIndex });
+      this.focusGridCell({
+        row: clamp(pos.row + move[0], 0, this.args.records.length - 1),
+        col: clamp(pos.col + move[1], 0, this.visibleFields.length - 1)
+      });
     }
   }
 
@@ -1122,10 +1502,9 @@ export default class EuiSheet<T extends object> extends Component<
     const editing = this.editing;
     if (!editing) return;
     this.editing = null;
-    this.api?.setFocusedCell({
-      rowIndex: editing.pos.row,
-      colIndex: editing.pos.col
-    });
+    const row = this.rowOf(editing.recordId, editing.pos.row);
+    if (row < 0) return;
+    this.focusGridCell({ row, col: editing.pos.col });
   };
 
   /* Editor callbacks, bound once */
@@ -1161,6 +1540,16 @@ export default class EuiSheet<T extends object> extends Component<
     for (const { id, fieldId } of touched) {
       if (next.delete(cellKey(id, fieldId))) changed = true;
     }
+    if (changeSet?.deletes?.length) {
+      // the removed records' texts go with them
+      const gone = new Set(changeSet.deletes.map(String));
+      for (const [key, entry] of next) {
+        if (gone.has(entry.id)) {
+          next.delete(key);
+          changed = true;
+        }
+      }
+    }
     if (next.size) {
       const ids = new Set(
         this.args.records.map((record) => String(this.args.getRecordId(record)))
@@ -1183,6 +1572,7 @@ export default class EuiSheet<T extends object> extends Component<
         const id = String(rejection.recordId ?? rejection.tempId);
         next.set(cellKey(id, rejection.fieldId), {
           id,
+          fieldId: rejection.fieldId,
           text: rejection.text,
           message: rejection.message,
           seenValue: valueOf(byId.get(id), rejection.fieldId)
@@ -1193,6 +1583,13 @@ export default class EuiSheet<T extends object> extends Component<
     if (changed) this.rejections = next;
     if (!changeSet) return;
     this.recordHistory(changeSet);
+    // the rows the owner's next `@records` gains or loses because of it
+    if (changeSet.inserts.length || changeSet.deletes?.length) {
+      this.pendingOwn.inserts += changeSet.inserts.length;
+      for (const id of changeSet.deletes ?? []) {
+        this.pendingOwn.deletes.add(String(id));
+      }
+    }
     for (const patch of changeSet.patches) {
       this.changedSinceRun.push({
         recordId: patch.recordId,
@@ -1211,12 +1608,25 @@ export default class EuiSheet<T extends object> extends Component<
   /**
    * A user action's change set becomes an undo entry (not an undo or redo,
    * and not one with only rejections or new options); a new entry clears
-   * the redo stack.
+   * the redo stack. A bulk resolve (`'resolve'`) joins the last entry, the
+   * paste that asked for it, so one undo reverts both.
    */
   recordHistory(changeSet: ChangeSet): void {
     if (changeSet.source === 'undo' || changeSet.source === 'redo') return;
-    if (!changeSet.patches.length && !changeSet.inserts.length) return;
-    this.undoStack.push(changeSet);
+    if (
+      !changeSet.patches.length &&
+      !changeSet.inserts.length &&
+      !changeSet.deletes?.length
+    ) {
+      return;
+    }
+    const entry = remapChangeSet(changeSet, this.remapped);
+    const last = this.undoStack[this.undoStack.length - 1];
+    if (entry.source === 'resolve' && last) {
+      this.undoStack[this.undoStack.length - 1] = mergeChangeSets(last, entry);
+      return;
+    }
+    this.undoStack.push(entry);
     if (this.undoStack.length > HISTORY_LIMIT) this.undoStack.shift();
     this.redoStack = [];
   }
@@ -1284,11 +1694,14 @@ export default class EuiSheet<T extends object> extends Component<
 
   <template>
     <div
-      class="euiSheet {{if this.dragging 'euiSheet--dragging'}}"
+      class="euiSheet
+        {{this.themeClass}}
+        {{if this.dragging 'euiSheet--dragging'}}"
       data-test-subj="euiSheet"
       ...attributes
       {{this.setupWrapper}}
       {{this.watchRecords @records}}
+      {{this.registerSheetApi}}
       {{on "keydown" this.onKeyDown capture=true}}
       {{on "copy" this.onCopy capture=true}}
       {{on "paste" this.onPaste capture=true}}
@@ -1304,10 +1717,10 @@ export default class EuiSheet<T extends object> extends Component<
         aria-label={{this.ariaLabel}}
         @columns={{this.columns}}
         @columnVisibility={{this.columnVisibility}}
-        @rowCount={{@records.length}}
+        @rowCount={{this.rowCount}}
         @renderCellValue={{SheetCell}}
         @cellContext={{this.cellContext}}
-        @registerApi={{this.registerApi}}
+        @registerApi={{this.registerGridApi}}
         @toolbarVisibility={{false}}
         @height={{@height}}
       />
@@ -1329,6 +1742,7 @@ export default class EuiSheet<T extends object> extends Component<
               @onCommit={{this.onEditorCommit}}
               @onCancel={{this.cancel}}
               @messages={{this.messages}}
+              @themeClass={{this.themeClass}}
             />
           {{/if}}
         </EditorFrame>

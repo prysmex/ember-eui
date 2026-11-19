@@ -58,6 +58,7 @@ class FlatpickrDateEditor extends Component {
         @onCommit={{@onCommit}}
         @onCancel={{@onCancel}}
         @messages={{@messages}}
+        @themeClass={{@themeClass}}
       />
     {{else}}
       <EuiFlatpickr

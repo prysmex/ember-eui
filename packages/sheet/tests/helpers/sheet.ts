@@ -14,9 +14,20 @@ export function el(selector: string, root: ParentNode = document): HTMLElement {
   return element;
 }
 
-export function cell(row: number, col: number): HTMLElement {
+/**
+ * Leading control columns of the sheet's grid (none yet; row numbers in
+ * v0.2 batch 2): `cell(row, col)` takes the data column.
+ */
+export const COL_OFFSET = 0;
+
+export function cell(
+  row: number,
+  col: number,
+  root: ParentNode = document
+): HTMLElement {
   return el(
-    `[role=gridcell][data-gridcell-visible-row-index="${row}"][data-gridcell-column-index="${col}"]`
+    `[role=gridcell][data-gridcell-visible-row-index="${row}"][data-gridcell-column-index="${col + COL_OFFSET}"]`,
+    root
   );
 }
 
@@ -45,7 +56,7 @@ export function selected(): string[] {
   )
     .map(
       (element) =>
-        `${element.dataset['gridcellVisibleRowIndex']}:${element.dataset['gridcellColumnIndex']}`
+        `${element.dataset['gridcellVisibleRowIndex']}:${Number(element.dataset['gridcellColumnIndex']) - COL_OFFSET}`
     )
     .sort();
 }

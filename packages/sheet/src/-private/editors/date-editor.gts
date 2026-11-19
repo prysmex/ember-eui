@@ -49,6 +49,7 @@ export default class DateEditor extends Component<
         @onCommit={{@onCommit}}
         @onCancel={{@onCancel}}
         @messages={{@messages}}
+        @themeClass={{@themeClass}}
       />
     {{else}}
       <input

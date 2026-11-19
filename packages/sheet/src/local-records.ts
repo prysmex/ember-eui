@@ -6,7 +6,12 @@ import { tracked } from '@glimmer/tracking';
 
 import { applyChangeSet, applyNewOptions } from './core/index.ts';
 
-import type { ChangeSet, EuiSheetField, RecordId } from './core/index.ts';
+import type {
+  ChangeSet,
+  EuiSheetField,
+  RecordId,
+  RecordInsert
+} from './core/index.ts';
 
 export interface LocalRecordsOptions<
   T,
@@ -15,6 +20,8 @@ export interface LocalRecordsOptions<
   getRecordId: (record: T) => RecordId;
   /** Default: `{ id: tempId, ...values }`. */
   createRecord?: (values: Record<string, unknown>, tempId: string) => T;
+  /** The record an undo of a delete puts back. Default: the deleted object, as it was (`insert.restore.record`). */
+  restoreRecord?: (insert: RecordInsert) => T;
   /** Optional: lets the store add options created on paste. */
   fields?: F[];
 }

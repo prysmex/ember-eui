@@ -20,6 +20,7 @@ export {
 export type {
   EuiSheetFieldType,
   EuiSheetSignature,
+  SheetApi,
   SheetCellSignature,
   SheetEditorRect,
   SheetEditorResult,

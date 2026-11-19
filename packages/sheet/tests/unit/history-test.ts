@@ -2,6 +2,7 @@ import { module, test } from 'qunit';
 
 import {
   applyChangeSet,
+  deleteRecords,
   invertChangeSet,
   redoChangeSet,
   undoChangeSet,
@@ -133,8 +134,8 @@ module('Unit | Sheet | history', function () {
     );
     assert.deepEqual(
       kept.inserts,
-      [{ tempId: 'new-2', index: 2, values: { a: 'o' } }],
-      'an existing tempId is not inserted again; index is at the end'
+      [{ tempId: 'new-2', index: 1, values: { a: 'o' } }],
+      'an existing tempId is not inserted again; without an anchor the index is kept, clamped to the end (v0.2, C3)'
     );
     assert.deepEqual(kept.deletes, [7], 'an unknown id is skipped');
   });
@@ -165,6 +166,182 @@ module('Unit | Sheet | history', function () {
       store.records,
       [{ id: 'r2', a: 'z' }],
       'a change set without deletes keeps every record'
+    );
+  });
+
+  test('H6 the inverse of a delete gives positioned restores', function (assert) {
+    const records: Row[] = [
+      { id: 'r0', a: 'a0' },
+      { id: 'r1', a: 'a1', b: 'b1' },
+      { id: 'r2', a: 'a2' },
+      { id: 'r3', a: 'a3' }
+    ];
+    const deleted = deleteRecords(records, ['r2', 'r1'], getId)!;
+    assert.deepEqual(invertChangeSet(deleted, ['a', 'b']), {
+      source: 'undo',
+      patches: [],
+      inserts: [
+        {
+          tempId: 'r1',
+          index: 1,
+          values: { a: 'a1', b: 'b1' },
+          anchor: { recordId: 'r0', position: 'after' },
+          restore: { recordId: 'r1', record: records[1] }
+        },
+        {
+          tempId: 'r2',
+          index: 2,
+          values: { a: 'a2' },
+          anchor: { recordId: 'r1', position: 'after' },
+          restore: { recordId: 'r2', record: records[2] }
+        }
+      ],
+      deletes: [],
+      rejected: [],
+      newOptions: []
+    });
+    const first = deleteRecords(records, ['r0'], getId)!;
+    const [restore] = invertChangeSet(first).inserts;
+    assert.strictEqual(
+      restore!.anchor,
+      undefined,
+      'the first record has no neighbour'
+    );
+    assert.deepEqual(restore!.values, {}, 'no field ids: no values');
+  });
+
+  test('H7 undo then redo of a delete round-trips through applyChangeSet', function (assert) {
+    const records: Row[] = [
+      { id: 'r0', a: 'a0' },
+      { id: 'r1', a: 'a1' },
+      { id: 'r2', a: 'a2' },
+      { id: 'r3', a: 'a3' }
+    ];
+    const deleted = deleteRecords(records, ['r1', 'r3'], getId)!;
+    const after = applyChangeSet(records, deleted, { getRecordId: getId });
+    assert.deepEqual(
+      after.map((record) => record.id),
+      ['r0', 'r2']
+    );
+    const undo = undoChangeSet(deleted, after, getId, { fieldIds: ['a'] })!;
+    assert.strictEqual(undo.source, 'undo');
+    const undone = applyChangeSet(after, undo, { getRecordId: getId });
+    assert.deepEqual(undone, records, 'the same records, in the same places');
+    assert.strictEqual(undone[1], records[1], 'the same objects');
+
+    const redo = redoChangeSet(deleted, undone, getId)!;
+    assert.strictEqual(redo.source, 'redo');
+    assert.deepEqual(redo.deletes, ['r1', 'r3']);
+    assert.deepEqual(redo.removed, deleted.removed, 'the entry’s own removed');
+    assert.deepEqual(
+      applyChangeSet(undone, redo, { getRecordId: getId }),
+      after
+    );
+    assert.strictEqual(
+      undoChangeSet(deleted, undone, getId),
+      null,
+      'nothing to restore while the records exist'
+    );
+  });
+
+  test('H8 a re-insert follows its anchor when the anchor moved', function (assert) {
+    const records: Row[] = [{ id: 'r0' }, { id: 'r1' }, { id: 'r2' }];
+    const deleted = deleteRecords(records, ['r2'], getId)!;
+    // the owner re-sorted: r1 (r2's old neighbour) is first now
+    const moved: Row[] = [{ id: 'r1' }, { id: 'r0' }];
+    const undo = undoChangeSet(deleted, moved, getId)!;
+    assert.strictEqual(undo.inserts[0]!.index, 1, 'right after r1, not at 2');
+    assert.deepEqual(
+      applyChangeSet(moved, undo, { getRecordId: getId }).map(
+        (record) => record.id
+      ),
+      ['r1', 'r2', 'r0']
+    );
+    // anchor gone: the old index, clamped
+    const gone = undoChangeSet(deleted, [{ id: 'x' }], getId)!;
+    assert.strictEqual(gone.inserts[0]!.index, 1);
+    // a redone paste: chained inserts get consecutive indexes after the anchor
+    const paste: ChangeSet = {
+      source: 'paste',
+      patches: [],
+      inserts: [
+        {
+          tempId: 'n0',
+          index: 3,
+          values: {},
+          anchor: { recordId: 'r2', position: 'after' }
+        },
+        {
+          tempId: 'n1',
+          index: 4,
+          values: {},
+          anchor: { recordId: 'n0', position: 'after' }
+        }
+      ],
+      rejected: [],
+      newOptions: []
+    };
+    const grown: Row[] = [
+      { id: 'r0' },
+      { id: 'r1' },
+      { id: 'r2' },
+      { id: 'owner' }
+    ];
+    assert.deepEqual(
+      redoChangeSet(paste, grown, getId)!.inserts.map((insert) => [
+        insert.tempId,
+        insert.index
+      ]),
+      [
+        ['n0', 3],
+        ['n1', 4]
+      ],
+      'after the anchor, before the row the owner added at the end'
+    );
+  });
+
+  test('H9 the equals option compares cells', function (assert) {
+    const entry: ChangeSet = {
+      source: 'edit',
+      patches: [
+        { recordId: 'r0', fieldId: 'tags', from: ['a'], to: ['a', 'b'] }
+      ],
+      inserts: [],
+      rejected: [],
+      newOptions: []
+    };
+    // the owner stored a copy of the array
+    const records: Row[] = [{ id: 'r0', tags: ['a', 'b'] }];
+    assert.strictEqual(
+      undoChangeSet(entry, records, getId),
+      null,
+      'Object.is: another array is a change made since'
+    );
+    const equals = (_fieldId: string, a: unknown, b: unknown) =>
+      JSON.stringify(a) === JSON.stringify(b);
+    assert.deepEqual(
+      undoChangeSet(entry, records, getId, { equals })!.patches,
+      [{ recordId: 'r0', fieldId: 'tags', from: ['a', 'b'], to: ['a'] }]
+    );
+    assert.deepEqual(
+      redoChangeSet(entry, [{ id: 'r0', tags: ['a'] }], getId, { equals })!
+        .patches,
+      entry.patches,
+      'redo too'
+    );
+  });
+
+  test('H10 an entry whose records are not in the records is skipped', function (assert) {
+    // the owner moved to another page: none of the entry's records are shown
+    const otherPage: Row[] = [{ id: 'p9', a: 'z' }];
+    assert.strictEqual(undoChangeSet(PASTE, otherPage, getId), null);
+    const edit: ChangeSet = { ...PASTE, source: 'edit', inserts: [] };
+    assert.strictEqual(redoChangeSet(edit, otherPage, getId), null);
+    const deleted = deleteRecords([{ id: 'p1' }], ['p1'], getId)!;
+    assert.strictEqual(
+      redoChangeSet(deleted, otherPage, getId),
+      null,
+      'a delete of a record that is not shown'
     );
   });
 });

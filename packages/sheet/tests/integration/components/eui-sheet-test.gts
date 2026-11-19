@@ -10,6 +10,7 @@ import {
   focus,
   render,
   settled,
+  triggerEvent,
   waitUntil
 } from '@ember/test-helpers';
 
@@ -20,16 +21,24 @@ import {
   changeSet,
   clipboard,
   editor,
+  editorFrame,
   el,
   focusCell,
   press,
+  pressed,
   scrollTo,
   selected,
   text,
   type
 } from '../../helpers/sheet.ts';
 
-import type { EuiSheetField, SheetOption } from '#src/core/index.ts';
+import type {
+  ChangeSet,
+  EuiSheetField,
+  RecordId,
+  SheetOption
+} from '#src/core/index.ts';
+import type { SheetApi } from '#src/types.ts';
 
 interface Person {
   id: string;
@@ -555,5 +564,285 @@ module('Integration | Component | EuiSheet', function (hooks) {
     // eslint-disable-next-line ember/no-pause-test
     await this.pauseTest();
     assert.true(true);
+  });
+});
+
+module('Integration | Component | EuiSheet v0.2 foundations', function (hooks) {
+  setupRenderingTest(hooks);
+
+  async function renderSheet(
+    options: { records?: Person[]; onChange?: (set: ChangeSet) => void } = {}
+  ) {
+    const store = localRecords(options.records ?? people(), {
+      getRecordId: getId
+    });
+    const state: { api: SheetApi | null; registered: number } = {
+      api: null,
+      registered: 0
+    };
+    const registerApi = (api: SheetApi) => {
+      state.api = api;
+      state.registered++;
+    };
+    const onChange = options.onChange ?? store.apply;
+    await render(
+      <template>
+        <div style="width:600px">
+          <EuiSheet
+            @records={{store.records}}
+            @fields={{FIELDS}}
+            @getRecordId={{getId}}
+            @onChange={{onChange}}
+            @registerApi={{registerApi}}
+          />
+        </div>
+      </template>
+    );
+    return { store, state };
+  }
+
+  /** The owner replaces `@records` (a re-sort, a re-query). */
+  async function replace(
+    store: { records: Person[] },
+    next: (records: Person[]) => Person[]
+  ): Promise<void> {
+    store.records = next(store.records);
+    await settled();
+  }
+
+  const ids = (records: { id: RecordId }[]) => records.map((r) => r.id);
+
+  test('T17 a cell with a line break is copied quoted and pastes back as one cell', async function (assert) {
+    const records = people();
+    records[0] = { ...records[0]!, name: 'two\nlines', city: 'say "hi"' };
+    const { store } = await renderSheet({ records });
+    await focusCell(0, 0);
+    await press('ArrowRight', { shiftKey: true });
+    const copied = await clipboard('copy');
+    assert.true(copied.prevented);
+    assert.strictEqual(copied.text, '"two\nlines"\tsay "hi"');
+
+    // a click starts a new selection (focus alone would extend the range)
+    await click(cell(2, 0));
+    await clipboard('paste', copied.text);
+    assert.strictEqual(store.log.length, 1);
+    assert.deepEqual(store.log[0]!.patches, [
+      { recordId: 'r2', fieldId: 'name', from: 'name2', to: 'two\nlines' },
+      { recordId: 'r2', fieldId: 'city', from: 'city2', to: 'say "hi"' }
+    ]);
+    assert.deepEqual(store.log[0]!.inserts, [], 'one row, no inserts');
+  });
+
+  test('T18 @registerApi gives undo, redo, focusCell and clearHistory', async function (assert) {
+    const { store, state } = await renderSheet();
+    assert.strictEqual(
+      state.registered,
+      1,
+      'called once, after the first render'
+    );
+    const api = state.api!;
+
+    await focusCell(1, 0);
+    await type('x');
+    await fillIn(editor()!, 'xy');
+    await press('Enter');
+    assert.strictEqual(text(1, 0), 'xy');
+
+    api.undo();
+    await settled();
+    assert.strictEqual(store.log[1]!.source, 'undo');
+    assert.strictEqual(text(1, 0), 'name1');
+    api.redo();
+    await settled();
+    assert.strictEqual(store.log[2]!.source, 'redo');
+    assert.strictEqual(text(1, 0), 'xy');
+
+    api.focusCell({ recordId: 'r3', fieldId: 'city' });
+    await settled();
+    assert.strictEqual(document.activeElement, cell(3, 1));
+    assert.deepEqual(selected(), ['3:1']);
+    api.focusCell({ recordId: 'nope', fieldId: 'city' });
+    api.focusCell({ recordId: 'r0', fieldId: 'nope' });
+    await settled();
+    assert.strictEqual(document.activeElement, cell(3, 1), 'unknown: no-op');
+
+    api.clearHistory();
+    api.undo();
+    api.redo();
+    await settled();
+    assert.strictEqual(store.log.length, 3, 'nothing to undo or redo');
+
+    await replace(store, (records) => [...records]);
+    assert.strictEqual(state.registered, 1, 'not called again on re-render');
+  });
+
+  test('T19 remapIds, then Ctrl+Z of a paste that inserted rows removes the remapped records', async function (assert) {
+    const { store, state } = await renderSheet();
+    await focusCell(4, 0);
+    await clipboard('paste', 'a\nb\nc');
+    const paste = store.log[0]!;
+    assert.strictEqual(paste.inserts.length, 2);
+    assert.strictEqual(store.records.length, 7);
+
+    // the server answers with its own ids
+    const serverIds: Record<string, RecordId> = {};
+    paste.inserts.forEach(
+      (insert, i) => (serverIds[insert.tempId] = `srv-${i}`)
+    );
+    state.api!.remapIds(serverIds);
+    await replace(store, (records) =>
+      records.map((r) =>
+        serverIds[r.id] ? { ...r, id: `${serverIds[r.id]}` } : r
+      )
+    );
+    assert.deepEqual(ids(store.records).slice(5), ['srv-0', 'srv-1']);
+    assert.strictEqual(
+      document.activeElement,
+      cell(4, 0),
+      'carrying new ids is not a change of rows: focus stays'
+    );
+
+    assert.true(await pressed('z', { ctrlKey: true }), 'Ctrl+Z');
+    const undo = store.log[1]!;
+    assert.strictEqual(undo.source, 'undo');
+    assert.deepEqual(undo.deletes, ['srv-0', 'srv-1']);
+    assert.deepEqual(undo.patches, [
+      { recordId: 'r4', fieldId: 'name', from: 'a', to: 'name4' }
+    ]);
+    await settled();
+    assert.deepEqual(ids(store.records), ['r0', 'r1', 'r2', 'r3', 'r4']);
+  });
+
+  test('T20 the owner re-orders @records: the selection and focus follow the head’s record', async function (assert) {
+    const { store } = await renderSheet();
+    await focusCell(0, 1);
+    await press('ArrowDown', { shiftKey: true });
+    assert.deepEqual(selected(), ['0:1', '1:1']);
+    assert.strictEqual(document.activeElement, cell(1, 1));
+
+    await replace(store, (records) => [...records].reverse());
+    assert.deepEqual(ids(store.records), ['r4', 'r3', 'r2', 'r1', 'r0']);
+    assert.deepEqual(selected(), ['3:1'], 'collapsed to the head, on r1');
+    assert.strictEqual(document.activeElement, cell(3, 1), 'focus follows');
+    assert.strictEqual(store.log.length, 0);
+
+    await press('Delete');
+    assert.deepEqual(
+      store.log[0]!.patches,
+      [{ recordId: 'r1', fieldId: 'city', from: 'city1', to: '' }],
+      'keys act on the record that moved'
+    );
+  });
+
+  test('T21 the head’s record is gone: the row index is kept, clamped', async function (assert) {
+    const { store } = await renderSheet();
+    await focusCell(1, 0);
+    await replace(store, (records) => records.filter((r) => r.id !== 'r1'));
+    assert.deepEqual(selected(), ['1:0'], 'same row: now r2');
+    assert.strictEqual(document.activeElement, cell(1, 0));
+    assert.strictEqual(text(1, 0), 'name2');
+
+    await focusCell(3, 2);
+    await replace(store, (records) => records.slice(0, 2));
+    assert.deepEqual(selected(), ['1:2'], 'clamped to the last row');
+    assert.strictEqual(document.activeElement, cell(1, 2));
+  });
+
+  test('T22 @records re-ordered while an editor has a typed draft: the editor stays on its record', async function (assert) {
+    const { store } = await renderSheet();
+    await focusCell(1, 0);
+    await type('x');
+    await fillIn(editor()!, 'xyz');
+
+    await replace(store, (records) => [...records].reverse());
+    assert.ok(editor(), 'the editor is still open');
+    assert.strictEqual(editor()!.value, 'xyz', 'with its draft');
+    assert.strictEqual(document.activeElement, editor(), 'and focus');
+    const frame = editorFrame()!.getBoundingClientRect();
+    const target = cell(3, 0).getBoundingClientRect();
+    assert.true(
+      Math.abs(frame.top - target.top) < 2,
+      `the frame moved to r1's cell (${frame.top} vs ${target.top})`
+    );
+
+    await press('Enter');
+    assert.deepEqual(store.log, [
+      changeSet({
+        source: 'edit',
+        patches: [{ recordId: 'r1', fieldId: 'name', from: 'name1', to: 'xyz' }]
+      })
+    ]);
+    assert.strictEqual(text(3, 0), 'xyz');
+    assert.strictEqual(text(1, 0), 'name3', 'not the old row index');
+    await waitUntil(() => document.activeElement === cell(4, 0));
+  });
+
+  test('T23 the edited record is removed from @records: the editor closes, nothing is emitted', async function (assert) {
+    const { store } = await renderSheet();
+    await focusCell(1, 0);
+    await type('x');
+    await fillIn(editor()!, 'abc');
+
+    await replace(store, (records) => records.filter((r) => r.id !== 'r1'));
+    assert.strictEqual(editor(), null, 'closed');
+    assert.strictEqual(store.log.length, 0, 'nothing emitted');
+    assert.deepEqual(
+      ids(store.records),
+      ['r0', 'r2', 'r3', 'r4'],
+      'no record written'
+    );
+    assert.strictEqual(text(1, 0), 'name2');
+    assert.strictEqual(
+      document.activeElement,
+      cell(1, 0),
+      'focus is back on the grid'
+    );
+  });
+
+  test('T25 a redo that only inserts focuses the re-inserted row once it is rendered', async function (assert) {
+    const { store } = await renderSheet();
+    await focusCell(4, 0);
+    // the first line is the row's own value: no patch, one insert
+    await clipboard('paste', 'name4\nnew');
+    const paste = store.log[0]!;
+    assert.deepEqual(paste.patches, []);
+    assert.strictEqual(paste.inserts.length, 1);
+
+    assert.true(await pressed('z', { ctrlKey: true }), 'Ctrl+Z');
+    assert.strictEqual(store.records.length, 5, 'undone');
+    assert.strictEqual(document.activeElement, cell(4, 0));
+
+    assert.true(await pressed('Z', { ctrlKey: true, shiftKey: true }), 'redo');
+    const redo = store.log[2]!;
+    assert.strictEqual(redo.source, 'redo');
+    assert.deepEqual(redo.patches, [], 'insert only');
+    await settled();
+    assert.strictEqual(store.records.length, 6);
+    assert.strictEqual(
+      document.activeElement,
+      cell(5, 0),
+      'focus on the re-inserted row'
+    );
+    assert.deepEqual(selected(), ['5:0']);
+    assert.strictEqual(text(5, 0), 'new');
+  });
+
+  test('T24 a select drag in progress ends when the owner replaces @records', async function (assert) {
+    const { store } = await renderSheet();
+    const wrapper = el('[data-test-subj=euiSheet]');
+    await triggerEvent(cell(0, 0), 'mousedown', { button: 0 });
+    await triggerEvent(cell(1, 1), 'mouseover');
+    assert.dom(wrapper).hasClass('euiSheet--dragging');
+    assert.deepEqual(selected(), ['0:0', '0:1', '1:0', '1:1']);
+
+    await replace(store, (records) => [...records].reverse());
+    assert.dom(wrapper).doesNotHaveClass('euiSheet--dragging');
+    assert.deepEqual(selected(), ['3:1'], 'no range: the head’s record (r1)');
+
+    await triggerEvent(cell(2, 2), 'mouseover');
+    assert.deepEqual(selected(), ['3:1'], 'moving on does not drag');
+    await triggerEvent(cell(2, 2), 'mouseup', { button: 0 });
+    await triggerEvent(cell(2, 2), 'click', { button: 0 });
+    assert.strictEqual(store.log.length, 0);
   });
 });

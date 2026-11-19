@@ -121,8 +121,32 @@ export interface CellPatch {
 
 export interface RecordInsert {
   tempId: string;
+  /**
+   * Position in the records the sheet was given (`@records`, which may be
+   * one page of the owner's data): the record's index in the result, after
+   * the set's deletes are applied and with inserts applied in ascending
+   * `index` order. An index past the end appends.
+   */
   index: number;
   values: Record<string, unknown>;
+  /**
+   * The neighbour in `@records` when the insert was made. Owners whose data
+   * is larger than `@records` (paged, sorted elsewhere) position by this;
+   * `applyChangeSet` uses it before `index`.
+   */
+  anchor?: { recordId: RecordId; position: 'before' | 'after' };
+  /** Set when an undo re-creates a deleted record: its id and the object it was. */
+  restore?: { recordId: RecordId; record: unknown };
+}
+
+/** What a delete removed, so it can be undone. */
+export interface RecordRemoval {
+  recordId: RecordId;
+  /** Index in `@records` when it was removed. */
+  index: number;
+  /** The neighbour before it in `@records` then, if any. */
+  after?: RecordId;
+  record: unknown;
 }
 
 /** A text that could not become a value. Exactly one of recordId / tempId is set. */
@@ -141,18 +165,31 @@ export interface NewOption {
 
 export interface ChangeSet {
   /**
-   * What made it: an edit, a paste, a clear, a fill (Ctrl/Cmd+D), or an
+   * What made it: an edit, a paste, a clear, a fill (Ctrl/Cmd+D), an insert
+   * or a delete of records, a cut, a bulk resolve of pasted text, or an
    * undo / redo of one of those.
    */
-  source: 'edit' | 'paste' | 'clear' | 'fill' | 'undo' | 'redo';
+  source:
+    | 'edit'
+    | 'paste'
+    | 'clear'
+    | 'fill'
+    | 'undo'
+    | 'redo'
+    | 'insert'
+    | 'delete'
+    | 'cut'
+    | 'resolve';
   patches: CellPatch[];
   inserts: RecordInsert[];
   /**
-   * Ids of records to remove. Only an undo of a paste that inserted rows has
-   * them: the inserted records' `tempId`s. Optional, so a change set written
-   * by hand needs none; an id that matches no record is ignored.
+   * Ids of records to remove: a user delete (with `removed`), its redo, or
+   * an undo of inserted rows (their `tempId`s). Optional, so a change set
+   * written by hand needs none; an id that matches no record is ignored.
    */
   deletes?: RecordId[];
+  /** Present whenever `deletes` comes from a user delete or its redo: same order as `deletes`. */
+  removed?: RecordRemoval[];
   rejected: CellRejection[];
   newOptions: NewOption[];
 }

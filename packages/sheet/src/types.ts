@@ -84,7 +84,37 @@ export interface SheetEditorSignature<
     /** Closes the editor without a change and focuses the cell. */
     onCancel: () => void;
     messages: SheetMessages;
+    /**
+     * The class that defines the sheet's theme colours (`--euiSheet-*`). An
+     * editor that renders a surface outside the sheet (a wormholed list or
+     * calendar) adds it to that surface, which otherwise gets the light
+     * fallbacks. Optional, so a wrapper that renders a built-in editor
+     * itself (`SheetInputEditor`) keeps working; the sheet always passes it.
+     */
+    themeClass?: string;
   };
+}
+
+/**
+ * What `@registerApi` gives the owner: one stable object, passed once,
+ * after the first render.
+ */
+export interface SheetApi {
+  /** Ctrl/Cmd+Z: emits the undo of the last change made in the sheet. */
+  undo(): void;
+  /** Ctrl/Cmd+Shift+Z: emits the last undone change again. */
+  redo(): void;
+  /** Focuses a cell by record and field. No-op when the record is not in `@records` or the field is not shown. */
+  focusCell(cell: { recordId: RecordId; fieldId: string }): void;
+  /**
+   * Tells the sheet the ids the owner gave to inserted (or restored)
+   * records: `{ [tempId or old id]: newId }`. The undo history, the
+   * rejected texts and a pending focus are rewritten, so undo still finds
+   * them. Call it before (or with) the `@records` that carry the new ids.
+   */
+  remapIds(ids: Record<string, RecordId>): void;
+  /** Drops the undo and redo stacks (call it when your data changed wholesale). */
+  clearHistory(): void;
 }
 
 /** The cell's box relative to the sheet's wrapper, in CSS px. */
@@ -125,5 +155,7 @@ export interface EuiSheetSignature<T> {
     validate?: (
       context: ValidateContext<T>
     ) => CellErrors | Promise<CellErrors>;
+    /** Receives the sheet's API (`undo`, `redo`, `focusCell`, `remapIds`, `clearHistory`) once, after the first render. */
+    registerApi?: (api: SheetApi) => void;
   };
 }

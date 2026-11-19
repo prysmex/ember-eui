@@ -8,6 +8,10 @@ import {
   commitText,
   commitValue,
   defaultMessages,
+  deleteRecords,
+  duplicateRecords,
+  insertRecords,
+  mergeChangeSets,
   pasteMatrix,
   rangeMatrix,
   toRange
@@ -164,12 +168,22 @@ module('Unit | Sheet | change sets', function () {
           { recordId: 'r1', fieldId: 'c', from: 'c1', to: 'y' }
         ],
         inserts: [
-          { tempId: 'new-0', index: 2, values: { b: 'p' } },
-          { tempId: 'new-1', index: 3, values: { b: 'q', c: 'r' } }
+          {
+            tempId: 'new-0',
+            index: 2,
+            values: { b: 'p' },
+            anchor: { recordId: 'r1', position: 'after' }
+          },
+          {
+            tempId: 'new-1',
+            index: 3,
+            values: { b: 'q', c: 'r' },
+            anchor: { recordId: 'new-0', position: 'after' }
+          }
         ],
         ...empty
       },
-      'clips at the last field, ragged rows, inserts past the end with increasing index'
+      'clips at the last field, ragged rows, inserts past the end with increasing index, anchored after the last record and each other (v0.2)'
     );
     assert.deepEqual(
       pasteMatrix(ctx(records), { row: 0, col: 0 }, [['a0', 'B']])?.patches,
@@ -401,7 +415,12 @@ module('Unit | Sheet | change sets', function () {
       ['b', 'x']
     ]);
     assert.deepEqual(result?.inserts, [
-      { tempId: 'new-0', index: 1, values: { name: 'b' } }
+      {
+        tempId: 'new-0',
+        index: 1,
+        values: { name: 'b' },
+        anchor: { recordId: 'r0', position: 'after' }
+      }
     ]);
     assert.deepEqual(result?.rejected, [
       {
@@ -420,7 +439,14 @@ module('Unit | Sheet | change sets', function () {
     ]);
     assert.deepEqual(
       onlyRejected?.inserts,
-      [{ tempId: 'new-0', index: 1, values: {} }],
+      [
+        {
+          tempId: 'new-0',
+          index: 1,
+          values: {},
+          anchor: { recordId: 'r0', position: 'after' }
+        }
+      ],
       'a row with only rejected cells is still inserted'
     );
     assert.deepEqual(onlyRejected?.rejected, [
@@ -485,5 +511,330 @@ module('Unit | Sheet | change sets', function () {
       'store.fields updated by apply'
     );
     assert.strictEqual(store.records[0]!['status'], 'Purple');
+  });
+
+  test('S1 applyChangeSet inserts at an index, clamps, and keeps paste appends', function (assert) {
+    const getRecordId = (record: Row) => record.id;
+    const set = (inserts: ChangeSet['inserts']): ChangeSet => ({
+      source: 'insert',
+      patches: [],
+      inserts,
+      ...empty
+    });
+    assert.deepEqual(
+      applyChangeSet(
+        rows(),
+        set([{ tempId: 't0', index: 1, values: { a: 'n' } }]),
+        { getRecordId }
+      ).map((record) => record.id),
+      ['r0', 't0', 'r1'],
+      'at index 1'
+    );
+    assert.deepEqual(
+      applyChangeSet(
+        rows(),
+        set([
+          { tempId: 't1', index: 2, values: {} },
+          { tempId: 't0', index: 0, values: {} }
+        ]),
+        { getRecordId }
+      ).map((record) => record.id),
+      ['t0', 'r0', 't1', 'r1'],
+      'ascending index: each index is a position in the result'
+    );
+    assert.deepEqual(
+      applyChangeSet(rows(), set([{ tempId: 't0', index: 99, values: {} }]), {
+        getRecordId
+      }).map((record) => record.id),
+      ['r0', 'r1', 't0'],
+      'an index past the end appends'
+    );
+    const pasted = pasteMatrix(ctx(rows()), { row: 1, col: 0 }, [
+      ['x'],
+      ['p'],
+      ['q']
+    ])!;
+    assert.deepEqual(
+      applyChangeSet(rows(), pasted, { getRecordId }).map((record) => [
+        record.id,
+        record['a']
+      ]),
+      [
+        ['r0', 'a0'],
+        ['r1', 'x'],
+        ['new-0', 'p'],
+        ['new-1', 'q']
+      ],
+      'a paste past the end still appends in order'
+    );
+  });
+
+  test('S2 the anchor wins over the index, on an array larger than the page', function (assert) {
+    const getRecordId = (record: Row) => record.id;
+    // the sheet saw a page of two records (r5, r6) of a larger array
+    const all: Row[] = Array.from({ length: 10 }, (_, i) => ({ id: `r${i}` }));
+    const set: ChangeSet = {
+      source: 'insert',
+      patches: [],
+      inserts: [
+        {
+          tempId: 't0',
+          index: 1,
+          values: {},
+          anchor: { recordId: 'r5', position: 'after' }
+        },
+        {
+          tempId: 't1',
+          index: 0,
+          values: {},
+          anchor: { recordId: 'r5', position: 'before' }
+        }
+      ],
+      ...empty
+    };
+    assert.deepEqual(
+      applyChangeSet(all, set, { getRecordId })
+        .slice(3, 9)
+        .map((record) => record.id),
+      ['r3', 'r4', 't1', 'r5', 't0', 'r6'],
+      'before and after the anchor, not at index 0 and 1'
+    );
+    const missing: ChangeSet = {
+      ...set,
+      inserts: [
+        {
+          tempId: 't0',
+          index: 1,
+          values: {},
+          anchor: { recordId: 'gone', position: 'after' }
+        }
+      ]
+    };
+    assert.deepEqual(
+      applyChangeSet(rows(), missing, { getRecordId }).map(
+        (record) => record.id
+      ),
+      ['r0', 't0', 'r1'],
+      'an anchor that is not in the array falls back to the index'
+    );
+  });
+
+  test('S2b chained inserts with a createRecord that assigns new ids land in order after the anchor', function (assert) {
+    let n = 100;
+    const created = insertRecords(ctx(rows()), {
+      at: 1,
+      anchor: { recordId: 'r0', position: 'after' },
+      values: [{ a: 'x' }, { a: 'y' }, { a: 'z' }]
+    });
+    const next = applyChangeSet(rows(), created, {
+      getRecordId: (record) => record.id,
+      createRecord: (values) => ({ id: `srv-${n++}`, ...values })
+    });
+    assert.deepEqual(
+      next.map((record) => [record.id, record['a']]),
+      [
+        ['r0', 'a0'],
+        ['srv-100', 'x'],
+        ['srv-101', 'y'],
+        ['srv-102', 'z'],
+        ['r1', 'a1']
+      ]
+    );
+  });
+
+  test('S3 restore puts the object back; restoreRecord overrides', function (assert) {
+    const getRecordId = (record: Row) => record.id;
+    const original: Row = { id: 'r9', a: 'kept', extra: { deep: true } };
+    const set: ChangeSet = {
+      source: 'undo',
+      patches: [],
+      inserts: [
+        {
+          tempId: 'r9',
+          index: 1,
+          values: { a: 'kept' },
+          anchor: { recordId: 'r0', position: 'after' },
+          restore: { recordId: 'r9', record: original }
+        }
+      ],
+      ...empty
+    };
+    const next = applyChangeSet(rows(), set, { getRecordId });
+    assert.strictEqual(next[1], original, 'the same object');
+    const custom = applyChangeSet(rows(), set, {
+      getRecordId,
+      restoreRecord: (insert) => ({ id: 'srv-1', ...insert.values })
+    });
+    assert.deepEqual(custom[1], { id: 'srv-1', a: 'kept' });
+    const store = localRecords(rows(), {
+      getRecordId,
+      restoreRecord: (insert) => ({ id: 'local', ...insert.values })
+    });
+    store.apply(set);
+    assert.strictEqual(store.records[1]!.id, 'local', 'localRecords passes it');
+  });
+
+  test('S4 insertRecords', function (assert) {
+    assert.deepEqual(insertRecords(ctx(rows()), { at: 1 }), {
+      source: 'insert',
+      patches: [],
+      inserts: [{ tempId: 'new-0', index: 1, values: {} }],
+      ...empty
+    });
+    let n = 0;
+    assert.deepEqual(
+      insertRecords(ctx(rows()), {
+        at: 2,
+        anchor: { recordId: 'r1', position: 'after' },
+        values: [{ a: 'x' }, { b: 'y' }],
+        nextTempId: () => `t${n++}`
+      }).inserts,
+      [
+        {
+          tempId: 't0',
+          index: 2,
+          values: { a: 'x' },
+          anchor: { recordId: 'r1', position: 'after' }
+        },
+        {
+          tempId: 't1',
+          index: 3,
+          values: { b: 'y' },
+          anchor: { recordId: 't0', position: 'after' }
+        }
+      ]
+    );
+  });
+
+  test('S5 deleteRecords', function (assert) {
+    const records: Row[] = [
+      { id: 'r0' },
+      { id: 'r1' },
+      { id: 'r2' },
+      { id: 'r3' }
+    ];
+    const getRecordId = (record: Row) => record.id;
+    assert.deepEqual(
+      deleteRecords(records, ['r2', 'nope', 'r0'], getRecordId),
+      {
+        source: 'delete',
+        patches: [],
+        inserts: [],
+        deletes: ['r0', 'r2'],
+        removed: [
+          { recordId: 'r0', index: 0, record: records[0] },
+          { recordId: 'r2', index: 2, after: 'r1', record: records[2] }
+        ],
+        ...empty
+      }
+    );
+    assert.strictEqual(deleteRecords(records, ['nope'], getRecordId), null);
+    assert.strictEqual(deleteRecords(records, [], getRecordId), null);
+    assert.deepEqual(
+      applyChangeSet(records, deleteRecords(records, ['r1'], getRecordId)!, {
+        getRecordId
+      }).map((record) => record.id),
+      ['r0', 'r2', 'r3']
+    );
+  });
+
+  test('S6 duplicateRecords copies the writable fields right after each record', function (assert) {
+    const fields: EuiSheetField<Row>[] = [
+      { id: 'a' },
+      { id: 'b', readOnly: true },
+      { id: 'c', readOnly: (record) => record['c'] === 'locked' }
+    ];
+    const records: Row[] = [
+      { id: 'r0', a: 'a0', b: 'b0', c: 'c0' },
+      { id: 'r1', a: 'a1', b: 'b1', c: 'locked' },
+      { id: 'r2', a: 'a2', b: 'b2', c: 'c2' }
+    ];
+    let n = 0;
+    const set = duplicateRecords(ctx(records, fields), [2, 0, 7], {
+      nextTempId: () => `t${n++}`
+    })!;
+    assert.strictEqual(set.source, 'insert');
+    assert.deepEqual(set.inserts, [
+      {
+        tempId: 't0',
+        index: 1,
+        values: { a: 'a0', c: 'c0' },
+        anchor: { recordId: 'r0', position: 'after' }
+      },
+      {
+        tempId: 't1',
+        index: 4,
+        values: { a: 'a2', c: 'c2' },
+        anchor: { recordId: 'r2', position: 'after' }
+      }
+    ]);
+    assert.deepEqual(
+      duplicateRecords(ctx(records, fields), [1])!.inserts[0]!.values,
+      { a: 'a1' },
+      'a field read-only for that record is skipped'
+    );
+    assert.deepEqual(
+      applyChangeSet(records, set, { getRecordId: (record) => record.id }).map(
+        (record) => record.id
+      ),
+      ['r0', 't0', 'r1', 'r2', 't1']
+    );
+    assert.strictEqual(duplicateRecords(ctx(records, fields), [9]), null);
+  });
+
+  test('S7 pasteMatrix anchors its inserts after the last record', function (assert) {
+    const result = pasteMatrix(ctx([]), { row: 0, col: 0 }, [['x'], ['y']]);
+    assert.deepEqual(
+      result?.inserts.map((insert) => insert.anchor),
+      [undefined, { recordId: 'new-0', position: 'after' }],
+      'no records: the first has no anchor, the next follows it'
+    );
+    const one = pasteMatrix(ctx(rows()), { row: 2, col: 0 }, [['z']]);
+    assert.deepEqual(one?.inserts[0]?.anchor, {
+      recordId: 'r1',
+      position: 'after'
+    });
+  });
+
+  test('S8 mergeChangeSets', function (assert) {
+    const first: ChangeSet = {
+      source: 'paste',
+      patches: [
+        { recordId: 'r0', fieldId: 'a', from: 'a0', to: 'x' },
+        { recordId: 'r1', fieldId: 'a', from: 'a1', to: 'y' }
+      ],
+      inserts: [{ tempId: 'new-0', index: 2, values: { a: 'p' } }],
+      rejected: [{ recordId: 'r0', fieldId: 'b', text: 'q', message: 'm' }],
+      newOptions: []
+    };
+    const second: ChangeSet = {
+      source: 'resolve',
+      patches: [
+        { recordId: 'r0', fieldId: 'a', from: 'x', to: 'X' },
+        { recordId: 'r0', fieldId: 'b', from: 'b0', to: 'B' },
+        { recordId: 'new-0', fieldId: 'b', from: undefined, to: 'Q' }
+      ],
+      inserts: [],
+      deletes: ['r9'],
+      rejected: [],
+      newOptions: [{ fieldId: 'a', option: { value: 'X', label: 'X' } }]
+    };
+    assert.deepEqual(mergeChangeSets(first, second), {
+      source: 'paste',
+      patches: [
+        { recordId: 'r0', fieldId: 'a', from: 'a0', to: 'X' },
+        { recordId: 'r1', fieldId: 'a', from: 'a1', to: 'y' },
+        { recordId: 'r0', fieldId: 'b', from: 'b0', to: 'B' }
+      ],
+      inserts: [{ tempId: 'new-0', index: 2, values: { a: 'p', b: 'Q' } }],
+      deletes: ['r9'],
+      rejected: [{ recordId: 'r0', fieldId: 'b', text: 'q', message: 'm' }],
+      newOptions: [{ fieldId: 'a', option: { value: 'X', label: 'X' } }]
+    });
+    assert.deepEqual(
+      first.inserts[0]!.values,
+      { a: 'p' },
+      'the first change set is not changed'
+    );
   });
 });

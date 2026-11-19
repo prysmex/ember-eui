@@ -23,11 +23,16 @@ export default class SheetCell extends Component<{
     return (this.args.cellContext as unknown as SheetCellContext).sheet;
   }
 
+  /** The data column: the grid's column index counts the sheet's control columns. */
+  get col(): number {
+    return this.args.colIndex - this.sheet.colOffset;
+  }
+
   @cached
   get view(): CellView | null {
     return this.sheet.cellView(
       this.args.rowIndex,
-      this.args.colIndex,
+      this.col,
       this.args.columnId
     );
   }
@@ -67,7 +72,7 @@ export default class SheetCell extends Component<{
   }
 
   onCommit = (value: unknown): void => {
-    this.sheet.commitCellValue(this.args.rowIndex, this.args.colIndex, value);
+    this.sheet.commitCellValue(this.args.rowIndex, this.col, value);
   };
 
   <template>

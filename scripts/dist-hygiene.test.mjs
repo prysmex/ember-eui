@@ -102,7 +102,8 @@ const PACKAGES = [
   'validated-form',
   'changeset-form',
   'flatpickr',
-  'pikaday'
+  'pikaday',
+  'sheet'
 ];
 
 test('every package lets bundlers drop its unused modules', () => {

@@ -1,0 +1,8 @@
+
+# tests
+dist-tests/
+
+# from scenarios (compat builds for older ember-source)
+tmp/
+config/optional-features.json
+ember-cli-build.cjs

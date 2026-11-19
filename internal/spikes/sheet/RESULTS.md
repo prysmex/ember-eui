@@ -393,3 +393,13 @@ arise.
   90 minus the 2 contract tests now in the patch; `test-nohook-grid.log`).
   ESLint and Prettier are clean on `tests/spikes`, `tests/integration/spikes`
   and `tests/unit/spikes`.
+
+## 8. The code moved to `packages/sheet` (2026-11-19)
+
+The spike became `@ember-eui/sheet` v0.1 (`PACKAGE-DESIGN.md`,
+`PACKAGE-RESULTS.md`). Its code under `packages/core/tests/spikes/`,
+`tests/integration/spikes/` and `tests/unit/spikes/` is deleted on branch
+`feat/sheet`, after the package's `Sheet` filter passed; core's
+`EuiDataGrid` filter still passes 88/88 without it. Not committed yet: the
+commit that moves it is the one that adds `packages/sheet`. This folder
+(`DESIGN.md`, `RESULTS.md`, `cell-api.patch`) stays.

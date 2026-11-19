@@ -77,6 +77,7 @@ fields for paging) and the placement rule are in 8.1 and 8.2.
 | 2 | Field management: "+" column, header menu items, field editor, `convertField`, `localRecords` field operations | 1 (the header menu and the column code it touches) | 900 | 700 |
 | 3a | Row model: grid row ↔ record / add row / group header. No behaviour change, no existing test touched | 1, 2 | 500 (about 350 of them rewritten lines) | 250 |
 | 3b | Group by: `@groups`, `@groupBy`, header rows, per-group add rows and summaries, `groupRecords`, `localRecords` and connector support | 3a | 1,200 | 1,100 |
+| 3c | Internal split of `eui-sheet.gts` into feature modules (history, clipboard, fill, row menu, fields, groups, …), each behind a private interface to the component. No behaviour change, no public API, no existing test touched (added 2026-11-19 at the user's request; design written after 3b) | 3b | mostly moved lines | none new |
 | 4 | Drag to reorder rows (change-set `moves`), row colours, `dateTime`, `button` and `barcode` types | 3b (a drag across groups) | 1,300 | 1,100 |
 | 5 | Current search match and `findMatches`, selection exposure, ranges by touch, upload progress | 3a (selection in record space) | 800 | 750 |
 

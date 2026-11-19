@@ -1,0 +1,277 @@
+diff --git a/packages/core/src/components/eui-data-grid.gts b/packages/core/src/components/eui-data-grid.gts
+index 11a37f74..7300c334 100644
+--- a/packages/core/src/components/eui-data-grid.gts
++++ b/packages/core/src/components/eui-data-grid.gts
+@@ -46,6 +46,7 @@ import EuiDataGridToolbar from './eui-data-grid/toolbar.gts';
+ // ember-eui extension (row-tree): row tree state and hooks
+ import EuiDataGridRowModel from './eui-data-grid/row-model.ts';
+ import { clampRowTreePageIndex } from './eui-data-grid/row-tree-hooks.ts';
++import { cellApi } from '../utils/data-grid/cell-api.ts'; // ember-eui extension (cell-api): focused cell getter
+ 
+ import type Owner from '@ember/owner';
+ import type EuiI18n from '../services/eui-i18n.ts';
+@@ -1131,7 +1132,8 @@ export default class EuiDataGrid extends Component<EuiDataGridSignature> {
+     },
+     closeCellPopover: () => this.closeCellPopover(),
+     scrollTo: (params) => this.body?.scrollTo?.(params),
+-    scrollToItem: (params) => this.body?.scrollToItem?.(params)
++    scrollToItem: (params) => this.body?.scrollToItem?.(params),
++    ...cellApi(this) // ember-eui extension (cell-api): getFocusedCell
+   };
+ 
+   // ember-eui extension (row-tree): toggles a row (closes a popover: rows below it move)
+diff --git a/packages/core/src/utils/data-grid/types.ts b/packages/core/src/utils/data-grid/types.ts
+index 9f20fb74..89162c30 100644
+--- a/packages/core/src/utils/data-grid/types.ts
++++ b/packages/core/src/utils/data-grid/types.ts
+@@ -421,6 +421,8 @@ export interface EuiDataGridRefProps {
+   expandAll?: () => void;
+   /** Collapses every row and group. */
+   collapseAll?: () => void;
++  /** Ember EUI extension (cell-api): the grid's last focused cell, if any. */
++  getFocusedCell?: () => EuiDataGridFocusedCellLocation | undefined; // ember-eui extension (cell-api)
+ }
+ 
+ /* ------------------------------------------------------------------------ */
+@@ -528,3 +530,9 @@ export interface EuiDataGridGrouping<T = any> {
+   /** Column showing the indentation and toggle. Defaults to the first data column. */
+   toggleColumnId?: string;
+ }
++
++/* Focused cell getter (Ember EUI extension cell-api, not in upstream EUI) */
++export interface EuiDataGridFocusedCellLocation extends EuiDataGridCellLocationProps {
++  /** Page-relative row index used by the cell markup; -1 for the header row. */
++  visibleRowIndex: number;
++}
+diff --git a/packages/core/tests/integration/components/eui-data-grid-api-test.gts b/packages/core/tests/integration/components/eui-data-grid-api-test.gts
+index 0d30b49e..672dacf2 100644
+--- a/packages/core/tests/integration/components/eui-data-grid-api-test.gts
++++ b/packages/core/tests/integration/components/eui-data-grid-api-test.gts
+@@ -300,7 +300,8 @@ module('Integration | Component | EuiDataGrid API', function (hooks) {
+       assert.ok(api, 'the API is registered after render');
+       assert.deepEqual(
+         Object.keys(api).sort(),
+-        ['closeCellPopover', 'openCellPopover', 'scrollTo', 'scrollToItem', 'setFocusedCell', 'setIsFullScreen']
++        // ember-eui extension (cell-api): getFocusedCell
++        ['closeCellPopover', 'getFocusedCell', 'openCellPopover', 'scrollTo', 'scrollToItem', 'setFocusedCell', 'setIsFullScreen']
+       );
+ 
+       api.setFocusedCell({ rowIndex: 2, colIndex: 1 });
+diff --git a/packages/core/src/utils/data-grid/cell-api.ts b/packages/core/src/utils/data-grid/cell-api.ts
+new file mode 100644
+index 00000000..1543407d
+--- /dev/null
++++ b/packages/core/src/utils/data-grid/cell-api.ts
+@@ -0,0 +1,32 @@
++/**
++ * Ember EUI extension (cell-api), not in upstream EUI: read access to the
++ * grid's focused cell for layers built on top of the grid.
++ * See internal/spikes/eui-latest/data-grid-extensions.md.
++ */
++import type {
++  EuiDataGridFocusedCell,
++  EuiDataGridFocusedCellLocation
++} from './types.ts';
++
++interface CellApiGrid {
++  focusedCell: EuiDataGridFocusedCell | undefined;
++  getCorrectRowIndex(visibleRowIndex: number): number;
++}
++
++export function cellApi(grid: CellApiGrid): {
++  getFocusedCell: () => EuiDataGridFocusedCellLocation | undefined;
++} {
++  return {
++    getFocusedCell() {
++      const focused = grid.focusedCell;
++      if (!focused) return undefined;
++      const [colIndex, visibleRowIndex] = focused;
++      return {
++        colIndex,
++        visibleRowIndex,
++        rowIndex:
++          visibleRowIndex < 0 ? -1 : grid.getCorrectRowIndex(visibleRowIndex)
++      };
++    }
++  };
++}
+diff --git a/packages/core/tests/integration/components/eui-data-grid-cell-api-test.gts b/packages/core/tests/integration/components/eui-data-grid-cell-api-test.gts
+new file mode 100644
+index 00000000..1d738f73
+--- /dev/null
++++ b/packages/core/tests/integration/components/eui-data-grid-cell-api-test.gts
+@@ -0,0 +1,174 @@
++/**
++ * Contract of the Ember EUI extension cell-api (`api.getFocusedCell`), see
++ * src/utils/data-grid/cell-api.ts and internal/spikes/sheet/DESIGN.md (4, 7.4).
++ */
++import { module, test } from 'qunit';
++import { setupRenderingTest } from 'ember-qunit';
++import {
++  blur,
++  render,
++  settled,
++  triggerKeyEvent,
++  waitUntil
++} from '@ember/test-helpers';
++import Component from '@glimmer/component';
++
++import EuiDataGrid from '#src/components/eui-data-grid.gts';
++
++import type {
++  EuiDataGridCellValueElementProps,
++  EuiDataGridColumn,
++  EuiDataGridRefProps
++} from '#src/utils/data-grid/types.ts';
++
++function el(selector: string, root: ParentNode = document): HTMLElement {
++  const element = root.querySelector<HTMLElement>(selector);
++  if (!element) throw new Error(`Missing ${selector}`);
++  return element;
++}
++
++function cell(row: number, col: number): HTMLElement {
++  return el(
++    `[role=gridcell][data-gridcell-visible-row-index="${row}"][data-gridcell-column-index="${col}"]`
++  );
++}
++
++const COLUMNS: EuiDataGridColumn[] = [
++  { id: 'a', displayAsText: 'A' },
++  { id: 'n', displayAsText: 'N' },
++  { id: 'c', displayAsText: 'C' }
++];
++
++const VALUES = ['10', '30', '20', '40'];
++
++class ValueCell extends Component<{ Args: EuiDataGridCellValueElementProps }> {
++  get value(): string {
++    return this.args.columnId === 'n'
++      ? (VALUES[this.args.rowIndex] ?? '')
++      : `${this.args.columnId}${this.args.rowIndex}`;
++  }
++
++  <template>{{this.value}}</template>
++}
++
++class ApiState {
++  api: EuiDataGridRefProps | null = null;
++  registerApi = (api: EuiDataGridRefProps) => {
++    this.api = api;
++  };
++}
++
++module('Integration | Component | EuiDataGrid cell-api', function (hooks) {
++  setupRenderingTest(hooks);
++
++  test('getFocusedCell: undefined before focus, data cell, header row, still set after blur', async function (assert) {
++    const state = new ApiState();
++    await render(
++      <template>
++        <div style="width:600px">
++          <EuiDataGrid
++            aria-label="Grid"
++            @columns={{COLUMNS}}
++            @rowCount={{4}}
++            @toolbarVisibility={{false}}
++            @renderCellValue={{ValueCell}}
++            @registerApi={{state.registerApi}}
++          />
++        </div>
++      </template>
++    );
++    const api = state.api!;
++    assert.strictEqual(
++      api.getFocusedCell?.(),
++      undefined,
++      'undefined after render'
++    );
++
++    api.setFocusedCell({ rowIndex: 2, colIndex: 1 });
++    await settled();
++    assert.strictEqual(document.activeElement, cell(2, 1));
++    assert.deepEqual(api.getFocusedCell?.(), {
++      rowIndex: 2,
++      colIndex: 1,
++      visibleRowIndex: 2
++    });
++
++    api.setFocusedCell({ rowIndex: 0, colIndex: 1 });
++    await settled();
++    await triggerKeyEvent(
++      document.activeElement as HTMLElement,
++      'keydown',
++      'ArrowUp'
++    );
++    await waitUntil(
++      () => document.activeElement?.getAttribute('role') === 'columnheader'
++    );
++    assert.deepEqual(
++      api.getFocusedCell?.(),
++      { rowIndex: -1, colIndex: 1, visibleRowIndex: -1 },
++      'header row'
++    );
++
++    await blur(document.activeElement!);
++    assert.false(
++      el('.euiDataGrid').contains(document.activeElement),
++      'focus left the grid'
++    );
++    assert.deepEqual(
++      api.getFocusedCell?.(),
++      { rowIndex: -1, colIndex: 1, visibleRowIndex: -1 },
++      'unchanged after blur: the last focused cell'
++    );
++  });
++
++  test('getFocusedCell with @sorting: data row index round-trips through setFocusedCell', async function (assert) {
++    const state = new ApiState();
++    const sorting = {
++      columns: [{ id: 'n', direction: 'desc' as const }],
++      onSort: () => {}
++    };
++    const inMemory = { level: 'sorting' as const };
++    await render(
++      <template>
++        <div style="width:600px">
++          <EuiDataGrid
++            aria-label="Grid"
++            @columns={{COLUMNS}}
++            @rowCount={{4}}
++            @toolbarVisibility={{false}}
++            @renderCellValue={{ValueCell}}
++            @inMemory={{inMemory}}
++            @sorting={{sorting}}
++            @registerApi={{state.registerApi}}
++          />
++        </div>
++      </template>
++    );
++    await waitUntil(
++      () =>
++        el('[data-datagrid-cellcontent]', cell(0, 1)).textContent?.trim() ===
++        '40'
++    );
++    const api = state.api!;
++
++    // visible row 0 shows data row 3 (n = 40)
++    cell(0, 2).focus();
++    await settled();
++    const focused = api.getFocusedCell?.();
++    assert.deepEqual(focused, { rowIndex: 3, colIndex: 2, visibleRowIndex: 0 });
++    assert.notStrictEqual(focused!.rowIndex, focused!.visibleRowIndex);
++
++    api.setFocusedCell({ rowIndex: 0, colIndex: 0 });
++    await settled();
++    api.setFocusedCell({
++      rowIndex: focused!.rowIndex,
++      colIndex: focused!.colIndex
++    });
++    await settled();
++    assert.strictEqual(
++      document.activeElement,
++      cell(0, 2),
++      'the same cell is focused again'
++    );
++  });
++});

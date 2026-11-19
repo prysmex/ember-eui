@@ -95,6 +95,21 @@ const CSS = `
 .euiSheet__attachmentError { margin-top: 4px; font-size: 12px; line-height: 16px; color: var(--euiSheet-textDanger, #BD271E); }
 .euiSheetRecord__box--withLink { display: inline-block; width: calc(100% - 36px); vertical-align: top; }
 .euiSheetRecord__openLink { margin-left: 4px; vertical-align: top; }
+.euiSheet { touch-action: manipulation; }
+.euiSheet__fillHandle { position: absolute; z-index: 3; box-sizing: border-box; width: 8px; height: 8px; border: 1px solid var(--euiSheet-plain, #FFF); background: var(--euiSheet-primary, #0B64DD); cursor: crosshair; }
+.euiSheet--filling, .euiSheet--filling * { cursor: crosshair; }
+.euiSheet--filling .euiSheet__fillHandle { pointer-events: none; }
+.euiSheet .euiDataGridRowCell.euiSheet__cell--fillPreview { outline: 1px dashed var(--euiSheet-primary, #0B64DD); outline-offset: -2px; }
+.euiSheet__ime { position: absolute; top: 0; left: 0; z-index: -1; width: 1px; height: 1px; margin: 0; padding: 0; border: 0; opacity: 0; pointer-events: none; }
+.euiSheet__ime.euiSheet__ime--active { z-index: 2; padding: 0 6px; border: 2px solid var(--euiSheet-primary, #0B64DD); opacity: 1; pointer-events: auto; }
+@media (pointer: coarse) { .euiSheet__fillHandle { display: none; } }
+@media (hover: none) {
+  .euiSheet__opener, .euiSheet__rowExpand { visibility: visible; }
+  .euiSheet__rowCheck { display: inline-block; }
+  .euiSheet__opener::after, .euiSheet__rowExpand::after, .euiSheet__rowCheck::before { content: ''; position: absolute; top: 50%; left: 50%; width: 32px; height: 32px; transform: translate(-50%, -50%); }
+  .euiSheet__rowExpand, .euiSheet__rowCheck { position: relative; }
+  .euiSheet [role=gridcell] { -webkit-touch-callout: none; }
+}
 ${frozenHeaderLefts()}
 `;
 

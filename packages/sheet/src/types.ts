@@ -319,6 +319,14 @@ export interface EuiSheetSignature<T> {
       requests: ResolveRequest<T>[],
       options: { signal: AbortSignal }
     ) => Promise<ResolveResult>;
+    /**
+     * Where a click on the selected cell, or Enter, edits (V02-DESIGN.md
+     * 8.5): `'cell'`, the editor over the cell; `'record'`, the expanded
+     * record with that field's editor open; `'auto'` (default), the record
+     * on a coarse pointer (a phone) when the sheet is narrower than 600 px,
+     * else the cell. Typing on a cell always edits in the cell.
+     */
+    editIn?: 'cell' | 'record' | 'auto';
   };
   Blocks: {
     /** Above the grid, inside the sheet: your own controls (field picker, search, sort). */

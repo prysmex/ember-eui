@@ -18,6 +18,7 @@ import RecordFormField from './record-form-field.gts';
 import type EuiSheet from '../components/eui-sheet.gts';
 import type { EuiSheetField } from '../core/index.ts';
 import type { EuiSheetFieldType, SheetEditorResult } from '../types.ts';
+import type Owner from '@ember/owner';
 
 /** The editor open in the form. */
 export class FormEditing {
@@ -55,6 +56,18 @@ interface RecordFormSignature {
 
 export default class RecordForm extends Component<RecordFormSignature> {
   @tracked _editing: FormEditing | null = null;
+
+  constructor(owner: Owner, args: RecordFormSignature['Args']) {
+    super(owner, args);
+    // `@editIn`: the sheet opened this record to edit one field (the sheet
+    // already set `formEditorOpen`, so the shell's focus trap waits)
+    const fieldId = args.sheet.takePendingFormEdit(args.record);
+    const field = fieldId && this.fields.find((f) => f.id === fieldId);
+    if (field && this.canEdit(field) && this.typeOf(field).editor) {
+      const view = args.sheet.cellViewFor(args.record, field);
+      this._editing = new FormEditing(args.record, field.id, null, view.text);
+    }
+  }
 
   /** The open editor; the shell pauses its focus trap meanwhile (N3). */
   get editing(): FormEditing | null {
@@ -253,6 +266,8 @@ export default class RecordForm extends Component<RecordFormSignature> {
   onKeyDown(event: KeyboardEvent): void {
     const editing = this.editing;
     if (!editing) return;
+    // a composition's Enter confirms it in the editor, it does not save
+    if (event.isComposing || event.keyCode === 229) return;
     const target = event.target;
     if (!(target instanceof Element) || !target.closest('.euiSheet__editor')) {
       return;

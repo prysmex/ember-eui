@@ -144,10 +144,15 @@ export function commitValue<T>(
   });
 }
 
-/** The type's empty value (`parse('')`) per non-read-only cell whose value differs; `null` when nothing changes. */
+/**
+ * The type's empty value (`parse('')`) per non-read-only cell whose value
+ * differs; `null` when nothing changes. Source 'clear', or `options.source`
+ * ('cut': the sheet's cut clears what it copied).
+ */
 export function clearRange<T>(
   ctx: SheetContext<T>,
-  range: Range
+  range: Range,
+  options: { source?: 'clear' | 'cut' } = {}
 ): ChangeSet | null {
   const patches: CellPatch[] = [];
   const bottom = Math.min(range.bottom, ctx.records.length - 1);
@@ -174,7 +179,9 @@ export function clearRange<T>(
       });
     }
   }
-  return patches.length ? changeSet('clear', { patches }) : null;
+  return patches.length
+    ? changeSet(options.source ?? 'clear', { patches })
+    : null;
 }
 
 /**

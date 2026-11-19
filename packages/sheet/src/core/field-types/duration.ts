@@ -1,4 +1,4 @@
-import { compareNumbers, finiteOrNull } from './numeric.ts';
+import { compareNumbers, finiteOrNull, numericSeries } from './numeric.ts';
 
 import type { DurationField, FieldType } from '../types.ts';
 
@@ -73,5 +73,7 @@ export const durationFieldType: FieldType<number | null, DurationField> = {
       : [messages.notADuration(String(value))];
   },
   compare: compareNumbers,
-  toNumber: finiteOrNull
+  toNumber: finiteOrNull,
+  series: (samples, count, _field, direction) =>
+    numericSeries(samples, count, direction)?.map(Math.round)
 };

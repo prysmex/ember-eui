@@ -1,4 +1,4 @@
-import { compareNumbers, finiteOrNull } from './numeric.ts';
+import { compareNumbers, finiteOrNull, numericSeries } from './numeric.ts';
 
 import type { FieldType, RatingField } from '../types.ts';
 
@@ -35,5 +35,10 @@ export const ratingFieldType: FieldType<number | null, RatingField> = {
   },
   isEmpty: (value) => value == null || value === 0,
   compare: compareNumbers,
-  toNumber: finiteOrNull
+  toNumber: finiteOrNull,
+  /** A constant step continues, kept within 1 and `max` (`4, 5` → `5, 5`). */
+  series: (samples, count, field, direction) =>
+    numericSeries(samples, count, direction)?.map((n) =>
+      Math.min(maxOf(field), Math.max(1, Math.round(n)))
+    )
 };

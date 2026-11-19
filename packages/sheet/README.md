@@ -110,6 +110,7 @@ Arguments of `EuiSheet`:
 | `@expandedRecordId`, `@onExpandedRecordChange`, `@expandedRecord` | The expanded record (controlled the same way), in a `'flyout'` (default) or a `'modal'`.                                                                                                                               |
 | `@rowActions`                                                     | Your row menu items: `{ id, label, icon?, color?, isDisabled?(records), onSelect(records) }`.                                                                                                                          |
 | `@onResolve`                                                      | `(requests, { signal }) => Promise<{ [fieldId]: { [text]: value \| null } }>`: bulk resolve of typed or pasted text (linked records, users, your types). Without it such text is rejected.                             |
+| `@editIn`                                                         | Where a click on the selected cell, or Enter, edits: `'cell'`, `'record'` (the expanded record with that field's editor open) or `'auto'` (default: the record on a touch screen narrower than 600 px, else the cell). |
 
 Blocks: `<:toolbar as |sheet|>` (above the grid) and `<:footer as |sheet|>`
 (below it) take your own controls. Both yield `{ api, fields, hiddenFields,
@@ -287,7 +288,8 @@ usual):
 
 The pure parts are exported: `invertChangeSet`, `withoutConflicts`,
 `undoChangeSet`, `redoChangeSet`, `mergeChangeSets`, for ranges
-`fillDown` and `tileMatrix`, and for records `insertRecords`,
+`fillDown`, `fillRight`, `fillRange` (the fill handle, with series) and
+`tileMatrix`, `edgeTarget` (Ctrl/Cmd+arrow), and for records `insertRecords`,
 `deleteRecords` and `duplicateRecords` (the change sets the add row and the
 row menu emit).
 
@@ -413,27 +415,33 @@ onResolve = async (requests, { signal }) => {
 
 ## Keyboard
 
-| Key                                  | On a cell                                                                                                   | In an editor                                                    |
-| ------------------------------------ | ----------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------- |
-| A printable key                      | Opens the editor with that character (a date: digits only; never on a checkbox)                             | Types                                                           |
-| Enter, F2, double-click              | Opens the editor on the current value (a date: the browser's date input)                                    | Enter saves and goes down                                       |
-| Tab, Shift+Tab                       | The grid's                                                                                                  | Saves and goes right / left                                     |
-| Escape                               | The grid's                                                                                                  | Closes without saving                                           |
-| Space                                | Toggles a checkbox; elsewhere expands the record                                                            | Types                                                           |
-| A digit                              | Sets a rating (0 clears)                                                                                    |                                                                 |
-| Shift+Enter                          | Adds a record below (as Enter when inserting is off)                                                        | Saves and goes down; in long text, adds a line (also Alt+Enter) |
-| Shift+F10, ContextMenu               | Opens the row menu                                                                                          |                                                                 |
-| Home, Ctrl+Home                      | The first field of the row, of the sheet (ArrowLeft from it: the row number)                                | Native                                                          |
-| Delete, Backspace                    | Clears the selected range                                                                                   | Deletes                                                         |
-| Shift+arrows                         | Selects a range                                                                                             | Moves in the text                                               |
-| Ctrl/Cmd+A                           | Selects every cell (focus stays)                                                                            | Native                                                          |
-| Ctrl/Cmd+C, Ctrl/Cmd+V               | Copies / pastes the range as TSV (cells with tabs or line breaks quoted, as Excel does)                     | Native                                                          |
-| Ctrl/Cmd+D                           | Fill down: each column's top value into the range's cells below it; on one row, the value of the cell above | Native                                                          |
-| Ctrl/Cmd+Z; Ctrl/Cmd+Shift+Z, Ctrl+Y | Undo; redo                                                                                                  | Native                                                          |
+| Key                                            | On a cell                                                                                                                                                | In an editor                                                    |
+| ---------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------- |
+| A printable key                                | Opens the editor with that character (a date: digits only; never on a checkbox)                                                                          | Types                                                           |
+| Enter, F2, double-click                        | Opens the editor on the current value (a date: the browser's date input)                                                                                 | Enter saves and goes down                                       |
+| Tab, Shift+Tab                                 | The grid's                                                                                                                                               | Saves and goes right / left                                     |
+| Escape                                         | The grid's                                                                                                                                               | Closes without saving                                           |
+| Space                                          | Toggles a checkbox; elsewhere expands the record                                                                                                         | Types                                                           |
+| A digit                                        | Sets a rating (0 clears)                                                                                                                                 |                                                                 |
+| Shift+Enter                                    | Adds a record below (as Enter when inserting is off)                                                                                                     | Saves and goes down; in long text, adds a line (also Alt+Enter) |
+| Shift+F10, ContextMenu                         | Opens the row menu                                                                                                                                       |                                                                 |
+| Home, Ctrl+Home                                | The first field of the row, of the sheet (ArrowLeft from it: the row number)                                                                             | Native                                                          |
+| Delete, Backspace                              | Clears the selected range                                                                                                                                | Deletes                                                         |
+| Shift+arrows                                   | Selects a range                                                                                                                                          | Moves in the text                                               |
+| Ctrl/Cmd+A                                     | Selects every cell (focus stays)                                                                                                                         | Native                                                          |
+| Ctrl/Cmd+C, Ctrl/Cmd+V                         | Copies / pastes the range as TSV (cells with tabs or line breaks quoted, as Excel does)                                                                  | Native                                                          |
+| Ctrl/Cmd+D                                     | Fill down: each column's top value into the range's cells below it; on one row, the value of the cell above                                              | Native                                                          |
+| Ctrl/Cmd+R                                     | Fill right: each row's left value into the range's cells right of it; on one column, the value of the cell to its left (taken from the browser's reload) | Native                                                          |
+| Ctrl/Cmd+X                                     | Cut: copies the range, then clears it (one undo step; with `@readOnly` it only copies)                                                                   | Native                                                          |
+| Ctrl/Cmd+arrows                                | Jumps to the edge of the data (Excel's rule); with Shift, extends the range to it                                                                        | Native                                                          |
+| Shift+Home, Shift+End; Ctrl/Cmd+Shift+Home/End | Extends the range to the row's first or last field; to the first, or the last record's last, cell                                                        | Native                                                          |
+| PageUp, PageDown                               | Moves by the rows in view; with Shift, extends the range                                                                                                 |                                                                 |
+| Ctrl/Cmd+Z; Ctrl/Cmd+Shift+Z, Ctrl+Y           | Undo; redo                                                                                                                                               | Native                                                          |
 
 In a select editor, typing filters the options, ArrowUp/ArrowDown move,
-Enter or a click picks. A click on another cell, or scrolling the grid,
-saves the editor's text and closes it.
+Enter or a click picks. A click on another cell saves the editor's text and
+closes it; so does a scroll that takes the edited cell out of view (a scroll
+that keeps it in view moves the editor with it).
 
 A paste starts at the selection's top-left cell. When the selection is
 larger than the copied block and its height and width are whole multiples
@@ -450,8 +458,14 @@ on a row number or a column title selects the row or column, the row's
 checkbox and expand icon do what they show, a click on the last row adds a
 record, and a right-click opens the row menu (see Records).
 Pressing on a cell and dragging over others selects that range; the release
-neither edits nor toggles a checkbox, and Shift+arrows continue from it (no
-scrolling at the grid's edge yet). Select
+neither edits nor toggles a checkbox, and Shift+arrows continue from it.
+Holding the pointer near the grid's edge, or past it, scrolls it and the
+range follows. The fill handle (the square at the range's bottom-right
+corner) fills the cells it is dragged over: a constant number step or a date
+step continues (`1, 2` → `3, 4`; one date goes on by a day), anything else
+repeats; Ctrl or Alt held at the release repeats; Escape cancels. Values are
+copied by reference (do not mutate them); across types they go through text,
+like a paste. Select
 and date cells show a ▾ or calendar button on the hovered or selected cell
 that opens the editor in one click; a click anywhere in a checkbox cell
 toggles it. A click on a rating's star sets it; a click on a link's text
@@ -550,7 +564,9 @@ field, context)` gives the cell's text; optional `copyText`, `validate`,
 sets the value without an editor), `equals(a, b)` (needed for array or
 object values), `resolve: { parts, combine }` (how a cell's text splits for
 `@onResolve`, and how the answers make its value; default: one part, its
-value), and `link(value, field)` (the link a click opens). The Ember layer
+value), `link(value, field)` (the link a click opens), and
+`series(samples, count, field, direction)` (the values the fill handle
+continues `samples` with, nearest first; `undefined` repeats them). The Ember layer
 adds optional components and key rules:
 
 | Key                 |                                                                                                                                                                                                                                                                                                                                   |
@@ -662,9 +678,19 @@ The value stays an ISO date, so parsing, display, copy and paste are the
 date type's. Check the argument names against the `@ember-eui/flatpickr`
 version you use; this package does not depend on it.
 
+## Touch and IME
+
+On touch screens a tap selects and a tap on the selected cell edits, a drag
+scrolls (no range selection by touch yet), and a long press opens the row
+menu. The ▾ buttons, row checkboxes and expand icons are always shown there,
+with 32 px touch areas, and the fill handle is not. `@editIn` (default
+`'auto'`) edits in the expanded record on a touch screen narrower than
+600 px. Dead keys and IMEs compose in a hidden input over the cell, so the
+editor opens with the composed text (`é`, `日本`). Neither was tried on real
+devices or real IMEs yet.
+
 ## Limits
 
-No cut, fill handle, fill right, auto-scroll while dragging, grouping,
-fullscreen or IME composition yet. Sorting, filtering, search and paging
+No range selection by touch, grouping or fullscreen yet. Sorting, filtering, search and paging
 are the owner's (see above, and the EmberSearchUi connector). Uploads show
 no progress (the cell is pending).

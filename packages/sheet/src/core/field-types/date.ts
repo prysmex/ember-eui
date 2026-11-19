@@ -1,6 +1,7 @@
 import type { DateField, FieldType } from '../types.ts';
 
 const ISO = /^(\d{4})-(\d{2})-(\d{2})$/;
+const DAY = 86_400_000;
 
 function pad(n: number, width = 2): string {
   return String(n).padStart(width, '0');
@@ -82,5 +83,28 @@ export const dateFieldType: FieldType<string | null, DateField> = {
     if (a == null) return b == null ? 0 : -1;
     if (b == null) return 1;
     return a < b ? -1 : a > b ? 1 : 0;
+  },
+  /**
+   * One date continues by one day; two or more with a constant step in
+   * days continue it (a weekly step stays weekly). Else `undefined`.
+   */
+  series(samples, count, _field, direction) {
+    const days: number[] = [];
+    for (const sample of samples) {
+      const iso = validIsoDate(sample);
+      if (!iso) return undefined;
+      const [y, m, d] = iso.split('-').map(Number);
+      days.push(Date.UTC(y!, m! - 1, d!) / DAY);
+    }
+    if (!days.length) return undefined;
+    const step = days.length === 1 ? 1 : days[1]! - days[0]!;
+    for (let i = 2; i < days.length; i++) {
+      if (days[i]! - days[i - 1]! !== step) return undefined;
+    }
+    const start = direction === 1 ? days[days.length - 1]! : days[0]!;
+    return Array.from({ length: count }, (_, k) => {
+      const date = new Date((start + direction * step * (k + 1)) * DAY);
+      return `${pad(date.getUTCFullYear(), 4)}-${pad(date.getUTCMonth() + 1)}-${pad(date.getUTCDate())}`;
+    });
   }
 };

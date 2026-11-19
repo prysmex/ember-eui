@@ -44,3 +44,33 @@ export const compareNumbers = (
 
 export const finiteOrNull = (value: unknown): number | null =>
   typeof value === 'number' && Number.isFinite(value) ? value : null;
+
+/**
+ * `FieldType.series` for numbers: two or more finite samples with a
+ * constant step continue it (`1, 2` → `3, 4`); anything else is
+ * `undefined` (the fill repeats the samples). Values are in fill order,
+ * the first one next to the samples: after the last sample going down or
+ * right (`direction` 1), before the first going up or left (-1).
+ */
+export function numericSeries(
+  samples: readonly unknown[],
+  count: number,
+  direction: 1 | -1
+): number[] | undefined {
+  if (samples.length < 2) return undefined;
+  if (!samples.every((v) => typeof v === 'number' && Number.isFinite(v))) {
+    return undefined;
+  }
+  const values = samples as number[];
+  const step = clean(values[1]! - values[0]!);
+  const tolerance = 1e-9 * Math.max(1, Math.abs(step));
+  for (let i = 2; i < values.length; i++) {
+    if (Math.abs(clean(values[i]! - values[i - 1]!) - step) > tolerance) {
+      return undefined;
+    }
+  }
+  const start = direction === 1 ? values[values.length - 1]! : values[0]!;
+  return Array.from({ length: count }, (_, k) =>
+    clean(start + direction * step * (k + 1))
+  );
+}

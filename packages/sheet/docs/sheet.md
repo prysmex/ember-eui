@@ -190,6 +190,7 @@ your own store, remove those records.
 | `@expandedRecord` | `'flyout'` (default) or `'modal'`. |
 | `@rowActions` | Your items of the row menu: `{ id, label, icon?, color?: 'danger', isDisabled?(records), onSelect(records) }`. |
 | `@onResolve` | `(requests, { signal }) => Promise<result>`: resolves typed or pasted text of linked-record, user and your own types through your API (bulk resolve, below). Without it such text is rejected. |
+| `@editIn` | Where a click on the selected cell, or Enter, edits: `'cell'` (the editor over the cell), `'record'` (the expanded record, with that field's editor open), or `'auto'` (default: the record on a touch screen when the sheet is narrower than 600 px, else the cell). Typing on a cell always edits in the cell. |
 
 ## The owner
 
@@ -584,7 +585,10 @@ default the whole text is one part and its value is the cell's value.
 | Key | On a cell | In an editor |
 | --- | --- | --- |
 | Arrows; Home, End (row start, end); Ctrl+Home, Ctrl+End (first, last cell) | Move (the grid's keys). Home and Ctrl+Home go to the first field; ArrowLeft from it reaches the row number | Move in the text |
+| Ctrl/Cmd+arrows | Jump to the edge of the data, as in Excel: to the last filled cell of a block, else to the next filled cell, else to the last cell. With Shift, extend the range to it | Move in the text |
+| PageUp, PageDown | Move by the rows in view (with Shift, extend the range) | |
 | Shift+arrows, Shift+click, a mouse drag | Select a range | Move in the text |
+| Shift+Home, Shift+End; Ctrl/Cmd+Shift+Home, Ctrl/Cmd+Shift+End | Extend the range to the row's first or last field; to the first or the last record's last cell | Select text |
 | Ctrl/Cmd+A | Select every cell | Select the text |
 | A printable key | Opens the editor with that character. A date opens only on a digit; a checkbox has no editor. | Types |
 | Enter, F2, double-click | Opens the editor on the current value (a date: the browser's date input) | Enter saves and goes down |
@@ -596,7 +600,9 @@ default the whole text is one part and its value is the cell's value.
 | Shift+F10, ContextMenu | Opens the row menu | |
 | Delete, Backspace | Clear the selected range | Delete text |
 | Ctrl/Cmd+C, Ctrl/Cmd+V | Copy / paste the range as tab-separated text (a cell with a tab or a line break is quoted, as Excel does) | The input's own |
+| Ctrl/Cmd+X | Cut: copies the range, then clears it (one undo step; with `@readOnly` it only copies) | The input's own |
 | Ctrl/Cmd+D | Fill down: the top row of the range into the cells below it; on one row, the row above into it | The browser's |
+| Ctrl/Cmd+R | Fill right: the left column of the range into the cells right of it; on one column, the column to its left into it. Taken from the browser's reload while a cell has focus | The browser's |
 | Ctrl/Cmd+Z; Ctrl/Cmd+Shift+Z, Ctrl+Y | Undo; redo | The input's own |
 
 On a row number: Space toggles the checkbox, Enter expands the record,
@@ -609,13 +615,31 @@ With the mouse, as in Airtable: a click selects a cell (a blue ring), a
 click on the selected cell edits it, and a double-click edits at once.
 Pressing on a cell and dragging over others selects that range (the
 release does not edit or toggle); Shift+arrows then continue from it.
+Holding the pointer near an edge of the grid, or past it, scrolls the
+grid (faster the farther out) and the range follows.
 Select and date cells show a ▾ or calendar button on the hovered or
 selected cell; a click on it opens the editor. A click anywhere in a
 checkbox cell toggles it. A custom type gets the same with `opener` (an
 EUI icon type) and `onCellClick`.
 
-A click on another cell, or scrolling the grid, saves the editor's text
-and closes it. In a select
+The fill handle is the small square at the bottom-right corner of the
+selected range. Drag it down, up, right or left: the cells it covers
+are outlined, and the release fills them from the range. Numbers
+(number, currency, percent, duration, rating) with a constant step
+continue it (`1, 2` gives `3, 4`); one date continues by a day, and two
+or more dates with a constant step continue it (weekly stays weekly);
+anything else repeats in order. Hold Ctrl or Alt (Option) when you
+release to repeat instead. Escape during the drag cancels it. Values are
+copied as they are (an array too: do not change it in place); across
+fields of different types they go through text, like a paste. A fill is
+one undo step. The handle is for a mouse; Ctrl/Cmd+D and Ctrl/Cmd+R
+are the keyboard's fills. A custom type continues its own values with
+`series(samples, count, field, direction)`.
+
+A click on another cell saves the editor's text and closes it. So does
+scrolling the grid so that the edited cell leaves the view; a scroll
+that keeps it fully in view (the grid bringing a far column into view
+when it is focused) moves the editor with it. In a select
 editor, typing filters the options, ArrowUp and ArrowDown move, and
 Enter, Tab or a click picks. Enter or Tab right after typing picks the
 first match.
@@ -626,6 +650,31 @@ end become inserts. When the selection is larger than the copied block
 and its height and width are whole multiples of the block's, the block
 is repeated over the whole selection, as in Excel: one copied cell
 fills every selected cell. Otherwise the block is pasted once.
+
+## Touch
+
+On a phone or a tablet, a tap selects a cell and a tap on the selected
+cell edits it. A drag scrolls; there is no range selection by touch yet,
+but row numbers, column titles and Ctrl/Cmd+A still select. A long
+press on a cell or a row number opens the row menu (Android Chrome fires
+its own context menu event; on iOS Safari the sheet's 500 ms timer opens
+it; a press that moves more than 10 px is a scroll). The ▾ and calendar
+buttons, the row checkbox and the expand icon are always shown on touch
+screens, with larger touch areas. With `@editIn` at its default, a sheet
+narrower than 600 px on a touch screen edits in the expanded record,
+with the tapped field's editor open. The fill handle is not shown on
+touch screens. None of this was tried on a real phone yet.
+
+## IME and dead keys
+
+A composition starts in a hidden input over the cell: with a dead key
+(`´` then `e` on a Spanish or Mac keyboard) or an IME (Japanese,
+Pinyin), typing on a cell opens the editor with the composed text (`é`,
+`日本`), not with the first key. Escape during it returns to the cell.
+Inside an open editor, the Enter that confirms a composition is the
+IME's: it does not save. This was checked with synthetic events only;
+real IMEs and dead keys on macOS (Chrome, Safari, Firefox) are still to
+be tried.
 
 ## Errors
 
@@ -654,15 +703,15 @@ value.
 
 These are not in yet:
 
-- Cut (Ctrl/Cmd+X), a fill handle, and fill right (Ctrl/Cmd+R).
-- Scrolling the grid while a drag reaches its edge: drag within the
-  visible rows, or use Shift+click.
+- Selecting a range by touch (a drag scrolls).
 - Grouping rows (planned for a later version: the groups must come from
   the owner, and no EmberSearchUi backend provides them yet). Sorting,
   filtering, search and paging are not "not yet": they are the owner's
   (above, and the EmberSearchUi connector), and the sheet draws them.
 - Upload progress (an uploading cell only shows as pending).
-- IME composition.
+
+Out of scope: formulas, rollups and lookups, comments, co-editing, and
+other kinds of views (calendar, kanban, gallery).
 
 </EuiText>
 

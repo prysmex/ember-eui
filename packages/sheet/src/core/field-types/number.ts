@@ -1,3 +1,5 @@
+import { numericSeries } from './numeric.ts';
+
 import type { FieldType, NumberField } from '../types.ts';
 
 function escape(char: string): string {
@@ -53,5 +55,7 @@ export const numberFieldType: FieldType<number | null, NumberField> = {
     return a - b;
   },
   toNumber: (value) =>
-    typeof value === 'number' && Number.isFinite(value) ? value : null
+    typeof value === 'number' && Number.isFinite(value) ? value : null,
+  series: (samples, count, _field, direction) =>
+    numericSeries(samples, count, direction)
 };

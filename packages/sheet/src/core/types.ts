@@ -258,6 +258,20 @@ export interface FieldType<
   };
   /** The link a value opens (url, email, phone). The sheet opens only http:, https:, mailto: and tel:. */
   link?(value: V | null | undefined, field: F): string | undefined;
+  /**
+   * The fill handle's series (`fillRange`): continues `samples` (the
+   * source cells, in sheet order) by `count` values, the first one next
+   * to the samples (`direction` 1: after the last sample, down or right;
+   * -1: before the first, up or left). `undefined` repeats the samples.
+   * The built-in number, currency, percent, duration and rating types
+   * continue a constant step; date also continues one date by a day.
+   */
+  series?(
+    samples: Array<V | null | undefined>,
+    count: number,
+    field: F,
+    direction: 1 | -1
+  ): V[] | undefined;
 }
 
 export type FieldTypeRegistry = Readonly<Record<string, FieldType<any, any>>>;

@@ -1,4 +1,9 @@
-import { compareNumbers, finiteOrNull, readNumber } from './numeric.ts';
+import {
+  compareNumbers,
+  finiteOrNull,
+  numericSeries,
+  readNumber
+} from './numeric.ts';
 
 import type { CurrencyField, FieldType } from '../types.ts';
 
@@ -71,5 +76,7 @@ export const currencyFieldType: FieldType<number | null, CurrencyField> = {
     return errors;
   },
   compare: compareNumbers,
-  toNumber: finiteOrNull
+  toNumber: finiteOrNull,
+  series: (samples, count, _field, direction) =>
+    numericSeries(samples, count, direction)
 };

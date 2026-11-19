@@ -1,4 +1,10 @@
-import { clean, compareNumbers, finiteOrNull, readNumber } from './numeric.ts';
+import {
+  clean,
+  compareNumbers,
+  finiteOrNull,
+  numericSeries,
+  readNumber
+} from './numeric.ts';
 
 import type { FieldType, PercentField } from '../types.ts';
 
@@ -45,5 +51,7 @@ export const percentFieldType: FieldType<number | null, PercentField> = {
     return errors;
   },
   compare: compareNumbers,
-  toNumber: finiteOrNull
+  toNumber: finiteOrNull,
+  series: (samples, count, _field, direction) =>
+    numericSeries(samples, count, direction)
 };

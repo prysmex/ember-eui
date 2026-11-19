@@ -1750,3 +1750,478 @@ The docs site was a production build served by `vite preview`. The checks used P
 - **Fixed in the README and the docs page:** both still said "five field types". The sentence now lists the built-in types.
 
 Not checked with real input: dark mode, Firefox, Safari, a real OS drag, real Excel or Numbers clipboards, `user` with `search` and `multiple`, concurrent uploads.
+
+## Batch 6: editing polish, touch, IME
+
+Built 2026-11-19 on `a610f70e` (uncommitted when this was written). Scope as
+`V02-DESIGN.md` 8.4 to 8.7: the fill handle with series, cut, fill right,
+edge jumps, range and page keys, auto-scroll while dragging; touch (long
+press, hover-only parts, `@editIn`, `touch-action`); dead keys and IMEs
+through a composition catcher; and the editor-closes-on-scroll race of batch
+5. `packages/core/src` was not changed. No dependency was added.
+
+### What was built (files, under `packages/sheet/`)
+
+| File | Change |
+| --- | --- |
+| `src/core/fill.ts` | `fillRight(ctx, range)`; `fillRange(ctx, source, target, { copy })` (down, up, right, left, with the type's `series`); a shared writer that copies same-type values by reference and converts across types through text (deviation 4). |
+| `src/core/nav.ts` (new) | `edgeTarget(ctx, pos, direction)`, exported from the core. |
+| `src/core/types.ts` | `FieldType.series?(samples, count, field, direction)`. |
+| `src/core/field-types/numeric.ts` | `numericSeries` (constant step, `clean`ed floats). |
+| `src/core/field-types/{number,currency,percent,duration,rating,date}.ts` | `series`: a constant step continues; duration rounds to seconds, rating stays in 1…`max`; date: one sample by a day, two or more by a constant day step. |
+| `src/core/change-set.ts` | `clearRange(ctx, range, { source?: 'clear' \| 'cut' })`. |
+| `src/-private/fill-handle.gts` (new) | The handle: placed after render from the corner cell's box, hidden when that corner is not in view. |
+| `src/-private/auto-scroll.ts` (new) | `AutoScroll` (update, stop; 24 px edge zones, speed up to 20 px per frame) and a replaceable `frames` hook for tests. |
+| `src/-private/ime-catcher.gts` (new) | The composition catcher input (`data-eui-sheet-editor-surface`, `tabindex=-1`, `aria-hidden`). |
+| `src/-private/sheet-cell.gts` | `euiSheet__cell--fillPreview` while a fill drag covers the cell. |
+| `src/-private/record-form.gts` | Opens the field's editor on mount when `@editIn` sent the tap there; a composing Enter in a form editor does not save. |
+| `src/-private/styles.ts` | Handle, preview, filling cursor, catcher, `(pointer: coarse)` and `(hover: none)` rules, `touch-action: manipulation`. No new colour: the handle and the preview use `--euiSheet-primary` and `--euiSheet-plain`. |
+| `src/components/eui-sheet.gts` | The scroll fix; `cut`; Ctrl/Cmd+R; `handleNavKey` (Ctrl/Cmd+arrows, Shift+Home/End, Ctrl/Cmd+Shift+Home/End, PageUp/PageDown with and without Shift) and `moveFocus`; the fill drag; auto-scroll for select and fill drags (`dragTo`, `dragOver` split out of `onMouseOver`); long press with pointer events; the IME branch and catcher handlers; `@editIn`. |
+| `src/types.ts`, `src/search-ui/eui-sheet-search.gts` | `@editIn`, forwarded by `EuiSheetSearch`. |
+| Tests, docs | Below. |
+
+### API changes
+
+Additive:
+
+- Argument `@editIn?: 'cell' | 'record' | 'auto'` (default `'auto'`), also
+  forwarded by `EuiSheetSearch`.
+- Core `fillRight`, `fillRange`, `edgeTarget`; `FieldType.series`; the
+  built-in number, currency, percent, duration, rating and date types have a
+  `series` (so do their sheet types, which spread them).
+- `clearRange`'s optional third parameter `{ source }`.
+
+Not purely additive:
+
+- C11 as designed: Ctrl/Cmd+R on a data cell (and a row number) is the
+  sheet's, not the browser's reload. Ctrl/Cmd+X, Ctrl/Cmd+arrows,
+  Shift+Home/End, Ctrl/Cmd+Shift+Home/End and PageUp/PageDown on a data cell
+  are now the sheet's (the grid's Ctrl+arrow moved one cell, its Shift+Home
+  reached the row number, its Ctrl+Shift+End the add row, and PageUp/Down did
+  nothing without pagination).
+- **The editor and grid scrolls** (the batch 5 race): a scroll no longer
+  always saves and closes the editor. When the edited cell is still fully in
+  view (rendered, inside the body, not under the header, the footer or the
+  frozen columns) the editor moves with it; otherwise it saves and closes as
+  before. README and `docs/sheet.md` said "scrolling the grid saves"; both
+  now say the new rule. T10 (a scroll of 100 rows) is unchanged and passes.
+- A press on a cell with a touch pointer no longer starts a select drag
+  (8.5: a touch drag scrolls).
+- `onMouseOver` delegates to `dragOver(element)`; there is a document
+  `mousemove` listener while a select drag may start (removed on release).
+
+No message token and no theme property was added, so `d07-translations.md`
+did not change.
+
+### Verification items (section 12)
+
+| # | Item | Outcome |
+| --- | --- | --- |
+| N13 | The IME mechanism with real input (8.6); touch on real devices (8.5). | Not verifiable here. The wiring is covered by synthetic events (IM1 to IM6: `KeyboardEvent` `Dead` and `Process`/229, `InputEvent`, `CompositionEvent`; TC1 to TC3: `PointerEvent` with `pointerType: 'touch'` in headless Chromium). Whether focusing the catcher inside the `keydown` carries the composition over is the open question of 8.6 and needs the Mac (Chrome, Safari, Firefox; Spanish dead keys, Japanese and Pinyin IMEs) and real phones. 8.6 asked to confirm the v0.1 behaviour (`´` then `e` opens with `e`) on the Mac before building the fix; that was not possible here, so the fix was built from the design. |
+| N14 | Performance. | Not measured. The fill preview is a class through `setCellProps` on rendered cells only; a long fill drag was not timed. |
+
+The batch 5 race:
+
+- **Red before the fix.** ED1, run against the unfixed `onScroll`
+  (`b6-red2.log`), failed on the late scroll event dispatched on purpose
+  ("a scroll that keeps the cell in view"). Its first check, two real
+  frames after opening the editor, passed there: in that run the focus's
+  scroll event had already arrived. So the real race was not reproduced by
+  that run. The synthetic late scroll is the deterministic part of the test.
+- **After the fix.** ED1 and ED2 pass.
+- **LT1 and LK1 without their waits.** In the scratch copy only, the four
+  frame waits were removed and the types2 module was run 15 times: 15 × no
+  failure. Then it was run 15 times as committed (with the waits): 15 × no
+  failure (`b6-nowait.log`). The log's "removed 6 frame waits" counts the
+  two 8-space lines twice (the 6-space pattern matches inside them); the
+  `grep -c` after it prints 0, so all four waits were removed. In batch 5 the race showed about once in 12 to
+  15 runs, so this is evidence that the waits are no longer needed, not
+  proof. They were left in, as asked.
+
+### Tests
+
+Baseline: 302/302 at HEAD (batch 5's `b5-c5.log`). Runs while building:
+
+- `b6-red.log`, `b6-red2.log`: ED1 and ED2 on the unfixed sheet. The first
+  run failed on a test-only error (a bound `style` string needs
+  `htmlSafe`). In the second, ED1 failed as described above and ED2 passed.
+- `b6-run1.log`: the build failed on an apostrophe in a test name. Then the
+  first full run: 328/331. P1 and P3 failed on `triggerKeyEvent` refusing a
+  lower-case `z` (now `pressed('z', …)`). TC3 queried the portaled flyout
+  inside the test root (now `document.body`).
+- `b6-run2.log`: 331/331.
+- `b6-c1.log`: 331/331. Lint failed to parse the IME and touch test files: a
+  non-ASCII dash in their header comment, before the first `<template>`,
+  shifts the gts parser's offsets. It is now "IM1 to IM5". Type check: a
+  `record.locked` index access in F9.
+- `b6-c2.log`: 330/331. P2's new column-range check used `click` without
+  importing it. Lint 0, Prettier clean.
+- `b6-c3.log`: 331/331, lint 0, Prettier clean; site build and smoke 9/9.
+- A review then found three gaps in paths the tests drove with synthetic
+  mouse events only. Each got a test first, which was red on the code then
+  (`b6-red3.log`, `b6-red5.log`):
+  - P10: a real release after auto-scroll collapsed the range. The grid
+    scrolls back to the pressed cell on `pointerup`, which unmounts the head.
+    The head's focus then came after the release and its click, so
+    `focusin` made it the anchor too. On that code the copy had 1 line
+    instead of 34. P10's first version had no render between `pointerup`
+    and `mouseup`, and it passed; a browser renders there (microtasks run
+    between the two events), so `settled()` was added and it went red.
+  - P11: a plain press near an edge, with 1 px of mouse movement, started
+    the loop and scrolled.
+  - IM7: a dead key on a far column. The focus's late scroll ended the
+    catcher (an earlier version reset it on any scroll), so the `é` was
+    dropped and focus stayed on the hidden input.
+- The fixes: the release sets `domCursor` (`rowCursor` for rows) before it
+  focuses the head, as `moveFocus` does. The loop starts only once a drag
+  selects (or a fill target differs from its source), or the pointer leaves
+  the grid's body. The catcher follows its cell on scroll like the editor,
+  and ends and blurs when the cell leaves the view. A fill release also
+  focuses the head again when an auto-scroll unmounted the focused cell.
+  `b6-fix1.log`: the 19 tests of these areas pass.
+- Final: see "Final run" below.
+
+New (32):
+
+- `tests/unit/fill-test.ts`: F4 `fillRight` (several columns, one column, the
+  first column, read-only); F4b across types through text (a number from
+  `'12'`, a rejection for `abc`); F5 `fillRange` down, up, right, left,
+  clamped to the last record; F6 number series (1, 2 → 3, 4; one sample
+  copies; 1, 2, 4 repeats; up without float noise) and percent, currency,
+  duration, rating (clamped to `max`); F7 date series (one sample by a day
+  over a month end, a weekly step, up a day); F8 `copy: true`; F9 read-only
+  cells skipped while the series counts them, values by reference.
+- `tests/unit/nav-test.ts` (new): NV1 `edgeTarget` in the four directions,
+  through blocks and gaps, at the edges, from the add row.
+- `tests/integration/components/eui-sheet-polish-test.gts` (new, 13):
+  - ED1: an editor opened on column 12 right after its focus stays open over
+    its cell, after two frames and after a late scroll event.
+  - ED2: a scroll that takes the cell out of view (horizontal, with the
+    frozen field rendering every column) saves and closes.
+  - P1: the handle at the corner, a press keeps focus, preview cells, release
+    → number and date series in one change set, union selected, one undo;
+    Ctrl at release repeats; Escape cancels.
+  - P2: hidden while editing, on a column range, with `@readOnly`.
+  - P3: cut → TSV, `'cut'` patches, one undo; read-only copies only.
+  - P4: Ctrl+R and Cmd+R.
+  - P5: Ctrl+ArrowDown to row 149 of 200 (row 0 no longer rendered),
+    Ctrl+Shift+ArrowDown to 199 keeps the anchor (a copy has 51 lines),
+    without Shift the range collapses, at the edge it stays.
+  - P6: Shift+End, Shift+Home to the first field (not the row number),
+    Ctrl+Shift+End to the last record, not the add row; Ctrl+Shift+Home.
+  - P7: PageDown by the rows in view, Shift+PageDown extends, PageUp.
+  - P8 (with P9's release): a select drag held under the grid scrolls and the
+    head follows; the release leaves no frame and no more scrolling.
+  - P9: destroy cancels the frame; a sheet that cannot scroll ends the loop
+    itself. P8 to P11 replace the `frames` hook, not
+    `window.requestAnimationFrame`.
+  - P10: the real event order (`pointerdown`, `mousedown`, focus, …,
+    `pointerup`, a render, `mouseup`) after 60 frames of auto-scroll. The
+    head is not rendered at the release, focus reaches it later, and the
+    range (34 rows) is kept.
+  - P11: on a scrolled grid, a press on the top visible row and a 1 px move
+    request no frame and do not scroll.
+- `tests/integration/components/eui-sheet-ime-test.gts` (new, 7): IM1 dead
+  key → catcher over the cell, `input` `é` → editor with `é`, saved; IM2
+  `Process`/229 + composition `日本`, nothing while composing, a composing
+  Enter left to the IME, a later `input` opens nothing more; IM3 Escape and
+  an empty `compositionend` return to the cell; IM4 read-only ignores it; IM5
+  `tabindex=-1`, `aria-hidden`, outside the grid; IM6 a composing Enter in an
+  open editor does not save; IM7 a dead key on column 12 of a 600 px sheet,
+  then the grid's late scroll, then `é`: the editor opens with `é`.
+- `tests/integration/components/eui-sheet-touch-test.gts` (new, 4): TC1 long
+  press on a link opens the menu on the pressed cell. The `contextmenu` that
+  Android also fires is prevented and opens no second menu. The click after
+  it is swallowed (`window.open` stubbed, not called), and the next tap opens
+  the link. TC2: a 20 px move, a `pointercancel`, or a mouse press opens
+  nothing. TC3: `@editIn="record"`, the second tap opens the flyout with the
+  Name editor mounted and focused, there is no grid editor, Enter saves, and
+  Enter on a cell opens it the same way. TC3b: `'auto'` with a fine pointer
+  edits in the cell.
+
+No existing test changed.
+
+Not executed by any test: the fill handle with a real mouse and
+`elementFromPoint` under real scrolling, horizontal auto-scroll, a fill drag
+with auto-scroll, the long-press timer on iOS (no `contextmenu`), `(hover:
+none)` and `(pointer: coarse)` styles, `@editIn="auto"` on a coarse pointer,
+dark mode of the handle and the preview, d18 at runtime (built, not run).
+
+### Lint, Prettier, types of the tests
+
+`pnpm lint` (`ember-tsc --noEmit`, ESLint, stylelint) exit 0 and Prettier
+`--check src tests/integration tests/unit README.md` clean, in the final
+check (below). Files were formatted with `--write` in the scratch copy and
+copied back (`b6-prettier-write.log`; the second pass changed nothing). The
+tests' type check (`ember-tsc --noEmit -p tsconfig.eslint.json`) has the
+same 19 errors as batch 5 (`.at()`, `ember-keyboard`, `deprecations.ts`),
+none in the new files.
+
+### Deviations from the design
+
+1. **Long press with pointer events**, not `touchstart`/`touchmove`/
+   `touchend` (the task asked for `pointerType: 'touch'`): one path for
+   Android and iOS Safari (13+). `pointercancel` (a native pan) cancels it.
+   The 500 ms timer is a run loop `later`, so `settled()` waits for it; TC1
+   needs no fake timers. A long press that opened the menu also swallows the
+   compatibility `mousedown` (which would close the menu) and Android's
+   `contextmenu`; the flag clears on the next press.
+2. **The fill handle hides under `(pointer: coarse)`** instead of showing only
+   under `(pointer: fine)`: headless Chromium, and some hybrid devices, may
+   match neither. On phones the result is the same.
+3. **The handle shows for cell ranges only**, not for whole rows or columns
+   selected by their numbers or titles (8.4 is silent).
+4. **Fills across fields of different types go through text**, as a paste:
+   the source type's copy text, the target's `parse` (source `'paste'`); a
+   text it cannot read is a rejection in the change set. This applies to
+   `fillRight` and horizontal `fillRange`; same-type values are copied by
+   reference. A horizontal series needs every field of the row to have the
+   same type. 8.4 is silent on this.
+5. **Series details**: rating values stay within 1 and `max` (`4, 5` → `5,
+   5`); duration rounds to whole seconds; a step of 0 repeats. `series`
+   returns its values nearest first, and an up or left fill repeats so that
+   the pattern ends next to the samples, as Excel does.
+6. **The scroll fix** keeps an editor whose cell is fully in view, rather
+   than ignoring the scroll that follows a focus. A partly hidden cell
+   closes the editor as before, so the editor never hangs over the header.
+   This is the first option the batch 5 notes offered.
+7. **After a fill drag** the union is selected. Focus stays where it was when
+   that cell is a corner of the union (a single cell filled down); else it
+   moves to the union's nearest corner. The sheet's model needs the focused
+   cell to be a corner of the range.
+8. **Range and page keys are handled by the sheet**, not only by setting
+   `extending`. The grid's targets were wrong (the row number, the add row),
+   and a far target is rendered after the focus call. The sheet sets the
+   range first, as `selectChanged` does. Ctrl/Cmd+PageUp/PageDown are left
+   to the browser (tab switching).
+9. **`@editIn` applies** to a click on the selected cell, the ▾ opener, a
+   double-click, Enter and F2. Typing and a composition still edit in the
+   cell. `'auto'` reads `(pointer: coarse)` and the wrapper's width at the
+   moment of the tap.
+10. **Cut** emits even when nothing changes, so a pending resolve on the cut
+    cells is dropped (batch 5's note). A rejected text in the range is
+    cleared too, without a change set, so it is not undone. It copies the
+    values, not the rejected texts, as copy does.
+11. **Files outside 8.6.1's list**: `record-form.gts` (`@editIn` and the
+    composing-Enter guard), `sheet-cell.gts` (the preview class),
+    `change-set.ts` (`clearRange`'s source), `numeric.ts` and the six type
+    files (the series).
+12. **The catcher** follows its cell on a grid scroll, as the editor does.
+    When the cell leaves the view (and no composition is in progress) it
+    ends and blurs, so focus never stays on a hidden input. Tab in it
+    returns to the cell like Escape.
+13. **No new message or theme token**: nothing new is shown as text, and
+    the handle and the preview use existing colours.
+14. **Auto-scroll starts only for a real drag**: a select drag once it
+    covers a second cell, a fill once its target differs from its source,
+    or either with the pointer outside the grid's body. 8.4 says "a drag
+    with the pointer within 24 px of an edge"; a press alone is not one.
+
+### Docs
+
+- `docs/sheet.md`: `@editIn` in the arguments; keyboard rows for Ctrl/Cmd+
+  arrows, PageUp/PageDown, Shift+Home/End and Ctrl/Cmd+Shift+Home/End,
+  Ctrl/Cmd+X, Ctrl/Cmd+R; the mouse text gains auto-scroll and a paragraph
+  on the fill handle (series, Ctrl/Alt, Escape, values by reference, across
+  types, `series` for custom types); the scroll rule for an open editor; new
+  sections "Touch" and "IME and dead keys"; "Not yet" keeps grouping and
+  upload progress, adds range selection by touch, and lists what is out of
+  scope (formulas, rollups and lookups, comments, co-editing, other kinds of
+  views).
+- `README.md`: the `@editIn` row; keyboard rows; the fill handle and
+  auto-scroll in "Mouse"; the scroll rule; `series` in the custom type
+  contract; `fillRight`, `fillRange`, `edgeTarget` in the exported pure
+  parts; a "Touch and IME" section; "Limits" updated.
+- New demo `d18-editing.md` ("Editing: fill handle, series, cut"). It shows
+  60 rows and 9 fields, wider than the sheet. Rows 1 and 2 hold `1, 2`, two
+  dates a week apart, durations, rates, percentages and statuses. Notes are
+  empty from row 21, for the edge jumps, and Reviewer is the far column. It
+  has a change set log. d07 needed no change.
+
+### Final run
+
+`b6-c4.log` (11:26 UTC, after the last edit of a source or test file):
+**334/334**, 0 failed (302 existing, 32 new). `b6-lint-c4.log` exit 0,
+`b6-prettier-c4.log` clean, `b6-tsc-tests-c4.log` 19 errors (the same as
+batch 5). Logs are in the session scratchpad
+(`/tmp/claude-1000/-Users-betocantu93-prysmex/df04f7e2-a347-4eab-a276-4d9974f4dbc1/scratchpad/`).
+
+### Docs site build
+
+In the scratch copy, `b6-site.sh` ran `build:js` of core, sheet, flatpickr,
+pikaday, changeset-form and validated-form. `dist-hygiene` exited 0, and so
+did `pnpm docs:api:check`. Then, in `site`, `pnpm clean:docfy && node
+../scripts/generate-llms-txt.mjs && pnpm exec vite build --mode production`
+exited 0 (`b6-site-summary.log`, `b6-site.log`, 11:15 UTC; rebuilt after the
+review's fixes: `b6-site2-summary.log`, `b6-site2.log`, 11:28 UTC, whose
+`dist` is the one left). d18 has its own
+chunk (`docfy-demo-docs-sheet-d18-editing-*.js`). The log has the same seven
+docfy `getRepoEditUrl` TypeErrors as the earlier batches (no `.git` in the
+scratch copy). `site/dist` is left in the scratch copy.
+
+A headless smoke run of the built site (`b6-smoke.mjs`; `b6-smoke.log` 9/9
+on the first build, `b6-smoke2.log` 9/9 on the second). It used DOM calls and synthetic events, not trusted input, with focus
+emulation on. It found:
+
+- d18 renders, with `1, 2` in Day.
+- A drag selects Day of rows 1 and 2, and the handle shows.
+- A press on the handle and a move to row 5 preview three cells. The
+  release writes `3, 4, 5`, and the log shows a `fill` change set.
+- A cut on row 1's Task puts `Inspect` on the clipboard and clears the cell.
+- There was no exception or console error.
+
+The first two smoke runs failed on the script, not on the demo. The page
+scrolls smoothly, so the sheet was still off screen when
+`elementFromPoint` ran.
+
+### For the orchestrator to check with real input (docs site, Sheet page)
+
+1. **Fill handle and series (d18 "Work log")**:
+   - Drag from row 1's Day to row 2's Date (four cells). The square shows at
+     row 2's Date corner. Drag it down to row 6: the cells are outlined while
+     dragging. Release: Day `3…6`, Date one week per row (12/01/2026 and
+     on). One change set in the log, one Ctrl/Cmd+Z.
+   - The same drag with Ctrl held at release (and Alt/Option on the Mac): `1,
+     2, 1, 2`. Escape during a drag: nothing written.
+   - Row 1's Date alone dragged down three rows: 06/01, 07/01, 08/01.
+     Hours, Rate and Done (rows 1 and 2) continue too (3:00, $50.00, 75%).
+     Status repeats To do, Doing.
+   - Drag the handle up from row 3 (after the fill), and right from Day to
+     Date: across types, `3` becomes no date (rejected, red).
+   - With a real mouse: the press on the square must not move focus or
+     start a select drag, and the crosshair cursor shows.
+2. **Cut**: select Task of rows 1 to 3, Ctrl/Cmd+X (the cells clear; the
+   log says `cut`), click row 10's Task, Ctrl/Cmd+V (the three tasks), then
+   Ctrl/Cmd+Z twice. The browser must fire `cut` on a focused,
+   non-editable cell: this was only dispatched in tests.
+3. **Ctrl/Cmd+R**: select Task and Notes of rows 1 to 3, then press it.
+   Notes get the tasks, and the page does not reload. Also on one Notes
+   cell.
+4. **Edge jumps and range keys**:
+   - Ctrl/Cmd+ArrowDown on row 1's Notes goes to row 20 (the last note).
+     Again: row 60 (none below). Ctrl/Cmd+ArrowUp: back to row 20.
+   - With Shift, the range extends, and a copy has the rows.
+   - Ctrl/Cmd+ArrowRight on row 3 goes from Day across the empty cells to
+     Task.
+   - Shift+End selects to Reviewer. Shift+Home selects back to Day, not the
+     row number. Ctrl/Cmd+Shift+End selects to row 60's Reviewer, not the
+     add row.
+   - PageDown and Shift+PageDown move by the rows in view.
+   - On the Mac, check Cmd+arrows and Cmd+Shift+End.
+5. **Auto-scroll**: press row 1's Task and drag below the grid's bottom
+   edge, then hold still. The grid scrolls (faster the farther out) and the
+   selection grows. Release: it stops, and a copy has the rows. Also drag
+   past the right edge (Reviewer) and back over the frozen Day column (it
+   scrolls left).
+6. **Editor on a far column (the batch 5 race)**: with the page narrow
+   enough that Reviewer is off to the right, click row 1's Reviewer, then
+   click it again at once (or press Enter right after the first click).
+   The editor must stay open over the cell. Then scroll the grid sideways
+   with the wheel until the cell leaves the view: the editor saves and
+   closes. A small vertical scroll that keeps it in view moves it with the
+   cell.
+7. **Composition (Playwright on Chromium)**. These events reach the page
+   through CDP, not through an OS IME:
+   - Dead key: on a focused Task cell, a keydown with key `Dead` (a CDP
+     `Input.dispatchKeyEvent` with `key: 'Dead'`; Playwright's
+     `keyboard.down` may not know that key name), then
+     `page.keyboard.insertText('é')`. The Task editor opens with `é`.
+   - IME: on a focused Task cell, a CDP `Input.dispatchKeyEvent` keyDown
+     with `key: 'Process'` and `windowsVirtualKeyCode: 229`, then
+     `Input.imeSetComposition({ text: 'にほん', selectionStart: 3,
+     selectionEnd: 3 })` and `Input.insertText({ text: '日本' })`. The editor
+     opens with `日本`, and nothing opens while composing.
+   - Escape after a dead key goes back to the cell.
+   - The real check is on the Mac: Spanish keyboard `´` + `e`, `~` + `n`,
+     and the Japanese and Pinyin IMEs, in Chrome, Safari and Firefox (8.6).
+8. **Touch (Chrome DevTools device mode, or Playwright with `hasTouch`)**:
+   - Long-press a cell for over 500 ms: the row menu opens on that row, and
+     the release opens no link and no editor.
+   - A touch drag scrolls and selects nothing.
+   - `@editIn` is `'auto'` in the demos, so a phone-sized viewport with
+     touch (narrower than 600 px) opens the expanded record with the tapped
+     field's editor on the second tap.
+   - The ▾ button and the row checkbox show without hover.
+   - Real iPhone and Android devices are still needed (no `contextmenu` on
+     iOS, text-selection callouts).
+9. **Dark mode**: the handle (primary on plain) and the dashed preview
+   outline in d01's dark switch. Not looked at.
+
+### What remains for v0.3 and for the Mac
+
+- **The Mac**: real IMEs and dead keys in Chrome, Safari and Firefox (N13,
+  8.6), and whether the catcher carries a composition over. If one browser
+  does not, the fallback is to open the editor empty on `compositionstart`
+  (8.6). Also: `cut` on a non-editable focused cell in Safari and Firefox,
+  Cmd+R and Cmd+arrows, and the fill handle and auto-scroll with a real
+  trackpad.
+- **Real devices**: the iOS long press (the timer path, callouts, a
+  following click), Android's `contextmenu`, `(hover: none)` and
+  `(pointer: coarse)` styles, and `@editIn="auto"` on a phone (8.5).
+- **Firefox and Safari** for everything here, and for the frozen field
+  (carried over).
+- **v0.3**:
+  - Range selection by touch.
+  - Dead keys and IMEs on the expanded record's boxes. The form has no
+    catcher: a dead key on a box is lost, as in v0.1, and only a composing
+    Enter in a form editor is guarded now.
+  - Re-measuring the fill handle on window resize (now: on selection,
+    scroll, column resize, `@records` and row height).
+  - A cell wider (or taller) than the grid's visible body is never fully in
+    view, so its editor still closes on any grid scroll.
+  - A keyboard way to choose "copy" instead of a series (only Ctrl/Alt at
+    the mouse release).
+  - Group by (carried over).
+- **Carried over from batch 5** (not batch 6's scope): one `@onResolve`
+  answer per text, and `maxFiles` without a message.
+
+The orchestrator's batch 5 observation of the editor race is addressed
+above ("The batch 5 race"). Its other observations are outside batch 6.
+
+### Batch 6: real input in Chromium (orchestrator, 2026-11-19)
+
+These checks ran on the production docs site (`vite preview`) with Playwright real mouse, keyboard and clipboard input. Dead keys and IME went through CDP (`Input.dispatchKeyEvent` with `Dead` or `Process`/229, `Input.imeSetComposition`, `Input.insertText`). Touch ran in a second browser context with `hasTouch`, `isMobile` and a 390×844 viewport, using CDP `Input.dispatchTouchEvent`. Screenshot: `v02-b6-touch.png`.
+
+**d18 "Work log":**
+
+- **Fill handle, series:**
+  - The handle renders in the sheet's wrapper (`.euiSheet`), not inside `.euiDataGrid`.
+  - Day and Date of rows 1–2 dragged to row 6 show 8 cells outlined while dragging.
+  - The release gives Day 3, 4, 5, 6 and Date 19/01, 26/01, 02/02, 09/02 (weekly), in one `fill` change set. One Ctrl+Z undoes it.
+- **Fill handle, other cases:**
+  - Ctrl held at the release repeats 1, 2, 1, 2 and the two dates.
+  - Escape during the drag cancels it.
+  - Hours, Rate and Done continue (3:00, 4:00, 5:00; $50, $55, $60; 75%, 100%, 125%: Done has no `max`), and Status repeats.
+  - A single Date dragged down goes on by a day (13/01, 14/01).
+- **Cut and paste:** Ctrl+X on Task rows 1–3 fires one `cut` event, empties the cells, and puts `Inspect\nReport\nTrain` on the clipboard. Ctrl+V at row 6 writes them, the first Ctrl+Z undoes the paste, and the second restores the cut cells.
+- **Ctrl+R:** fill right on Task and Notes gives "Audit", "Audit" without reloading the page, and Ctrl+Z undoes it.
+- **Edge jumps:**
+  - Ctrl+ArrowDown on Notes goes to row 20, then row 60, and Ctrl+ArrowUp back to row 20.
+  - Ctrl+Shift+ArrowUp selects rows 1–20.
+  - Shift+Home extends to Day. Ctrl+ArrowLeft and Ctrl+ArrowRight reach Day and Reviewer.
+  - Ctrl+Home goes to row 1's Day, and Ctrl+Shift+End selects through row 60's Reviewer.
+  - PageDown moves 8 rows (row 9, then row 17), and PageUp goes back.
+- **Auto-scroll:**
+  - A drag from row 3 held 30 px below the grid scrolls it (`scrollTop` 0 → 1110 in 1.5 s). The scrolling stops at the release.
+  - The range survives the release: scrolled back to the top, rows 3–10 are still selected.
+  - Dragging past the right edge scrolls sideways (`scrollLeft` 609) and selects Date…Reviewer.
+  - A plain click near the bottom edge does not scroll.
+- **Editor on a far column:**
+  - Reviewer on row 2 is off to the right. A click, then Enter at once, scrolls it into view and leaves the editor open, and typing works.
+  - A sideways wheel scroll that takes the cell out of view saves it ("Luis X") and closes the editor.
+  - Two quick clicks also leave the editor open.
+- **Dead keys and IME:**
+  - A `Dead` keydown on a Task cell focuses the composition catcher, `insertText é` opens the editor with "é", and Enter saves it.
+  - An IME composition (`に`, then `にほん`, committed as `日本`) saves "日本".
+  - A dead key on the far Reviewer column right after an arrow key saves "á", and Ctrl+Z undoes it.
+- **Touch (d15 at 390 px wide):**
+  - The first tap selects, and the second opens the expanded record.
+  - The fill handle's element exists but has `display: none` (`(pointer: coarse)` matches).
+  - A long press of 800 ms opens the row menu, and on a link it adds "Open link" and opens nothing. A short tap on the link opens it.
+
+**Observations, not fixed:**
+
+- **The tap after a long press lands on the menu.** The menu appears under the finger, so the tap that follows the release lands on it. In these runs it hit the menu panel itself, not an item. On a real device, an item under the finger could be activated; worth a check, or ignoring the first click after a long press.
+- **Misleading page measurements.** Measuring `window.scrollY` around clicks on the docs page gave large jumps while the page's lazy demos were still laying out. Once the layout had settled, a click did not move the grid on the page.
+
+Not checked with real input: Firefox, Safari, a real touch device, real IMEs and dead-key layouts (the design's 8.6 asked to confirm the old dead-key behaviour on the Mac first), the sideways fill (fill handle dragged right), and dark mode.

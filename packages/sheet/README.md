@@ -100,9 +100,10 @@ your own store, apply the change set yourself:
 
 ```ts
 interface ChangeSet {
-  source: 'edit' | 'paste' | 'clear';
+  source: 'edit' | 'paste' | 'clear' | 'fill' | 'undo' | 'redo';
   patches: { recordId; fieldId; from; to }[]; // cells of existing records
   inserts: { tempId; index; values }[]; // rows pasted past the end
+  deletes?: recordId[]; // only in an undo of a paste that inserted rows
   rejected: { recordId?; tempId?; fieldId; text; message }[];
   newOptions: { fieldId; option }[]; // options created on paste
 }
@@ -110,8 +111,8 @@ interface ChangeSet {
 
 - `applyChangeSet(records, changeSet, { getRecordId, createRecord? })`
   returns the new records (patched records are new objects; the others
-  keep their identity). The default `createRecord` uses the `tempId` as the
-  new record's `id`.
+  keep their identity; records whose id is in `deletes` are removed). The
+  default `createRecord` uses the `tempId` as the new record's `id`.
 - `applyNewOptions(fields, changeSet)` returns the fields with the options
   created on paste (`createOnPaste`). Pass the result as `@fields`.
 - `rejected` lists texts a field type could not read (`abc` in a number
@@ -123,6 +124,33 @@ interface ChangeSet {
 
 The helpers and every type are also exported from `@ember-eui/sheet/core`,
 which has no Ember imports.
+
+## Undo and redo
+
+Ctrl/Cmd+Z undoes the last change made in the sheet (an edit, a paste, a
+clear, a fill, a checkbox toggle); Ctrl/Cmd+Shift+Z and Ctrl+Y redo it. Each
+sheet keeps the last 100 change sets it emitted. An undo is a change set
+like any other, through `@onChange` (so `@validate` and rejections work as
+usual):
+
+- `source: 'undo'`, each patch with `from` and `to` swapped, and the rows a
+  paste inserted in `deletes` (their `tempId`s). A redo emits the original
+  again with `source: 'redo'`, re-inserting with the same `tempId`s and
+  values.
+- Only cells that still hold the value the change left there are written;
+  a cell changed since (by your store, a server, another user) is skipped.
+  When nothing is left, nothing is emitted.
+- An inserted row is found by its `tempId`: if your store gives the new
+  record another id, undo cannot remove it (the deletion is skipped). A row
+  changed since it was inserted is not removed either.
+- Options created on paste (`createOnPaste`) are not removed by undo.
+- Changes you make to `@records` are not history; a new change clears the
+  redo history; with `@readOnly`, undo and redo do nothing. In an open
+  editor, Ctrl/Cmd+Z is the input's own undo.
+
+The pure parts are exported: `invertChangeSet`, `withoutConflicts`,
+`undoChangeSet`, `redoChangeSet`, and for ranges `fillDown` and
+`tileMatrix`.
 
 ## Field types
 
@@ -138,25 +166,38 @@ Dates are shown as `DD/MM/YYYY` (or `MM/DD/YYYY`) and copied as ISO.
 
 ## Keyboard
 
-| Key                     | On a cell                                                                       | In an editor                |
-| ----------------------- | ------------------------------------------------------------------------------- | --------------------------- |
-| A printable key         | Opens the editor with that character (a date: digits only; never on a checkbox) | Types                       |
-| Enter, F2, double-click | Opens the editor on the current value (a date: the browser's date input)        | Enter saves and goes down   |
-| Tab, Shift+Tab          | The grid's                                                                      | Saves and goes right / left |
-| Escape                  | The grid's                                                                      | Closes without saving       |
-| Space                   | Toggles a checkbox; does nothing elsewhere                                      | Types                       |
-| Delete, Backspace       | Clears the selected range                                                       | Deletes                     |
-| Shift+arrows            | Selects a range                                                                 | Moves in the text           |
-| Ctrl/Cmd+C, Ctrl/Cmd+V  | Copies / pastes the range as TSV                                                | Native                      |
+| Key                                  | On a cell                                                                                                   | In an editor                |
+| ------------------------------------ | ----------------------------------------------------------------------------------------------------------- | --------------------------- |
+| A printable key                      | Opens the editor with that character (a date: digits only; never on a checkbox)                             | Types                       |
+| Enter, F2, double-click              | Opens the editor on the current value (a date: the browser's date input)                                    | Enter saves and goes down   |
+| Tab, Shift+Tab                       | The grid's                                                                                                  | Saves and goes right / left |
+| Escape                               | The grid's                                                                                                  | Closes without saving       |
+| Space                                | Toggles a checkbox; does nothing elsewhere                                                                  | Types                       |
+| Delete, Backspace                    | Clears the selected range                                                                                   | Deletes                     |
+| Shift+arrows                         | Selects a range                                                                                             | Moves in the text           |
+| Ctrl/Cmd+A                           | Selects every cell (focus stays)                                                                            | Native                      |
+| Ctrl/Cmd+C, Ctrl/Cmd+V               | Copies / pastes the range as TSV                                                                            | Native                      |
+| Ctrl/Cmd+D                           | Fill down: each column's top value into the range's cells below it; on one row, the value of the cell above | Native                      |
+| Ctrl/Cmd+Z; Ctrl/Cmd+Shift+Z, Ctrl+Y | Undo; redo                                                                                                  | Native                      |
 
 In a select editor, typing filters the options, ArrowUp/ArrowDown move,
 Enter or a click picks. A click on another cell, or scrolling the grid,
 saves the editor's text and closes it.
 
+A paste starts at the selection's top-left cell. When the selection is
+larger than the copied block and its height and width are whole multiples
+of the block's, the block is repeated over the whole selection (one copied
+cell fills every selected cell); otherwise it is pasted once. Read-only
+cells are skipped. Fill down copies the stored values as they are (no
+parsing) and also skips read-only cells.
+
 ## Mouse
 
 As in Airtable: a click selects a cell, a click on the selected cell edits
-it, a double-click edits at once, and Shift+click extends the range. Select
+it, a double-click edits at once, and Shift+click extends the range.
+Pressing on a cell and dragging over others selects that range; the release
+neither edits nor toggles a checkbox, and Shift+arrows continue from it (no
+scrolling at the grid's edge yet). Select
 and date cells show a ▾ or calendar button on the hovered or selected cell
 that opens the editor in one click; a click anywhere in a checkbox cell
 toggles it. A field type gets the same with two optional properties:
@@ -350,8 +391,8 @@ version you use; this package does not depend on it.
 
 ## Limits (v0.1)
 
-No undo, fill handle, mouse drag selection, sorting or filtering UI,
-fullscreen, row insert or delete buttons, IME composition, quoted TSV
-cells or control columns. Pasted text in a field whose type returns
+No cut, fill handle, fill right, auto-scroll while dragging, sorting or
+filtering UI, fullscreen, row insert or delete buttons, IME composition,
+quoted TSV cells or control columns. Pasted text in a field whose type returns
 `{ unresolved }` is a rejection (bulk resolve on paste is planned). Colours
 are fixed (no dark mode yet).

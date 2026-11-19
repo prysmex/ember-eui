@@ -502,3 +502,143 @@ Chosen by the user: Airtable-style clicks, with hover feedback.
   edits ("Fire extinguishers"); hovering a select cell shows ▾, and one click
   on it opens the options; one click on the empty part of a checkbox cell
   toggles it. Screenshot: `sheet-clicks.png`.
+
+## 16. Undo/redo, drag-select, range fill (2026-11-19)
+
+Built from the orchestrator's brief (decisions already made). Working tree
+only, nothing committed; `packages/core/src` untouched. Logs are in `$S`
+(the scratchpad above), all prefixed `u16-`.
+
+### What was built
+
+- **Undo / redo.** `EuiSheet` keeps two plain stacks of the change sets it
+  emitted for user actions. `emit()` records every change set whose source
+  is not `undo`/`redo` and that has patches or inserts (so edits, pastes,
+  clears, fills, checkbox clicks and `navKey`s all count; rejection-only
+  and newOptions-only sets do not). A new entry clears the redo stack; at
+  most 100 entries (the oldest is dropped). On a data cell (not in an
+  editor): Ctrl/Cmd+Z undoes, Ctrl/Cmd+Shift+Z and Ctrl+Y redo, always
+  `preventDefault` + `stopPropagation`. Undo/redo go through `emit()`, so
+  rejections at the written cells are dropped and `@validate` is scheduled
+  as for any change set. After an undo/redo the bounding box of the patched
+  cells (rows that exist both before and after the change) is selected,
+  `anchor` = bottom-right, `head` = top-left, and `api.setFocusedCell`
+  focuses the top-left (`domCursor` is set first so `onFocusIn` keeps the
+  range). An undo that only removed rows moves focus to the last remaining
+  row when the focused row was removed.
+- **Drag to select.** A left-button press on a data cell (no Shift, not on
+  an opener, not while editing) remembers the cell and listens for
+  `mouseup` on `document` (capture). The first `mouseover` of a different
+  data cell starts the drag: `anchor` = pressed cell, `head` follows the
+  hovered cell, the wrapper gets `euiSheet--dragging` (`user-select: none`)
+  and any started text selection is cleared. The release removes the
+  listener and the class; if `anchor` ≠ `head`, it sets `extending`, calls
+  `setFocusedCell(head)` (synchronous: the head is rendered) and clears
+  `extending` again, and marks the next click as the end of the drag
+  (`onClick` ignores it: no edit-on-second-click, no `onCellClick`). The
+  mark is cleared on the next press, so a release outside the sheet cannot
+  swallow a later click. A press that never leaves its cell changes
+  nothing: a plain click behaves as before.
+- **Range fill.** Ctrl/Cmd+D: `fillDown(ctx, range)`, one change set with
+  `source: 'fill'`. Paste: `tileMatrix(block, selHeight, selWidth)` before
+  `pasteMatrix`, so a block that fits the selection a whole number of times
+  fills it; the selection after the paste is the pasted (tiled) block.
+  Ctrl/Cmd+A sets `anchor` (0,0) and `head` (last row, last column) without
+  moving focus; Delete and copy then use that range.
+
+New core files (plain TS, exported from `@ember-eui/sheet/core` and the
+root): `src/core/history.ts` (`invertChangeSet`, `withoutConflicts`,
+`undoChangeSet`, `redoChangeSet`) and `src/core/fill.ts` (`fillDown`,
+`tileMatrix`). The core boundary test (B1) still passes with them.
+
+### API changes (additive)
+
+- `ChangeSet.source`: `'edit' | 'paste' | 'clear' | 'fill' | 'undo' | 'redo'`.
+- `ChangeSet.deletes?: RecordId[]`: only in an undo of a paste that inserted
+  rows. `applyChangeSet` (and so `localRecords`) removes the records whose
+  id matches, compared as strings; unknown ids are ignored. The key is
+  absent (not `[]`) when there is nothing to delete, so existing
+  `deepEqual`s on change sets are unchanged.
+- The `pressed()` test helper takes optional modifiers.
+
+### Limits (documented in the README and `docs/sheet.md`)
+
+- An inserted row is found by its `tempId`; a store that gives it another
+  id cannot have it removed by undo (the deletion is skipped).
+- Undo/redo write only cells that still hold the value the entry left
+  (`Object.is` on `valueOf`); also, a deletion is skipped when the inserted
+  row's values changed since. When nothing is left, nothing is emitted and
+  the entry still moves to the other stack.
+- `newOptions` created on paste are not removed by undo; redo does not
+  re-emit them (or the original's rejections).
+- With `@readOnly`, undo and redo do nothing (the stacks are kept). Per-cell
+  `readOnly` is not re-checked at undo time.
+- No auto-scroll while dragging at the grid's edge ("Not yet").
+- A ragged pasted block (lines of different widths) is never tiled.
+- Selection after a redo that only re-inserted rows: unchanged (the rows
+  are rendered only on the next render, and `setFocusedCell` throws past
+  the grid's last row).
+
+### Tests
+
+Final run `$S/u16-final3-test.log` (long testem config, wall clock
+05:14:28 to 05:15:05, `$S/u16-final3-dates.log`): **113/113 pass**, 0 fail,
+0 skip: 34 unit, 78 integration, plus ember-qunit's `Ember.onerror` check.
+Baseline before any change: `$S/u16-test-baseline.log`, 90/90.
+
+New (23):
+
+| File | Tests |
+| --- | --- |
+| `tests/unit/history-test.ts` | H1 inverse of patches and inserts; H2 undo/redo with no conflict (round trip through `applyChangeSet`); H3 a changed cell is skipped, a changed inserted row is not deleted, nothing left gives `null`; H4 missing records (even with `from: undefined`), existing `tempId`s, numeric ids; H5 `applyChangeSet` and `localRecords` apply `deletes`. |
+| `tests/unit/fill-test.ts` | F1 multi-row fill (unchanged omitted, read-only skipped, per-record `readOnly`); F2 single cell from above, first row, unchanged, read-only, sheet `readOnly`; F3 tiling: 1×1 fills 3×2, 2×1 into 4×1 tiles, 2×1 into 3×1 falls back, smaller selection, 1×2 into 2×4, ragged. |
+| `eui-sheet-history-test.gts` | U1 edit → Ctrl+Z restores (exact change set, focus and selection on the cell), Ctrl+Shift+Z, Cmd+Z, Ctrl+Y, empty redo prevented and silent; U2 paste with 2 inserted rows → undo emits `deletes` with their tempIds and localRecords removes them, redo re-adds same tempIds and values; U3 owner change skipped, and an all-conflict undo emits nothing but the next undo continues; U4 a new edit clears redo, a rejection is not history; U5 101 toggles, 101 undos: 100 emitted; U6 Ctrl+Z in an open editor is not prevented, the sheet does not undo; U7 undo with focus on an inserted row (insert-only paste): the row goes, focus moves to the last remaining row, redo re-inserts; with patches, the restored box is selected and focused; U8 with `@readOnly` Ctrl+Z is prevented and emits nothing (the entry is kept and undone later), `@validate` errors follow the undo, and a rejection on a cell the undo writes is cleared. |
+| `eui-sheet-range-test.gts` | R1 drag (0,0)→(2,1) from the focused cell: 6 cells, dragging class, no editor, focus on head, Shift+ArrowDown gives 8; R2 drag on checkboxes then click: no toggle; a press that stays is a click (toggles); Shift+press does not drag; R3 Ctrl+D multi-row (read-only column skipped) and Ctrl+Z; R4 Cmd+D single cell, nothing above row 0; R5 paste `true` into 3×2 (name, done) fills 6 cells, read-only skipped in a tile, 2×1 into 3×1 pasted once; R6 Ctrl+A: 12 cells, focus stays, copy has 3 lines, Delete clears every writable non-empty cell; R7 no drag from an opener or while an editor is open; a drag released outside the sheet ends (selection kept) and the next click still toggles. |
+
+Existing tests: none changed; all 90 pass unchanged.
+
+Mutation checks (scratch only, restored and verified with `cmp`
+afterwards): without the click suppression, R1 and R2 fail
+(`$S/u16-mut-A-test.log`); without the conflict check in
+`withoutConflicts`, U3 and H3 fail (`$S/u16-mut-B-test.log`).
+
+Lint and format: `pnpm lint` (stylelint, ESLint, ember-tsc) exit 0
+(`$S/u16-lint-final.log`); `prettier --check src tests/integration
+tests/unit README.md` clean (`$S/u16-prettier-final.log`; three new test
+files and the README were formatted with `--write` in scratch and copied
+back, `$S/u16-prettier-write.log`). Docs Markdown not Prettier-formatted,
+as the brief says.
+
+Not run here: real input (Playwright) and the site build; the drag tests
+use synthetic `mousedown`/`mouseover`/`mouseup`/`click` events (the
+synthetic `mousedown` does not move focus; R1 focuses first). In a real
+browser the click after a cross-cell drag is expected to target the
+cells' common ancestor (not verified here); the suppression flag does not
+depend on the click's target. Not covered by a test: the clearing of a
+text selection started by the press (`removeAllRanges`), and the
+`user-select: none` style itself (R1 checks only the class).
+
+### Deviations from the brief, with reasons
+
+| # | What | Why |
+| --- | --- | --- |
+| E1 | Ctrl+D on a one-row range of several columns fills each cell from the cell above (the brief specifies only a single cell). | Excel does the same; it is the single-cell rule applied per column. |
+| E2 | Redo re-emits the original's patches and inserts, but `rejected: []`, `newOptions: []`, and each re-insert's `index` is recomputed to the end of the current records. | Rejections would be stored again by `emit`; options were never removed; `index` must describe the current records. |
+| E3 | An inserted row is not deleted by undo when any value its insert set changed since. | The brief's conflict rule applied to the cells of the inserted row: deleting it would lose the newer values. |
+| E4 | Undo/redo do nothing with sheet-level `@readOnly`. | A read-only sheet should not write; not in the brief. |
+| E5 | After undo/redo, `anchor` is the box's bottom-right and `head` its top-left. | The brief says to focus the top-left, and `head` is where focus is. |
+| E6 | Ctrl/Cmd+A leaves focus on its cell, so `head` (last row, last column) is not the focused cell there. | The brief: "without moving focus". Shift+arrows afterwards extend from the focused cell's neighbour with anchor (0,0). |
+| E7 | Ragged pasted blocks are never tiled. | Tiling a ragged block is ill-defined; it pastes as before. |
+| E8 | The `localRecords applies deletes` case is a unit test (H5), plus U2 asserts it through the store. | It needs no rendering. |
+| E9 | R5 and R7 use `click()` instead of `focus()` to start a new selection after Shift+arrows. | Pre-existing behaviour, not changed: `extending` stays set from the last Shift+arrow until the next keydown or mousedown, so a programmatic `focus()` extends the range. A real user always presses a key or the mouse first. The drag's release does not leave it set (it is cleared after the focus move). |
+
+### 16.x Real input in Chromium (added by the orchestrator, 2026-11-19)
+
+Production docs build, Basics demo, Playwright keyboard and mouse (no
+synthetic events): typing "Zed" over "Ana 1" then Ctrl+Z restores
+"Ana 1", Ctrl+Shift+Z gives "Zed" again, Ctrl+Z "Ana 1"; a mouse drag from
+(1,0) to (3,1) selects those 6 cells and opens no editor; Ctrl+D fills both
+columns from the top row ("Bruno 2", "Madrid") and Ctrl+Z restores
+"Bruno 2", "Carla 3", "Diego 4"; copying "Monterrey" and pasting it into a
+dragged 3×2 selection fills all 6 cells. Not checked with real input:
+Ctrl+Y, Ctrl+A, undo of inserted rows (covered by integration tests).

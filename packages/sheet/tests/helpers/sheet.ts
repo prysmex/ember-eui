@@ -97,13 +97,22 @@ export async function type(char: string): Promise<void> {
 }
 
 /** A keydown on the focused element; returns whether it was prevented. */
-export async function pressed(key: string): Promise<boolean> {
+export async function pressed(
+  key: string,
+  modifiers: {
+    shiftKey?: boolean;
+    ctrlKey?: boolean;
+    metaKey?: boolean;
+    altKey?: boolean;
+  } = {}
+): Promise<boolean> {
   // the sheet stops the events it handles in the capture phase, so no
   // listener would see them: dispatch our own and read the flag after
   const event = new KeyboardEvent('keydown', {
     key,
     bubbles: true,
-    cancelable: true
+    cancelable: true,
+    ...modifiers
   });
   (document.activeElement as HTMLElement).dispatchEvent(event);
   await settled();

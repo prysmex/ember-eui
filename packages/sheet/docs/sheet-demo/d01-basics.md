@@ -7,10 +7,15 @@ order: 1
 <EuiText>
 
 Twenty records in a `localRecords` store. Edit a few cells, select a
-range with Shift+arrows and press Delete, or copy a block from Excel or
-Google Sheets and paste it on a cell: rows past the end become new
-records. The panel shows the last change sets, with their `patches`,
-`inserts` and `rejected` texts (paste `abc` on Hours).
+range with Shift+arrows or by dragging the mouse and press Delete, or
+copy a block from Excel or Google Sheets and paste it on a cell: rows
+past the end become new records. Ctrl/Cmd+D fills a range down from its
+top row (or a cell from the one above), and pasting one cell into a range
+fills the whole range. Ctrl/Cmd+Z undoes any of these and Ctrl/Cmd+Shift+Z
+redoes it. The panel shows the last change sets, with their `source`
+(`edit`, `paste`, `clear`, `fill`, `undo`, `redo`), `patches`, `inserts`,
+`deletes` (an undone paste's new rows) and `rejected` texts (paste `abc`
+on Hours).
 
 </EuiText>
 

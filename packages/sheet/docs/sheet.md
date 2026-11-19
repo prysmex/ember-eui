@@ -30,9 +30,10 @@ calls `@onChange` with a change set, and you apply it to your own store:
 
 ```ts
 interface ChangeSet {
-  source: 'edit' | 'paste' | 'clear';
+  source: 'edit' | 'paste' | 'clear' | 'fill' | 'undo' | 'redo';
   patches: { recordId; fieldId; from; to }[]; // cells of existing records
   inserts: { tempId; index; values }[]; // rows pasted past the end
+  deletes?: recordId[]; // only an undo of a paste that inserted rows
   rejected: { recordId?; tempId?; fieldId; text; message }[];
   newOptions: { fieldId; option }[]; // options created on paste
 }
@@ -80,6 +81,28 @@ no Ember imports.
 A pasted row past the end comes as an insert with a `tempId`. By default
 `applyChangeSet` uses the `tempId` as the new record's `id`.
 
+## Undo and redo
+
+Ctrl/Cmd+Z undoes the last change made in the sheet (an edit, a paste, a
+clear, a fill or a checkbox toggle); Ctrl/Cmd+Shift+Z and Ctrl+Y redo it.
+The sheet keeps the last 100 change sets it emitted, per sheet, and an
+undo is one more change set through `@onChange`: `source: 'undo'`, each
+patch with `from` and `to` swapped, and the rows a paste inserted listed
+in `deletes` (a redo emits the original again, `source: 'redo'`, with the
+same `tempId`s). `applyChangeSet` and `localRecords` apply `deletes`; with
+your own store, remove those records.
+
+- An undo or redo only writes cells that still hold the value the change
+  left there. A cell you changed since (from your store, a server or
+  another user) is skipped; if nothing is left, nothing is emitted.
+- An inserted row is found by its `tempId`, so a store that gives the
+  new record another id cannot have it removed by undo (it is skipped).
+  A row changed since it was inserted is not removed either.
+- Options created on paste (`createOnPaste`) stay after an undo.
+- Changes to `@records` made outside the sheet are not undone, a new
+  change clears the redo history, and with `@readOnly` undo and redo do
+  nothing. In an open editor, Ctrl/Cmd+Z is the input's own undo.
+
 ## Arguments
 
 | Argument | Description |
@@ -113,7 +136,8 @@ Dates are shown as `DD/MM/YYYY` (or `MM/DD/YYYY`) and copied as ISO.
 | Key | On a cell | In an editor |
 | --- | --- | --- |
 | Arrows; Home, End (row start, end); Ctrl+Home, Ctrl+End (first, last cell) | Move (the grid's keys) | Move in the text |
-| Shift+arrows, Shift+click | Select a range | Move in the text |
+| Shift+arrows, Shift+click, a mouse drag | Select a range | Move in the text |
+| Ctrl/Cmd+A | Select every cell | Select the text |
 | A printable key | Opens the editor with that character. A date opens only on a digit; a checkbox has no editor. | Types |
 | Enter, F2, double-click | Opens the editor on the current value (a date: the browser's date input) | Enter saves and goes down |
 | Tab, Shift+Tab | Tab moves focus out of the grid, to the next element on the page | Save and go right / left |
@@ -121,9 +145,13 @@ Dates are shown as `DD/MM/YYYY` (or `MM/DD/YYYY`) and copied as ISO.
 | Space | Toggles a checkbox; does nothing elsewhere | Types |
 | Delete, Backspace | Clear the selected range | Delete text |
 | Ctrl/Cmd+C, Ctrl/Cmd+V | Copy / paste the range as tab-separated text | The input's own |
+| Ctrl/Cmd+D | Fill down: the top row of the range into the cells below it; on one row, the row above into it | The browser's |
+| Ctrl/Cmd+Z; Ctrl/Cmd+Shift+Z, Ctrl+Y | Undo; redo | The input's own |
 
 With the mouse, as in Airtable: a click selects a cell (a blue ring), a
 click on the selected cell edits it, and a double-click edits at once.
+Pressing on a cell and dragging over others selects that range (the
+release does not edit or toggle); Shift+arrows then continue from it.
 Select and date cells show a ▾ or calendar button on the hovered or
 selected cell; a click on it opens the editor. A click anywhere in a
 checkbox cell toggles it. A custom type gets the same with `opener` (an
@@ -137,7 +165,10 @@ first match.
 
 A paste starts at the top left cell of the selection. Columns past the
 last field are dropped, read-only cells are skipped, and rows past the
-end become inserts.
+end become inserts. When the selection is larger than the copied block
+and its height and width are whole multiples of the block's, the block
+is repeated over the whole selection, as in Excel: one copied cell
+fills every selected cell. Otherwise the block is pasted once.
 
 ## Errors
 
@@ -166,8 +197,9 @@ value.
 
 These are not in v0.1:
 
-- Undo and redo, cut (Ctrl/Cmd+X), and a fill handle.
-- Selecting a range by dragging the mouse.
+- Cut (Ctrl/Cmd+X), a fill handle, and fill right (Ctrl/Cmd+R).
+- Scrolling the grid while a drag reaches its edge: drag within the
+  visible rows, or use Shift+click.
 - Sorting and filtering UI, frozen columns, row numbers, and buttons to
   add or delete rows.
 - Multi-select, linked record, user and attachment fields.

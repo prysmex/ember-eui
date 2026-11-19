@@ -24,14 +24,18 @@ import {
   commitText,
   commitValue,
   createMessages,
+  fillDown,
   isReadOnly,
   mergeErrors,
   parseTsv,
   pasteMatrix,
   rangeMatrix,
+  redoChangeSet,
   resolveType,
+  tileMatrix,
   toRange,
   toTsv,
+  undoChangeSet,
   validateCell,
   valueOf
 } from '../core/index.ts';
@@ -130,6 +134,9 @@ interface FocusedCell {
   viewportBelow: number;
 }
 
+/** Undo entries kept per sheet. */
+const HISTORY_LIMIT = 100;
+
 /** Debounce of `@validate` runs, in ms. */
 const VALIDATE_DEBOUNCE = 50;
 
@@ -174,6 +181,8 @@ export default class EuiSheet<T extends object> extends Component<
   @tracked order: string[] | null = null;
   /** The last applied `@validate` result. */
   @tracked validation: Validation | null = null;
+  /** A drag over other cells is selecting a range (no text selection meanwhile). */
+  @tracked dragging = false;
 
   /** Plain: the last text the editor reported, and whether it reported one. */
   draft = '';
@@ -185,6 +194,15 @@ export default class EuiSheet<T extends object> extends Component<
   /** The next focus move extends the range. */
   extending = false;
   wrapper: HTMLElement | null = null;
+
+  /* Undo and redo: the change sets this sheet emitted for user actions */
+  undoStack: ChangeSet[] = [];
+  redoStack: ChangeSet[] = [];
+
+  /** The cell a left-button press started on, while it may become a drag. */
+  dragFrom: Pos | null = null;
+  /** The press ended a drag: its click is not a click on a cell. */
+  suppressClick = false;
 
   /** Stable object: the grid passes it to every cell renderer. */
   cellContext = { sheet: this as unknown as EuiSheet<object> };
@@ -211,6 +229,7 @@ export default class EuiSheet<T extends object> extends Component<
     if (this.validateTimer) cancel(this.validateTimer);
     this.validateController?.abort();
     this.endValidateWaiter();
+    this.stopWatchingRelease();
   }
 
   /* -------------------------------------------------------------------- */
@@ -564,6 +583,70 @@ export default class EuiSheet<T extends object> extends Component<
     // before the press moves focus: was this cell the focused one?
     const cell = this.dataCell(event.target);
     this.pressOnFocusedCell = !!cell && cell === document.activeElement;
+    // a click after a drag that released outside the sheet never came
+    this.suppressClick = false;
+    this.endDrag();
+    // a press that may become a drag (Shift+click extends instead)
+    if (
+      cell &&
+      event.button === 0 &&
+      !event.shiftKey &&
+      !this.editing &&
+      !(event.target as Element).closest('[data-eui-sheet-opener]')
+    ) {
+      this.dragFrom = this.cursor(cell);
+      document.addEventListener('mouseup', this.onRelease, true);
+    }
+  }
+
+  /**
+   * Drag to select: once the pointer is over another data cell, the pressed
+   * cell is the anchor and the hovered one the head. Nothing changes while
+   * the pointer stays on the pressed cell, so a click is only a click.
+   */
+  @action
+  onMouseOver(event: MouseEvent): void {
+    const from = this.dragFrom;
+    if (!from) return;
+    const cell = this.dataCell(event.target);
+    if (!cell) return;
+    const pos = this.cursor(cell);
+    if (!this.dragging) {
+      if (samePos(pos, from)) return;
+      this.dragging = true;
+      this.anchor = from;
+    }
+    if (!samePos(pos, this.head)) this.head = pos;
+    // text the press may have started to select
+    window.getSelection()?.removeAllRanges();
+  }
+
+  /** The release ends a drag (anywhere on the page): focus goes to the head, keeping the anchor. */
+  onRelease = (): void => {
+    const dragged = this.dragging;
+    this.endDrag();
+    if (!dragged) return;
+    const head = this.head;
+    if (!head || samePos(head, this.anchor)) return;
+    // the click that follows is the end of the drag, not a click on a cell
+    this.suppressClick = true;
+    // onFocusIn keeps the anchor, so Shift+arrows continue from here
+    this.extending = true;
+    if (head.row < this.args.records.length) {
+      // the head is rendered (it was hovered): the grid focuses it at once
+      this.api?.setFocusedCell({ rowIndex: head.row, colIndex: head.col });
+    }
+    this.extending = false;
+  };
+
+  endDrag(): void {
+    this.stopWatchingRelease();
+    this.dragFrom = null;
+    if (this.dragging) this.dragging = false;
+  }
+
+  stopWatchingRelease(): void {
+    document.removeEventListener('mouseup', this.onRelease, true);
   }
 
   /**
@@ -576,6 +659,10 @@ export default class EuiSheet<T extends object> extends Component<
   onClick(event: MouseEvent): void {
     const pressOnFocusedCell = this.pressOnFocusedCell;
     this.pressOnFocusedCell = false;
+    if (this.suppressClick) {
+      this.suppressClick = false;
+      return;
+    }
     if (event.shiftKey || this.editing) return;
     const cell = this.dataCell(event.target);
     if (!cell) return;
@@ -648,6 +735,38 @@ export default class EuiSheet<T extends object> extends Component<
     const { key } = event;
     const plain = !event.ctrlKey && !event.metaKey && !event.altKey;
 
+    if ((event.ctrlKey || event.metaKey) && !event.altKey) {
+      // with Shift, `key` is upper case
+      const letter = key.toLowerCase();
+      if (letter === 'z') {
+        stop(event);
+        if (event.shiftKey) this.redo();
+        else this.undo();
+        return;
+      }
+      if (letter === 'y' && event.ctrlKey && !event.shiftKey) {
+        stop(event);
+        this.redo();
+        return;
+      }
+      if (letter === 'd' && !event.shiftKey) {
+        // also keeps the browser from bookmarking the page
+        stop(event);
+        this.fill();
+        return;
+      }
+      if (letter === 'a' && !event.shiftKey) {
+        // every cell; focus stays where it is
+        stop(event);
+        this.anchor = { row: 0, col: 0 };
+        this.head = {
+          row: this.args.records.length - 1,
+          col: this.visibleFields.length - 1
+        };
+        return;
+      }
+    }
+
     // navKey first: a checkbox's Space (PACKAGE-DESIGN.md 7.4)
     if (plain && !readOnly && type.navKey) {
       const result = type.navKey(key, valueOf(record, field.id), field);
@@ -684,6 +803,103 @@ export default class EuiSheet<T extends object> extends Component<
     }
     // arrows, Home/End, PageUp/Down (with or without Shift), Tab, Escape,
     // Ctrl/Meta combos: the grid's own handling
+  }
+
+  /** Ctrl/Cmd+D: fill the range down, or the cell from the one above. */
+  fill(): void {
+    const range = this.range;
+    if (!range) return;
+    // the cells written: below the top row, or the row itself (from above)
+    const targets =
+      range.bottom > range.top ? { ...range, top: range.top + 1 } : range;
+    this.emit(fillDown(this.context, range), this.touchedIn(targets, true));
+  }
+
+  /* -------------------------------------------------------------------- */
+  /* Undo and redo                                                         */
+  /* -------------------------------------------------------------------- */
+
+  /** Emits the inverse of the last entry, without the cells changed since. */
+  undo(): void {
+    if (this.args.readOnly) return;
+    const entry = this.undoStack.pop();
+    if (!entry) return;
+    this.redoStack.push(entry);
+    this.applyHistory(
+      undoChangeSet(entry, this.args.records, this.args.getRecordId)
+    );
+  }
+
+  /** Emits the last undone entry again, without the cells changed since. */
+  redo(): void {
+    if (this.args.readOnly) return;
+    const entry = this.redoStack.pop();
+    if (!entry) return;
+    this.undoStack.push(entry);
+    this.applyHistory(
+      redoChangeSet(entry, this.args.records, this.args.getRecordId)
+    );
+  }
+
+  /** Emits an undo or redo (if anything is left of it) and selects what it changed. */
+  applyHistory(changeSet: ChangeSet | null): void {
+    if (!changeSet) return;
+    const before = this.args.records.length;
+    this.emit(
+      changeSet,
+      changeSet.patches.map((patch) => ({
+        id: patch.recordId,
+        fieldId: patch.fieldId
+      }))
+    );
+    this.selectChanged(changeSet, before);
+  }
+
+  /**
+   * Selects the bounding box of the patched cells and focuses its top-left
+   * cell. Only rows that exist both before and after the change are used:
+   * inserted rows are rendered only on the next render, and the grid throws
+   * for a row past its last one.
+   */
+  selectChanged(changeSet: ChangeSet, rowsBefore: number): void {
+    // the owner's records after it applied the change set, if it did at once
+    const records = this.args.records;
+    const rows = Math.min(rowsBefore, records.length);
+    const indexOf = new Map(
+      records.map((record, i) => [String(this.args.getRecordId(record)), i])
+    );
+    let box: Range | null = null;
+    for (const patch of changeSet.patches) {
+      const row = indexOf.get(String(patch.recordId));
+      const col = this.visibleFields.findIndex(
+        (field) => field.id === patch.fieldId
+      );
+      if (row === undefined || row >= rows || col < 0) continue;
+      box = box
+        ? {
+            top: Math.min(box.top, row),
+            left: Math.min(box.left, col),
+            bottom: Math.max(box.bottom, row),
+            right: Math.max(box.right, col)
+          }
+        : { top: row, left: col, bottom: row, right: col };
+    }
+    let focus: Pos;
+    if (box) {
+      focus = { row: box.top, col: box.left };
+      this.anchor = { row: box.bottom, col: box.right };
+    } else {
+      // nothing patched (an undo that only removed rows): keep focus on a
+      // row that still exists
+      const head = this.head;
+      if (!head || head.row < rows || rows === 0) return;
+      focus = { row: rows - 1, col: head.col };
+      this.anchor = focus;
+    }
+    this.head = focus;
+    // onFocusIn sees the cell it already knows and keeps the range
+    this.domCursor = focus;
+    this.api?.setFocusedCell({ rowIndex: focus.row, colIndex: focus.col });
   }
 
   onEditKeyDown(event: KeyboardEvent): void {
@@ -735,7 +951,12 @@ export default class EuiSheet<T extends object> extends Component<
     if (!range) return;
     stop(event);
     const anchor = { row: range.top, col: range.left };
-    const matrix = parseTsv(data.getData('text/plain'));
+    // a block that fits the selection a whole number of times fills it
+    const matrix = tileMatrix(
+      parseTsv(data.getData('text/plain')),
+      range.bottom - range.top + 1,
+      range.right - range.left + 1
+    );
     const width = Math.max(...matrix.map((line) => line.length));
     const pasted = {
       top: anchor.row,
@@ -971,6 +1192,7 @@ export default class EuiSheet<T extends object> extends Component<
     }
     if (changed) this.rejections = next;
     if (!changeSet) return;
+    this.recordHistory(changeSet);
     for (const patch of changeSet.patches) {
       this.changedSinceRun.push({
         recordId: patch.recordId,
@@ -984,6 +1206,19 @@ export default class EuiSheet<T extends object> extends Component<
     }
     this.args.onChange(changeSet);
     this.scheduleValidate();
+  }
+
+  /**
+   * A user action's change set becomes an undo entry (not an undo or redo,
+   * and not one with only rejections or new options); a new entry clears
+   * the redo stack.
+   */
+  recordHistory(changeSet: ChangeSet): void {
+    if (changeSet.source === 'undo' || changeSet.source === 'redo') return;
+    if (!changeSet.patches.length && !changeSet.inserts.length) return;
+    this.undoStack.push(changeSet);
+    if (this.undoStack.length > HISTORY_LIMIT) this.undoStack.shift();
+    this.redoStack = [];
   }
 
   /* -------------------------------------------------------------------- */
@@ -1049,7 +1284,7 @@ export default class EuiSheet<T extends object> extends Component<
 
   <template>
     <div
-      class="euiSheet"
+      class="euiSheet {{if this.dragging 'euiSheet--dragging'}}"
       data-test-subj="euiSheet"
       ...attributes
       {{this.setupWrapper}}
@@ -1061,6 +1296,7 @@ export default class EuiSheet<T extends object> extends Component<
       {{on "mousedown" this.onMouseDown capture=true}}
       {{on "focusin" this.onFocusIn}}
       {{on "focusout" this.onFocusOut}}
+      {{on "mouseover" this.onMouseOver}}
       {{on "click" this.onClick}}
       {{on "dblclick" this.onDoubleClick}}
     >

@@ -140,9 +140,19 @@ export interface NewOption {
 }
 
 export interface ChangeSet {
-  source: 'edit' | 'paste' | 'clear';
+  /**
+   * What made it: an edit, a paste, a clear, a fill (Ctrl/Cmd+D), or an
+   * undo / redo of one of those.
+   */
+  source: 'edit' | 'paste' | 'clear' | 'fill' | 'undo' | 'redo';
   patches: CellPatch[];
   inserts: RecordInsert[];
+  /**
+   * Ids of records to remove. Only an undo of a paste that inserted rows has
+   * them: the inserted records' `tempId`s. Optional, so a change set written
+   * by hand needs none; an id that matches no record is ignored.
+   */
+  deletes?: RecordId[];
   rejected: CellRejection[];
   newOptions: NewOption[];
 }

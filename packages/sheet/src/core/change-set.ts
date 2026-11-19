@@ -265,8 +265,9 @@ export function pasteMatrix<T>(
 
 /**
  * The records with the change set applied (pure). Patched records are new
- * objects, the others keep their identity; inserts are appended in `index`
- * order. `rejected` and `newOptions` do not touch records.
+ * objects, the others keep their identity; records whose id is in `deletes`
+ * are removed (compared as strings); inserts are appended in `index` order.
+ * `rejected` and `newOptions` do not touch records.
  */
 export function applyChangeSet<T extends object>(
   records: readonly T[],
@@ -284,7 +285,11 @@ export function applyChangeSet<T extends object>(
     values[patch.fieldId] = patch.to;
     byId.set(patch.recordId, values);
   }
-  const next = records.map((record) => {
+  const deleted = new Set((changeSet.deletes ?? []).map(String));
+  const kept = deleted.size
+    ? records.filter((record) => !deleted.has(String(getRecordId(record))))
+    : records;
+  const next = kept.map((record) => {
     const values = byId.get(getRecordId(record));
     return values ? ({ ...record, ...values } as T) : record;
   });

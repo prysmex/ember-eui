@@ -5,6 +5,7 @@
  */
 const CSS = `
 .euiSheet { position: relative; }
+.euiSheet--dragging, .euiSheet--dragging * { user-select: none; -webkit-user-select: none; }
 .euiSheet .euiDataGridRow:hover .euiDataGridRowCell { background-color: rgba(105, 112, 125, 0.06); }
 .euiSheet .euiDataGridRowCell.euiSheet__cell--selected { background-color: rgba(0, 119, 204, 0.12); }
 .euiSheet .euiDataGridRowCell:focus { outline: 2px solid #0B64DD; outline-offset: -2px; }

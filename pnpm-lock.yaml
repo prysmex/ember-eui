@@ -1406,7 +1406,7 @@ importers:
         version: 7.23.3(@babel/core@7.29.7(supports-color@10.2.2))(supports-color@10.2.2)
       '@ember-eui/core':
         specifier: workspace:*
-        version: file:packages/core(b756b225e43f913a7cb0f23602e03ede)
+        version: link:../core
       '@ember/optional-features':
         specifier: ^2.2.0
         version: 2.2.0(supports-color@10.2.2)
@@ -1927,6 +1927,9 @@ importers:
       '@ember-eui/pikaday':
         specifier: workspace:*
         version: link:../packages/pikaday
+      '@ember-eui/sheet':
+        specifier: workspace:*
+        version: link:../packages/sheet
       '@ember-eui/validated-form':
         specifier: workspace:*
         version: link:../packages/validated-form

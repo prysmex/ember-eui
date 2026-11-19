@@ -6,6 +6,7 @@
 import Component from '@glimmer/component';
 import { action } from '@ember/object';
 import { on } from '@ember/modifier';
+import { cancel, next } from '@ember/runloop';
 import { htmlSafe } from '@ember/template';
 import { modifier } from 'ember-modifier';
 
@@ -21,6 +22,10 @@ export const EDITOR_SURFACE_SELECTOR =
 /** Only the parts an editor renders elsewhere. */
 const SURFACE_SELECTOR =
   '.euiSheetEditorSurface, [data-eui-sheet-editor-surface]';
+
+/** Where focus goes back to when an editor removed its own focused element. */
+const FOCUSABLE_SELECTOR =
+  'input:not([type=hidden]), textarea, select, button, [tabindex]:not([tabindex="-1"])';
 
 interface EditorFrameSignature {
   Args: {
@@ -64,10 +69,47 @@ export default class EditorFrame extends Component<EditorFrameSignature> {
     );
   }
 
+  /** A deferred focusout decision (see `focusOut`). */
+  pending: ReturnType<typeof next> | null = null;
+
+  /**
+   * Focus left `from`, towards `to`. A focusout with no `relatedTarget` is
+   * ambiguous: focus went nowhere (a click on the page, another window), or
+   * the focused element was removed from the DOM, e.g. a calendar redrawing
+   * its days when one is picked (flatpickr). Those are decided once the
+   * browser has settled focus: still in the editor, or its focused element
+   * was removed, keeps editing; anything else closes the editor.
+   */
+  focusOut(from: EventTarget | null, to: EventTarget | null): void {
+    if (this.staysInEditor(to)) return;
+    if (to) {
+      this.args.onFocusOut();
+      return;
+    }
+    if (this.pending) cancel(this.pending);
+    this.pending = next(() => {
+      this.pending = null;
+      const frame = this.frame;
+      if (this.isDestroying || this.isDestroyed || !frame) return;
+      if (this.staysInEditor(document.activeElement)) return;
+      if (from instanceof Element && !from.isConnected) {
+        // the editor removed its own focused element: keep editing, and
+        // give focus back so the sheet's keys (Enter, Tab, Escape) work
+        frame.querySelector<HTMLElement>(FOCUSABLE_SELECTOR)?.focus();
+        return;
+      }
+      this.args.onFocusOut();
+    });
+  }
+
   @action
   onFocusOut(event: FocusEvent): void {
-    if (this.staysInEditor(event.relatedTarget)) return;
-    this.args.onFocusOut();
+    this.focusOut(event.target, event.relatedTarget);
+  }
+
+  willDestroy(): void {
+    super.willDestroy();
+    if (this.pending) cancel(this.pending);
   }
 
   /**
@@ -80,8 +122,7 @@ export default class EditorFrame extends Component<EditorFrameSignature> {
       const from = event.target;
       if (!(from instanceof Element) || frame.contains(from)) return;
       if (!from.closest(SURFACE_SELECTOR)) return;
-      if (this.staysInEditor(event.relatedTarget)) return;
-      this.args.onFocusOut();
+      this.focusOut(from, event.relatedTarget);
     };
     document.addEventListener('focusout', onDocumentFocusOut, true);
     return () => {

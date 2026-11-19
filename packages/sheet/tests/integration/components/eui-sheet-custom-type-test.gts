@@ -5,10 +5,19 @@
  */
 import { module, test } from 'qunit';
 import { setupRenderingTest } from 'ember-qunit';
-import { click, fillIn, focus, render, waitUntil } from '@ember/test-helpers';
+import {
+  blur,
+  click,
+  fillIn,
+  focus,
+  render,
+  waitUntil
+} from '@ember/test-helpers';
 import Component from '@glimmer/component';
+import { tracked } from '@glimmer/tracking';
 import { fn } from '@ember/helper';
 import { on } from '@ember/modifier';
+import { schedule } from '@ember/runloop';
 import { modifier } from 'ember-modifier';
 
 import EuiSheet from '#src/components/eui-sheet.gts';
@@ -219,11 +228,70 @@ class FakeDatePicker extends Component<SheetEditorSignature<string | null>> {
   </template>
 }
 
+/* C5, C6: an editor that removes its own focused element ------------------ */
+
+/**
+ * Stands in for flatpickr, which redraws its days when one is picked: the
+ * focused day is removed from the DOM (a focusout with no relatedTarget),
+ * and the date is saved after the redraw.
+ */
+class RedrawingPicker extends Component<SheetEditorSignature<string | null>> {
+  @tracked generation = 0;
+
+  get destination(): HTMLElement {
+    return document.querySelector<HTMLElement>('#ember-testing')!;
+  }
+
+  get days(): string[] {
+    return [`d${this.generation}-a`, `d${this.generation}-b`];
+  }
+
+  focusOnInsert = modifier((input: HTMLInputElement) => input.focus());
+
+  /** Redraws the days (the focused one is removed), then saves after the render. */
+  pick = (day: string): void => {
+    this.generation++;
+    schedule('afterRender', () => this.args.onCommit({ value: day }));
+  };
+
+  /** Redraws without saving (e.g. moving to the next month). */
+  redraw = (): void => {
+    this.generation++;
+  };
+
+  <template>
+    <input aria-label="Day" data-test-redraw-input {{this.focusOnInsert}} />
+    <button
+      type="button"
+      data-test-redraw-next
+      {{on "click" this.redraw}}
+    >Next</button>
+    {{#in-element this.destination insertBefore=null}}
+      <div class="euiSheetEditorSurface" data-test-redraw-calendar>
+        {{#each this.days key="@identity" as |day|}}
+          <button
+            type="button"
+            data-test-redraw-day
+            {{on "click" (fn this.pick day)}}
+          >{{day}}</button>
+        {{/each}}
+      </div>
+    {{/in-element}}
+  </template>
+}
+
+const redrawType: EuiSheetFieldType<string | null> = {
+  parse: (text) => ({ value: text || null }),
+  format: (value) => value ?? '',
+  editor: RedrawingPicker
+};
+
 const FIELD_TYPES: Record<string, EuiSheetFieldType<any, any>> = {
   rating: ratingType,
   pick: pickType,
   surface: surfaceType,
-  date: { ...dateType, editor: FakeDatePicker }
+  date: { ...dateType, editor: FakeDatePicker },
+  redraw: redrawType
 };
 
 const FIELDS: EuiSheetField<Row>[] = [
@@ -231,7 +299,8 @@ const FIELDS: EuiSheetField<Row>[] = [
   { id: 'rating', type: 'rating' },
   { id: 'pick', type: 'pick' },
   { id: 'name2', type: 'surface' },
-  { id: 'due', type: 'date' }
+  { id: 'due', type: 'date' },
+  { id: 'day', type: 'redraw' }
 ];
 
 module('Integration | Component | EuiSheet custom type', function (hooks) {
@@ -392,6 +461,55 @@ module('Integration | Component | EuiSheet custom type', function (hooks) {
       editorFrame(),
       null,
       "dateType's opensOnKey still applies"
+    );
+  });
+
+  test('C5 a pick that removes the focused element is saved', async function (assert) {
+    const store = await renderSheet();
+    await focusCell(0, 5);
+    await press('Enter');
+    assert.ok(el('[data-test-redraw-input]'), 'the editor is open');
+    // click() focuses the day first; the pick redraws the days, which
+    // removes the focused one, and saves after the render
+    await click('[data-test-redraw-day]');
+    assert.deepEqual(
+      store.log.map((set) => set.patches),
+      [[{ recordId: 'r0', fieldId: 'day', from: undefined, to: 'd0-a' }]],
+      'the picked value is saved, not the draft'
+    );
+    assert.strictEqual(editorFrame(), null, 'the pick closed the editor');
+    assert.strictEqual(text(0, 5), 'd0-a');
+  });
+
+  test('C6 removing the focused element keeps the editor open', async function (assert) {
+    const store = await renderSheet();
+    await focusCell(1, 5);
+    await press('Enter');
+    await focus('[data-test-redraw-day]');
+    assert.ok(editorFrame(), 'focus in the surface keeps the editor open');
+
+    // the days are redrawn while one is focused (a native click does not
+    // move focus): the focused day leaves the DOM, nothing is saved
+    el('[data-test-redraw-next]').click();
+    await waitUntil(
+      () => document.activeElement === el('[data-test-redraw-input]')
+    );
+    assert.ok(
+      editorFrame(),
+      'the removed focused day does not close the editor'
+    );
+    assert.strictEqual(
+      document.activeElement,
+      el('[data-test-redraw-input]'),
+      'focus is given back to the editor'
+    );
+    assert.strictEqual(store.log.length, 0, 'nothing was saved');
+
+    await blur(el('[data-test-redraw-input]'));
+    assert.strictEqual(
+      editorFrame(),
+      null,
+      'focus leaving to nowhere still closes the editor'
     );
   });
 });

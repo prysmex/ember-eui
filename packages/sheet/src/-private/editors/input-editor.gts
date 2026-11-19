@@ -19,7 +19,20 @@ export default class InputEditor extends Component<
   }
 
   get inputMode(): string | undefined {
-    return this.args.field.type === 'number' ? 'decimal' : undefined;
+    switch (this.args.field.type) {
+      case 'number':
+      case 'currency':
+      case 'percent':
+        return 'decimal';
+      case 'phone':
+        return 'tel';
+      case 'email':
+        return 'email';
+      case 'url':
+        return 'url';
+      default:
+        return undefined;
+    }
   }
 
   @action

@@ -2,11 +2,11 @@
  * Change-set builders: what an edit, a clear or a paste writes, as plain
  * data the owner applies (PACKAGE-DESIGN.md 5.5).
  */
-import { cellKey, isReadOnly, resolveType, valueOf } from './fields.ts';
+import { isReadOnly, resolveType, sameFieldValue, valueOf } from './fields.ts';
+import { buildPaste } from './paste-plan.ts';
 
 import type {
   CellPatch,
-  CellRejection,
   ChangeSet,
   EuiSheetField,
   NewOption,
@@ -53,6 +53,13 @@ function rejectionMessage(
   return undefined;
 }
 
+/** The options a parse result creates (`newOption` and `newOptions`). */
+function parsedOptions(result: ParseResult<unknown>): NewOption['option'][] {
+  if (!('value' in result)) return [];
+  const { newOption, newOptions } = result;
+  return [...(newOption ? [newOption] : []), ...(newOptions ?? [])];
+}
+
 /** The copy text of each cell of the range, clamped to existing rows and fields. */
 export function rangeMatrix<T>(ctx: SheetContext<T>, range: Range): string[][] {
   const bottom = Math.min(range.bottom, ctx.records.length - 1);
@@ -93,7 +100,8 @@ export function commitText<T>(
     return null;
   }
   const recordId = ctx.getRecordId(record);
-  const result = resolveType(ctx.types, field).parse(text, field, {
+  const type = resolveType(ctx.types, field);
+  const result = type.parse(text, field, {
     record,
     messages: ctx.messages,
     source: 'edit'
@@ -104,15 +112,15 @@ export function commitText<T>(
       rejected: [{ recordId, fieldId: field.id, text, message }]
     });
   }
-  const { value, newOption } = result as {
-    value: unknown;
-    newOption?: NewOption['option'];
-  };
+  const { value } = result as { value: unknown };
   const from = valueOf(record, field.id);
-  if (Object.is(from, value)) return null;
+  if (sameFieldValue(type, from, value)) return null;
   return changeSet('edit', {
     patches: [{ recordId, fieldId: field.id, from, to: value }],
-    newOptions: newOption ? [{ fieldId: field.id, option: newOption }] : []
+    newOptions: parsedOptions(result).map((option) => ({
+      fieldId: field.id,
+      option
+    }))
   });
 }
 
@@ -128,7 +136,7 @@ export function commitValue<T>(
     return null;
   }
   const from = valueOf(record, field.id);
-  if (Object.is(from, value)) return null;
+  if (sameFieldValue(resolveType(ctx.types, field), from, value)) return null;
   return changeSet('edit', {
     patches: [
       { recordId: ctx.getRecordId(record), fieldId: field.id, from, to: value }
@@ -149,14 +157,15 @@ export function clearRange<T>(
     for (let col = Math.max(range.left, 0); col <= right; col++) {
       const field = ctx.fields[col]!;
       if (isReadOnly(ctx, field, record)) continue;
-      const result = resolveType(ctx.types, field).parse('', field, {
+      const type = resolveType(ctx.types, field);
+      const result = type.parse('', field, {
         record,
         messages: ctx.messages,
         source: 'clear'
       });
       if (!('value' in result)) continue;
       const from = valueOf(record, field.id);
-      if (Object.is(from, result.value)) continue;
+      if (sameFieldValue(type, from, result.value)) continue;
       patches.push({
         recordId: ctx.getRecordId(record),
         fieldId: field.id,
@@ -182,101 +191,7 @@ export function pasteMatrix<T>(
   matrix: readonly (readonly string[])[],
   options: { nextTempId?: () => string } = {}
 ): ChangeSet | null {
-  const patches: CellPatch[] = [];
-  const inserts: RecordInsert[] = [];
-  const rejected: CellRejection[] = [];
-  const newOptions: NewOption[] = [];
-  const seenOptions = new Set<string>();
-
-  matrix.forEach((line, i) => {
-    const record = ctx.records[anchor.row + i];
-    const accepted: Record<string, unknown> = {};
-    let tempId: string | undefined;
-    let recordId: RecordId | undefined;
-    if (record !== undefined) recordId = ctx.getRecordId(record);
-    const ensureTempId = () => {
-      tempId ??= options.nextTempId?.() ?? `new-${inserts.length}`;
-      return tempId;
-    };
-
-    line.forEach((text, j) => {
-      const field: EuiSheetField<T> | undefined = ctx.fields[anchor.col + j];
-      if (!field) return;
-      const contextRecord = (
-        record !== undefined ? { ...record, ...accepted } : { ...accepted }
-      ) as T;
-      if (isReadOnly(ctx, field, contextRecord)) return;
-      const result = resolveType(ctx.types, field).parse(text, field, {
-        record: contextRecord,
-        messages: ctx.messages,
-        source: 'paste'
-      });
-      const message = rejectionMessage(ctx as SheetContext<unknown>, result);
-      if (message !== undefined) {
-        rejected.push(
-          record !== undefined
-            ? { recordId: recordId!, fieldId: field.id, text, message }
-            : { tempId: ensureTempId(), fieldId: field.id, text, message }
-        );
-        return;
-      }
-      const { value, newOption } = result as {
-        value: unknown;
-        newOption?: NewOption['option'];
-      };
-      accepted[field.id] = value;
-      if (newOption) {
-        const key = cellKey(String(newOption.value), field.id);
-        if (!seenOptions.has(key)) {
-          seenOptions.add(key);
-          newOptions.push({ fieldId: field.id, option: newOption });
-        }
-      }
-      if (record !== undefined) {
-        const from = valueOf(record, field.id);
-        if (!Object.is(from, value)) {
-          patches.push({
-            recordId: recordId!,
-            fieldId: field.id,
-            from,
-            to: value
-          });
-        }
-      } else {
-        ensureTempId();
-      }
-    });
-
-    if (record === undefined && tempId !== undefined) {
-      // after the last record, then each after the previous insert
-      const previous = inserts[inserts.length - 1];
-      const last = ctx.records[ctx.records.length - 1];
-      const anchorId = previous
-        ? previous.tempId
-        : last !== undefined
-          ? ctx.getRecordId(last)
-          : undefined;
-      const insert: RecordInsert = {
-        tempId,
-        index: ctx.records.length + inserts.length,
-        values: accepted
-      };
-      if (anchorId !== undefined) {
-        insert.anchor = { recordId: anchorId, position: 'after' };
-      }
-      inserts.push(insert);
-    }
-  });
-
-  if (
-    !patches.length &&
-    !inserts.length &&
-    !rejected.length &&
-    !newOptions.length
-  ) {
-    return null;
-  }
-  return changeSet('paste', { patches, inserts, rejected, newOptions });
+  return buildPaste(ctx, anchor, matrix, options).changeSet;
 }
 
 /**

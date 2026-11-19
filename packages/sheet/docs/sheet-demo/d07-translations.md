@@ -72,6 +72,18 @@ const SPANISH = {
   close: 'Cerrar',
   filterByField: 'Filtrar por este campo',
   reapply: 'Volver a aplicar',
+  notAnAttachment: 'Un texto no es un archivo',
+  uploadFailed: 'No se pudo subir',
+  notAUrl: '"{text}" no es una URL',
+  notAnEmail: '"{text}" no es un correo',
+  notAPhone: '"{text}" no es un teléfono',
+  notADuration: '"{text}" no es una duración',
+  openLink: 'Abrir enlace',
+  removeFile: 'Quitar archivo',
+  addFiles: 'Agregar archivos',
+  loading: 'Cargando',
+  noMatches: 'Sin resultados',
+  searchFailed: 'No se pudieron cargar las opciones',
 };
 
 // the English defaults, to put back

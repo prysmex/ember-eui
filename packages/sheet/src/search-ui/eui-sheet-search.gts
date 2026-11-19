@@ -66,6 +66,7 @@ type ForwardedArgs<Doc> = Pick<
   | 'onCheckedChange'
   | 'registerApi'
   | 'ariaLabel'
+  | 'onResolve'
 >;
 
 export interface EuiSheetSearchSignature<Doc extends object> {
@@ -229,6 +230,7 @@ export default class EuiSheetSearch<Doc extends object> extends Component<
       @onCheckedChange={{@onCheckedChange}}
       @registerApi={{@registerApi}}
       @ariaLabel={{@ariaLabel}}
+      @onResolve={{@onResolve}}
       ...attributes
     >
       <:toolbar as |sheet|>

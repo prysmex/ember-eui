@@ -65,6 +65,30 @@ export interface SheetMessages {
   filterByField: () => string;
   /** 'Re-apply': the EmberSearchUi connector's button that runs the search again after edits. */
   reapply: () => string;
+  /** 'Text is not a file': text pasted on an attachment cell. */
+  notAnAttachment: () => string;
+  /** 'Upload failed' */
+  uploadFailed: () => string;
+  /** '"x" is not a URL' */
+  notAUrl: (text: string) => string;
+  /** '"x" is not an email address' */
+  notAnEmail: (text: string) => string;
+  /** '"x" is not a phone number' */
+  notAPhone: (text: string) => string;
+  /** '"x" is not a duration' */
+  notADuration: (text: string) => string;
+  /** 'Open link': the row menu's item and the expanded record's button. */
+  openLink: () => string;
+  /** 'Remove file' */
+  removeFile: () => string;
+  /** 'Add files': the attachment editor's file picker. */
+  addFiles: () => string;
+  /** 'Loading': a picker searching. */
+  loading: () => string;
+  /** 'No matches': a picker whose search found nothing. */
+  noMatches: () => string;
+  /** 'Could not load the options': a picker whose search failed. */
+  searchFailed: () => string;
 }
 
 export interface SheetMessageToken {
@@ -223,6 +247,66 @@ export const sheetMessageTokens: Readonly<
   close: {
     token: 'euiSheet.close',
     defaultMessage: 'Close',
+    params: []
+  },
+  notAnAttachment: {
+    token: 'euiSheet.notAnAttachment',
+    defaultMessage: 'Text is not a file',
+    params: []
+  },
+  uploadFailed: {
+    token: 'euiSheet.uploadFailed',
+    defaultMessage: 'Upload failed',
+    params: []
+  },
+  notAUrl: {
+    token: 'euiSheet.notAUrl',
+    defaultMessage: '"{text}" is not a URL',
+    params: ['text']
+  },
+  notAnEmail: {
+    token: 'euiSheet.notAnEmail',
+    defaultMessage: '"{text}" is not an email address',
+    params: ['text']
+  },
+  notAPhone: {
+    token: 'euiSheet.notAPhone',
+    defaultMessage: '"{text}" is not a phone number',
+    params: ['text']
+  },
+  notADuration: {
+    token: 'euiSheet.notADuration',
+    defaultMessage: '"{text}" is not a duration',
+    params: ['text']
+  },
+  openLink: {
+    token: 'euiSheet.openLink',
+    defaultMessage: 'Open link',
+    params: []
+  },
+  removeFile: {
+    token: 'euiSheet.removeFile',
+    defaultMessage: 'Remove file',
+    params: []
+  },
+  addFiles: {
+    token: 'euiSheet.addFiles',
+    defaultMessage: 'Add files',
+    params: []
+  },
+  loading: {
+    token: 'euiSheet.loading',
+    defaultMessage: 'Loading',
+    params: []
+  },
+  noMatches: {
+    token: 'euiSheet.noMatches',
+    defaultMessage: 'No matches',
+    params: []
+  },
+  searchFailed: {
+    token: 'euiSheet.searchFailed',
+    defaultMessage: 'Could not load the options',
     params: []
   }
 };

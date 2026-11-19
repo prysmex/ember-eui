@@ -6,6 +6,8 @@ import type {
   FieldType,
   RecordId,
   RecordInsert,
+  ResolveRequest,
+  ResolveResult,
   SheetMessages,
   ValidateContext
 } from './core/index.ts';
@@ -19,8 +21,12 @@ export interface EuiSheetFieldType<
   cell?: ComponentLike<SheetCellSignature<V, F>>;
   /** Editor component. Without one the type has no edit mode (navKey and the cell's @onCommit still work). */
   editor?: ComponentLike<SheetEditorSignature<V, F>>;
-  /** 'cell': the editor covers the cell. 'panel': a panel under (or above) the cell. Default 'cell'. */
-  editorLayout?: 'cell' | 'panel';
+  /**
+   * 'cell': the editor covers the cell. 'panel': a panel under (or above)
+   * the cell. 'expand': starts at the cell's box and grows (long text).
+   * Default 'cell'.
+   */
+  editorLayout?: 'cell' | 'panel' | 'expand';
   /** Whether a printable key opens the editor. Default: yes. Space never does. */
   opensOnKey?: (key: string) => boolean;
   /** Keys the editor handles itself while it is open. Default: none. */
@@ -65,6 +71,8 @@ export interface SheetCellSignature<
     onCommit: (value: V) => void;
     /** The sheet's `@highlight`: a cell that shows text may mark it (`EuiHighlight`). */
     highlight?: string;
+    /** `type.link(value)` when its scheme is one the sheet opens: draw the text as a link (`[data-eui-sheet-link]`). */
+    link?: string;
   };
 }
 
@@ -85,6 +93,21 @@ export interface SheetEditorSignature<
     initialKey: string | null;
     /** Reports the text to parse if the editor is closed by blur, scroll, or a key the sheet handles. */
     onDraftChange: (text: string) => void;
+    /**
+     * Reports a value to save as is if the editor is closed that way (a
+     * multi-select's toggled options): the last of `onDraftChange` and
+     * `onDraftValue` called wins. Optional for wrappers; the sheet always
+     * passes it.
+     */
+    onDraftValue?: (value: V) => void;
+    /** Saves a value and keeps the editor open (a removed file). The sheet always passes it. */
+    onSave?: (value: V) => void;
+    /**
+     * Attachment fields: uploads files through `field.upload` and appends
+     * them to the value read when the upload ends; the promise rejects
+     * when the upload fails. The sheet passes it when the field has `upload`.
+     */
+    onUpload?: (files: File[]) => Promise<void>;
     /** Closes the editor. `{ value }` is saved as is, `{ text }` goes through type.parse, nothing saves the reported draft. `move` is [rows, cols]; default [0, 0]. */
     onCommit: (
       result?: SheetEditorResult<V>,
@@ -283,6 +306,19 @@ export interface EuiSheetSignature<T> {
     expandedRecord?: 'flyout' | 'modal';
     /** Extra items of the row menu, before "Delete". */
     rowActions?: SheetRowAction<T>[];
+    /**
+     * Bulk resolve (V02-DESIGN.md 8.2): typed or pasted text a type answers
+     * `{ unresolved }` for (linked records, users, an app's own types) is
+     * shown as pending and sent here, once per paste or typed commit, one
+     * request per field. The resolved cells arrive as a second change set
+     * (source 'resolve'), one undo entry with the paste. Without it such
+     * text is rejected. `signal` is aborted when none of the call's cells
+     * is still pending (the user wrote over them) or the sheet is destroyed.
+     */
+    onResolve?: (
+      requests: ResolveRequest<T>[],
+      options: { signal: AbortSignal }
+    ) => Promise<ResolveResult>;
   };
   Blocks: {
     /** Above the grid, inside the sheet: your own controls (field picker, search, sort). */

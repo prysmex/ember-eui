@@ -1264,3 +1264,489 @@ The docs site was a production build served by `vite preview`. The checks ran on
 - **Off-page undo stays on its stack:** back on page 1, Ctrl+Z also changes nothing, because after Re-apply the "Zz" record sorts to the last page. Searching `Zz` shows that record alone. Ctrl+Z there gives "Ana 1" (the row stays, and "Re-apply" shows), and Ctrl+Shift+Z gives "Zz" again.
 
 Not checked with real input: adding a record, the Status filter chips, rows per page, Firefox, Safari.
+
+## Batch 5: field types and @onResolve
+
+Built 2026-11-19 on `2d5f3910` (uncommitted when this was written). Scope as
+`V02-DESIGN.md` 8.1 to 8.3: ten more built-in field types (`multiSelect`,
+`linkedRecord`, `user`, `attachment`, `currency`, `percent`, `duration`,
+`rating`, `url`/`email`/`phone`, `longText`), the contract additions
+(`equals`, `resolve`, `link`, `newOptions`, `editorLayout: 'expand'`), bulk
+resolve (`@onResolve`, `planPaste`, `planCommit`, `resolveCells`), uploads
+(editor, drop, pasted files), and `@onResolve` forwarded by `EuiSheetSearch`.
+`packages/core/src` was not changed. Nothing of batch 6 was started.
+
+### What was built (files, under `packages/sheet/`)
+
+| File | Change |
+| --- | --- |
+| `src/core/types.ts` | Field interfaces `MultiSelectField`, `LinkedRecordField`, `UserField`, `AttachmentField`, `CurrencyField`, `PercentField`, `DurationField`, `RatingField`, `LinkField`, `LongTextField`; value types `SheetLinkedRecord`, `SheetUser`, `SheetAttachment`; `ParseResult` value variant gains `newOptions`; `FieldType.equals`, `resolve: { parts, combine }`, `link`; `PendingCell`, `ResolveRequest`, `ResolveResult`. |
+| `src/core/field-types/{multi-select,linked-record,user,attachment,currency,percent,duration,rating,link,long-text}.ts` (new) | The core types (`link.ts` holds url, email, phone, `safeLink`, `LINK_PROTOCOLS`; `attachment.ts` holds `safeFileUrl`). |
+| `src/core/field-types/numeric.ts` (new) | Number reading shared by currency and percent (not exported from the index). |
+| `src/core/field-types/index.ts` | Exports and `builtInFieldTypes` with the 12 new names. |
+| `src/core/list.ts` (new) | `splitList` (comma parts, a quoted part keeps its commas) and `joinList` (quotes a label with a comma or a leading quote). Exported. |
+| `src/core/paste-plan.ts` (new) | `buildPaste`, the paste builder shared by `pasteMatrix` and `planPaste`, and `partsOf`. Not exported from the index. |
+| `src/core/resolve.ts` (new) | `planPaste`, `planCommit`, `resolveCells`, type `ResolvePlan`. |
+| `src/core/change-set.ts`, `fill.ts` | "Unchanged" checks through the type's `equals` (`sameFieldValue`); `newOption` and `newOptions` of a parse result in `commitText`; `pasteMatrix` is now `buildPaste(…).changeSet`. |
+| `src/core/fields.ts` | `sameFieldValue(type, a, b)`. |
+| `src/core/messages.ts` | 12 tokens (below). |
+| `src/-private/cells/{chips,avatar,attachment,rating,link,long-text}-cell.gts` (new) | Cells; spans and `<img>` only. |
+| `src/-private/editors/{multi-select,record-picker,attachment,textarea}-editor.gts` (new) | Editors; `record-picker` serves linkedRecord and user. |
+| `src/-private/editors/input-editor.gts` | `inputmode` for currency, percent (`decimal`), phone (`tel`), email, url. |
+| `src/-private/editor-frame.gts` | `'expand'` layout: the cell's top/left, `min-width: max(width, 240px)`, `min-height` the cell's height. |
+| `src/-private/sheet-cell.gts` | `euiSheet__cell--pending` (+ `aria-busy`), `euiSheet__cell--dropTarget`, `@link` to the cell. |
+| `src/-private/record-form-field.gts`, `record-form.gts` | `@link` to the cell, an "Open link" `EuiButtonIcon` beside the box, the editor's `@onDraftValue`, `@onSave`, `@onUpload` in the form. |
+| `src/-private/styles.ts`, `theme.ts` | Styles of the new cells, editors, pending and drop target; tokens `--euiSheet-link` (`textPrimary`) and `--euiSheet-star` (`textWarning`). |
+| `src/components/eui-sheet.gts` | `@onResolve` (pending cells, calls, waiter, merge into the paste's entry), the upload pipeline, drag and drop, pasted files, link clicks, "Open link" in the row menu, `equals` for undo/redo and live rejections, `'expand'` editors, value drafts (`onDraftValue`), stay-open saves (`onSave`). |
+| `src/field-types.ts`, `src/index.ts` | Registration (`multiSelectType`, `linkedRecordType`, `userType`, `attachmentType`, `currencyType`, `percentType`, `durationType`, `ratingType`, `urlType`, `emailType`, `phoneType`, `longTextType`) and exports. |
+| `src/types.ts` | `editorLayout: 'expand'`; cell arg `link`; editor args `onDraftValue`, `onSave`, `onUpload`; `EuiSheetSignature.Args.onResolve`. |
+| `src/search-ui/eui-sheet-search.gts` | Forwards `@onResolve`. |
+| Tests, docs | Below. |
+
+### API changes
+
+Additive:
+
+- Argument `@onResolve(requests, { signal }) => Promise<ResolveResult>`, also
+  forwarded by `EuiSheetSearch`.
+- Built-in types (sheet registry and core registry) `multiSelect`,
+  `linkedRecord`, `user`, `attachment`, `currency`, `percent`, `duration`,
+  `rating`, `url`, `email`, `phone`, `longText`; their exports
+  (`multiSelectType` … `longTextType`; core `multiSelectFieldType` …
+  `longTextFieldType`); field interfaces and value types listed above.
+- `FieldType.equals`, `FieldType.resolve`, `FieldType.link`; `ParseResult`'s
+  `newOptions`; `EuiSheetFieldType.editorLayout: 'expand'`.
+- Core `planPaste`, `planCommit`, `resolveCells`, `ResolvePlan`,
+  `PendingCell`, `ResolveRequest`, `ResolveResult`, `sameFieldValue`,
+  `splitList`, `joinList`, `safeLink`, `safeFileUrl`, `LINK_PROTOCOLS`.
+- `SheetCellSignature.Args.link`; `SheetEditorSignature.Args.onDraftValue`,
+  `onSave`, `onUpload` (all optional; deviation 2).
+- `CellView` (exported) gains `pending`, `link` and `dropTarget`.
+- Messages (tokens `euiSheet.*`): `notAnAttachment`, `uploadFailed`,
+  `notAUrl(text)`, `notAnEmail(text)`, `notAPhone(text)`,
+  `notADuration(text)`, `openLink`, `removeFile`, `addFiles`, `loading`,
+  `noMatches`, and `searchFailed` (deviation 1).
+- Theme properties `--euiSheet-link` and `--euiSheet-star`.
+
+Not purely additive:
+
+- "Unchanged" checks use the type's `equals` (`commitText`, `commitValue`,
+  `clearRange`, `pasteMatrix`, `fillDown`, undo/redo's conflict check, and
+  whether a rejected text is still live). For the v0.1 types nothing changes
+  (no `equals`: `Object.is`).
+- A `'resolve'` change set is merged into the history entry of the paste or
+  edit that asked for it, not into the last entry (batch 1 deviation 9 is
+  replaced).
+- `builtInFieldTypes` and `builtInSheetFieldTypes` have 12 more names: an app
+  type registered under one of them (`url`, `rating`, …) now replaces a
+  built-in instead of adding a type (it still wins, as before).
+- `onPaste` handles files on an attachment cell before it looks for
+  `text/plain`.
+
+### Verification items (section 12)
+
+| # | Item | Outcome |
+| --- | --- | --- |
+| N11 | `EuiSelectable` in multi-selection mode with a search field focused (V5 quirks); `EuiFilePicker` and `EuiAvatar` arguments. | Multi mode (`@singleSelection` unset) gives `@onChange(options, event, changed)` per toggle; a click or Enter on the current option toggles it, and the editor keeps its own array (M2). The V5 quirk holds in multi mode too: opened by a typed key, no option is current, so the editor's capture handler toggles the first match on Enter (M5). `EuiFilePicker`: `@multiple @compressed @fullWidth @isLoading @isInvalid @initialPromptText @onChange(FileList) @ref` and `accept` as an attribute; `@ref` gives `removeFiles()`; `triggerEvent(input, 'change', { files })` reaches `@onChange` (A1). `EuiAvatar`: `@size="s" @name @imageUrl`; without `@imageUrl` it renders the initials as text ("AR"), which RF17 first counted in the cell's text. Read in the sources and run in the tests. |
+| N12 | No tabbable element in the new cells. | A4: every cell of the 12 new types in one row, RW13's selector (`a[href], button, input, select, textarea, [contenteditable], [tabindex]` other than `-1`) finds nothing and no cell has `aria-describedby`; LK2: no `<a>` in any cell, three `role="link"` spans. Checked with the selector, not with `tabbable()`. |
+| N14 | Performance. | Not measured. 8.3's "measure in d08" was not done: d08 has no chip or avatar columns. |
+
+### Tests
+
+Baseline: 256/256 at HEAD (batch 4's `b4-c3.log`). Runs while building:
+
+- `b5-u1.log` (unit only): 98/99. F12 failed: `abc` in a currency field
+  stripped to `''` and parsed as empty (`null`) instead of an error. Fixed
+  in the source (a text with no number is an error).
+- `b5-run1.log` (full, existing tests only): 271/273. RF5 and RF6 failed:
+  a first version wrapped the form's box in a new row element for the
+  "open link" button, so `box.parentElement` was no longer the field. The
+  wrapper was dropped (the button is a sibling of the box).
+- `b5-t2a.log`, `b5-dbg1.log`: RA1 failed because the star list was keyed by
+  identity, so the cell's re-render on focus replaced the clicked span
+  before its click (now `key="n"`; this also matters in a real browser).
+- `b5-run2.log`: 298/299, the new form test (first named RF15, a clash with
+  the existing RF15; now RF17) counted the avatar's initials ("AR") in the
+  person's text; then `@link` was missing on the form's cell (`b5-rf.log`).
+- LT1 failed twice with no textarea after Enter: in `b5-t2a.log` and in
+  `b5-c2.log` (299/300); it passed in `b5-dbg1.log`, `b5-run2.log` and
+  `b5-c1.log`. The likely cause, inferred and not isolated by any run: the
+  grid scrolls the last column into view on focus, and that scroll event
+  comes a frame later and closes an editor opened before it (the sheet's
+  "commit on scroll", v0.1 behaviour). LT1 now waits two animation frames
+  after the focus. Then the module was run 15 times in a row (`b5-loop.log`):
+  14 × 19/19 and once 18/19, LK1 this time. Twelve more runs with details
+  (`b5-loop2.log`) caught it again: "the second click on the cell edits"
+  found no editor, the same race (a click on the first column, then on
+  column 9, then a second click that opens the editor before the scroll
+  event of the focus arrives). Twenty runs of LK1 alone did not fail
+  (`b5-lk1.log`). LK1 got the same two-frame wait; then 15 runs of the
+  module, 15 × 19/19 (`b5-loop3.log`). If the inferred cause is right, a
+  real user who edits within a frame of focusing a cell that the grid
+  scrolls into view hits it too: the editor closes at once (it saves its
+  draft). Not changed in batch 5 (see "Notes for batch 6").
+
+`b5-c3.log` (10:05 UTC): 300/300. Then a review found that the record
+picker reported a typed search of a local list, or the old value when
+nothing was typed (deviation 8), and that pasted files won over a
+spreadsheet's text (deviation 17); both were changed and US2, RV8 and a part
+of A3 added: 302/302 (`b5-c4.log`, 10:17 UTC). Final, after LK1's frame
+wait (the last edit of a source or test file): **302/302**, 0 failed
+(`b5-c5.log`, 10:24 UTC). Logs are in the session scratchpad
+(`/tmp/claude-1000/-Users-betocantu93-prysmex/df04f7e2-a347-4eab-a276-4d9974f4dbc1/scratchpad/`).
+
+New (46):
+
+- `tests/unit/field-types-test.ts`: F8–F17, one per new type (parse, format,
+  copyText, validate, compare, isEmpty, equals, navKey, toNumber, link as
+  they apply); F18 `parse(copyText(v))` round trip for every new type but
+  attachment (linkedRecord through `parts` and `combine`, since its text
+  needs the owner); F19 multiSelect quoted parts, `splitList`, `joinList` and
+  `newOptions`; F20 link schemes (`javascript:`, `data:`, `ftp:`, `vbscript:`
+  give no link; a `javascript:` url fails validation).
+- `tests/unit/resolve-test.ts` (new): RS1–RS4 as in 8.3. RS1 also checks
+  that an equal array is no patch in a paste and in a fill; RS3 that `from`
+  is read when resolving and that `withoutConflicts` with `equals` keeps a
+  patch whose cell holds an equal fresh array.
+- `tests/integration/components/eui-sheet-types2-test.gts` (new, 19): M1–M4,
+  L1–L3, US1, A1–A4, NU1, RA1, LK1, LK2, LT1 as in 8.3, plus M5 (opened by a
+  typed key: the seeded search, Enter toggles the first match; N11). M2 also
+  covers Enter on the current option, Escape, focus leaving; M4 an undo of
+  an array clear; A1 a failing upload in the editor; A2 files pasted from the
+  clipboard; A3 text pasted on an attachment cell and a spreadsheet-like
+  paste (text, HTML and a PNG) that stays text; LK1 the row menu's "Open
+  link" and that a `javascript:` value has no link. Also US2 (a picker left
+  without a pick: a local list's typed search saves nothing, and a rejected
+  text stays).
+- `tests/integration/components/eui-sheet-resolve-test.gts` (new, 8): RV1–RV7,
+  and RV8 (an undo of the paste before the answer aborts the call and the
+  late answer is not written).
+  RV1 includes a row inserted by the paste (patched by its `tempId`) and the
+  redo; RV2 a rejected `@onResolve` promise; RV3 also a paste over a pending
+  cell.
+- `eui-sheet-record-test.gts`: RF17 (the design's "RF15", renamed: RF15
+  exists): every new type's cell in the form, the open-link buttons, a star,
+  the multi-select and long text editors in flow.
+- `eui-sheet-search-test.gts`: SS10, `EuiSheetSearch` forwards `@onResolve`
+  (a paste resolves and goes through `search.apply`).
+
+No existing test changed.
+
+Not executed by any test: dark mode of the new cells and editors; a real
+file dialog and a real drag from the desktop (the tests dispatch
+`DragEvent`s and set `files`); `maxFiles`; two uploads on one cell at once;
+`remapIds` while a resolve or upload is pending; the `user` field with
+`search` and `multiple`; the long text frame near the
+sheet's bottom edge; d15–d17 at runtime (built, not run).
+
+Lint (`pnpm lint`: `ember-tsc --noEmit`, ESLint, stylelint): exit 0
+(`b5-lint-c5.log`). The first lint (`b5-lint1.log`) had four errors in new
+code (a `Promise.reject` of a non-Error, two `String()` of `unknown`, a
+floating `click()` in RV6), fixed. Prettier `--check src tests/integration
+tests/unit tests/helpers README.md`: only `tests/helpers/index.js`, unclean at
+HEAD (`b5-prettier-c5.log`); files were formatted with `--write` in the
+scratch copy and copied back (`b5-prettier-write.log`). The tests' type check
+(`ember-tsc --noEmit -p tsconfig.eslint.json`, `b5-tsc-tests-c5.log`) has 19
+errors, all in files batch 5 did not add (`.at()`, `ember-keyboard`); the
+new files and RF17 have none.
+These are the same 19 as batch 4's `b4-tsc-tests-c3.log`.
+
+### Deviations from the design
+
+1. **A twelfth message, `searchFailed`** ("Could not load the options"):
+   the record picker shows it when `field.search` rejects. 8.2.1's list has
+   no text for that state (d04's demo has its own string).
+2. **Three optional editor arguments** that 8.1 does not name, because two
+   behaviours it asks for cannot be built with v0.1's editor contract
+   (`commit()` and the form's commit both close the editor):
+   - `@onDraftValue(value)`: a value to save when focus leaves ("Tab or
+     blur commits" the multi-select's toggled options; `@onDraftChange` only
+     takes text). The last of `@onDraftChange` and `@onDraftValue` wins.
+   - `@onSave(value)`: saves and keeps the editor open (a removed file).
+   - `@onUpload(files)`: the sheet's upload pipeline (below), passed when
+     the field has `upload`.
+   They are optional in `SheetEditorSignature` so a wrapper that renders a
+   built-in editor itself still type-checks; the sheet and the form always
+   pass them.
+3. **`@link` on cells**: the sheet computes `type.link(value)` (and checks
+   its scheme) and passes it to the cell, so a link cell draws the link
+   style only when there is a link it would open. The sheet checks the
+   scheme again on the click (`safeLink`), so an app type's `link` cannot
+   open `javascript:`.
+4. **One upload pipeline** (`uploadFiles`) for the editor's picker, a drop
+   and pasted files: the cell is pending (its value stays shown) and a test
+   waiter is held; the new files are appended to the value read when the
+   upload ends; files past `maxFiles` are not uploaded. Uploads are **not**
+   dropped by a newer write of the cell (resolve cells are): 8.3 says a
+   second upload appends to the value read then, and a removal in the
+   editor while an upload runs must not lose it. A failed drop or paste
+   gives the cell a rejection (text: the file names, `uploadFailed`); a
+   failed upload from the editor shows the message in the panel instead (a
+   rejection would replace the cell's files with text while the panel
+   lists them).
+5. **History of a resolve**: the resolve merges
+   into the entry of the paste or typed commit that asked for it (kept by
+   reference, followed through `remapIds` and merges); a resolved cell's
+   rejection, if the entry had one, is dropped from it. When the paste had
+   no entry (every cell was pending, so its change set was `null`) the
+   resolve is its own entry (RV2, RV6). Undoing the paste before the answer
+   drops its pending cells and aborts the call (RV8).
+6. **Signal**: aborted when the call has no pending cell left (a newer
+   write, the record left `@records`, an undo) or the sheet is destroyed;
+   not after the call settled. A rejected `@onResolve` promise turns its
+   cells into rejections and is not re-thrown.
+7. **What a pending cell shows**: its text, grey and italic, with
+   `aria-busy`; no errors until it settles (8.2.1). The text is shown like a
+   rejected text (no cell component), also in the expanded record.
+8. **Typed text in the record picker resolves** (RV6): for a field that
+   searches (`search`), a search typed and left without a pick (focus
+   leaves) is reported as text, so it goes through `planCommit` and
+   `@onResolve`; without `@onResolve` it becomes a rejection ("could not be
+   resolved"), as typed unresolved text was in v0.1. Tab or Enter pick the
+   current or first match instead. A user field with a local `options` list
+   saves nothing for a typed search, and a picker opened and left without
+   typing reports nothing, so a rejected text on the cell stays (US2; a
+   first version reported the old value and cleared it). The multi-select
+   editor never reports a typed search.
+9. **Type details the table leaves open**:
+   - `rating`: `0` parses to `null` (no stars) and a `0` digit clears;
+     `isEmpty` counts `0` as empty; stars are `★` characters, not icons.
+   - `percent`: `min`/`max` are in stored units (fractions); the messages
+     show them as percentages.
+   - `duration`: a two-part `1:30` is always hours and minutes (also with
+     `'h:mm:ss'`); `'h:mm'` shows whole minutes, so seconds do not survive a
+     copy in that format (F18 uses whole minutes there).
+   - `currency`: copies the plain number with the locale's decimal
+     separator (`1234,5` for `de-DE`), so a paste gives the value back; the
+     design says "plain number". The symbol is any non-number character; the
+     code is removed case-insensitively.
+   - `user` with `options`: a part that matches no label or email is
+     `notAnOption(part)`; `linkedRecord` with `multiple: false` resolves the
+     first part only.
+   - `multiSelect` `compare`: option by option in the options' order;
+     `attachment` `compare`: by file count.
+   - `attachment` `handlesKey`: Tab, Enter and Space (its panel has links and
+     buttons); typing does not open it; its opener is `paperClip`.
+10. **Undo and live rejections use `equals`** (8.2.1 lists undo; the
+    rejection check in `liveRejection` was added, so an owner that replaces
+    a value by an equal copy keeps a rejected text shown). `restoreRejections`
+    (redo) still compares with `Object.is`.
+11. **The expanded record's "open" button** sits beside the box (the box is
+    `inline-block` and narrower) rather than in a new wrapper, so the form's
+    DOM stays as RF5/RF6 read it.
+12. **Files**: `paste-plan.ts` (the paste builder shared by `pasteMatrix` and
+    `planPaste`), `list.ts` and `field-types/numeric.ts` are not in 8.2.1.
+    `splitList`, `joinList`, `safeLink`, `safeFileUrl`, `LINK_PROTOCOLS` and
+    `sameFieldValue` are exported from the core.
+13. **`fieldsFromSchema` is unchanged**: the driver's `FieldDefinition` has no
+    multi-value flag and no url/email type (`keyword`, `text`, `number`,
+    `date`, `boolean`, `geo` or any string), so there was nothing to map.
+14. **Theme**: `--euiSheet-link` is `colors.textPrimary` and `--euiSheet-star`
+    `colors.textWarning`, the keys core's own theme reads (`colors.link` and
+    `colors.warning` were not found there).
+15. **Request records** of a row being inserted are the values accepted so
+    far in that row (as `ParseContext.record`), not `undefined`.
+16. **Open questions** took the design's defaults: Q8 (`upload` on the
+    field, no progress), Q12 (percent as a fraction), Q14 (two change sets,
+    one undo entry).
+17. **Pasted files and text**: files on the clipboard are uploaded only
+    when there is no plain text or no HTML; a spreadsheet's copy (text, HTML
+    and a picture of the cells) pastes as text (A3). The rule was not
+    checked against real Excel, Numbers or Google Sheets clipboards.
+
+### Docs
+
+- `docs/sheet.md`: the `@onResolve` argument row; the field types table
+  with the 12 new types, a paragraph per new cell and editor, array values
+  and `equals`; a new section "Bulk resolve"; keyboard rows (a digit on a
+  rating, Shift/Alt+Enter in long text); the two new theme properties;
+  "Not yet" loses the new types and bulk resolve and gains "upload
+  progress".
+- `README.md`: the same, shorter (the new types as rows of the field types
+  table, keyboard rows, theme properties); the custom-type contract (`equals`,
+  `resolve`, `link`, `@link`, the new editor arguments, `'expand'`), the
+  exported types, the new message tokens, "Limits".
+- `d07-translations.md`: Spanish texts for the 12 new messages.
+- `d04-custom-cells.md`: `@onResolve` for the zone picker (a bulk lookup in
+  the fake API), `equals` on the zone type, and the text.
+- New `d15-more-field-types.md` (every simple new type, a user list, an
+  invalid `javascript:` URL), `d16-linked-records.md` (linkedRecord and a
+  searched user over a fake API, `@onResolve` with a call log, a paste to
+  try), `d17-attachments.md` (fake upload of 800 ms that fails for a name
+  with `fail`, `blob:` URLs, `maxFiles: 4`).
+
+### Docs site build
+
+In the scratch copy: `build:js` of core, sheet, flatpickr, pikaday,
+changeset-form and validated-form; `node --test scripts/dist-hygiene.test.mjs`
+exit 0 (`b5-dist-hygiene.log`); `pnpm docs:api:check` exit 0
+(`b5-docs-api-check.log`); then in `site` `pnpm clean:docfy && node
+../scripts/generate-llms-txt.mjs && pnpm exec vite build --mode production`:
+exit 0 (`b5-site.log`, `b5-site-summary.log`, 10:06 UTC; rebuilt after the
+review's source and docs changes: `b5-site2.log`, `b5-site2-summary.log`,
+10:25 UTC, whose `dist` is the one left). d17 has its own chunk
+(`docfy-demo-docs-sheet-d17-attachments-*.js`); the texts of d15, d16, d04's
+`resolveZones` and d07's "Sin resultados" are in the sheet route's chunk.
+The log has the same seven docfy `getRepoEditUrl` TypeErrors as the earlier
+batches (no `.git` in the scratch copy). `site/dist` is left in the scratch
+copy.
+
+A headless smoke run of the built site (`b5-smoke.mjs`, `b5-smoke.log`
+24/24 on the first build, `b5-smoke2.log` 24/24 on the second; DOM calls and synthetic events, not trusted input; focus emulation on
+so `focus()` dispatches focus events): d15 renders chips and "+1", an
+avatar, `$120.00`, `25%`, `1:30`, four lit stars, a link span, no link for
+the `javascript:` value and no `<a>` in cells; d16 takes a synthetic paste of
+three lines on the first Name, shows six pending cells, then resolves them
+(chips "Ana Ruiz, Bruno Vela", `Zed` invalid, the inserted row's reviewer
+"Bruno Vela"), and its log shows one answered call with the distinct names;
+d17 shows a thumbnail and a file icon; d04 renders; no exception or console
+error. Two first runs failed on the script (another demo also has a grid
+named "Products"; the grid's copy markers in `textContent`; `focus()` in an
+unfocused headless page fires no focus events), not on the demos.
+
+### For the orchestrator to check with real input (docs site, Sheet page)
+
+1. **More field types (d15)**:
+   - Tags: Enter on row 1's Tags; click Green and Red (the list stays
+     open, the checks follow); Tab saves (chips "Blue, Green") and moves to
+     Owner. Type `g` on a Tags cell: the list shows Green and Gray; Enter
+     toggles Green; Escape cancels.
+   - Paste `Red, "Blue, dark"` on a Tags cell: a new chip "Blue, dark".
+     Copy that cell and paste it in a text editor: `Red, "Blue, dark"`.
+   - Owner: Enter, type `bru`, click Bruno Vela: saved at once. Paste
+     `carla@example.com` on an Owner cell.
+   - Price: type `$1,234.5`, Enter: `$1,234.50` (es-MX format). Discount:
+     paste `12.5%` (shows 13%; copy gives `12.5%`). Time: type `1h 30m`.
+   - Score: click the 2nd star, then the same star (cleared); press `4`.
+   - Website: click the text of row 1 (new tab, example.com), click beside
+     the text (selects; a second click edits); row 3's `javascript:alert(1)`
+     is red and opens nothing. Right-click a Website cell: "Open link".
+   - Notes: Enter, Shift+Enter, Alt+Enter (lines added, the box grows past
+     the row), Enter saves. Check Alt+Enter on the Mac (Option+Enter).
+   - Space on a row: the flyout shows every type; the "open" buttons beside
+     Website, Email, Phone; the Tags and Notes editors in flow.
+   - The Dark switch is in d01 only: dark mode of these cells, the star
+     colour and the link colour were not looked at.
+2. **Linked records and bulk resolve (d16)**:
+   - Enter on a Contacts cell, type `a` (a loading line for 300 ms), click
+     two people, Tab: two chips.
+   - Copy the three lines of the demo's text (a real clipboard, with tabs)
+     and paste them on row 1's Name: names at once, a fourth row, the
+     Contacts and Reviewer cells grey for about 500 ms, then chips and
+     avatars; `Zed` red ("could not be resolved"). The log shows one call.
+     Ctrl/Cmd+Z once: the names, the people and the added row all go back;
+     Ctrl/Cmd+Shift+Z brings them back.
+   - Paste `Ana Ruiz` on a Contacts cell and press Delete on it within
+     500 ms: the log says "aborted", the cell stays empty.
+   - In a Contacts picker type `Elena Mora` and click another cell without
+     picking: it resolves (log), and the chip appears.
+3. **Attachments (d17)**:
+   - Click the paperclip on row 2's Files: the panel with the file picker;
+     pick an image: the picker spins about 800 ms, the panel lists it with a
+     link and a remove button, the cell shows the thumbnail; remove it.
+   - Drag a file from the desktop onto a Files cell: the blue outline while
+     hovering, grey while uploading, then the file. Drag a file named
+     `fail.txt`: the cell turns red, "Upload failed".
+   - Take a screenshot to the clipboard and paste it on a Files cell.
+   - Paste text on a Files cell: "Text is not a file"; copy row 1's Files:
+     the URLs.
+   - Tab and Shift+Tab inside the panel (links, remove buttons, picker);
+     Escape closes it and focus returns to the cell.
+4. **Custom cells (d04)**: copy row 1's Zone (`Offices`) and paste it on row
+   4's Zone: grey for 400 ms, then `Offices`. Paste `Garden`: red.
+5. **Translations (d07)**: d07's own fields have none of the new types. With
+   Español on (the service is global), paste `soon` on a Time cell of d15:
+   the message is `"soon" no es una duración`; open a d16 picker and type
+   `zzz`: "Sin resultados".
+
+### Notes for batch 6
+
+- **Fill handle and fill right** copy values by reference (arrays too): the
+  owner must not mutate them (docs say so). Every "unchanged" check must use
+  `sameFieldValue`; `fillDown` already does.
+- **Cut** (Ctrl/Cmd+X) of a pending cell: emit it as a write (`touched`), so
+  the pending resolve is dropped; an upload is not dropped by writes
+  (deviation 4).
+- **Edge jumps and auto-scroll**: the editor closes on any grid scroll
+  (`onScroll` commits). The scroll the grid makes to bring a just-focused
+  cell into view arrives a frame later, so an editor opened within that
+  frame closes at once (inferred from LT1 and LK1, which now wait two
+  frames). Batch 6's auto-scroll and edge jumps scroll on purpose: the
+  scroll handler should not commit an editor whose cell is still rendered,
+  or should ignore the scroll that follows a focus. Auto-scroll while
+  dragging should not open editors.
+- **IME**: the record picker and multi-select search fields are real inputs;
+  the composition catcher must not steal focus from an open panel editor.
+  The long text editor handles Shift/Alt+Enter itself (`isLineBreakKey`).
+- **Touch**: a star tap and a link tap act on the first tap (the cell's own
+  click handler and the sheet's `[data-eui-sheet-link]` branch); a long
+  press for the menu must not also open a link.
+- The sheet now has `pendingCells`, `pendingCalls` and `dropPos` state;
+  `remapIds` rewrites pending cells, and undo ends the calls of the entry it
+  undoes.
+
+### Batch 5: real input in Chromium (orchestrator, 2026-11-19)
+
+The docs site was a production build served by `vite preview`. The checks used Playwright real clicks, typing, keys and clipboard (`navigator.clipboard` written first, then Ctrl+V or Ctrl+C on the cell). Drag-and-drop used dispatched `dragenter`/`dragover`/`drop` events with a `DataTransfer`, not an OS drag. Screenshot: `v02-b5-flyout.png`, the expanded record of d15.
+
+**d15 (more field types)**
+
+- **Tags:**
+  - Enter opens the list. Clicking Red and Blue keeps the list open, and Tab saves "Red, Blue" and moves to Owner.
+  - Typing `g` filters to Green and Gray, and Enter toggles Green.
+  - Pasting `Red, "Blue, dark"` gives Red and "Blue, dark", and Ctrl+Z restores it.
+- **Owner:** typing `bru` shows Bruno Vela. Clicking away saves nothing. Clicking the option saves "BV Bruno Vela" and closes the picker.
+- **Number formats:**
+  - Price: `$1,234.5` shows "$1,234.50".
+  - Discount: pasting `12.5%` shows "13%", and Ctrl+C copies `12.5%`.
+  - Time: `1h 30m` shows "1:30".
+- **Score:** clicking star 3 gives 3, and clicking it again clears it. The digit `5` gives 5 without opening an editor.
+- **Links:**
+  - Links are `span[role=link]` with tabIndex −1, so cells keep no tabbable element.
+  - Clicking `example.com` opens `https://example.com/` in a new tab, and clicking an email launches `mailto:`.
+  - Clicking the cell beside the text selects it and opens nothing.
+  - Right-clicking a link cell shows "Open link", which opens the URL.
+  - `javascript:alert(1)` renders as plain text, with no link and no "Open link".
+- **Notes:**
+  - Enter opens a textarea. Shift+Enter and Alt+Enter add lines, the editor grows from 60 to 75 px, and Enter saves the three lines.
+  - Copying two Notes cells gives the multi-line one quoted.
+- **Expanded record:** Space opens the flyout with each type's cell, and the three links have "open" buttons.
+
+**d16 (linked records, bulk resolve)**
+
+- **Picker:** typing `a` lists the five people with the current one checked. Clicking toggles, and Tab saves.
+- **Pasting the demo's three lines on row 1's Name:**
+  - The text is written at once.
+  - About 500 ms later the chips and avatars appear, and `Zed` is red with "could not be resolved" in the cell error box.
+  - The log shows one call with the distinct names per field.
+  - One Ctrl+Z undoes the paste and the resolve together, and Ctrl+Shift+Z redoes both.
+- **Abort:** pasting `Elena Mora` on a Reviewer and pressing Delete within 60 ms leaves the cell empty, and the log reads "aborted (no pending cell left)".
+- **Type and click away:** typing `Elena Mora` in an empty Reviewer's picker and clicking elsewhere resolves it ("EM Elena Mora").
+- **Fixed in the demo text:** it said "a row is added", but the demo has three rows, so the three lines add none. The sentence is removed.
+
+**d17 (attachments)**
+
+- **Panel:**
+  - Enter on an empty Files cell opens the panel ("Add files").
+  - Clicking "Add files" opens the real file chooser, and choosing a file keeps the panel open. The cell is pending, then the panel lists the file.
+  - A second file is added the same way, and "Remove file" removes one with the panel still open.
+  - Escape closes the panel with focus back in the grid, including from the file input, and Ctrl+Z restores the removed file.
+- **Drop:** a dropped `notes.txt` outlines the cell (`--dropTarget`), then shows it pending, then adds the file. A dropped `fail.txt` marks the cell "Upload failed" and shows the rejected names, as other rejections do.
+- **Pasting an image:**
+  - A pasted image (`image/png` on the clipboard) uploads to the focused cell: on an empty one, and from 2 files to 3 and 4.
+  - The 4th file shows as "+1" in the cell.
+  - A 5th paste is dropped by `maxFiles: 4` without a message.
+- **Pasting text:** text on a Files cell is rejected ("Text is not a file"). A clipboard with text, HTML and an image, starting on a Files cell, pastes as text: Files is rejected, Notes gets the next column, and Ctrl+Z undoes it.
+- **Copying:** a Files cell gives its URLs joined by `, `.
+- **Easy to misread:** clicking an already selected Files cell opens the panel (the Airtable click model). A paste then goes to the panel and does nothing; use the arrow keys to move between cells.
+
+**d04 (custom cells):** pasting `Offices` and `Garden` on Zone (rows 2–3) shows both in grey (pending). Then Offices resolves and Garden is marked "could not be resolved", and one Ctrl+Z undoes both.
+
+**Observations, not fixed:**
+
+- **One answer per text:** `@onResolve`'s result is keyed by field and text, so one name cannot resolve to different values on different rows. The request's `cells` carry each record, but the answer cannot use them. In d04, `Offices` (a North zone) was accepted on a South plant row.
+- **`maxFiles`:** files past it are dropped without a message, and the panel still offers "Add files" when the cell is full.
+- **Editor race:** the race behind LT1/LK1 (the grid scrolls to a far column a frame later and closes an editor opened in that frame) was not hit with real input here. It is left for batch 6.
+- **Fixed in the README and the docs page:** both still said "five field types". The sentence now lists the built-in types.
+
+Not checked with real input: dark mode, Firefox, Safari, a real OS drag, real Excel or Numbers clipboards, `user` with `search` and `multiple`, concurrent uploads.

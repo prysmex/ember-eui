@@ -56,6 +56,11 @@ export default class SheetCell extends Component<{
       classes.push('euiSheet__cell--selected');
       props['aria-selected'] = 'true';
     }
+    if (view?.pending) {
+      classes.push('euiSheet__cell--pending');
+      props['aria-busy'] = 'true';
+    }
+    if (view?.dropTarget) classes.push('euiSheet__cell--dropTarget');
     if (view?.errors.length) {
       classes.push('euiSheet__cell--invalid');
       props['aria-invalid'] = 'true';
@@ -113,6 +118,7 @@ export default class SheetCell extends Component<{
           @readOnly={{this.view.readOnly}}
           @onCommit={{this.onCommit}}
           @highlight={{this.highlight}}
+          @link={{this.view.link}}
         />
       {{else if this.highlight}}
         <EuiHighlight

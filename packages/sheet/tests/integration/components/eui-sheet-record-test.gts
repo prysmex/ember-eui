@@ -561,4 +561,146 @@ module('Integration | Component | EuiSheet expanded record', function (hooks) {
       assert.ok(shell(), 'the shell stays open');
     });
   }
+
+  test('RF17 the new field types in the form: their cells, editors and the open-link button', async function (assert) {
+    const opened: unknown[][] = [];
+    const original = window.open;
+    window.open = ((...args: unknown[]) => {
+      opened.push(args);
+      return null;
+    }) as typeof window.open;
+    try {
+      const fields: EuiSheetField<Task>[] = [
+        { id: 'name', label: 'Name' },
+        {
+          id: 'tags',
+          label: 'Tags',
+          type: 'multiSelect',
+          options: [
+            { value: 'a', label: 'Alpha' },
+            { value: 'b', label: 'Beta' }
+          ]
+        },
+        {
+          id: 'people',
+          label: 'People',
+          type: 'linkedRecord',
+          search: () => Promise.resolve([{ id: 'p1', label: 'Ana' }])
+        },
+        {
+          id: 'owner',
+          label: 'Owner',
+          type: 'user',
+          options: [{ id: 'u1', label: 'Ana Ruiz' }]
+        },
+        { id: 'files', label: 'Files', type: 'attachment' },
+        {
+          id: 'price',
+          label: 'Price',
+          type: 'currency',
+          currency: 'USD',
+          locale: 'en-US'
+        },
+        { id: 'pct', label: 'Pct', type: 'percent' },
+        { id: 'time', label: 'Time', type: 'duration' },
+        { id: 'stars', label: 'Stars', type: 'rating' },
+        { id: 'site', label: 'Site', type: 'url' },
+        { id: 'mail', label: 'Mail', type: 'email' },
+        { id: 'tel', label: 'Tel', type: 'phone' },
+        { id: 'notes', label: 'Notes', type: 'longText' }
+      ];
+      const store = localRecords<Task>(
+        [
+          {
+            id: 'r0',
+            name: 'n',
+            tags: ['a'],
+            people: [{ id: 'p1', label: 'Ana' }],
+            owner: { id: 'u1', label: 'Ana Ruiz' },
+            files: [
+              {
+                id: 'f',
+                name: 'f.png',
+                url: 'https://example.com/f.png',
+                type: 'image/png'
+              }
+            ],
+            price: 3,
+            pct: 0.5,
+            time: 600,
+            stars: 2,
+            site: 'example.com',
+            mail: 'a@b.co',
+            tel: '+1 555',
+            notes: 'x\ny'
+          } as unknown as Task
+        ],
+        { getRecordId: getId, fields }
+      );
+      await render(
+        <template>
+          <div style="width:800px">
+            <EuiSheet
+              @records={{store.records}}
+              @fields={{store.fields}}
+              @getRecordId={{getId}}
+              @onChange={{store.apply}}
+            />
+          </div>
+        </template>
+      );
+      await openOn(0);
+      assert.dom('[data-test-subj=euiSheetChip]', box('tags')).hasText('Alpha');
+      assert.dom('[data-test-subj=euiSheetChip]', box('people')).hasText('Ana');
+      assert.dom('.euiSheet__personName', box('owner')).hasText('Ana Ruiz');
+      assert.dom('[data-test-subj=euiSheetThumb]', box('files')).exists();
+      assert.strictEqual(box('price').textContent?.trim(), '$3.00');
+      assert.strictEqual(box('pct').textContent?.trim(), '50%');
+      assert.strictEqual(box('time').textContent?.trim(), '0:10');
+      assert.dom('[data-eui-sheet-star]', box('stars')).exists({ count: 5 });
+      assert.dom('[data-eui-sheet-link]', box('site')).hasText('example.com');
+      assert
+        .dom('[data-test-subj=euiSheetLongText]', box('notes'))
+        .hasText('x y');
+      // the open-link buttons: url, email, phone
+      const buttons = shell()!.querySelectorAll<HTMLElement>(
+        '[data-test-subj=euiSheetRecordOpenLink]'
+      );
+      assert.strictEqual(buttons.length, 3);
+      await click(buttons[0]!);
+      assert.deepEqual(opened, [['https://example.com', '_blank', 'noopener']]);
+      // a star in the form
+      await click(el('[data-eui-sheet-star="4"]', box('stars')));
+      assert.deepEqual(store.log[store.log.length - 1]!.patches, [
+        { recordId: 'r0', fieldId: 'stars', from: 2, to: 4 }
+      ]);
+      // the multi-select editor, in flow
+      await key(box('tags'), 'Enter');
+      const beta = Array.from(
+        editorFrame()!.querySelectorAll<HTMLElement>('[role=option]')
+      ).find((option) => option.textContent?.includes('Beta'))!;
+      await click(beta);
+      assert.ok(editorFrame(), 'stays open');
+      await key(editor()!, 'Tab');
+      assert.deepEqual(store.log[store.log.length - 1]!.patches, [
+        { recordId: 'r0', fieldId: 'tags', from: ['a'], to: ['a', 'b'] }
+      ]);
+      // the long text editor, in flow
+      await key(box('notes'), 'Enter');
+      const textarea = el('[data-test-subj=euiSheetTextarea]', document.body);
+      assert.dom(editorFrame()).hasClass('euiSheet__editor--inline');
+      assert.true(
+        await key(textarea, 'Enter', { shiftKey: true }),
+        'Shift+Enter'
+      );
+      await fillIn(textarea, 'x\ny\nz');
+      await key(textarea, 'Enter');
+      assert.deepEqual(store.log[store.log.length - 1]!.patches, [
+        { recordId: 'r0', fieldId: 'notes', from: 'x\ny', to: 'x\ny\nz' }
+      ]);
+      assert.ok(shell(), 'the shell stays open');
+    } finally {
+      window.open = original;
+    }
+  });
 });

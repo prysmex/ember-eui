@@ -1,5 +1,6 @@
 /**
- * Positions the open editor over its cell ('cell') or beside it ('panel'),
+ * Positions the open editor over its cell ('cell'), beside it ('panel') or
+ * from its box, growing ('expand'),
  * inside the sheet's wrapper, or in flow ('inline': the expanded record's
  * form), and turns focus leaving it into a commit (PACKAGE-DESIGN.md 8.1).
  * The grid and the form share this focus-out logic. Not a popover: no
@@ -33,7 +34,7 @@ interface EditorFrameSignature {
   Args: {
     /** Not used by 'inline'. */
     rect?: SheetEditorRect;
-    layout: 'cell' | 'panel' | 'inline';
+    layout: 'cell' | 'panel' | 'expand' | 'inline';
     placement?: 'below' | 'above';
     onFocusOut: () => void;
   };
@@ -51,6 +52,12 @@ export default class EditorFrame extends Component<EditorFrameSignature> {
     if (this.args.layout === 'cell') {
       return htmlSafe(
         `top:${top}px;left:${left}px;width:${width}px;height:${height}px;`
+      );
+    }
+    if (this.args.layout === 'expand') {
+      // starts at the cell's box; the editor grows it (long text)
+      return htmlSafe(
+        `top:${top}px;left:${left}px;min-width:${Math.max(width, 240)}px;min-height:${height}px;`
       );
     }
     const minWidth = Math.max(width, 240);

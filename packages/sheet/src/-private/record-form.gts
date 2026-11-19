@@ -26,8 +26,10 @@ export class FormEditing {
   fieldId: string;
   initialKey: string | null;
   draft: string;
-  /** Plain: the last text the editor reported, and whether it reported one. */
+  /** Plain: the last text (or value) the editor reported, and whether it reported one. */
   latest: string;
+  latestValue: unknown = undefined;
+  kind: 'text' | 'value' = 'text';
   dirty = false;
 
   constructor(
@@ -98,6 +100,15 @@ export default class RecordForm extends Component<RecordFormSignature> {
     const editing = this.editing;
     if (!editing) return;
     editing.latest = text;
+    editing.kind = 'text';
+    editing.dirty = true;
+  };
+
+  onDraftValue = (value: unknown): void => {
+    const editing = this.editing;
+    if (!editing) return;
+    editing.latestValue = value;
+    editing.kind = 'value';
     editing.dirty = true;
   };
 
@@ -117,6 +128,8 @@ export default class RecordForm extends Component<RecordFormSignature> {
       this.sheet.commitFormValue(record, field, result.value);
     } else if (result && 'text' in result) {
       this.sheet.commitFormText(record, field, result.text);
+    } else if (editing.dirty && editing.kind === 'value') {
+      this.sheet.commitFormValue(record, field, editing.latestValue);
     } else if (editing.dirty) {
       this.sheet.commitFormText(record, field, editing.latest);
     }
@@ -276,7 +289,9 @@ export default class RecordForm extends Component<RecordFormSignature> {
     if (!editing) return;
     next(() => {
       sheet.formEditorOpen = false;
-      if (editing.dirty && field) {
+      if (editing.dirty && field && editing.kind === 'value') {
+        sheet.commitFormValue(editing.record, field, editing.latestValue);
+      } else if (editing.dirty && field) {
         sheet.commitFormText(editing.record, field, editing.latest);
       }
     });
@@ -298,6 +313,7 @@ export default class RecordForm extends Component<RecordFormSignature> {
           @onBoxKeyDown={{this.onBoxKeyDown}}
           @onBoxClick={{this.onBoxClick}}
           @onDraftChange={{this.onDraftChange}}
+          @onDraftValue={{this.onDraftValue}}
           @onCommit={{this.onEditorCommit}}
           @onCancel={{this.cancel}}
           @onFocusOut={{this.onEditorFocusOut}}

@@ -10,6 +10,8 @@ import { fn } from '@ember/helper';
 import { on } from '@ember/modifier';
 import { guidFor } from '@ember/object/internals';
 
+import EuiButtonIcon from '@ember-eui/core/components/eui-button-icon';
+
 import EditorFrame from './editor-frame.gts';
 
 import type EuiSheet from '../components/eui-sheet.gts';
@@ -27,6 +29,7 @@ interface RecordFormFieldSignature {
     onBoxKeyDown: (field: EuiSheetField, event: KeyboardEvent) => void;
     onBoxClick: (field: EuiSheetField) => void;
     onDraftChange: (text: string) => void;
+    onDraftValue: (value: unknown) => void;
     onCommit: (
       result?: SheetEditorResult<unknown>,
       options?: { move?: [number, number] }
@@ -75,6 +78,27 @@ export default class RecordFormField extends Component<RecordFormFieldSignature>
     this.args.sheet.commitFormValue(this.args.record, this.args.field, value);
   };
 
+  /** The editor's `@onSave`: saves and keeps it open. */
+  onSave = (value: unknown): void => {
+    this.args.sheet.commitFormValue(this.args.record, this.args.field, value);
+  };
+
+  /** The editor's `@onUpload` (fields with `upload`). */
+  get onUpload(): ((files: File[]) => Promise<void>) | undefined {
+    const { sheet, field, record } = this.args;
+    if (typeof field['upload'] !== 'function') return undefined;
+    return (files: File[]) =>
+      sheet.uploadFiles(sheet.args.getRecordId(record), field, files);
+  }
+
+  get openLinkLabel(): string {
+    return this.args.sheet.messages.openLink();
+  }
+
+  openLink = (): void => {
+    this.args.sheet.openLink(this.view.link);
+  };
+
   <template>
     <div
       class="euiSheetRecord__field"
@@ -94,7 +118,8 @@ export default class RecordFormField extends Component<RecordFormFieldSignature>
         {{#if this.editable}}
           <div
             class="euiSheetRecord__box
-              {{if this.view.errors.length 'euiSheetRecord__box--invalid'}}"
+              {{if this.view.errors.length 'euiSheetRecord__box--invalid'}}
+              {{if this.view.link 'euiSheetRecord__box--withLink'}}"
             role="button"
             tabindex="0"
             aria-labelledby={{this.labelId}}
@@ -113,6 +138,7 @@ export default class RecordFormField extends Component<RecordFormFieldSignature>
                 @errors={{this.view.errors}}
                 @readOnly={{this.view.readOnly}}
                 @onCommit={{this.onCellCommit}}
+                @link={{this.view.link}}
               />
             {{else}}
               {{this.view.text}}
@@ -121,7 +147,8 @@ export default class RecordFormField extends Component<RecordFormFieldSignature>
         {{else}}
           <div
             class="euiSheetRecord__box euiSheetRecord__box--readOnly
-              {{if this.view.errors.length 'euiSheetRecord__box--invalid'}}"
+              {{if this.view.errors.length 'euiSheetRecord__box--invalid'}}
+              {{if this.view.link 'euiSheetRecord__box--withLink'}}"
             aria-labelledby={{this.labelId}}
             data-eui-sheet-record-box={{@field.id}}
             data-test-subj="euiSheetRecordBox"
@@ -135,11 +162,22 @@ export default class RecordFormField extends Component<RecordFormFieldSignature>
                 @errors={{this.view.errors}}
                 @readOnly={{true}}
                 @onCommit={{this.onCellCommit}}
+                @link={{this.view.link}}
               />
             {{else}}
               {{this.view.text}}
             {{/if}}
           </div>
+        {{/if}}
+        {{#if this.view.link}}
+          <EuiButtonIcon
+            @iconType="popout"
+            class="euiSheetRecord__openLink"
+            aria-label={{this.openLinkLabel}}
+            title={{this.openLinkLabel}}
+            data-test-subj="euiSheetRecordOpenLink"
+            {{on "click" this.openLink}}
+          />
         {{/if}}
       {{/if}}
       {{#if this.editing}}
@@ -152,6 +190,9 @@ export default class RecordFormField extends Component<RecordFormFieldSignature>
               @draft={{this.editing.draft}}
               @initialKey={{this.editing.initialKey}}
               @onDraftChange={{@onDraftChange}}
+              @onDraftValue={{@onDraftValue}}
+              @onSave={{this.onSave}}
+              @onUpload={{this.onUpload}}
               @onCommit={{@onCommit}}
               @onCancel={{@onCancel}}
               @messages={{@sheet.messages}}

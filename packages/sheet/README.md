@@ -6,8 +6,9 @@ controlled: you pass the records in, and the sheet calls `@onChange` with
 a change set (what the user typed, cleared or pasted); you apply it to your
 own store. It edits with the keyboard, selects ranges, copies and pastes
 blocks as TSV (to and from spreadsheets), and shows cell errors. It has
-five field types (text, number, checkbox, single select, date), and you
-can add your own cells and editors.
+built-in field types for text, numbers, checkboxes, selects, dates,
+linked records, users, attachments, currency, percent, duration, rating,
+links and long text, and you can add your own cells and editors.
 
 ## Install
 
@@ -108,6 +109,7 @@ Arguments of `EuiSheet`:
 | `@checkedRecordIds`, `@onCheckedChange`                           | Checked rows; controlled with the handler, local without it.                                                                                                                                                           |
 | `@expandedRecordId`, `@onExpandedRecordChange`, `@expandedRecord` | The expanded record (controlled the same way), in a `'flyout'` (default) or a `'modal'`.                                                                                                                               |
 | `@rowActions`                                                     | Your row menu items: `{ id, label, icon?, color?, isDisabled?(records), onSelect(records) }`.                                                                                                                          |
+| `@onResolve`                                                      | `(requests, { signal }) => Promise<{ [fieldId]: { [text]: value \| null } }>`: bulk resolve of typed or pasted text (linked records, users, your types). Without it such text is rejected.                             |
 
 Blocks: `<:toolbar as |sheet|>` (above the grid) and `<:footer as |sheet|>`
 (below it) take your own controls. Both yield `{ api, fields, hiddenFields,
@@ -318,7 +320,8 @@ come from the EUI theme, so the sheet follows light and dark: put it in an
 `--euiSheet-text`, `--euiSheet-textSubdued`, `--euiSheet-danger`,
 `--euiSheet-textDanger`, `--euiSheet-dangerFilled`,
 `--euiSheet-textInverse`, `--euiSheet-shadow`, `--euiSheet-subdued`,
-`--euiSheet-border`, `--euiSheet-highlight`) set by a class on the sheet's
+`--euiSheet-border`, `--euiSheet-link`, `--euiSheet-star`,
+`--euiSheet-highlight`) set by a class on the sheet's
 wrapper. To change one, set it on the sheet itself (`<EuiSheet
 style="--euiSheet-selected: #E6F0FF" …>`) or with a more specific
 selector: set on a parent element it loses to the sheet's class. Editors
@@ -352,34 +355,81 @@ focus trap is off, so a wormholed calendar works.
 
 ## Field types
 
-| Type             | Value                         | Accepted text                                                                           | Options                                                           |
-| ---------------- | ----------------------------- | --------------------------------------------------------------------------------------- | ----------------------------------------------------------------- |
-| `text` (default) | string                        | anything                                                                                | `maxLength`, `pattern`, `patternMessage`                          |
-| `number`         | number or `null`              | `12`, `-1.5`, `1,234.5` (no exponent, currency or `%`)                                  | `min`, `max`, `decimalSeparator` (`'.'` or `','`)                 |
-| `checkbox`       | boolean                       | `true 1 yes y x ✓ si sí`, `false 0 no n` and empty                                      |                                                                   |
-| `singleSelect`   | an option's `value` or `null` | an option's label (any case) or value                                                   | `options` (an array or a function of the record), `createOnPaste` |
-| `date`           | ISO `YYYY-MM-DD` or `null`    | `2026-11-19` (also with a time), `2026/11/19`, `19/11/2026`, `19-11-2026`, `19.11.2026` | `dateOrder` (`'dmy'` default, or `'mdy'`), `min`, `max` (ISO)     |
+| Type                    | Value                                                            | Accepted text                                                                           | Options                                                           |
+| ----------------------- | ---------------------------------------------------------------- | --------------------------------------------------------------------------------------- | ----------------------------------------------------------------- |
+| `text` (default)        | string                                                           | anything                                                                                | `maxLength`, `pattern`, `patternMessage`                          |
+| `number`                | number or `null`                                                 | `12`, `-1.5`, `1,234.5` (no exponent, currency or `%`)                                  | `min`, `max`, `decimalSeparator` (`'.'` or `','`)                 |
+| `checkbox`              | boolean                                                          | `true 1 yes y x ✓ si sí`, `false 0 no n` and empty                                      |                                                                   |
+| `singleSelect`          | an option's `value` or `null`                                    | an option's label (any case) or value                                                   | `options` (an array or a function of the record), `createOnPaste` |
+| `date`                  | ISO `YYYY-MM-DD` or `null`                                       | `2026-11-19` (also with a time), `2026/11/19`, `19/11/2026`, `19-11-2026`, `19.11.2026` | `dateOrder` (`'dmy'` default, or `'mdy'`), `min`, `max` (ISO)     |
+| `multiSelect`           | an array of option values                                        | labels or values separated by `,` (a quoted part keeps its commas)                      | `options`, `createOnPaste`                                        |
+| `linkedRecord`          | an array of `{ id, label }`                                      | resolved by `@onResolve`                                                                | `search(query, { record, signal })`, `multiple` (default `true`)  |
+| `user`                  | `{ id, label, avatarUrl? }` or `null` (an array with `multiple`) | with `options`: a label or an `email`; else resolved by `@onResolve`                    | `options` or `search`, `multiple`                                 |
+| `attachment`            | an array of `{ id, name, url, type?, size?, thumbnailUrl? }`     | none (files are uploaded: picker, drop, pasted files)                                   | `upload(files, { record, field, signal })`, `accept`, `maxFiles`  |
+| `currency`              | number or `null`                                                 | `$1,234.50`, `MXN 12`, `12`                                                             | `currency`, `locale`, `precision`, `min`, `max`                   |
+| `percent`               | a fraction or `null`                                             | `25%` or `25` (both `0.25`)                                                             | `precision`, `min`, `max`                                         |
+| `duration`              | seconds or `null`                                                | `1:30`, `1:30:00`, `1h 30m`, `90` (minutes; seconds with `'h:mm:ss'`)                   | `durationFormat` (`'h:mm'` or `'h:mm:ss'`)                        |
+| `rating`                | 1 to `max`, or `null`                                            | `0` to `max`                                                                            | `max` (default 5)                                                 |
+| `url`, `email`, `phone` | string                                                           | anything (validated: a web address, `x@y.z`, digits and `+ ( ) -`)                      | `maxLength`                                                       |
+| `longText`              | string with line breaks                                          | anything                                                                                | `maxLength`                                                       |
 
 Dates are shown as `DD/MM/YYYY` (or `MM/DD/YYYY`) and copied as ISO.
 
+Multi-select: chips and a list editor (a click or Enter toggles, Tab or a
+click elsewhere saves). Linked record and user: chips or avatars and a
+picker over `search` (or `options`). Attachment: thumbnails, an editor with
+links, remove buttons and a file picker; files dropped or pasted on a cell
+are uploaded; a copy gives the URLs. Rating: stars, a click or a digit sets
+it. URL, email, phone: link-styled text; a click on it opens the link in a
+new tab (only `http:`, `https:`, `mailto:`, `tel:`), the row menu has "Open
+link". Long text: a text area that grows from the cell; Shift+Enter or
+Alt+Enter adds a line, Enter saves.
+
+Array values are compared by content (`equals`); the sheet never changes a
+value in place, and your store should not either.
+
+### Bulk resolve
+
+With `@onResolve`, a paste writes what it can at once and shows the cells
+that need your API as pending; then the sheet calls `@onResolve` once, one
+request per field (`{ fieldId, texts, cells }`), and writes the answers as
+a second change set (source `'resolve'`), undone together with the paste.
+A text answered `null`, or a call that rejects, is a rejection. Writing a
+pending cell again drops its result; when no cell of a call is left, or
+the sheet is destroyed, its `signal` is aborted.
+
+```ts
+onResolve = async (requests, { signal }) => {
+  const result = {};
+  for (const { fieldId, texts } of requests) {
+    const found = await api.lookup(fieldId, texts, { signal });
+    result[fieldId] = Object.fromEntries(
+      texts.map((t) => [t, found.find((r) => r.label === t) ?? null])
+    );
+  }
+  return result;
+};
+```
+
 ## Keyboard
 
-| Key                                  | On a cell                                                                                                   | In an editor                |
-| ------------------------------------ | ----------------------------------------------------------------------------------------------------------- | --------------------------- |
-| A printable key                      | Opens the editor with that character (a date: digits only; never on a checkbox)                             | Types                       |
-| Enter, F2, double-click              | Opens the editor on the current value (a date: the browser's date input)                                    | Enter saves and goes down   |
-| Tab, Shift+Tab                       | The grid's                                                                                                  | Saves and goes right / left |
-| Escape                               | The grid's                                                                                                  | Closes without saving       |
-| Space                                | Toggles a checkbox; elsewhere expands the record                                                            | Types                       |
-| Shift+Enter                          | Adds a record below (as Enter when inserting is off)                                                        | Saves and goes down         |
-| Shift+F10, ContextMenu               | Opens the row menu                                                                                          |                             |
-| Home, Ctrl+Home                      | The first field of the row, of the sheet (ArrowLeft from it: the row number)                                | Native                      |
-| Delete, Backspace                    | Clears the selected range                                                                                   | Deletes                     |
-| Shift+arrows                         | Selects a range                                                                                             | Moves in the text           |
-| Ctrl/Cmd+A                           | Selects every cell (focus stays)                                                                            | Native                      |
-| Ctrl/Cmd+C, Ctrl/Cmd+V               | Copies / pastes the range as TSV (cells with tabs or line breaks quoted, as Excel does)                     | Native                      |
-| Ctrl/Cmd+D                           | Fill down: each column's top value into the range's cells below it; on one row, the value of the cell above | Native                      |
-| Ctrl/Cmd+Z; Ctrl/Cmd+Shift+Z, Ctrl+Y | Undo; redo                                                                                                  | Native                      |
+| Key                                  | On a cell                                                                                                   | In an editor                                                    |
+| ------------------------------------ | ----------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------- |
+| A printable key                      | Opens the editor with that character (a date: digits only; never on a checkbox)                             | Types                                                           |
+| Enter, F2, double-click              | Opens the editor on the current value (a date: the browser's date input)                                    | Enter saves and goes down                                       |
+| Tab, Shift+Tab                       | The grid's                                                                                                  | Saves and goes right / left                                     |
+| Escape                               | The grid's                                                                                                  | Closes without saving                                           |
+| Space                                | Toggles a checkbox; elsewhere expands the record                                                            | Types                                                           |
+| A digit                              | Sets a rating (0 clears)                                                                                    |                                                                 |
+| Shift+Enter                          | Adds a record below (as Enter when inserting is off)                                                        | Saves and goes down; in long text, adds a line (also Alt+Enter) |
+| Shift+F10, ContextMenu               | Opens the row menu                                                                                          |                                                                 |
+| Home, Ctrl+Home                      | The first field of the row, of the sheet (ArrowLeft from it: the row number)                                | Native                                                          |
+| Delete, Backspace                    | Clears the selected range                                                                                   | Deletes                                                         |
+| Shift+arrows                         | Selects a range                                                                                             | Moves in the text                                               |
+| Ctrl/Cmd+A                           | Selects every cell (focus stays)                                                                            | Native                                                          |
+| Ctrl/Cmd+C, Ctrl/Cmd+V               | Copies / pastes the range as TSV (cells with tabs or line breaks quoted, as Excel does)                     | Native                                                          |
+| Ctrl/Cmd+D                           | Fill down: each column's top value into the range's cells below it; on one row, the value of the cell above | Native                                                          |
+| Ctrl/Cmd+Z; Ctrl/Cmd+Shift+Z, Ctrl+Y | Undo; redo                                                                                                  | Native                                                          |
 
 In a select editor, typing filters the options, ArrowUp/ArrowDown move,
 Enter or a click picks. A click on another cell, or scrolling the grid,
@@ -404,7 +454,9 @@ neither edits nor toggles a checkbox, and Shift+arrows continue from it (no
 scrolling at the grid's edge yet). Select
 and date cells show a ▾ or calendar button on the hovered or selected cell
 that opens the editor in one click; a click anywhere in a checkbox cell
-toggles it. A field type gets the same with two optional properties:
+toggles it. A click on a rating's star sets it; a click on a link's text
+opens it (a click beside it selects). Files dragged onto an attachment cell
+are uploaded. A field type gets the same with two optional properties:
 
 ```ts
 const zoneType: EuiSheetFieldType<Zone | null> = {
@@ -474,8 +526,11 @@ like EUI's own, with English defaults and these tokens:
 (`{count}`), `expandRecord`, `copyRow`, `copyRows` (`{count}`),
 `deleteRecord`, `deleteRecords` (`{count}`), `selectRow`, `selectAllRows`,
 `rowNumber` (`{n}`), `recordTitle` (`{n}`), `previousRecord`, `nextRecord`,
-`close`, `filterByField`, and `reapply` (the EmberSearchUi connector's
-button) (all under `euiSheet.`).
+`close`, `filterByField`, `reapply` (the EmberSearchUi connector's
+button), and for the field types of v0.2 `notAnAttachment`, `uploadFailed`,
+`notAUrl` (`{text}`), `notAnEmail` (`{text}`), `notAPhone` (`{text}`),
+`notADuration` (`{text}`), `openLink`, `removeFile`, `addFiles`,
+`loading`, `noMatches`, `searchFailed` (all under `euiSheet.`).
 
 ```ts
 this.euiI18n.addTranslations({
@@ -492,17 +547,20 @@ A field type is an object: `parse(text, field, context)` returns
 `{ value }`, `{ error }` (a rejection) or `{ unresolved }`; `format(value,
 field, context)` gives the cell's text; optional `copyText`, `validate`,
 `isEmpty`, `compare`, `toNumber` (for `summarize`), `navKey` (a key that
-sets the value without an editor). The Ember layer adds optional
-components and key rules:
+sets the value without an editor), `equals(a, b)` (needed for array or
+object values), `resolve: { parts, combine }` (how a cell's text splits for
+`@onResolve`, and how the answers make its value; default: one part, its
+value), and `link(value, field)` (the link a click opens). The Ember layer
+adds optional components and key rules:
 
-| Key                 |                                                                                                                                                                                   |
-| ------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `cell`              | Display component: `@value @text @field @record @errors @readOnly @onCommit(value) @highlight`. It must not render a tabbable element.                                            |
-| `editor`            | Editor component: `@value @field @record @draft @initialKey @onDraftChange(text) @onCommit(result?, { move? }) @onCancel @messages @themeClass`. It focuses itself when inserted. |
-| `editorLayout`      | `'cell'` (over the cell, default) or `'panel'` (a panel below or above it).                                                                                                       |
-| `opensOnKey(key)`   | Whether a printable key opens the editor.                                                                                                                                         |
-| `handlesKey(event)` | Keys the open editor handles itself (the sheet then leaves them alone; Enter, Tab and Escape are otherwise the sheet's).                                                          |
-| `schema`            | The grid schema of the column (`'numeric'`, `'datetime'`, `'boolean'`, `'currency'`): the column menu's sort labels and the alignment. Built-ins: number, date, checkbox.         |
+| Key                 |                                                                                                                                                                                                                                                                                                                                   |
+| ------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `cell`              | Display component: `@value @text @field @record @errors @readOnly @onCommit(value) @highlight @link`. It must not render a tabbable element (a link is a `<span role="link" data-eui-sheet-link>`, never `<a href>`).                                                                                                             |
+| `editor`            | Editor component: `@value @field @record @draft @initialKey @onDraftChange(text) @onDraftValue(value) @onSave(value) @onUpload(files) @onCommit(result?, { move? }) @onCancel @messages @themeClass`. It focuses itself when inserted. `@onDraftValue` reports a value to save when focus leaves; `@onSave` saves and stays open. |
+| `editorLayout`      | `'cell'` (over the cell, default), `'panel'` (a panel below or above it) or `'expand'` (from the cell's box, growing).                                                                                                                                                                                                            |
+| `opensOnKey(key)`   | Whether a printable key opens the editor.                                                                                                                                                                                                                                                                                         |
+| `handlesKey(event)` | Keys the open editor handles itself (the sheet then leaves them alone; Enter, Tab and Escape are otherwise the sheet's).                                                                                                                                                                                                          |
+| `schema`            | The grid schema of the column (`'numeric'`, `'datetime'`, `'boolean'`, `'currency'`): the column menu's sort labels and the alignment. Built-ins: number, date, checkbox.                                                                                                                                                         |
 
 Register types with `@fieldTypes={{this.fieldTypes}}` and use them with
 `type: 'name'`. An editor that renders part of itself elsewhere (a
@@ -530,8 +588,10 @@ export const zoneType: EuiSheetFieldType<Zone | null> = {
 ```
 
 The built-in types are exported (`textType`, `numberType`, `checkboxType`,
-`singleSelectType`, `dateType`, and `builtInSheetFieldTypes`) so you can
-change one part of them.
+`singleSelectType`, `dateType`, `multiSelectType`, `linkedRecordType`,
+`userType`, `attachmentType`, `currencyType`, `percentType`, `durationType`,
+`ratingType`, `urlType`, `emailType`, `phoneType`, `longTextType`, and
+`builtInSheetFieldTypes`) so you can change one part of them.
 
 ## Using another date picker (e.g. @ember-eui/flatpickr)
 
@@ -606,5 +666,5 @@ version you use; this package does not depend on it.
 
 No cut, fill handle, fill right, auto-scroll while dragging, grouping,
 fullscreen or IME composition yet. Sorting, filtering, search and paging
-are the owner's (see above, and the EmberSearchUi connector). Pasted text in a field whose type returns
-`{ unresolved }` is a rejection (bulk resolve on paste is planned).
+are the owner's (see above, and the EmberSearchUi connector). Uploads show
+no progress (the cell is pending).

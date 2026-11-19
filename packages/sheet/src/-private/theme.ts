@@ -37,6 +37,9 @@ export const sheetThemeVars = ({ euiTheme }: EuiThemeStyleContext) => {
     '--euiSheet-border': colors.borderBaseSubdued,
     // the theme's shadow colour is opaque; the error box's shadow is light
     '--euiSheet-shadow': withAlpha(colors.shadow, 0.2),
-    '--euiSheet-highlight': colors.backgroundLightText
+    '--euiSheet-highlight': colors.backgroundLightText,
+    // batch 5: link text (url, email, phone, file names) and rating stars
+    '--euiSheet-link': colors.textPrimary,
+    '--euiSheet-star': colors.textWarning
   };
 };

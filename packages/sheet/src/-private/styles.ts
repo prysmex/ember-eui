@@ -72,6 +72,29 @@ const CSS = `
 .euiSheet .euiDataGridHeaderCell.euiSheet__frozenHeader { position: sticky; z-index: 3; background-color: inherit; }
 .euiSheet--scrolledX .euiSheet__frozenEdge { box-shadow: 4px 0 4px -2px var(--euiSheet-shadow, rgba(0, 0, 0, 0.2)); }
 .euiSheet--scrolledX .euiSheet__frozenEdge.euiSheet__cell--invalid { box-shadow: inset 0 0 0 1px var(--euiSheet-danger, #BD271E), 4px 0 4px -2px var(--euiSheet-shadow, rgba(0, 0, 0, 0.2)); }
+.euiSheet__chips, .euiSheet__people, .euiSheet__files { display: inline-flex; align-items: center; gap: 4px; max-width: 100%; overflow: hidden; white-space: nowrap; vertical-align: middle; }
+.euiSheet__chips .euiBadge { min-width: 0; flex-shrink: 1; margin: 0; }
+.euiSheet__more { flex-shrink: 0; font-size: 12px; color: var(--euiSheet-textSubdued, #69707D); }
+.euiSheet__person { display: inline-flex; align-items: center; gap: 4px; min-width: 0; }
+.euiSheet__personName, .euiSheet__fileName { overflow: hidden; text-overflow: ellipsis; }
+.euiSheet__thumb { flex-shrink: 0; width: 24px; height: 24px; object-fit: cover; border: 1px solid var(--euiSheet-border, #D3DAE6); border-radius: 3px; vertical-align: middle; }
+.euiSheet__file { display: inline-flex; align-items: center; gap: 2px; min-width: 0; max-width: 120px; }
+.euiSheet__rating { display: inline-flex; gap: 1px; line-height: 1; }
+.euiSheet__star { color: var(--euiSheet-border, #D3DAE6); font-size: 16px; cursor: pointer; }
+.euiSheet__star--on { color: var(--euiSheet-star, #F5A700); }
+.euiSheet__link { color: var(--euiSheet-link, #0B64DD); text-decoration: underline; cursor: pointer; }
+.euiSheet__longText { white-space: pre-line; }
+.euiSheet .euiDataGridRowCell.euiSheet__cell--pending { color: var(--euiSheet-textSubdued, #69707D); font-style: italic; }
+.euiSheet .euiDataGridRowCell.euiSheet__cell--dropTarget { box-shadow: inset 0 0 0 2px var(--euiSheet-primary, #0B64DD); }
+.euiSheet__editor--expand { z-index: 3; }
+.euiSheet__textarea { display: block; box-sizing: border-box; width: 100%; min-height: inherit; max-height: 240px; margin: 0; padding: 6px; border: 2px solid var(--euiSheet-primary, #0B64DD); background: var(--euiSheet-plain, #FFF); color: var(--euiSheet-text, #343741); font: inherit; line-height: 1.4; resize: none; overflow-y: auto; }
+.euiSheet__editor--inline .euiSheet__textarea { min-height: 88px; border-radius: 4px; }
+.euiSheet__attachments { outline: none; }
+.euiSheet__attachment { display: flex; align-items: center; gap: 8px; padding: 2px 0 6px; }
+.euiSheet__attachmentName { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--euiSheet-link, #0B64DD); }
+.euiSheet__attachmentError { margin-top: 4px; font-size: 12px; line-height: 16px; color: var(--euiSheet-textDanger, #BD271E); }
+.euiSheetRecord__box--withLink { display: inline-block; width: calc(100% - 36px); vertical-align: top; }
+.euiSheetRecord__openLink { margin-left: 4px; vertical-align: top; }
 ${frozenHeaderLefts()}
 `;
 

@@ -15,9 +15,12 @@ Position is kept and marked "is not an option" rather than cleared.
 Company is read-only unless Contractor is checked, and required when it
 is.
 
-A zone cannot be pasted yet: its type returns `{ unresolved }` for
-text, which v0.1 rejects ("could not be resolved"), so copying a Zone
-cell and pasting it gives an error.
+A zone can be pasted: its type returns `{ unresolved }` for text, and
+the sheet's `@onResolve` looks the names up in the same fake API (400 ms).
+Copy a Zone cell (or type `Assembly`) and paste it on another row: the
+cell shows the text in grey while it is pending, then the zone. A name
+that is no zone (`Garden`) is marked "could not be resolved". Without
+`@onResolve` such a paste is rejected.
 
 </EuiText>
 
@@ -130,10 +133,30 @@ class ZoneEditor extends Component {
   </template>
 }
 
+/** The fake API's bulk lookup: each name → its zone, or null. */
+function resolveZones(names) {
+  return new Promise((resolve) => {
+    setTimeout(() => {
+      const found = {};
+      for (const name of names) {
+        const lower = name.toLowerCase();
+        let zone = null;
+        for (const [site, zones] of Object.entries(ZONES)) {
+          const match = zones.find((z) => z.toLowerCase() === lower);
+          if (match) zone = { id: `${site}-${match}`, label: match };
+        }
+        found[name] = zone;
+      }
+      resolve(found);
+    }, 400);
+  });
+}
+
 const zoneType = {
   parse: (text) => (text.trim() === '' ? { value: null } : { unresolved: text.trim() }),
   format: (value) => value?.label ?? '',
   isEmpty: (value) => value == null,
+  equals: (a, b) => (a?.id ?? null) === (b?.id ?? null),
   editor: ZoneEditor,
   editorLayout: 'panel',
   // a ▾ button on the hovered or selected cell opens the picker in one click
@@ -201,6 +224,13 @@ export default class SheetCustomCells extends Component {
   getId = (record) => record.id;
   store = localRecords(RECORDS, { getRecordId: this.getId, fields: FIELDS });
 
+  // bulk resolve: one call per paste, the distinct names per field
+  onResolve = async (requests) => {
+    const result = {};
+    for (const { fieldId, texts } of requests) result[fieldId] = await resolveZones(texts);
+    return result;
+  };
+
   <template>
     <EuiSheet
       @fields={{this.store.fields}}
@@ -208,6 +238,7 @@ export default class SheetCustomCells extends Component {
       @getRecordId={{this.getId}}
       @onChange={{this.store.apply}}
       @fieldTypes={{this.fieldTypes}}
+      @onResolve={{this.onResolve}}
       @height={{220}}
       @ariaLabel='Workers'
     />

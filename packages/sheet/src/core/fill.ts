@@ -2,7 +2,7 @@
  * Range fill: fill down (Ctrl/Cmd+D) and tiling a pasted block over a
  * larger selection, both Excel-style.
  */
-import { isReadOnly, valueOf } from './fields.ts';
+import { isReadOnly, resolveType, sameFieldValue, valueOf } from './fields.ts';
 
 import type { CellPatch, ChangeSet, Range, SheetContext } from './types.ts';
 
@@ -31,12 +31,13 @@ export function fillDown<T>(
   const patches: CellPatch[] = [];
   for (let col = left; col <= right; col++) {
     const field = ctx.fields[col]!;
+    const type = resolveType(ctx.types, field);
     const value = valueOf(source, field.id);
     for (let row = firstTarget; row <= bottom; row++) {
       const record = ctx.records[row]!;
       if (isReadOnly(ctx, field, record)) continue;
       const from = valueOf(record, field.id);
-      if (Object.is(from, value)) continue;
+      if (sameFieldValue(type, from, value)) continue;
       patches.push({
         recordId: ctx.getRecordId(record),
         fieldId: field.id,

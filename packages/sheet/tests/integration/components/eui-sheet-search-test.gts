@@ -13,6 +13,7 @@ import { applyChangeSet } from '#src/core/index.ts';
 import { EuiSheetSearch } from '#src/search-ui/index.ts';
 import {
   cell,
+  clipboard,
   editor,
   el,
   focusCell,
@@ -424,5 +425,49 @@ module('Integration | Component | EuiSheetSearch', function (hooks) {
     assert.deepEqual(column(0, 1), ['Ana'], 'Eva is not in the results');
     assert.strictEqual(editor(), null, 'the editor closed');
     assert.strictEqual(store.changes.length, 1, 'without a change set');
+  });
+
+  test('SS10 @onResolve is forwarded: a paste resolves through the owner and goes through search.apply', async function (assert) {
+    const { store, driver } = setup(3);
+    drivers.push(driver);
+    const placeType = {
+      parse: (t: string) =>
+        t.trim() === '' ? { value: '' } : { unresolved: t.trim() },
+      format: (value: unknown) => (typeof value === 'string' ? value : '')
+    };
+    const fieldTypes = { place: placeType };
+    const fields: EuiSheetField<Doc>[] = [
+      { id: 'name', label: 'Name' },
+      { id: 'city', label: 'City', type: 'place' }
+    ];
+    const asked: string[][] = [];
+    const onResolve = (requests: { texts: string[] }[]) => {
+      asked.push(requests.flatMap((request) => request.texts));
+      return Promise.resolve({ city: { Paris: 'Paris (FR)' } });
+    };
+    await render(
+      <template>
+        <div style="width:700px">
+          <EuiSheetSearch
+            @driver={{driver}}
+            @getRecordId={{getId}}
+            @onChange={{store.write}}
+            @fields={{fields}}
+            @fieldTypes={{fieldTypes}}
+            @onResolve={{onResolve}}
+            @height={{300}}
+          />
+        </div>
+      </template>
+    );
+    await focusCell(0, 1);
+    await clipboard('paste', 'Paris');
+    assert.deepEqual(asked, [['Paris']]);
+    assert.deepEqual(
+      store.changes.map((change) => change.source),
+      ['resolve']
+    );
+    assert.strictEqual(text(0, 1), 'Paris (FR)', 'shown over the results');
+    assert.strictEqual(store.docs[0]!.city, 'Paris (FR)');
   });
 });

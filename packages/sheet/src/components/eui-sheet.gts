@@ -41,9 +41,14 @@ import {
   mergeErrors,
   parseTsv,
   pasteMatrix,
+  planCommit,
+  planPaste,
   rangeMatrix,
   redoChangeSet,
+  resolveCells,
   resolveType,
+  safeLink,
+  sameFieldValue,
   tileMatrix,
   toRange,
   toTsv,
@@ -83,9 +88,13 @@ import type {
   CellErrors,
   ChangeSet,
   EuiSheetField,
+  PendingCell,
   Pos,
   Range,
   RecordId,
+  ResolvePlan,
+  ResolveResult,
+  SheetAttachment,
   SheetContext,
   RecordInsert,
   SheetMessages
@@ -132,6 +141,33 @@ export interface CellView {
   errors: string[];
   selected: boolean;
   readOnly: boolean;
+  /** Waiting for `@onResolve` or an upload: no errors shown until it settles. */
+  pending: boolean;
+  /** `type.link(value)` when its scheme is one the sheet opens. */
+  link: string | undefined;
+  /** Files dragged over the cell will be dropped on it. */
+  dropTarget: boolean;
+}
+
+/**
+ * A cell waiting for `@onResolve` (text: what was typed or pasted, shown
+ * meanwhile) or for an upload (text: null, the value stays shown).
+ */
+interface PendingEntry {
+  text: string | null;
+  /** The call it waits for. */
+  token: object;
+  /** The cell to resolve; none for an upload. */
+  cell?: PendingCell;
+}
+
+/** One `@onResolve` call or upload in flight. */
+interface PendingCall {
+  kind: 'resolve' | 'upload';
+  controller: AbortController;
+  waiter: unknown;
+  /** The history entry of the paste or edit that asked for it: the resolve is merged into it. */
+  entry: HistoryEntry | null;
 }
 
 /**
@@ -155,10 +191,12 @@ class Editing {
   field: EuiSheetField;
   type: EuiSheetFieldType;
   @tracked rect: SheetEditorRect;
-  layout: 'cell' | 'panel';
+  layout: 'cell' | 'panel' | 'expand';
   @tracked placement: 'below' | 'above';
   initialKey: string | null;
   draft: string;
+  /** The editor's `@onUpload` (attachment fields with `upload`). */
+  onUpload?: (files: File[]) => Promise<void>;
 
   constructor(init: {
     pos: Pos;
@@ -166,7 +204,7 @@ class Editing {
     field: EuiSheetField;
     type: EuiSheetFieldType;
     rect: SheetEditorRect;
-    layout: 'cell' | 'panel';
+    layout: 'cell' | 'panel' | 'expand';
     placement: 'below' | 'above';
     initialKey: string | null;
     draft: string;
@@ -351,6 +389,26 @@ let tempIdCounter = 0;
 const nextTempId = (): string => `new-${++tempIdCounter}`;
 
 const validateWaiter = buildWaiter('@ember-eui/sheet:validate');
+const resolveWaiter = buildWaiter('@ember-eui/sheet:resolve');
+
+type UploadField = EuiSheetField & {
+  upload?: (
+    files: File[],
+    context: { record: unknown; field: EuiSheetField; signal: AbortSignal }
+  ) => Promise<SheetAttachment[]>;
+  maxFiles?: number;
+};
+
+/** The field's `upload`, when it has one (attachment fields). */
+function uploadOf(field: EuiSheetField): UploadField['upload'] {
+  const upload = (field as UploadField).upload;
+  return typeof upload === 'function' ? upload : undefined;
+}
+
+/** A drag that carries files. */
+function hasFiles(event: DragEvent): boolean {
+  return Array.from(event.dataTransfer?.types ?? []).includes('Files');
+}
 
 const EMPTY_CHANGE_SET: ChangeSet = {
   source: 'undo',
@@ -468,6 +526,12 @@ export default class EuiSheet<T extends object> extends Component<
   @tracked localExpandedId: RecordId | null = null;
   /** The open row menu. */
   @tracked menu: MenuState | null = null;
+  /** Cells waiting for `@onResolve` or an upload, by cellKey. */
+  @tracked pendingCells: ReadonlyMap<string, PendingEntry> = new Map();
+  /** The attachment cell files are dragged over. */
+  @tracked dropPos: Pos | null = null;
+  /** The `@onResolve` calls and uploads in flight, by token. */
+  pendingCalls = new Map<object, PendingCall>();
   /**
    * An editor is open in the expanded record's form: the shell's focus
    * trap is paused, so focus can reach a surface the editor renders
@@ -486,9 +550,11 @@ export default class EuiSheet<T extends object> extends Component<
   /** What a drag selects: cells, or rows (a press on a row number). */
   dragKind: 'cells' | 'rows' = 'cells';
 
-  /** Plain: the last text the editor reported, and whether it reported one. */
+  /** Plain: the last text (or value) the editor reported, and whether it reported one. */
   draft = '';
   draftDirty = false;
+  draftValue: unknown = undefined;
+  draftKind: 'text' | 'value' = 'text';
 
   /** The grid's API (not the sheet's: that is `sheetApi`). */
   gridApi: EuiDataGridRefProps | null = null;
@@ -560,6 +626,7 @@ export default class EuiSheet<T extends object> extends Component<
     this.endValidateWaiter();
     this.stopWatchingRelease();
     document.removeEventListener('mousedown', this.onDocumentMouseDown, true);
+    for (const token of [...this.pendingCalls.keys()]) this.endCall(token);
   }
 
   /* -------------------------------------------------------------------- */
@@ -1325,7 +1392,11 @@ export default class EuiSheet<T extends object> extends Component<
   ): Rejection | undefined {
     const rejection = this.rejections.get(cellKey(recordId, fieldId));
     if (!rejection) return undefined;
-    return Object.is(rejection.seenValue, valueOf(record, fieldId))
+    return this.valueEquals(
+      fieldId,
+      rejection.seenValue,
+      valueOf(record, fieldId)
+    )
       ? rejection
       : undefined;
   }
@@ -1362,7 +1433,10 @@ export default class EuiSheet<T extends object> extends Component<
     const record = this.recordAt(row);
     const field = this.visibleFields.find((f) => f.id === fieldId);
     if (record === undefined || !field) return null;
-    return this.cellViewFor(record, field, this.isSelected(row, col));
+    const view = this.cellViewFor(record, field, this.isSelected(row, col));
+    const drop = this.dropPos;
+    if (drop && drop.row === row && drop.col === col) view.dropTarget = true;
+    return view;
   }
 
   /** A record's field as a cell shows it: the grid's cells and the expanded record's boxes. */
@@ -1372,9 +1446,13 @@ export default class EuiSheet<T extends object> extends Component<
     const value = valueOf(record, field.id);
     const recordId = ctx.getRecordId(record);
     const rejection = this.liveRejection(record, recordId, field.id);
-    const text = rejection
-      ? rejection.text
-      : type.format(value, field, { record, messages: ctx.messages });
+    const pending = this.pendingCells.get(cellKey(recordId, field.id));
+    const text =
+      pending && pending.text !== null
+        ? pending.text
+        : rejection
+          ? rejection.text
+          : type.format(value, field, { record, messages: ctx.messages });
     // a rejected cell shows only its rejection and the owner's errors: the
     // other layers describe the old value (PACKAGE-DESIGN.md 6, 9.4)
     const errors = rejection
@@ -1393,11 +1471,39 @@ export default class EuiSheet<T extends object> extends Component<
       type,
       value,
       text,
-      rejected: !!rejection,
-      errors,
+      // a pending text is shown as text, like a rejected one
+      rejected: !!rejection || (!!pending && pending.text !== null),
+      errors: pending ? [] : errors,
       selected,
-      readOnly: isReadOnly(ctx, field, record)
+      readOnly: isReadOnly(ctx, field, record),
+      pending: !!pending,
+      link: this.linkOf(type, field, value),
+      dropTarget: false
     };
+  }
+
+  /** `type.link(value)`, when it is a link the sheet opens. */
+  linkOf(
+    type: EuiSheetFieldType,
+    field: EuiSheetField,
+    value: unknown
+  ): string | undefined {
+    return type.link ? safeLink(type.link(value as never, field)) : undefined;
+  }
+
+  /** Opens a link in a new tab; only http:, https:, mailto: and tel: (checked again here). */
+  openLink(href: string | undefined): boolean {
+    const safe = safeLink(href);
+    if (!safe) return false;
+    window.open(safe, '_blank', 'noopener');
+    return true;
+  }
+
+  /** The field's type's `equals`, else `Object.is` (by field id, visible or hidden). */
+  valueEquals(fieldId: string, a: unknown, b: unknown): boolean {
+    const field = this.allFields.find((f) => f.id === fieldId);
+    if (!field) return Object.is(a, b);
+    return sameFieldValue(this.typeOf(field), a, b);
   }
 
   /** A cell component's `@onCommit(value)`. */
@@ -1462,6 +1568,13 @@ export default class EuiSheet<T extends object> extends Component<
     this.lastRecords = records;
     this.lastIds = ids;
     this.pendingOwn = { deletes: new Set(), inserts: 0 };
+    // a pending cell whose record left `@records` (an owner's re-query) is
+    // dropped; one on a row not inserted yet (an async owner) is kept
+    if (previous && this.pendingCells.size) {
+      const now = new Set(ids);
+      const left = previousIds.filter((id) => !now.has(id));
+      if (left.length) this.dropPending([], left);
+    }
     if (
       previous &&
       !sameIds(previousIds, ids) &&
@@ -1956,6 +2069,15 @@ export default class EuiSheet<T extends object> extends Component<
         }
       });
     }
+    const link = this.menuLink(menu);
+    if (link) {
+      items.push({
+        id: 'openLink',
+        label: messages.openLink(),
+        icon: 'popout',
+        onSelect: () => this.openLink(link)
+      });
+    }
     items.push({
       id: 'copy',
       label: count > 1 ? messages.copyRows(count) : messages.copyRow(),
@@ -1989,6 +2111,15 @@ export default class EuiSheet<T extends object> extends Component<
       });
     }
     return items;
+  }
+
+  /** The link of the cell the menu was opened on, if it has one. */
+  menuLink(menu: MenuState): string | undefined {
+    if (menu.col === null) return undefined;
+    const record = this.recordAt(menu.row);
+    const field = this.visibleFields[menu.col];
+    if (record === undefined || !field) return undefined;
+    return this.linkOf(this.typeOf(field), field, valueOf(record, field.id));
   }
 
   /** The field the menu was opened on; the first one from a row number. */
@@ -2113,7 +2244,13 @@ export default class EuiSheet<T extends object> extends Component<
 
   /** A text typed in the form, parsed by the field's type. */
   commitFormText(record: T, field: EuiSheetField<T>, text: string): void {
-    this.commitForm(record, field, (ctx, pos) => commitText(ctx, pos, text));
+    const form = this.formContext(record);
+    if (!form) return;
+    const col = this.allFields.indexOf(field);
+    if (col < 0) return;
+    this.emitText(form.ctx, { row: 0, col }, text, [
+      { id: this.args.getRecordId(form.record), fieldId: field.id }
+    ]);
   }
 
   /** Delete or Backspace on a box: the type's empty value. */
@@ -2561,6 +2698,14 @@ export default class EuiSheet<T extends object> extends Component<
     const field = this.visibleFields[pos.col];
     if (record === undefined || !field) return;
     const type = this.typeOf(field);
+    // a click on the link text opens it (first click, no edit)
+    if (target.closest('[data-eui-sheet-link]')) {
+      if (this.openLink(this.linkOf(type, field, valueOf(record, field.id)))) {
+        return;
+      }
+    }
+    // a star click is the cell's own (`@onCommit`): no edit
+    if (target.closest('[data-eui-sheet-star]')) return;
     if (target.closest('[data-eui-sheet-opener]')) {
       if (this.canEdit(pos)) this.startEdit(pos, cell, null);
       return;
@@ -2896,8 +3041,14 @@ export default class EuiSheet<T extends object> extends Component<
   /* -------------------------------------------------------------------- */
 
   /** What undo and redo need besides the records: every field id, visible and hidden (a restored record's values). */
-  get historyOptions(): { fieldIds: string[] } {
-    return { fieldIds: this.allFields.map((field) => field.id) };
+  get historyOptions(): {
+    fieldIds: string[];
+    equals: (fieldId: string, a: unknown, b: unknown) => boolean;
+  } {
+    return {
+      fieldIds: this.allFields.map((field) => field.id),
+      equals: (fieldId, a, b) => this.valueEquals(fieldId, a, b)
+    };
   }
 
   /**
@@ -2910,6 +3061,8 @@ export default class EuiSheet<T extends object> extends Component<
     const entry = this.undoStack.pop();
     if (!entry) return;
     this.redoStack.push(entry);
+    // a resolve or upload still running for it is dropped (V02-RESULTS, batch 5)
+    this.endCallsOf(entry);
     const applied = this.applyHistory(
       undoChangeSet(
         entry.changeSet,
@@ -2991,8 +3144,30 @@ export default class EuiSheet<T extends object> extends Component<
       changeSet: remapChangeSet(entry.changeSet, map),
       rejections: remapRejections(entry.rejections, (id) => remapId(id, map))
     });
-    this.undoStack = this.undoStack.map(remapEntry);
-    this.redoStack = this.redoStack.map(remapEntry);
+    const remapTracked = (entry: HistoryEntry): HistoryEntry => {
+      const next = remapEntry(entry);
+      this.replaceEntry(entry, next);
+      return next;
+    };
+    this.undoStack = this.undoStack.map(remapTracked);
+    this.redoStack = this.redoStack.map(remapTracked);
+    if (this.pendingCells.size) {
+      const next = new Map<string, PendingEntry>();
+      for (const [key, entry] of this.pendingCells) {
+        const cell = entry.cell;
+        if (!cell) {
+          const at = key.indexOf('\u0000');
+          const id = String(remapId(key.slice(0, at), map));
+          next.set(cellKey(id, key.slice(at + 1)), entry);
+          continue;
+        }
+        const id = remapId(cell.recordId ?? cell.tempId!, map);
+        const moved: PendingCell = { ...cell, recordId: id };
+        delete moved.tempId;
+        next.set(cellKey(id, cell.fieldId), { ...entry, cell: moved });
+      }
+      this.pendingCells = next;
+    }
     if (this.rejections.size) {
       const next = new Map<string, Rejection>();
       for (const entry of this.rejections.values()) {
@@ -3229,7 +3404,22 @@ export default class EuiSheet<T extends object> extends Component<
     if (this.editing && this.isInEditor(target)) return;
     if (!this.isRangeTarget(target)) return;
     const data = event.clipboardData;
-    if (!data || !Array.from(data.types).includes('text/plain')) return;
+    if (!data) return;
+    // files on an attachment cell: uploaded to the range's first cell. A
+    // spreadsheet's copy carries a picture of the cells besides its text
+    // and HTML: then the text wins.
+    const plain = data.getData('text/plain');
+    const types = Array.from(data.types);
+    if (
+      data.files?.length &&
+      (!plain.trim() || !types.includes('text/html')) &&
+      this.range &&
+      this.pasteFiles(data.files)
+    ) {
+      stop(event);
+      return;
+    }
+    if (!Array.from(data.types).includes('text/plain')) return;
     const range = this.range;
     if (!range) return;
     stop(event);
@@ -3255,10 +3445,18 @@ export default class EuiSheet<T extends object> extends Component<
       bottom: anchor.row + matrix.length - 1,
       right: Math.min(anchor.col + width - 1, this.visibleFields.length - 1)
     };
-    this.emit(
-      pasteMatrix(this.context, anchor, matrix, { nextTempId }),
-      this.touchedIn(pasted, false)
-    );
+    const touched = this.touchedIn(pasted, false);
+    if (this.args.onResolve) {
+      // V9: the synchronous part at once, the resolved part later
+      const plan = planPaste(this.context, anchor, matrix, { nextTempId });
+      const entry = this.emit(plan.changeSet, touched);
+      this.startResolve(plan, entry);
+    } else {
+      this.emit(
+        pasteMatrix(this.context, anchor, matrix, { nextTempId }),
+        touched
+      );
+    }
     // no setFocusedCell: inserted rows exist only after the next render
     this.anchor = anchor;
     this.head = { row: pasted.bottom, col: pasted.right };
@@ -3351,6 +3549,7 @@ export default class EuiSheet<T extends object> extends Component<
     const rect = this.rectOf(cell);
     if (!rect) return;
     const layout = type.editorLayout ?? 'cell';
+    const upload = uploadOf(field);
     const below = rect.wrapperHeight - (rect.top + rect.height);
     const placement =
       layout === 'panel' && below < PANEL_SPACE && rect.top > below
@@ -3377,6 +3576,12 @@ export default class EuiSheet<T extends object> extends Component<
       initialKey,
       draft
     });
+    this.draftKind = 'text';
+    this.draftValue = undefined;
+    if (upload) {
+      this.editing.onUpload = (files) =>
+        this.uploadFiles(recordId, field, files);
+    }
   }
 
   /**
@@ -3416,21 +3621,15 @@ export default class EuiSheet<T extends object> extends Component<
     if (row < 0) return;
     const pos = { row, col: editing.pos.col };
     const ctx = this.context;
-    let ran = true;
-    let changeSet: ChangeSet | null = null;
+    const touched = [{ id: editing.recordId, fieldId: editing.field.id }];
     if (result && 'value' in result) {
-      changeSet = commitValue(ctx, pos, result.value);
+      this.emit(commitValue(ctx, pos, result.value), touched);
     } else if (result && 'text' in result) {
-      changeSet = commitText(ctx, pos, result.text);
+      this.emitText(ctx, pos, result.text, touched);
+    } else if (this.draftDirty && this.draftKind === 'value') {
+      this.emit(commitValue(ctx, pos, this.draftValue), touched);
     } else if (this.draftDirty) {
-      changeSet = commitText(ctx, pos, this.draft);
-    } else {
-      ran = false;
-    }
-    if (ran) {
-      this.emit(changeSet, [
-        { id: editing.recordId, fieldId: editing.field.id }
-      ]);
+      this.emitText(ctx, pos, this.draft, touched);
     }
     if (refocus) {
       // synchronous is safe: the target row already exists
@@ -3455,7 +3654,44 @@ export default class EuiSheet<T extends object> extends Component<
   onDraftChange = (text: string): void => {
     this.draft = text;
     this.draftDirty = true;
+    this.draftKind = 'text';
   };
+
+  onDraftValue = (value: unknown): void => {
+    this.draftValue = value;
+    this.draftDirty = true;
+    this.draftKind = 'value';
+  };
+
+  /** The editor's `@onSave`: saves a value and keeps it open. */
+  onEditorSave = (value: unknown): void => {
+    const editing = this.editing;
+    if (!editing) return;
+    const row = this.rowOf(editing.recordId, editing.pos.row);
+    if (row < 0) return;
+    this.emit(commitValue(this.context, { row, col: editing.pos.col }, value), [
+      { id: editing.recordId, fieldId: editing.field.id }
+    ]);
+  };
+
+  /**
+   * A typed text: with `@onResolve`, a text the type answers `{ unresolved }`
+   * for is pending and resolved (`planCommit`); else `commitText`.
+   */
+  emitText(
+    ctx: SheetContext<T>,
+    pos: Pos,
+    text: string,
+    touched: Touched
+  ): void {
+    if (!this.args.onResolve) {
+      this.emit(commitText(ctx, pos, text), touched);
+      return;
+    }
+    const plan = planCommit(ctx, pos, text);
+    const entry = this.emit(plan.changeSet, touched);
+    this.startResolve(plan, entry);
+  }
 
   onEditorCommit = (
     result?: SheetEditorResult<unknown>,
@@ -3477,12 +3713,21 @@ export default class EuiSheet<T extends object> extends Component<
    * Updates the rejections (drops the touched cells and entries whose record
    * is gone, adds the change set's), then calls `@onChange`.
    */
-  emit(changeSet: ChangeSet | null, touched: Touched): void {
+  emit(
+    changeSet: ChangeSet | null,
+    touched: Touched,
+    options: { mergeInto?: HistoryEntry | null } = {}
+  ): HistoryEntry | null {
     const next = new Map(this.rejections);
     let changed = false;
     for (const { id, fieldId } of touched) {
       if (next.delete(cellKey(id, fieldId))) changed = true;
     }
+    // a newer write to a pending cell discards its result
+    this.dropPending(
+      touched.map(({ id, fieldId }) => cellKey(id, fieldId)),
+      changeSet?.deletes ?? []
+    );
     if (changeSet?.deletes?.length) {
       // the removed records' texts and checkboxes go with them
       const gone = new Set(changeSet.deletes.map(String));
@@ -3532,8 +3777,8 @@ export default class EuiSheet<T extends object> extends Component<
       }
     }
     if (changed) this.rejections = next;
-    if (!changeSet) return;
-    this.recordHistory(changeSet, stored);
+    if (!changeSet) return null;
+    const entry = this.recordHistory(changeSet, stored, options.mergeInto);
     // the rows the owner's next `@records` gains or loses because of it
     if (changeSet.inserts.length || changeSet.deletes?.length) {
       this.pendingOwn.inserts += changeSet.inserts.length;
@@ -3554,6 +3799,7 @@ export default class EuiSheet<T extends object> extends Component<
     }
     this.args.onChange(changeSet);
     this.scheduleValidate();
+    return entry;
   }
 
   /**
@@ -3563,32 +3809,375 @@ export default class EuiSheet<T extends object> extends Component<
    * the redo stack. A bulk resolve (`'resolve'`) joins the last entry, the
    * paste that asked for it, so one undo reverts both.
    */
-  recordHistory(changeSet: ChangeSet, rejections: Rejection[]): void {
-    if (changeSet.source === 'undo' || changeSet.source === 'redo') return;
+  recordHistory(
+    changeSet: ChangeSet,
+    rejections: Rejection[],
+    mergeInto?: HistoryEntry | null
+  ): HistoryEntry | null {
+    if (changeSet.source === 'undo' || changeSet.source === 'redo') {
+      return null;
+    }
     if (
       !changeSet.patches.length &&
       !changeSet.inserts.length &&
       !changeSet.deletes?.length &&
       !rejections.length
     ) {
-      return;
+      return null;
     }
     const remap = (id: RecordId) => remapId(id, this.remapped);
     const entry: HistoryEntry = {
       changeSet: remapChangeSet(changeSet, this.remapped),
       rejections: remapRejections(rejections, remap)
     };
-    const last = this.undoStack[this.undoStack.length - 1];
-    if (entry.changeSet.source === 'resolve' && last) {
-      this.undoStack[this.undoStack.length - 1] = {
-        changeSet: mergeChangeSets(last.changeSet, entry.changeSet),
-        rejections: [...last.rejections, ...entry.rejections]
+    // a resolve joins the entry of the paste or edit that asked for it
+    const index = mergeInto ? this.undoStack.indexOf(mergeInto) : -1;
+    if (entry.changeSet.source === 'resolve' && index >= 0) {
+      const target = this.undoStack[index]!;
+      // a resolved text is no longer a rejection of that entry
+      const written = new Set(
+        entry.changeSet.patches.map((patch) =>
+          cellKey(patch.recordId, patch.fieldId)
+        )
+      );
+      const merged: HistoryEntry = {
+        changeSet: mergeChangeSets(target.changeSet, entry.changeSet),
+        rejections: [
+          ...target.rejections.filter(
+            (rejection) =>
+              !written.has(cellKey(rejection.id, rejection.fieldId))
+          ),
+          ...entry.rejections
+        ]
       };
-      return;
+      this.undoStack[index] = merged;
+      this.replaceEntry(target, merged);
+      return merged;
     }
     this.undoStack.push(entry);
     if (this.undoStack.length > HISTORY_LIMIT) this.undoStack.shift();
     this.redoStack = [];
+    return entry;
+  }
+
+  /** A history entry was replaced (merged, remapped): calls that point at it follow. */
+  replaceEntry(from: HistoryEntry, to: HistoryEntry): void {
+    for (const call of this.pendingCalls.values()) {
+      if (call.entry === from) call.entry = to;
+    }
+  }
+
+  /* -------------------------------------------------------------------- */
+  /* Bulk resolve and uploads (V02-DESIGN.md 8.1, 8.2)                     */
+  /* -------------------------------------------------------------------- */
+
+  /**
+   * Stores a plan's pending cells (after its synchronous change set was
+   * emitted: that emit's `touched` covers them) and calls `@onResolve`
+   * once, one request per field.
+   */
+  startResolve(plan: ResolvePlan<T>, entry: HistoryEntry | null): void {
+    const onResolve = this.args.onResolve;
+    if (!onResolve || !plan.pending.length) return;
+    const token = {};
+    const controller = new AbortController();
+    const next = new Map(this.pendingCells);
+    for (const cell of plan.pending) {
+      next.set(cellKey(cell.recordId ?? cell.tempId!, cell.fieldId), {
+        text: cell.text,
+        token,
+        cell
+      });
+    }
+    this.pendingCells = next;
+    this.pendingCalls.set(token, {
+      kind: 'resolve',
+      controller,
+      waiter: resolveWaiter.beginAsync(),
+      entry
+    });
+    let result: Promise<ResolveResult>;
+    try {
+      result = Promise.resolve(
+        onResolve(plan.requests, { signal: controller.signal })
+      );
+    } catch (error) {
+      result = Promise.reject(
+        error instanceof Error ? error : new Error(String(error))
+      );
+    }
+    result.then(
+      (answers) => this.finishResolve(token, answers),
+      () => this.finishResolve(token, null)
+    );
+  }
+
+  /**
+   * Writes the cells still pending under `token`: the resolved values (a
+   * second change set, source 'resolve', merged into the paste's undo
+   * entry), or, when the call failed (`null`), a rejection per cell.
+   */
+  finishResolve(token: object, answers: ResolveResult | null): void {
+    const call = this.pendingCalls.get(token);
+    if (!call || this.isDestroying || this.isDestroyed) return;
+    const cells: PendingCell[] = [];
+    const next = new Map(this.pendingCells);
+    for (const [key, entry] of this.pendingCells) {
+      if (entry.token !== token || !entry.cell) continue;
+      cells.push(entry.cell);
+      next.delete(key);
+    }
+    this.pendingCells = next;
+    const mergeInto = call.entry;
+    this.endCall(token, false);
+    if (!cells.length) return;
+    let changeSet: ChangeSet | null;
+    if (answers) {
+      changeSet = resolveCells(
+        { ...this.context, fields: this.allFields },
+        cells,
+        answers
+      );
+    } else {
+      changeSet = {
+        source: 'resolve',
+        patches: [],
+        inserts: [],
+        rejected: cells.map((cell) => {
+          const message = this.messages.unresolved(cell.text);
+          return cell.recordId !== undefined
+            ? {
+                recordId: cell.recordId,
+                fieldId: cell.fieldId,
+                text: cell.text,
+                message
+              }
+            : {
+                tempId: cell.tempId!,
+                fieldId: cell.fieldId,
+                text: cell.text,
+                message
+              };
+        }),
+        newOptions: []
+      };
+    }
+    this.emit(
+      changeSet,
+      cells.map((cell) => ({
+        id: cell.recordId ?? cell.tempId!,
+        fieldId: cell.fieldId
+      })),
+      { mergeInto }
+    );
+  }
+
+  /** Ends a call and its test waiter; aborts its signal unless it settled (`abort: false`). */
+  endCall(token: object, abort = true): void {
+    const call = this.pendingCalls.get(token);
+    if (!call) return;
+    this.pendingCalls.delete(token);
+    if (abort) call.controller.abort();
+    resolveWaiter.endAsync(call.waiter);
+  }
+
+  /** Ends the calls an undone entry asked for, and drops their cells. */
+  endCallsOf(entry: HistoryEntry): void {
+    const tokens = [...this.pendingCalls]
+      .filter(([, call]) => call.entry === entry)
+      .map(([token]) => token);
+    if (!tokens.length) return;
+    const next = new Map(this.pendingCells);
+    for (const [key, pending] of this.pendingCells) {
+      if (tokens.includes(pending.token)) next.delete(key);
+    }
+    this.pendingCells = next;
+    for (const token of tokens) this.endCall(token);
+  }
+
+  /**
+   * Drops pending resolve cells (by cellKey, or every cell of a record id);
+   * a call none of whose cells is left pending is ended (its signal
+   * aborted). Uploads are kept.
+   */
+  dropPending(
+    keys: readonly string[],
+    recordIds: readonly RecordId[] = []
+  ): void {
+    if (!this.pendingCells.size) return;
+    const ids = new Set(recordIds.map(String));
+    let next: Map<string, PendingEntry> | null = null;
+    for (const [key, entry] of this.pendingCells) {
+      // an upload is not undone by a write: its files are appended to the value then
+      if (!entry.cell) continue;
+      const id = String(entry.cell.recordId ?? entry.cell.tempId);
+      if (!keys.includes(key) && !ids.has(id)) continue;
+      next ??= new Map(this.pendingCells);
+      next.delete(key);
+    }
+    if (!next) return;
+    this.pendingCells = next;
+    const live = new Set([...next.values()].map((entry) => entry.token));
+    for (const [token, call] of [...this.pendingCalls]) {
+      if (call.kind === 'resolve' && !live.has(token)) this.endCall(token);
+    }
+  }
+
+  /** Files pasted on an attachment cell: uploaded to the range's first cell. True when handled. */
+  pasteFiles(files: FileList): boolean {
+    const range = this.range;
+    if (!range) return false;
+    const record = this.recordAt(range.top);
+    const field = this.visibleFields[range.left];
+    if (record === undefined || !field || !uploadOf(field)) return false;
+    if (isReadOnly(this.context, field, record)) return true;
+    void this.uploadFiles(this.args.getRecordId(record), field, [...files], {
+      rejectOnFailure: true
+    }).catch(() => undefined);
+    return true;
+  }
+
+  /**
+   * One upload pipeline for the editor, a drop and pasted files:
+   * `field.upload(files, { record, field, signal })`, the cell pending
+   * meanwhile, then the new files appended to the value read at that time
+   * (`commitValue`, source 'edit'). On failure the promise rejects and,
+   * with `rejectOnFailure`, the cell gets a rejection (`uploadFailed`).
+   * Files past `maxFiles` are not uploaded.
+   */
+  uploadFiles(
+    recordId: RecordId,
+    field: EuiSheetField,
+    files: File[],
+    options: { rejectOnFailure?: boolean } = {}
+  ): Promise<void> {
+    const upload = uploadOf(field);
+    const record = this.args.records[this.rowOf(recordId, 0)];
+    if (!upload || record === undefined || !files.length) {
+      return Promise.resolve();
+    }
+    const maxFiles = (field as UploadField).maxFiles;
+    const current = valueOf(record, field.id);
+    const room =
+      maxFiles === undefined
+        ? files.length
+        : maxFiles - (Array.isArray(current) ? current.length : 0);
+    const chosen = files.slice(0, Math.max(0, room));
+    if (!chosen.length) return Promise.resolve();
+    const token = {};
+    const controller = new AbortController();
+    const key = cellKey(recordId, field.id);
+    const next = new Map(this.pendingCells);
+    next.set(key, { text: null, token });
+    this.pendingCells = next;
+    this.pendingCalls.set(token, {
+      kind: 'upload',
+      controller,
+      waiter: resolveWaiter.beginAsync(),
+      entry: null
+    });
+    const settle = (): boolean => {
+      const live = this.pendingCalls.has(token);
+      if (this.pendingCells.get(key)?.token === token) {
+        const rest = new Map(this.pendingCells);
+        rest.delete(key);
+        this.pendingCells = rest;
+      }
+      this.endCall(token, false);
+      return live && !this.isDestroying && !this.isDestroyed;
+    };
+    return upload(chosen, { record, field, signal: controller.signal }).then(
+      (added) => {
+        if (!settle()) return;
+        // the value now: another upload may have finished meanwhile
+        const row = this.rowOf(recordId, 0);
+        const now = this.args.records[row];
+        if (now === undefined) return;
+        const before = valueOf(now, field.id);
+        let value = [...(Array.isArray(before) ? before : []), ...added];
+        if (maxFiles !== undefined) value = value.slice(0, maxFiles);
+        const ctx = { ...this.context, records: [now], fields: [field] };
+        this.emit(commitValue(ctx, { row: 0, col: 0 }, value), [
+          { id: recordId, fieldId: field.id }
+        ]);
+      },
+      (error: unknown) => {
+        if (!settle()) throw error;
+        if (options.rejectOnFailure) {
+          this.emit(
+            {
+              source: 'edit',
+              patches: [],
+              inserts: [],
+              rejected: [
+                {
+                  recordId,
+                  fieldId: field.id,
+                  text: chosen.map((file) => file.name).join(', '),
+                  message: this.messages.uploadFailed()
+                }
+              ],
+              newOptions: []
+            },
+            [{ id: recordId, fieldId: field.id }]
+          );
+        }
+        throw error;
+      }
+    );
+  }
+
+  /* Dragging files over an attachment cell */
+
+  /** The attachment cell under a drag with files, if it can take them. */
+  dropCellAt(
+    target: EventTarget | null
+  ): { pos: Pos; record: T; field: EuiSheetField<T> } | null {
+    const cell = this.dataCell(target);
+    if (!cell) return null;
+    const pos = this.cursor(cell);
+    const record = this.recordAt(pos.row);
+    const field = this.visibleFields[pos.col];
+    if (record === undefined || !field || !uploadOf(field)) return null;
+    if (isReadOnly(this.context, field, record)) return null;
+    return { pos, record, field };
+  }
+
+  @action
+  onDragOver(event: DragEvent): void {
+    if (!hasFiles(event)) return;
+    const target = this.dropCellAt(event.target);
+    if (!target) {
+      if (this.dropPos) this.dropPos = null;
+      return;
+    }
+    event.preventDefault();
+    if (event.dataTransfer) event.dataTransfer.dropEffect = 'copy';
+    if (!samePos(this.dropPos, target.pos)) this.dropPos = target.pos;
+  }
+
+  @action
+  onDragLeave(event: DragEvent): void {
+    const to = event.relatedTarget;
+    if (to instanceof Node && this.wrapper?.contains(to)) return;
+    if (this.dropPos) this.dropPos = null;
+  }
+
+  @action
+  onDrop(event: DragEvent): void {
+    if (!hasFiles(event)) return;
+    this.dropPos = null;
+    const target = this.dropCellAt(event.target);
+    if (!target) return;
+    event.preventDefault();
+    event.stopPropagation();
+    const files = [...(event.dataTransfer?.files ?? [])];
+    void this.uploadFiles(
+      this.args.getRecordId(target.record),
+      target.field,
+      files,
+      { rejectOnFailure: true }
+    ).catch(() => undefined);
   }
 
   /* -------------------------------------------------------------------- */
@@ -3674,6 +4263,9 @@ export default class EuiSheet<T extends object> extends Component<
       {{on "click" this.onClick}}
       {{on "dblclick" this.onDoubleClick}}
       {{on "contextmenu" this.onContextMenu}}
+      {{on "dragover" this.onDragOver capture=true}}
+      {{on "dragleave" this.onDragLeave}}
+      {{on "drop" this.onDrop capture=true}}
     >
       {{#if (has-block "toolbar")}}
         <div class="euiSheet__toolbar" data-test-subj="euiSheetToolbar">
@@ -3761,6 +4353,9 @@ export default class EuiSheet<T extends object> extends Component<
               @draft={{editing.draft}}
               @initialKey={{editing.initialKey}}
               @onDraftChange={{this.onDraftChange}}
+              @onDraftValue={{this.onDraftValue}}
+              @onSave={{this.onEditorSave}}
+              @onUpload={{editing.onUpload}}
               @onCommit={{this.onEditorCommit}}
               @onCancel={{this.cancel}}
               @messages={{this.messages}}

@@ -64,6 +64,15 @@ export function isEmptyValue(
   return type.isEmpty ? type.isEmpty(value) : value == null || value === '';
 }
 
+/** Whether two values of a field are the same: the type's `equals`, else `Object.is`. */
+export function sameFieldValue(
+  type: FieldType<any, any>,
+  a: unknown,
+  b: unknown
+): boolean {
+  return type.equals ? type.equals(a, b) : Object.is(a, b);
+}
+
 /** Key of one cell in maps: `${id}\u0000${fieldId}`. */
 export function cellKey(id: RecordId | string, fieldId: string): string {
   return `${String(id)}\u0000${fieldId}`;

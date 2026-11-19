@@ -65,6 +65,127 @@ export interface SingleSelectField<T = any> extends EuiSheetField<T> {
   createOnPaste?: boolean;
 }
 
+export interface MultiSelectField<T = any> extends EuiSheetField<T> {
+  type: 'multiSelect';
+  options: SheetOption[] | ((record: T) => SheetOption[]);
+  /** A pasted part that matches no option becomes a new option. Default false. */
+  createOnPaste?: boolean;
+}
+
+/** One linked record: the value of a `linkedRecord` field is an array of them. */
+export interface SheetLinkedRecord {
+  id: RecordId;
+  label: string;
+}
+
+export interface LinkedRecordField<T = any> extends EuiSheetField<T> {
+  type: 'linkedRecord';
+  /** The records matching `query`, for the picker. `signal` is aborted when a newer search starts or the picker closes. */
+  search: (
+    query: string,
+    context: { record: T | undefined; signal: AbortSignal }
+  ) => Promise<SheetLinkedRecord[]>;
+  /** More than one record per cell. Default true. */
+  multiple?: boolean;
+}
+
+/** A user (a collaborator): the value of a `user` field, or an array with `multiple`. */
+export interface SheetUser {
+  id: RecordId;
+  label: string;
+  avatarUrl?: string;
+  /** Matched by paste with `options`. Not shown. */
+  email?: string;
+}
+
+export interface UserField<T = any> extends EuiSheetField<T> {
+  type: 'user';
+  /** A known list: pasted text matches a label or an email. */
+  options?: SheetUser[];
+  /** Without `options`: the users matching `query` (as `LinkedRecordField.search`). */
+  search?: (
+    query: string,
+    context: { record: T | undefined; signal: AbortSignal }
+  ) => Promise<SheetUser[]>;
+  /** More than one user per cell (the value is then an array). Default false. */
+  multiple?: boolean;
+}
+
+/** One file of an `attachment` field. */
+export interface SheetAttachment {
+  id: string;
+  name: string;
+  url: string;
+  /** MIME type. `image/*` shows `url` as the thumbnail when there is no `thumbnailUrl`. */
+  type?: string;
+  size?: number;
+  thumbnailUrl?: string;
+}
+
+export interface AttachmentField<T = any> extends EuiSheetField<T> {
+  type: 'attachment';
+  /** Stores the files and returns them as attachments. Without it the field has no file picker and no drop. */
+  upload?: (
+    files: File[],
+    context: {
+      record: T | undefined;
+      field: AttachmentField<T>;
+      signal: AbortSignal;
+    }
+  ) => Promise<SheetAttachment[]>;
+  /** The file input's `accept`. */
+  accept?: string;
+  /** Files per cell; more are not uploaded. */
+  maxFiles?: number;
+}
+
+export interface CurrencyField<T = any> extends EuiSheetField<T> {
+  type: 'currency';
+  /** ISO 4217 code, e.g. 'MXN'. */
+  currency: string;
+  /** BCP 47 locale of the display, e.g. 'es-MX'. Default: the browser's. */
+  locale?: string;
+  /** Decimals shown. Default 2. */
+  precision?: number;
+  min?: number;
+  max?: number;
+  /** Default: the locale's. The other of '.' and ',' is read as a thousands separator. */
+  decimalSeparator?: '.' | ',';
+}
+
+export interface PercentField<T = any> extends EuiSheetField<T> {
+  type: 'percent';
+  /** Decimals shown. Default 0. */
+  precision?: number;
+  /** In stored units: fractions (0.5 is 50%). */
+  min?: number;
+  max?: number;
+  /** Default '.'. */
+  decimalSeparator?: '.' | ',';
+}
+
+export interface DurationField<T = any> extends EuiSheetField<T> {
+  type: 'duration';
+  /** Default 'h:mm'. */
+  durationFormat?: 'h:mm' | 'h:mm:ss';
+}
+
+export interface RatingField<T = any> extends EuiSheetField<T> {
+  type: 'rating';
+  /** Stars. Default 5. */
+  max?: number;
+}
+
+export interface LinkField<T = any> extends EuiSheetField<T> {
+  type: 'url' | 'email' | 'phone';
+  maxLength?: number;
+}
+
+export interface LongTextField<T = any> extends EuiSheetField<T> {
+  type: 'longText';
+  maxLength?: number;
+}
+
 export interface DateField<T = any> extends EuiSheetField<T> {
   type: 'date';
   /** Order of day and month in typed, pasted and displayed dates. Default 'dmy'. */
@@ -85,9 +206,9 @@ export interface ParseContext<T = any> extends TypeContext<T> {
 }
 
 export type ParseResult<V> =
-  | { value: V; newOption?: SheetOption }
+  | { value: V; newOption?: SheetOption; newOptions?: SheetOption[] }
   | { error: string }
-  /** Reserved (PACKAGE-DESIGN.md 9.2): the text needs the owner's bulk resolve. v0.1 treats it as an error. */
+  /** The text needs the owner's bulk resolve (`@onResolve`); without one it is a rejection. */
   | { unresolved: string };
 
 export interface FieldType<
@@ -118,6 +239,25 @@ export interface FieldType<
     value: V | null | undefined,
     field: F
   ): { value: V } | undefined;
+  /**
+   * Value equality, for "unchanged" checks (an edit, clear, paste or fill
+   * that writes an equal value gives no patch; undo's conflict check).
+   * Default `Object.is`. Types with array or object values need it.
+   */
+  equals?(a: V | null | undefined, b: V | null | undefined): boolean;
+  /** For a type whose `parse` returns `{ unresolved }` (bulk resolve, `@onResolve`). */
+  resolve?: {
+    /** The texts of one cell to resolve. Default: `[unresolved]`. */
+    parts(text: string, field: F, context: ParseContext): string[];
+    /** The cell's value from its resolved parts (`value` null: no match). */
+    combine(
+      parts: Array<{ text: string; value: unknown | null }>,
+      field: F,
+      context: ParseContext
+    ): ParseResult<V>;
+  };
+  /** The link a value opens (url, email, phone). The sheet opens only http:, https:, mailto: and tel:. */
+  link?(value: V | null | undefined, field: F): string | undefined;
 }
 
 export type FieldTypeRegistry = Readonly<Record<string, FieldType<any, any>>>;
@@ -241,3 +381,31 @@ export interface ValidateContext<T> {
   /** Aborted when a newer run starts or the sheet is destroyed. */
   signal: AbortSignal;
 }
+
+/** A cell waiting for the owner's bulk resolve (`@onResolve`): exactly one of recordId / tempId is set. */
+export interface PendingCell {
+  recordId?: RecordId;
+  tempId?: string;
+  fieldId: string;
+  /** The cell's text as typed or pasted (shown while pending, and in a rejection). */
+  text: string;
+  /** The texts to resolve: `type.resolve.parts`, or the `unresolved` text. */
+  parts: string[];
+}
+
+/** What `@onResolve` gets: one request per field. */
+export interface ResolveRequest<T = any> {
+  fieldId: string;
+  /** Distinct texts to resolve for this field. */
+  texts: string[];
+  cells: Array<{
+    text: string;
+    recordId?: RecordId;
+    tempId?: string;
+    /** The record; for a row being inserted, the values accepted so far in it. */
+    record: T | undefined;
+  }>;
+}
+
+/** Per field id: text → the value to store, or `null` when nothing matches. */
+export type ResolveResult = Record<string, Record<string, unknown | null>>;

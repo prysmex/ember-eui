@@ -368,11 +368,47 @@ resizing it moves the frozen edge. Keyboard focus that would land under
 the frozen columns scrolls the cell clear, and focusing a frozen cell
 (a click, ArrowLeft into it) does not scroll the grid.
 
-The limit: while a field is frozen the grid renders every column of the
-rows in view, not only the columns in view, so a frozen cell never
-unmounts. Rows stay virtualized; the cost is rows in view × all fields
-(the "Large data" example shows it with thirty fields). Above 50 visible
-fields the sheet does not freeze.
+### Performance
+
+Freezing turns off column virtualization. The grid can only keep a cell
+pinned while it stays mounted, so while a field is frozen it renders every
+column of the rows in view, not only the columns in view. Rows stay
+virtualized, so the number of records does not matter. What matters is:
+
+| | Cells rendered |
+| --- | --- |
+| Not frozen | rows in view × fields in view |
+| Frozen | rows in view × every visible field (plus the row numbers) |
+
+Vertical scrolling mounts a new row's cells, so its cost grows with that
+count. Horizontal scrolling then mounts nothing, since every column is
+already there.
+
+Measured in the sheet's own test (FZ9: 10,000 records × 30 fields, 12 rows
+rendered, headless Chromium, 20 scroll steps of 600 px):
+
+| | Cells rendered | Time per scroll step |
+| --- | --- | --- |
+| Not frozen | 72 | 38–50 ms |
+| Frozen | 372 | 182–197 ms |
+
+So five times the cells cost about four times the time. Take the absolute
+numbers as a test machine's, not a target; the ratio is what carries over.
+The "Large data" example lets you feel it: it has 31 columns, with a
+switch to freeze the first one.
+
+What makes it worse, each one multiplied by every column:
+
+- More visible fields. Hide the ones not needed on screen
+  (`@hiddenFields`); they stay in the expanded record.
+- A taller grid (`@height`), so more rows in view.
+- Heavy cells: attachment thumbnails, linked-record chips, your own cell
+  components from `@fieldTypes`.
+
+A sheet with a dozen fields barely notices. With thirty or more, freeze
+only if users really scroll sideways a lot, and check it on the slowest
+device you support. Above 50 visible fields the sheet does not freeze at
+all, and `@frozenFields` is ignored.
 
 ## The sheet's API
 

@@ -138,9 +138,13 @@ or over every record with `summarize(ctx, records, field, kind)` (`count`,
 
 `@frozenFields={{1}}` freezes the first field (off by default): it, its
 header, its summary cell and the row numbers stay in view on horizontal
-scroll. While a field is frozen the grid renders every column of
-the rows in view (rows stay virtualized); above 50 visible fields the sheet
-does not freeze.
+scroll. It has a cost: while a field is frozen the grid renders every
+column of the rows in view, not only the columns in view (rows stay
+virtualized). In the sheet's test with 30 fields that was 372 cells instead
+of 72, and about four times the time per vertical scroll step. Freeze on
+sheets with few fields, or hide the fields not needed on screen. Above 50
+visible fields the sheet does not freeze. The docs' "Frozen field" section
+has the numbers.
 
 ## EmberSearchUi
 

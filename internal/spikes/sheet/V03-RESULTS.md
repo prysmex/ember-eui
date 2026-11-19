@@ -1032,3 +1032,22 @@ own property of the identity model is an array or a typed array.
   PageUp/PageDown can land on a header.
 - The paste head and focus with groups (9 above).
 - The GR tests that repeat one case per cluster under groups (8.10).
+
+### Checked-rows copy and batch 3a: real input in Chromium (main session, 2026-11-19)
+
+The user's report: after checking 2 rows, Ctrl+C left the clipboard as it
+was. Cause: focus is on the row number after a checkbox click, and a row
+number counted as a clipboard target only while whole rows were
+range-selected. Fixed in 94b8e52f (`isCheckedRowsTarget`, `rowsTsv`, RW18).
+
+Production docs build with batch 3a in it, d01, Playwright real clicks and
+keys (`playwright-core` on the system Chromium, clipboard permissions):
+
+- A click on a data cell of row 2 first, so the browser's selection stays
+  there (a caret in that cell's content), then the checkboxes of rows 0
+  and 1. Focus is on row 1's row number. Ctrl+C: the clipboard holds the
+  two rows as TSV, every visible field.
+- A click on row 2's first field, Ctrl+V: rows 2 and 3 get the values of
+  rows 0 and 1. No page errors.
+
+Not checked: Firefox, Safari, a Mac keyboard (⌘C).

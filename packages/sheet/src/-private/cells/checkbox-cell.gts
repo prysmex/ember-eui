@@ -1,26 +1,19 @@
 /**
  * The checkbox cell: a box drawn in CSS. Not focusable (P9): Space on the
- * cell (the type's navKey) or a click on the box toggles it.
+ * cell (the type's navKey) or a click anywhere in the cell (the type's
+ * onCellClick, handled by the sheet) toggles it.
  */
-import Component from '@glimmer/component';
-import { on } from '@ember/modifier';
+import type { TOC } from '@ember/component/template-only';
 
 import type { SheetCellSignature } from '../../types.ts';
 
-export default class CheckboxCell extends Component<
-  SheetCellSignature<any, any>
-> {
-  toggle = (): void => {
-    if (!this.args.readOnly) this.args.onCommit(this.args.value !== true);
-  };
+const CheckboxCell: TOC<SheetCellSignature<any, any>> = <template>
+  <span
+    class="euiSheet__checkbox {{if @value 'euiSheet__checkbox--checked'}}"
+    role="img"
+    aria-label={{@text}}
+    data-test-subj="euiSheetCheckbox"
+  ></span>
+</template>;
 
-  <template>
-    <span
-      class="euiSheet__checkbox {{if @value 'euiSheet__checkbox--checked'}}"
-      role="img"
-      aria-label={{@text}}
-      data-test-subj="euiSheetCheckbox"
-      {{on "click" this.toggle}}
-    ></span>
-  </template>
-}
+export default CheckboxCell;

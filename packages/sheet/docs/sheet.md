@@ -122,8 +122,15 @@ Dates are shown as `DD/MM/YYYY` (or `MM/DD/YYYY`) and copied as ISO.
 | Delete, Backspace | Clear the selected range | Delete text |
 | Ctrl/Cmd+C, Ctrl/Cmd+V | Copy / paste the range as tab-separated text | The input's own |
 
+With the mouse, as in Airtable: a click selects a cell (a blue ring), a
+click on the selected cell edits it, and a double-click edits at once.
+Select and date cells show a ▾ or calendar button on the hovered or
+selected cell; a click on it opens the editor. A click anywhere in a
+checkbox cell toggles it. A custom type gets the same with `opener` (an
+EUI icon type) and `onCellClick`.
+
 A click on another cell, or scrolling the grid, saves the editor's text
-and closes it. A click on a checkbox's box toggles it. In a select
+and closes it. In a select
 editor, typing filters the options, ArrowUp and ArrowDown move, and
 Enter, Tab or a click picks. Enter or Tab right after typing picks the
 first match.

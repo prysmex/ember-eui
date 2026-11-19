@@ -555,9 +555,53 @@ export default class EuiSheet<T extends object> extends Component<
     };
   }
 
+  /** The press started on the cell that already had focus (a second click edits). */
+  pressOnFocusedCell = false;
+
   @action
   onMouseDown(event: MouseEvent): void {
     this.extending = event.shiftKey;
+    // before the press moves focus: was this cell the focused one?
+    const cell = this.dataCell(event.target);
+    this.pressOnFocusedCell = !!cell && cell === document.activeElement;
+  }
+
+  /**
+   * Airtable-style clicks: the first click selects (the grid focuses the
+   * cell); a click on the selected cell edits; the type's opener button
+   * opens the editor in one click; a type with `onCellClick` (the checkbox)
+   * saves on any click.
+   */
+  @action
+  onClick(event: MouseEvent): void {
+    const pressOnFocusedCell = this.pressOnFocusedCell;
+    this.pressOnFocusedCell = false;
+    if (event.shiftKey || this.editing) return;
+    const cell = this.dataCell(event.target);
+    if (!cell) return;
+    const pos = this.cursor(cell);
+    const record = this.args.records[pos.row];
+    const field = this.visibleFields[pos.col];
+    if (record === undefined || !field) return;
+    const type = this.typeOf(field);
+    const target = event.target as Element;
+    if (target.closest('[data-eui-sheet-opener]')) {
+      if (this.canEdit(pos)) this.startEdit(pos, cell, null);
+      return;
+    }
+    if (type.onCellClick) {
+      if (isReadOnly(this.context, field, record)) return;
+      const result = type.onCellClick(
+        valueOf(record, field.id) as never,
+        field,
+        record
+      );
+      if (result) this.commitCellValue(pos.row, pos.col, result.value);
+      return;
+    }
+    if (pressOnFocusedCell && this.canEdit(pos)) {
+      this.startEdit(pos, cell, null);
+    }
   }
 
   /** Whether the cell at `pos` opens an editor. */
@@ -572,6 +616,8 @@ export default class EuiSheet<T extends object> extends Component<
 
   @action
   onDoubleClick(event: MouseEvent): void {
+    // the double-click's second click already opened the editor
+    if (this.editing) return;
     const cell = this.dataCell(event.target);
     if (!cell) return;
     const pos = this.cursor(cell);
@@ -1015,6 +1061,7 @@ export default class EuiSheet<T extends object> extends Component<
       {{on "mousedown" this.onMouseDown capture=true}}
       {{on "focusin" this.onFocusIn}}
       {{on "focusout" this.onFocusOut}}
+      {{on "click" this.onClick}}
       {{on "dblclick" this.onDoubleClick}}
     >
       <EuiDataGrid

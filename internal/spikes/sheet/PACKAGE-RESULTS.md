@@ -472,3 +472,33 @@ visible changed.
   (Artículo, Cantidad, Unidad, Vence) and options (Piezas, Cajas); focusing
   the empty Artículo cell shows "Obligatorio" under it, and the Unidad cell
   shows `"kg" no es una opción`. Screenshot: `sheet-cell-error-es.png`.
+
+## 15. Airtable-style clicks and hover feedback (2026-11-19)
+
+Reported by the user: every cell needed two presses to do anything, and a
+single click gave almost no feedback. Before: a click only focused the cell
+(the grid's thin outline); editing needed a double-click, Enter, F2 or
+typing; a checkbox toggled only on its small box; select and date cells had
+no button.
+
+Chosen by the user: Airtable-style clicks, with hover feedback.
+
+- A click selects the cell, drawn with a 2px blue ring; a click on the
+  selected cell edits it; a double-click still edits at once (one editor);
+  Shift+click extends the range and never edits; read-only cells never edit.
+- Field-type contract (Ember layer, optional): `opener` (an EUI icon type,
+  shown at the end of the hovered or selected editable cell; a click opens
+  the editor) and `onCellClick(value, field, record)` (a click anywhere in
+  the cell saves its result). Built-ins: singleSelect `opener: 'arrowDown'`,
+  date `opener: 'calendar'`, checkbox `onCellClick` toggles (the box no
+  longer has its own click handler, so a click toggles once). The custom
+  cells demo's zone picker uses `opener: 'arrowDown'`.
+- Rows get a light highlight on hover. Openers are not focusable (P9).
+- Tests: new `eui-sheet-click-test.gts`, K1 to K4. N7 now expects a
+  double-click on a checkbox cell to toggle twice (it is two clicks). Full
+  sheet suite **90/90**; `pnpm lint` exit 0; Prettier clean.
+- Real input on the production docs build (field types demo): one click on
+  a text cell selects it with the blue ring and no editor, a second click
+  edits ("Fire extinguishers"); hovering a select cell shows ▾, and one click
+  on it opens the options; one click on the empty part of a checkbox cell
+  toggles it. Screenshot: `sheet-clicks.png`.

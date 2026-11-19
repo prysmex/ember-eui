@@ -136,6 +136,8 @@ const zoneType = {
   isEmpty: (value) => value == null,
   editor: ZoneEditor,
   editorLayout: 'panel',
+  // a ▾ button on the hovered or selected cell opens the picker in one click
+  opener: 'arrowDown',
   handlesKey: (event) => ['Enter', 'ArrowUp', 'ArrowDown'].includes(event.key),
 };
 

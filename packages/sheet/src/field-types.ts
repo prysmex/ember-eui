@@ -37,10 +37,11 @@ export const numberType: EuiSheetFieldType<number | null, NumberField> = {
   editor: InputEditor
 };
 
-/** No editor: Space (navKey) or a click on the box toggles it (P7). */
+/** No editor: Space (navKey) or a click anywhere in the cell toggles it (P7). */
 export const checkboxType: EuiSheetFieldType<boolean, CheckboxField> = {
   ...checkboxFieldType,
-  cell: CheckboxCell
+  cell: CheckboxCell,
+  onCellClick: (value) => ({ value: value !== true })
 };
 
 export const singleSelectType: EuiSheetFieldType<
@@ -51,6 +52,7 @@ export const singleSelectType: EuiSheetFieldType<
   cell: SelectCell,
   editor: SelectEditor,
   editorLayout: 'panel',
+  opener: 'arrowDown',
   // any printable key but Space (which never opens an editor) filters the list
   opensOnKey: (key) => key !== ' ',
   handlesKey: (event) =>
@@ -64,6 +66,7 @@ export const singleSelectType: EuiSheetFieldType<
 export const dateType: EuiSheetFieldType<string | null, DateField> = {
   ...dateFieldType,
   editor: DateEditor,
+  opener: 'calendar',
   opensOnKey: (key) => /^\d$/.test(key)
 };
 

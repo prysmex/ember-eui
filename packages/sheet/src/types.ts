@@ -24,6 +24,21 @@ export interface EuiSheetFieldType<
   opensOnKey?: (key: string) => boolean;
   /** Keys the editor handles itself while it is open. Default: none. */
   handlesKey?: (event: KeyboardEvent) => boolean;
+  /**
+   * An EUI icon type (e.g. `'arrowDown'`, `'calendar'`) shown at the end of
+   * the hovered or selected cell; a click on it opens the editor at once.
+   * Default: none (a second click on the selected cell opens it).
+   */
+  opener?: string;
+  /**
+   * A click anywhere in the cell saves the value it returns (the checkbox
+   * toggles), instead of selecting then editing. `undefined`: nothing.
+   */
+  onCellClick?: (
+    value: V | null | undefined,
+    field: F,
+    record: unknown
+  ) => { value: V | null } | undefined;
 }
 
 export interface SheetCellSignature<

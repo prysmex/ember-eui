@@ -153,6 +153,26 @@ In a select editor, typing filters the options, ArrowUp/ArrowDown move,
 Enter or a click picks. A click on another cell, or scrolling the grid,
 saves the editor's text and closes it.
 
+## Mouse
+
+As in Airtable: a click selects a cell, a click on the selected cell edits
+it, a double-click edits at once, and Shift+click extends the range. Select
+and date cells show a ▾ or calendar button on the hovered or selected cell
+that opens the editor in one click; a click anywhere in a checkbox cell
+toggles it. A field type gets the same with two optional properties:
+
+```ts
+const zoneType: EuiSheetFieldType<Zone | null> = {
+  // …parse, format, editor…
+  opener: 'arrowDown' // an EUI icon type: a button that opens the editor
+};
+
+const ratingType: EuiSheetFieldType<number | null> = {
+  // …
+  onCellClick: (value) => ({ value: ((value ?? 0) % 5) + 1 }) // a click saves this value
+};
+```
+
 ## Errors
 
 A cell with errors has a red border and the messages as its title. While

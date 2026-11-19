@@ -5,7 +5,14 @@
  */
 const CSS = `
 .euiSheet { position: relative; }
-.euiSheet__cell--selected { background: rgba(0, 119, 204, 0.12); }
+.euiSheet .euiDataGridRow:hover .euiDataGridRowCell { background-color: rgba(105, 112, 125, 0.06); }
+.euiSheet .euiDataGridRowCell.euiSheet__cell--selected { background-color: rgba(0, 119, 204, 0.12); }
+.euiSheet .euiDataGridRowCell:focus { outline: 2px solid #0B64DD; outline-offset: -2px; }
+.euiSheet__opener { position: absolute; top: 50%; right: 6px; transform: translateY(-50%); display: inline-flex; padding: 2px; border-radius: 3px; color: #69707D; cursor: pointer; visibility: hidden; }
+.euiSheet__opener:hover { background: rgba(105, 112, 125, 0.16); color: #343741; }
+.euiSheet .euiDataGridRowCell:hover .euiSheet__opener,
+.euiSheet .euiDataGridRowCell:focus .euiSheet__opener,
+.euiSheet .euiSheet__cell--selected .euiSheet__opener { visibility: visible; }
 .euiSheet__cell--invalid { color: #BD271E; box-shadow: inset 0 0 0 1px #BD271E; }
 .euiSheet__cellError { position: absolute; z-index: 4; box-sizing: border-box; padding: 4px 8px; border-radius: 4px; background: #BD271E; color: #FFF; font-size: 12px; line-height: 16px; pointer-events: none; box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2); }
 .euiSheet__editor { position: absolute; box-sizing: border-box; }

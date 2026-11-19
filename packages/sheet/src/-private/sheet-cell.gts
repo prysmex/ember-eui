@@ -6,6 +6,8 @@
 import Component from '@glimmer/component';
 import { cached } from '@glimmer/tracking';
 
+import EuiIcon from '@ember-eui/core/components/eui-icon';
+
 import type EuiSheet from '../components/eui-sheet.gts';
 import type { CellView } from '../components/eui-sheet.gts';
 import type { EuiDataGridCellValueElementProps } from '@ember-eui/core/utils/data-grid/types';
@@ -57,6 +59,13 @@ export default class SheetCell extends Component<{
     return view && !view.rejected ? view.type.cell : undefined;
   }
 
+  /** The type's opener icon, on cells that can be edited. */
+  get opener(): string | undefined {
+    const view = this.view;
+    if (!view || view.readOnly || !view.type.editor) return undefined;
+    return view.type.opener;
+  }
+
   onCommit = (value: unknown): void => {
     this.sheet.commitCellValue(this.args.rowIndex, this.args.colIndex, value);
   };
@@ -76,6 +85,15 @@ export default class SheetCell extends Component<{
         />
       {{else}}
         {{this.view.text}}
+      {{/if}}
+      {{#if this.opener}}
+        {{! not focusable (P9): a click is handled by the sheet }}
+        <span
+          class="euiSheet__opener"
+          data-eui-sheet-opener
+          data-test-subj="euiSheetOpener"
+          aria-hidden="true"
+        ><EuiIcon @type={{this.opener}} @size="s" /></span>
       {{/if}}
     {{/if}}
   </template>

@@ -288,9 +288,15 @@ module('Integration | Component | EuiSheet field types', function (hooks) {
     await press('Enter');
     await press('F2');
     await type('x');
+    assert.strictEqual(store.log.length, 1, 'no further change set');
     await doubleClick(cell(1, 2));
     assert.strictEqual(editor(), null, 'no editor');
-    assert.strictEqual(store.log.length, 1, 'no further change set');
+    assert.strictEqual(
+      store.log.length,
+      3,
+      'a double-click is two clicks: two toggles'
+    );
+    assert.true(store.records[1]!.done, 'back to the same value');
     const box = el('[data-test-subj=euiSheetCheckbox]', cell(1, 2));
     assert.dom(box).doesNotHaveAttribute('tabindex');
     assert.dom('[data-euigrid-tab-managed]', cell(1, 2)).doesNotExist();

@@ -2481,16 +2481,43 @@ export default class EuiSheet<T extends object> extends Component<
   /** Copies the records' visible fields as TSV. */
   copyRows(records: readonly T[]): void {
     if (!records.length) return;
-    const matrix = rangeMatrix(
-      { ...this.context, records },
-      {
-        top: 0,
-        left: 0,
-        bottom: records.length - 1,
-        right: this.visibleFields.length - 1
-      }
+    writeClipboard(this.rowsTsv(records));
+  }
+
+  /** The records' visible fields as TSV, in the given order. */
+  rowsTsv(records: readonly T[]): string {
+    return toTsv(
+      rangeMatrix(
+        { ...this.context, records },
+        {
+          top: 0,
+          left: 0,
+          bottom: records.length - 1,
+          right: this.visibleFields.length - 1
+        }
+      )
     );
-    writeClipboard(toTsv(matrix));
+  }
+
+  /**
+   * Whether a copy is of the checked records: some are checked and the
+   * event is on a row number or on the header checkbox, where focus is
+   * after a checkbox click. A copy on a data cell copies the range.
+   */
+  isCheckedRowsTarget(target: EventTarget | null): boolean {
+    if (!this.checkedRecords.length || !(target instanceof Element)) {
+      return false;
+    }
+    const rowCell = this.rowNumberCell(target);
+    if (rowCell) return this.isClipboardTarget(target, rowCell);
+    const header = target.closest<HTMLElement>(
+      `[role=columnheader][data-gridcell-column-id="${ROW_COLUMN_ID}"]`
+    );
+    return (
+      !!header &&
+      !!this.wrapper?.contains(header) &&
+      this.isClipboardTarget(target, header)
+    );
   }
 
   /* -------------------------------------------------------------------- */
@@ -4956,6 +4983,15 @@ export default class EuiSheet<T extends object> extends Component<
   onCopy(event: ClipboardEvent): void {
     const target = event.target;
     if (this.editing && this.isInEditor(target)) return;
+    if (this.isCheckedRowsTarget(target)) {
+      if (!event.clipboardData) return;
+      event.clipboardData.setData(
+        'text/plain',
+        this.rowsTsv(this.checkedRecords)
+      );
+      stop(event);
+      return;
+    }
     if (!this.isRangeTarget(target)) return;
     const range = this.range;
     if (!range || !event.clipboardData) return;

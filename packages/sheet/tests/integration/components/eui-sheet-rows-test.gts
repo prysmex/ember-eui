@@ -787,6 +787,40 @@ module('Integration | Component | EuiSheet records', function (hooks) {
       else delete (clip as { writeText?: unknown }).writeText;
     }
   });
+  test('RW18 Ctrl+C after checking rows copies the checked rows; on a data cell, the range', async function (assert) {
+    await renderSheet(4);
+    const check = (row: number) =>
+      el('[data-test-subj=euiSheetRowCheck]', rowCell(row));
+    await click(check(1));
+    await click(check(3));
+    const tsv = 'name1\tcity1\t1\nname3\tcity3\t3';
+    // where focus is after the clicks: a row number
+    assert.ok(
+      rowCell(3).contains(document.activeElement),
+      'focus on the row number'
+    );
+    const fromFocus = await clipboard('copy');
+    assert.true(fromFocus.prevented, 'the sheet’s copy');
+    assert.strictEqual(fromFocus.text, tsv, 'the checked rows, in order');
+    assert.strictEqual(
+      (await clipboard('copy', '', rowCell(0))).text,
+      tsv,
+      'on an unchecked row number too'
+    );
+    const all = el('[data-test-subj=euiSheetRowCheckAll]');
+    assert.strictEqual(
+      (await clipboard('copy', '', all.closest('[role=columnheader]')!)).text,
+      tsv,
+      'on the header checkbox'
+    );
+    await focusCell(0, 1);
+    assert.strictEqual(
+      (await clipboard('copy')).text,
+      'city0',
+      'a data cell copies the range'
+    );
+  });
+
   /* The add row's look (V03 5.2) */
 
   function addRowCells(): HTMLElement[] {

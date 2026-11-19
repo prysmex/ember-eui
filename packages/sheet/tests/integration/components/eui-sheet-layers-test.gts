@@ -355,6 +355,10 @@ module('Integration | Component | EuiSheet layers', function (hooks) {
     assert.true(layer.classList.contains(themeClass!), 'on the layer too');
     assert.strictEqual(plain(menu()), plain(wrapper), 'the same colours');
     await press('Escape');
+    // the menu's close refocuses its cell a frame later: a person cannot
+    // right-click again inside that frame, a test can
+    await settled();
+    await frames();
     // an override set on the sheet itself reaches the layer
     wrapper.style.setProperty('--euiSheet-selected', 'rgb(1, 2, 3)');
     await rightClick(cell(LAST, 0));

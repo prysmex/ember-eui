@@ -15,7 +15,8 @@ component) does the work with its own array:
   passes `@sort` back, which draws the arrows. A second sort is added to
   the first.
 - **Hide, move, resize**: the menu's "Hide column" and "Move left/right",
-  and dragging a column's edge, call `@onHiddenFieldsChange`,
+  dragging a header to another place (or Space, the arrows and Space on a
+  focused header), and dragging a column's edge, call `@onHiddenFieldsChange`,
   `@onFieldOrderChange` and `@onFieldWidthChange`; the owner updates
   `@fields`, `@hiddenFields` and `@fieldWidths`. The first field cannot be
   hidden or moved, and stays in view when you scroll right (it is frozen,
@@ -23,7 +24,9 @@ component) does the work with its own array:
 - **The toolbar** is the app's, in the sheet's `<:toolbar>` block: a search
   box (the owner filters its records and passes the term as `@highlight`),
   the row height (the block's `setRowHeight`, which calls
-  `@onRowHeightChange`) and a field picker (`hideField`, `showField`).
+  `@onRowHeightChange`), the header lines (`@headerLines`: long labels
+  wrap to 2 or 3 lines; narrow a column to see it) and a field picker
+  (`hideField`, `showField`).
 - **Filter by this field** in the menu calls `@onFilterByField`; this demo
   only logs it, where your filter UI would open.
 - "Name" and "Notes" have a `description`: the header's info icon, and the
@@ -74,6 +77,12 @@ const HEIGHTS = [
   { id: 'tall', label: 'Tall' },
 ];
 
+const HEADER_LINES = [
+  { id: '1', label: '1 line' },
+  { id: '2', label: '2' },
+  { id: '3', label: '3' },
+];
+
 const byId = (id) => ALL_FIELDS.find((field) => field.id === id);
 const isShown = (fields, id) => fields.some((field) => field.id === id);
 const sortText = (sort) =>
@@ -84,6 +93,7 @@ const sortText = (sort) =>
 export default class SheetViewIntents extends Component {
   getId = (record) => record.id;
   heights = HEIGHTS;
+  headerLineOptions = HEADER_LINES;
   allFields = ALL_FIELDS;
 
   // the owner's state: its records and the view of them
@@ -91,6 +101,7 @@ export default class SheetViewIntents extends Component {
   @tracked visibleIds = ['name', 'city', 'hours', 'start', 'active'];
   @tracked widths = { name: 180 };
   @tracked rowHeight = 'short';
+  @tracked headerLines = 1;
   @tracked sort = [];
   @tracked query = '';
   @tracked isLoading = false;
@@ -174,6 +185,14 @@ export default class SheetViewIntents extends Component {
     this.log('onFilterByField', id);
   };
 
+  setHeaderLines = (id) => {
+    this.headerLines = Number(id);
+  };
+
+  get headerLinesId() {
+    return String(this.headerLines);
+  }
+
   search = (query) => {
     this.query = query;
   };
@@ -208,6 +227,7 @@ export default class SheetViewIntents extends Component {
           @highlight={{this.query}}
           @isLoading={{this.isLoading}}
           @frozenFields={{1}}
+          @headerLines={{this.headerLines}}
           @height={{380}}
           @ariaLabel='Workers'
         >
@@ -230,6 +250,15 @@ export default class SheetViewIntents extends Component {
                   @options={{this.heights}}
                   @idSelected={{sheet.rowHeight}}
                   @onChange={{sheet.setRowHeight}}
+                  @buttonSize='compressed'
+                />
+              </EuiFlexItem>
+              <EuiFlexItem @grow={{false}}>
+                <EuiButtonGroup
+                  @legend='Header lines'
+                  @options={{this.headerLineOptions}}
+                  @idSelected={{this.headerLinesId}}
+                  @onChange={{this.setHeaderLines}}
                   @buttonSize='compressed'
                 />
               </EuiFlexItem>

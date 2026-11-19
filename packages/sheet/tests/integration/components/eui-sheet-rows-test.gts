@@ -1,12 +1,14 @@
 /**
  * Records (V02-DESIGN.md 5): row numbers, row and column selection, the
- * add row, Shift+Enter, the row menu, insert, delete and duplicate.
+ * add row, Shift+Enter, the row menu, insert, delete and duplicate. The
+ * add row's look (V03 5.2): AR1-AR8.
  */
 import { module, test } from 'qunit';
 import { setupRenderingTest } from 'ember-qunit';
 import { tracked } from '@glimmer/tracking';
 import {
   click,
+  focus,
   render,
   settled,
   triggerEvent,
@@ -28,6 +30,7 @@ import {
 
 import type { ChangeSet, EuiSheetField, RecordId } from '#src/core/index.ts';
 import type { SheetApi, SheetRowAction } from '#src/types.ts';
+import type EuiEmotionService from '@ember-eui/core/services/eui-emotion';
 
 interface Row {
   id: string;
@@ -66,6 +69,7 @@ class State {
     undefined;
   @tracked checked: RecordId[] = [];
   @tracked fields: EuiSheetField<Row>[] = FIELDS;
+  @tracked frozenFields: number | undefined = undefined;
   hiddenFields: EuiSheetField<Row>[] | undefined = undefined;
   newRecordValues:
     | ((context: {
@@ -145,6 +149,7 @@ module('Integration | Component | EuiSheet records', function (hooks) {
             @checkedRecordIds={{state.checked}}
             @onCheckedChange={{state.onCheckedChange}}
             @registerApi={{register}}
+            @frozenFields={{state.frozenFields}}
           />
         </div>
       </template>
@@ -781,5 +786,335 @@ module('Integration | Component | EuiSheet records', function (hooks) {
       if (original) Object.defineProperty(clip, 'writeText', original);
       else delete (clip as { writeText?: unknown }).writeText;
     }
+  });
+  /* The add row's look (V03 5.2) */
+
+  function addRowCells(): HTMLElement[] {
+    return Array.from(
+      document.querySelectorAll<HTMLElement>(
+        '.euiSheet__addRow [role=gridcell]'
+      )
+    );
+  }
+
+  /** A computed colour of `var(--euiSheet-<name>)`, read from a probe in the sheet. */
+  function sheetColor(name: string): string {
+    const probe = document.createElement('span');
+    probe.style.color = `var(--euiSheet-${name})`;
+    el('[data-test-subj=euiSheet]').appendChild(probe);
+    const color = getComputedStyle(probe).color;
+    probe.remove();
+    return color;
+  }
+
+  function isOpaque(color: string): boolean {
+    const match = /^rgba?\(([^)]+)\)$/.exec(color);
+    if (!match) return false;
+    const parts = match[1]!.split(',').map((part) => part.trim());
+    return parts.length === 3 || Number(parts[3]) === 1;
+  }
+
+  function isInvisible(width: string, style: string, color: string): boolean {
+    return (
+      parseFloat(width) === 0 ||
+      style === 'none' ||
+      color === 'rgba(0, 0, 0, 0)'
+    );
+  }
+
+  /** Every cell of the add row has the same opaque background (AR3, AR4). */
+  function assertOneBackground(assert: Assert, label: string): void {
+    const cells = addRowCells();
+    assert.true(cells.length >= 4, `${label}: the row's cells are rendered`);
+    const colors = cells.map((c) => getComputedStyle(c).backgroundColor);
+    const images = cells.map((c) => getComputedStyle(c).backgroundImage);
+    assert.deepEqual(
+      [...new Set(colors)],
+      [colors[0]],
+      `${label}: one background colour (${colors.join(' | ')})`
+    );
+    assert.deepEqual([...new Set(images)], ['none'], `${label}: no image`);
+    assert.true(isOpaque(colors[0]!), `${label}: opaque (${colors[0]})`);
+    assert.strictEqual(
+      colors[0],
+      sheetColor('plain'),
+      `${label}: --euiSheet-plain`
+    );
+  }
+
+  test('AR1 with row numbers: one plus, in the row-number cell; the first field has the text only', async function (assert) {
+    await renderSheet(2);
+    assert.dom('.euiSheet__addRow .euiIcon').exists({ count: 1 }, 'one plus');
+    assert.dom('.euiIcon', rowCell(2)).exists('in the row-number cell');
+    const label = el('[data-test-subj=euiSheetAddRecord]', cell(2, 0));
+    assert.strictEqual(label.textContent?.trim(), 'Add record');
+    assert.dom('.euiIcon', label).doesNotExist('no icon by the text');
+  });
+
+  test('AR2 the plus is centred in the row-number cell, both ways', async function (assert) {
+    await renderSheet(2);
+    const box = rowCell(2).getBoundingClientRect();
+    const plus = el('.euiSheet__rowAdd', rowCell(2)).getBoundingClientRect();
+    const dx = plus.left + plus.width / 2 - (box.left + box.width / 2);
+    const dy = plus.top + plus.height / 2 - (box.top + box.height / 2);
+    assert.true(Math.abs(dx) <= 1, `horizontally (${dx.toFixed(1)} px)`);
+    assert.true(Math.abs(dy) <= 1, `vertically (${dy.toFixed(1)} px)`);
+  });
+
+  test('AR3 every cell of the add row has the same opaque background, frozen or not', async function (assert) {
+    const state = new State();
+    await renderSheet(2, state);
+    assertOneBackground(assert, 'nothing frozen');
+    state.frozenFields = 1;
+    await settled();
+    assert.dom(rowCell(2)).hasClass('euiSheet__cell--frozen');
+    assertOneBackground(assert, 'one frozen field');
+  });
+
+  test('AR4 AR3 in the dark theme', async function (assert) {
+    const state = new State();
+    await renderSheet(2, state);
+    const light = sheetColor('plain');
+    const emotion = this.owner.lookup(
+      'service:eui-emotion'
+    ) as EuiEmotionService;
+    emotion.colorMode = 'dark';
+    await settled();
+    assert.notStrictEqual(sheetColor('plain'), light, 'the dark theme is on');
+    assertOneBackground(assert, 'dark');
+    state.frozenFields = 1;
+    await settled();
+    assertOneBackground(assert, 'dark, one frozen field');
+  });
+
+  test('AR5 no inner dividers in the add row; the frame keeps its outer edges', async function (assert) {
+    const state = new State();
+    await renderSheet(2, state);
+    const check = (label: string) => {
+      const cells = addRowCells();
+      cells.forEach((c, i) => {
+        const style = getComputedStyle(c);
+        if (i < cells.length - 1) {
+          assert.true(
+            isInvisible(
+              style.borderRightWidth,
+              style.borderRightStyle,
+              style.borderRightColor
+            ),
+            `${label}: cell ${i} has no right divider (${style.borderRightWidth} ${style.borderRightStyle} ${style.borderRightColor})`
+          );
+        }
+        if (i > 0) {
+          assert.true(
+            isInvisible(
+              style.borderLeftWidth,
+              style.borderLeftStyle,
+              style.borderLeftColor
+            ),
+            `${label}: cell ${i} has no left divider`
+          );
+        }
+      });
+      const last = getComputedStyle(cells[cells.length - 1]!);
+      assert.false(
+        isInvisible(
+          last.borderRightWidth,
+          last.borderRightStyle,
+          last.borderRightColor
+        ),
+        `${label}: the grid's right edge stays`
+      );
+    };
+    check('nothing frozen');
+    state.frozenFields = 1;
+    await settled();
+    check('one frozen field');
+  });
+
+  test('AR6 a focused cell of the add row shows only the sheet’s ring', async function (assert) {
+    await renderSheet(2);
+    const primary = sheetColor('primary');
+    for (const [label, target] of [
+      ['the row-number cell', () => rowCell(2)],
+      ['a data cell', () => cell(2, 1)]
+    ] as const) {
+      await focus(target());
+      const style = getComputedStyle(target());
+      assert.strictEqual(
+        style.outlineColor,
+        primary,
+        `${label}: outline colour`
+      );
+      assert.strictEqual(style.outlineWidth, '3px', `${label}: outline width`);
+      assert.strictEqual(style.outlineOffset, '-3px', `${label}: inside`);
+      assert.strictEqual(style.outlineStyle, 'solid', `${label}: solid`);
+      assert.strictEqual(style.boxShadow, 'none', `${label}: no box-shadow`);
+      assert.strictEqual(
+        getComputedStyle(target(), '::after').content,
+        'none',
+        `${label}: no grid outline (::after)`
+      );
+    }
+  });
+
+  test('AR7 @rowNumbers={{false}}: the first field shows the only plus and the text', async function (assert) {
+    const state = new State();
+    state.rowNumbers = false;
+    await renderSheet(2, state);
+    assert.dom('.euiSheet__addRow .euiIcon').exists({ count: 1 }, 'one plus');
+    const label = el('.euiSheet__addRow [data-test-subj=euiSheetAddRecord]');
+    assert.dom('.euiIcon', label).exists('by the text');
+    assert.strictEqual(label.textContent?.trim(), 'Add record');
+  });
+
+  test('AR8 a click on the text "Add record" inserts', async function (assert) {
+    const store = await renderSheet(2);
+    await click(el('[data-test-subj=euiSheetAddRecord]', cell(2, 0)));
+    assert.strictEqual(store.log.length, 1);
+    assert.strictEqual(store.log[0]!.source, 'insert');
+    assert.strictEqual(store.records.length, 3);
+  });
+  /* Selection marks on headers and row numbers, checked rows (V03 batch 1) */
+
+  const marked = (element: HTMLElement) =>
+    getComputedStyle(element).backgroundImage.includes('linear-gradient');
+
+  test('HM2 a cell range marks its columns’ headers and its rows’ numbers lightly; HM3 one cell marks only its own', async function (assert) {
+    await renderSheet(4);
+    await focusCell(0, 1);
+    await press('ArrowRight', { shiftKey: true });
+    await press('ArrowDown', { shiftKey: true });
+    assert.deepEqual(
+      [0, 1, 2].map((col) => marked(header(col))),
+      [false, true, true],
+      'the range’s headers'
+    );
+    assert.strictEqual(
+      getComputedStyle(header(1)).boxShadow,
+      'none',
+      'light: no bar'
+    );
+    assert.deepEqual(
+      [0, 1, 2, 3].map((row) =>
+        rowCell(row).classList.contains('euiSheet__rowCell--marked')
+      ),
+      [true, true, false, false],
+      'the range’s row numbers'
+    );
+    assert.strictEqual(
+      getComputedStyle(rowCell(0)).color,
+      getComputedStyle(el('.euiDataGridHeaderCell__content', header(1))).color,
+      'both in primary'
+    );
+    // HM3: collapsed to the active cell
+    await press('Escape');
+    assert.deepEqual(
+      [0, 1, 2].map((col) => marked(header(col))),
+      [false, true, false],
+      'only the active cell’s header'
+    );
+    assert.deepEqual(
+      [0, 1, 2, 3].map((row) =>
+        rowCell(row).classList.contains('euiSheet__rowCell--marked')
+      ),
+      [true, false, false, false],
+      'only its row number'
+    );
+  });
+
+  test('HM4 selected rows: the tint and a 3 px bar on the row number’s inner edge', async function (assert) {
+    await renderSheet(4);
+    await click(rowCell(1));
+    assert.dom(rowCell(1)).hasClass('euiSheet__rowCell--selected');
+    assert.true(
+      getComputedStyle(rowCell(1)).boxShadow.includes('-3px 0px 0px'),
+      `the bar (${getComputedStyle(rowCell(1)).boxShadow})`
+    );
+    assert.strictEqual(getComputedStyle(rowCell(2)).boxShadow, 'none');
+    assert.false(marked(header(0)), 'a row selection marks no header');
+  });
+
+  test('CK1 checking a row tints its cells and its row number; unchecking removes it; a range wins', async function (assert) {
+    await renderSheet(3);
+    await click(el('[data-eui-sheet-row-check]', rowCell(1)));
+    assert.dom(rowCell(1)).hasClass('euiSheet__rowCell--checked');
+    assert.dom(cell(1, 1)).hasClass('euiSheet__cell--checked');
+    const tinted = getComputedStyle(cell(1, 1)).backgroundColor;
+    assert.notStrictEqual(tinted, 'rgba(0, 0, 0, 0)', `tinted (${tinted})`);
+    assert.strictEqual(
+      getComputedStyle(cell(0, 1)).backgroundColor,
+      'rgba(0, 0, 0, 0)',
+      'not the other rows'
+    );
+    assert.strictEqual(
+      getComputedStyle(rowCell(1)).backgroundColor,
+      sheetColor('selected'),
+      'the row number in the selection tint'
+    );
+    // a range over the checked row shows the range look
+    await focusCell(1, 0);
+    await press('ArrowRight', { shiftKey: true });
+    assert.strictEqual(
+      getComputedStyle(cell(1, 1)).backgroundColor,
+      sheetColor('selected'),
+      'the range wins'
+    );
+    assert.dom('.euiSheet__addRow .euiSheet__cell--checked').doesNotExist();
+    await click(el('[data-eui-sheet-row-check]', rowCell(1)));
+    assert.dom(cell(1, 1)).doesNotHaveClass('euiSheet__cell--checked');
+  });
+  test('VP1 the row menu: lines between its groups; the right-clicked cell is marked', async function (assert) {
+    await renderSheet(4);
+    await rightClick(cell(2, 1));
+    const panel = menu()!;
+    const order = Array.from(
+      panel.querySelectorAll<HTMLElement>(
+        '.euiSheet__menuSeparator, [data-test-subj^=euiSheetRowMenu-]'
+      )
+    ).map((element) =>
+      element.matches('hr')
+        ? '|'
+        : element.dataset['testSubj']!.replace('euiSheetRowMenu-', '')
+    );
+    assert.deepEqual(order, [
+      'insertAbove',
+      'insertBelow',
+      '|',
+      'duplicate',
+      'expand',
+      '|',
+      'copy',
+      '|',
+      'delete'
+    ]);
+    assert.deepEqual(
+      selected(),
+      ['2:1'],
+      'the cell is selected (the range look)'
+    );
+    await press('ArrowDown');
+    assert.strictEqual(
+      document.activeElement,
+      el('[data-test-subj=euiSheetRowMenu-insertBelow]'),
+      'the arrows skip the lines'
+    );
+  });
+
+  test('EM1 no records: a message (and the add action); loading or one record: none', async function (assert) {
+    const state = new State();
+    const store = await renderSheet(0, state);
+    assert.dom('[data-test-subj=euiSheetEmpty]').includesText('No records');
+    assert.dom('.euiSheet__addRow').exists('the add row is the action');
+    await click(el('[data-test-subj=euiSheetAddRecord]'));
+    assert.strictEqual(store.log[0]?.source, 'insert', 'the action inserts');
+    assert
+      .dom('[data-test-subj=euiSheetEmpty]')
+      .doesNotExist('one record: no message');
+
+    const readOnly = new State();
+    readOnly.canInsert = false;
+    await renderSheet(0, readOnly);
+    assert.dom('[data-test-subj=euiSheetEmpty]').includesText('No records');
+    assert.dom('.euiSheet__addRow').doesNotExist('no add row');
   });
 });

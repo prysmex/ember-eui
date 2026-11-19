@@ -190,7 +190,8 @@ module('Integration | Component | EuiSheet', function (hooks) {
     await press('ArrowRight', { shiftKey: true });
     await settled();
     assert.deepEqual(selected(), ['1:0', '1:1', '2:0', '2:1']);
-    assert.strictEqual(document.activeElement, cell(2, 1));
+    // the active cell stays the anchor (V03 batch 1)
+    assert.strictEqual(document.activeElement, cell(1, 0));
 
     await press('Delete');
     await settled();
@@ -211,9 +212,10 @@ module('Integration | Component | EuiSheet', function (hooks) {
     ]);
     assert.strictEqual(text(3, 0), 'name3', '(3, 0) unchanged');
 
+    // a plain arrow moves from the active cell and collapses
     await press('ArrowDown');
     await settled();
-    assert.deepEqual(selected(), ['3:1']);
+    assert.deepEqual(selected(), ['2:0']);
   });
 
   test('T5 copy gives the range as TSV', async function (assert) {
@@ -335,18 +337,20 @@ module('Integration | Component | EuiSheet', function (hooks) {
     );
     assert.deepEqual(selected(), [], 'no selected cell rendered');
 
+    // V03 batch 1: the focused active cell (the anchor) unmounted while a
+    // range is selected; the grid's body holds focus, so keys still work
     assert.strictEqual(
       document.activeElement,
-      document.body,
-      'focus left with the unmounted cell'
+      el('[role=grid]'),
+      'focus is held by the grid'
     );
 
     await scrollTo(0);
     await settled();
-    await waitUntil(() => document.activeElement === cell(4, 1));
+    await waitUntil(() => document.activeElement === cell(2, 0));
     assert.strictEqual(
       document.activeElement,
-      cell(4, 1),
+      cell(2, 0),
       'the re-mounted focused cell took focus again'
     );
     assert.deepEqual(selected(), expected, 'selection is back');
@@ -426,13 +430,14 @@ module('Integration | Component | EuiSheet', function (hooks) {
     assert.strictEqual(document.activeElement, input);
     const a = input.getBoundingClientRect();
     const b = cell(0, 0).getBoundingClientRect();
-    const close = (x: number, y: number) => Math.abs(x - y) <= 1;
+    // V03 batch 1: the editor covers the cell, lifted up to 2 px past it
+    const past = (outerEdge: number) => outerEdge >= -0.5 && outerEdge <= 2.5;
     assert.true(
-      close(a.top, b.top) &&
-        close(a.left, b.left) &&
-        close(a.width, b.width) &&
-        close(a.height, b.height),
-      `editor box ${JSON.stringify(a)} matches cell box ${JSON.stringify(b)}`
+      past(b.top - a.top) &&
+        past(b.left - a.left) &&
+        past(a.right - b.right) &&
+        past(a.bottom - b.bottom),
+      `editor box ${JSON.stringify(a)} covers cell box ${JSON.stringify(b)}`
     );
   });
 
@@ -718,23 +723,28 @@ module('Integration | Component | EuiSheet v0.2 foundations', function (hooks) {
     assert.deepEqual(ids(store.records), ['r0', 'r1', 'r2', 'r3', 'r4']);
   });
 
-  test('T20 the owner re-orders @records: the selection and focus follow the head’s record', async function (assert) {
+  test('T20 the owner re-orders @records: the selection and focus follow the active cell’s record', async function (assert) {
     const { store } = await renderSheet();
     await focusCell(0, 1);
     await press('ArrowDown', { shiftKey: true });
     assert.deepEqual(selected(), ['0:1', '1:1']);
-    assert.strictEqual(document.activeElement, cell(1, 1));
+    // V03 batch 1: the active cell is the anchor, not the head
+    assert.strictEqual(document.activeElement, cell(0, 1));
 
     await replace(store, (records) => [...records].reverse());
     assert.deepEqual(ids(store.records), ['r4', 'r3', 'r2', 'r1', 'r0']);
-    assert.deepEqual(selected(), ['3:1'], 'collapsed to the head, on r1');
-    assert.strictEqual(document.activeElement, cell(3, 1), 'focus follows');
+    assert.deepEqual(
+      selected(),
+      ['4:1'],
+      'collapsed to the active cell, on r0'
+    );
+    assert.strictEqual(document.activeElement, cell(4, 1), 'focus follows');
     assert.strictEqual(store.log.length, 0);
 
     await press('Delete');
     assert.deepEqual(
       store.log[0]!.patches,
-      [{ recordId: 'r1', fieldId: 'city', from: 'city1', to: '' }],
+      [{ recordId: 'r0', fieldId: 'city', from: 'city0', to: '' }],
       'keys act on the record that moved'
     );
   });
@@ -842,10 +852,15 @@ module('Integration | Component | EuiSheet v0.2 foundations', function (hooks) {
 
     await replace(store, (records) => [...records].reverse());
     assert.dom(wrapper).doesNotHaveClass('euiSheet--dragging');
-    assert.deepEqual(selected(), ['3:1'], 'no range: the head’s record (r1)');
+    // V03 batch 1: the active cell is the anchor
+    assert.deepEqual(
+      selected(),
+      ['4:0'],
+      'no range: the active cell’s record (r0)'
+    );
 
     await triggerEvent(cell(2, 2), 'mouseover');
-    assert.deepEqual(selected(), ['3:1'], 'moving on does not drag');
+    assert.deepEqual(selected(), ['4:0'], 'moving on does not drag');
     await triggerEvent(cell(2, 2), 'mouseup', { button: 0 });
     await triggerEvent(cell(2, 2), 'click', { button: 0 });
     assert.strictEqual(store.log.length, 0);

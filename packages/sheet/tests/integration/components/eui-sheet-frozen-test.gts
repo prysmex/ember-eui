@@ -23,6 +23,7 @@ import {
   el,
   focusCell,
   press,
+  resizerOf,
   selected,
   type
 } from '../../helpers/sheet.ts';
@@ -243,6 +244,35 @@ module('Integration | Component | EuiSheet frozen field', function (hooks) {
     );
   });
 
+  test('CD6 gate (V03 5.3): with column drag on, the frozen headers stick through their draggable wrappers', async function (assert) {
+    const state = new State();
+    await renderSheet(state);
+    assert
+      .dom('[data-test-subj=euiDataGridHeaderDroppable]')
+      .exists('column drag is on');
+    const wrapper = headerCell(1).closest<HTMLElement>(
+      '.euiDataGridHeaderCellDraggable'
+    )!;
+    assert.ok(wrapper, 'the frozen header is in a draggable wrapper');
+    assert.strictEqual(getComputedStyle(wrapper).position, 'sticky');
+    const before = rect(headerCell(1));
+    await scrollGrid(700);
+    close(assert, rect(headerCell(1)).left, before.left, 'its left is kept');
+    assert.true(
+      headerCell(1).contains(atCentre(headerCell(1))),
+      'it paints over the scrolled headers'
+    );
+    const background = getComputedStyle(headerCell(1)).backgroundColor;
+    assert.true(
+      /^rgb\(/.test(background),
+      `its background is opaque (${background})`
+    );
+    assert.false(
+      wrapper.contains(atCentre(headerCell(2))),
+      'the next header is not frozen'
+    );
+  });
+
   test('FZ4 ArrowLeft never leaves the focused cell under the frozen columns', async function (assert) {
     const state = new State();
     await renderSheet(state);
@@ -292,9 +322,7 @@ module('Integration | Component | EuiSheet frozen field', function (hooks) {
     await renderSheet(state);
     const before = rect(cell(3, 1)).left;
     const width = rect(cell(3, 0)).width;
-    const resizer = el(
-      '[role=columnheader][data-gridcell-column-index="1"] [data-test-subj=dataGridColumnResizer]'
-    );
+    const resizer = resizerOf(headerCell(1));
     // pageX is not an event init field: it follows clientX
     await triggerEvent(resizer, 'mousedown', { clientX: 300 });
     await triggerEvent(window as unknown as Element, 'mousemove', {
@@ -336,9 +364,15 @@ module('Integration | Component | EuiSheet frozen field', function (hooks) {
     assert.ok(frame_, 'the editor is open');
     const box = rect(cell(3, 0));
     const editorBox = rect(frame_!);
-    close(assert, editorBox.left, box.left, 'editor left');
-    close(assert, editorBox.top, box.top, 'editor top');
-    close(assert, editorBox.width, box.width, 'editor width');
+    // V03 batch 1: the editor is lifted up to 2 px past the cell on each side
+    const grows = (outerEdge: number, label: string) =>
+      assert.true(
+        outerEdge >= -0.5 && outerEdge <= 2.5,
+        `${label} (${outerEdge.toFixed(1)} px past the cell)`
+      );
+    grows(box.left - editorBox.left, 'editor left');
+    grows(box.top - editorBox.top, 'editor top');
+    grows(editorBox.right - box.right, 'editor right');
     assert.true(
       frame_!.contains(atCentre(cell(3, 0))),
       'the editor is painted over the frozen cell'
@@ -566,8 +600,8 @@ module('Integration | Component | EuiSheet frozen field', function (hooks) {
     assert.strictEqual(outerElement.scrollLeft, 500, 'the scroll is kept');
     assert.strictEqual(
       document.activeElement,
-      at(5, 6),
-      'focus on the drag head'
+      at(5, 0),
+      'focus stays on the anchor (V03 batch 1)'
     );
   });
 });

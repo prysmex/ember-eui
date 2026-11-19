@@ -72,6 +72,10 @@ export class RowNumberCell extends Component<RowNumberCellSignature> {
         this.sheet.positionOf(this.args.rowIndex)
       );
       if (this.checked) classes.push('euiSheet__rowCell--checked');
+      // V03 batch 1: a cell range's rows
+      if (this.sheet.isRowMarked(this.args.rowIndex)) {
+        classes.push('euiSheet__rowCell--marked');
+      }
       if (this.selected) {
         classes.push('euiSheet__rowCell--selected');
         props['aria-selected'] = 'true';

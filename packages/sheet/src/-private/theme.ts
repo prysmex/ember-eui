@@ -19,12 +19,24 @@ function withAlpha(color: string, alpha: number): string {
 }
 
 /** Module scope, so `useEuiBorealisStyles` memoizes it per resolved theme. */
-export const sheetThemeVars = ({ euiTheme }: EuiThemeStyleContext) => {
+export const sheetThemeVars = ({
+  euiTheme,
+  colorMode
+}: EuiThemeStyleContext) => {
   const colors = euiTheme.colors;
+  const dark = colorMode === 'DARK';
   return {
     label: 'euiSheetTheme',
     '--euiSheet-primary': colors.primary,
-    '--euiSheet-selected': colors.backgroundBaseInteractiveSelect,
+    // V03 batch 1: the range tint is the primary at 12 % (light) / 20 %
+    // (dark); EUI's backgroundBaseInteractiveSelect (about rgb(241, 246,
+    // 255) on white) was barely visible. Borealis' backgroundLightPrimary
+    // is the same token in dark, so it is not stronger.
+    '--euiSheet-selected': withAlpha(colors.primary, dark ? 0.2 : 0.12),
+    // checked rows: lighter than a range, about hover strength
+    '--euiSheet-checked': withAlpha(colors.primary, dark ? 0.1 : 0.06),
+    // the open cell editor's elevation (dark needs a stronger shadow)
+    '--euiSheet-elevation': withAlpha(colors.shadow, dark ? 0.6 : 0.25),
     '--euiSheet-hover': colors.backgroundBaseInteractiveHover,
     '--euiSheet-plain': colors.backgroundBasePlain,
     '--euiSheet-subdued': colors.backgroundBaseSubdued,

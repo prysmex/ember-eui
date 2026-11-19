@@ -31,6 +31,17 @@ export function cell(
   );
 }
 
+/**
+ * A header cell's column resizer: inside the cell, or with column drag on
+ * (the default, V03 5.3, X2) its sibling in the draggable wrapper.
+ */
+export function resizerOf(header: HTMLElement): HTMLElement {
+  const selector = '[data-test-subj=dataGridColumnResizer]';
+  const inside = header.querySelector<HTMLElement>(selector);
+  if (inside) return inside;
+  return el(`:scope > ${selector}`, header.parentElement!);
+}
+
 export function text(row: number, col: number): string {
   return (
     cell(row, col)

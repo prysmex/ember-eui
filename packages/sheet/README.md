@@ -95,8 +95,9 @@ Arguments of `EuiSheet`:
 | `@height`, `@ariaLabel`                                           | The grid's height; its accessible name (default `Sheet`).                                                                                                                                                              |
 | `@registerApi`                                                    | `(api) => void`: the sheet's API, once, after the first render (below).                                                                                                                                                |
 | `@hiddenFields`                                                   | Fields that are not columns: listed in the expanded record, copied by duplicate.                                                                                                                                       |
-| `@onHiddenFieldsChange`, `@onFieldOrderChange`                    | The new hidden ids after a hide or show; the visible ids after a move. With them, update `@fields` / `@hiddenFields`; without them the sheet keeps its own.                                                            |
-| `@fieldWidths`, `@onFieldWidthChange`                             | Widths by field id; `(fieldId, width)` after a resize (without it the grid keeps it until its columns change).                                                                                                         |
+| `@onHiddenFieldsChange`, `@onFieldOrderChange`                    | The new hidden ids after a hide or show; the visible ids after a move or a header drag. With them, update `@fields` / `@hiddenFields`; without them the sheet keeps its own.                                           |
+| `@fieldDrag`, `@headerLines`                                      | Drag a header to reorder (default `true`; also Space, the arrows and Space on a focused header); `1` (default), `2` or `3` lines a header label may wrap to.                                                           |
+| `@fieldWidths`, `@onFieldWidthChange`                             | Widths by field id; `(fieldId, width)` after a resize (without it the sheet keeps the width itself).                                                                                                                   |
 | `@rowHeight`, `@onRowHeightChange`                                | `'short'` (default), `'medium'`, `'tall'`, `'extraTall'`; controlled with the handler, local without.                                                                                                                  |
 | `@sort`, `@onSortChange`                                          | Your sort (`[{ field, direction }]`), drawn as arrows; the column menu's sort items call the handler. No handler: no sort items. The sheet never sorts.                                                                |
 | `@onFilterByField`                                                | Adds "Filter by this field" to the column menu: `(fieldId) => void`.                                                                                                                                                   |
@@ -115,7 +116,8 @@ Arguments of `EuiSheet`:
 Blocks: `<:toolbar as |sheet|>` (above the grid) and `<:footer as |sheet|>`
 (below it) take your own controls. Both yield `{ api, fields, hiddenFields,
 sort, rowHeight, checkedRecords, hideField(id), showField(id),
-setRowHeight(height), setSort(sort) }`.
+setRowHeight(height), setSort(sort), showShortcuts() }`. `<:empty>`
+replaces the "No records" message shown when `@records` is empty.
 
 ## The owner: queries and presentation
 
@@ -128,8 +130,9 @@ your search box, field picker or pager in the blocks.
 Presentation state (visible fields and their order, widths, row height) is
 controlled with a handler (the sheet shows exactly the argument and calls
 the handler; update the argument, or nothing changes) and local without
-one ("Hide column" hides, "Move" moves). The first field cannot be hidden
-or moved.
+one ("Hide column" hides, "Move" or a header drag moves). The first field
+cannot be hidden or moved. `@fieldDrag={{false}}` turns the header drag
+off; `@headerLines={{2}}` lets long labels wrap.
 
 The summary bar shows `@summary`'s texts. Compute them from your backend,
 or over every record with `summarize(ctx, records, field, kind)` (`count`,
@@ -310,6 +313,7 @@ row menu emit).
 | `expandRecord(id)`                   | Opens the expanded record (`null` closes it).                                                                         |
 | `insertRecord({ anchor?, values? })` | Emits the insert of one record, next to `anchor` or at the end.                                                       |
 | `deleteRecords(ids)`                 | Emits the delete of those records.                                                                                    |
+| `showShortcuts()`                    | Opens the shortcut list (as Ctrl/Cmd+/).                                                                              |
 
 When you replace `@records` with records the sheet did not change (a new
 sort, another page, a reload), the selection collapses to the focused
@@ -441,6 +445,8 @@ onResolve = async (requests, { signal }) => {
 | Shift+Home, Shift+End; Ctrl/Cmd+Shift+Home/End | Extends the range to the row's first or last field; to the first, or the last record's last, cell                                                        | Native                                                          |
 | PageUp, PageDown                               | Moves by the rows in view; with Shift, extends the range                                                                                                 |                                                                 |
 | Ctrl/Cmd+Z; Ctrl/Cmd+Shift+Z, Ctrl+Y           | Undo; redo                                                                                                                                               | Native                                                          |
+| Ctrl/Cmd+/                                     | Opens the shortcut list (also on a row number or a header)                                                                                               |                                                                 |
+| Space on a header                              | Lifts the column: the arrows move it, Space drops it, Escape cancels (Enter opens the header menu)                                                       |                                                                 |
 
 In a select editor, typing filters the options, ArrowUp/ArrowDown move,
 Enter or a click picks. A click on another cell saves the editor's text and
@@ -462,7 +468,10 @@ on a row number or a column title selects the row or column, the row's
 checkbox and expand icon do what they show, a click on the last row adds a
 record, and a right-click opens the row menu (see Records).
 Pressing on a cell and dragging over others selects that range; the release
-neither edits nor toggles a checkbox, and Shift+arrows continue from it.
+neither edits nor toggles a checkbox, and Shift+arrows continue from it. The
+active cell (the ring) stays where the range started; only its far corner
+moves. A right-click on a header opens the header menu. A copy marks the
+copied cells dashed until Escape or a change.
 Holding the pointer near the grid's edge, or past it, scrolls it and the
 range follows. The fill handle (the square at the range's bottom-right
 corner) fills the cells it is dragged over: a constant number step or a date

@@ -52,6 +52,10 @@ export default class SheetCell extends Component<{
       classes.push(frozen.className);
       props['style'] = frozen.style;
     }
+    // a checked row's light tint (V03 batch 1); never the add row
+    if (view && this.sheet.isChecked(this.args.rowIndex)) {
+      classes.push('euiSheet__cell--checked');
+    }
     if (view?.selected) {
       classes.push('euiSheet__cell--selected');
       props['aria-selected'] = 'true';
@@ -74,12 +78,17 @@ export default class SheetCell extends Component<{
     return '';
   }
 
-  /** The add row's first data cell shows "+ Add record"; its other cells nothing. */
+  /** The add row's first data cell shows "Add record"; its other cells nothing. */
   get addRecordLabel(): string | undefined {
     if (this.col !== 0 || !this.sheet.isAddRow(this.args.rowIndex)) {
       return undefined;
     }
     return this.sheet.messages.addRecord();
+  }
+
+  /** One plus on the add row (V03 5.2): the row-number cell's, else this one. */
+  get addRecordIcon(): boolean {
+    return this.sheet.colOffset === 0;
   }
 
   get cellComponent() {
@@ -107,7 +116,7 @@ export default class SheetCell extends Component<{
     {{this.cellProps}}
     {{#if this.addRecordLabel}}
       <span class="euiSheet__addRecord" data-test-subj="euiSheetAddRecord">
-        <EuiIcon @type="plus" @size="s" />
+        {{#if this.addRecordIcon}}<EuiIcon @type="plus" @size="s" />{{/if}}
         {{this.addRecordLabel}}
       </span>
     {{else if this.view}}

@@ -21,6 +21,9 @@ on it), with Shift they extend the range; Shift+End and Ctrl/Cmd+Shift+End
 too; PageDown moves by a screen. Drag a selection down past the grid's
 bottom edge and hold it: the grid scrolls and the range follows.
 
+The **Shortcuts** button in the toolbar (the block's `showShortcuts()`)
+and Ctrl/Cmd+/ on a cell open the list of every key.
+
 Click Reviewer, the last column, then click it again (or press Enter):
 the grid scrolls it into view and its editor stays open. With a dead key
 (`´` then `e`) or an IME, typing on a cell opens the editor with the
@@ -31,7 +34,9 @@ composed text.
 ```gjs component
 import Component from '@glimmer/component';
 import { tracked } from '@glimmer/tracking';
+import { on } from '@ember/modifier';
 import {
+  EuiButton,
   EuiCodeBlock,
   EuiFlexGroup,
   EuiFlexItem,
@@ -97,7 +102,11 @@ export default class SheetEditing extends Component {
           @onChange={{this.onChange}}
           @height={{360}}
           @ariaLabel='Work log'
-        />
+        >
+          <:toolbar as |sheet|>
+            <EuiButton @size='s' @iconType='keyboard' {{on 'click' sheet.showShortcuts}}>Shortcuts</EuiButton>
+          </:toolbar>
+        </EuiSheet>
       </EuiFlexItem>
       <EuiFlexItem @grow={{1}}>
         <EuiTitle @size='xxs'><h4>Last change sets</h4></EuiTitle>

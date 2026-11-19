@@ -33,10 +33,32 @@ interface RowMenuSignature {
   };
 }
 
+const GROUPS: Readonly<Record<string, number>> = {
+  insertAbove: 0,
+  insertBelow: 0,
+  duplicate: 1,
+  expand: 1,
+  openLink: 1,
+  copy: 2,
+  delete: 4
+};
+
+/** The sheet's items by group; the app's `@rowActions` go together, before Delete. */
+function groupOf(id: string): number {
+  return GROUPS[id] ?? 3;
+}
+
 export default class RowMenu extends Component<RowMenuSignature> {
   get style() {
     return htmlSafe(`top:${this.args.top}px;left:${this.args.left}px;`);
   }
+
+  /** A line before the item that starts a group (V03 batch 1): insert | duplicate, expand, open | copy, your actions | delete. */
+  startsGroup = (index: number): boolean => {
+    if (index === 0) return false;
+    const items = this.args.items;
+    return groupOf(items[index]!.id) !== groupOf(items[index - 1]!.id);
+  };
 
   select = (item: RowMenuItem): void => {
     if (!item.disabled) this.args.onSelect(item);
@@ -51,7 +73,10 @@ export default class RowMenu extends Component<RowMenuSignature> {
     >
       <EuiPanel @paddingSize="none" @hasShadow={{true}}>
         <EuiContextMenuPanel @hasFocus={{true}} @initialFocusedItemIndex={{0}}>
-          {{#each @items as |item|}}
+          {{#each @items as |item index|}}
+            {{#if (this.startsGroup index)}}
+              <hr class="euiSheet__menuSeparator" aria-hidden="true" />
+            {{/if}}
             <EuiContextMenuItem
               @icon={{item.icon}}
               @color={{item.color}}

@@ -1,7 +1,10 @@
-/** Drag to select, fill down (Ctrl/Cmd+D), tiled paste and select all (Ctrl/Cmd+A). */
+/**
+ * Drag to select, fill down (Ctrl/Cmd+D), tiled paste and select all
+ * (Ctrl/Cmd+A). The active cell stays at the anchor (V03 batch 1): AN1-AN4.
+ */
 import { module, test } from 'qunit';
 import { setupRenderingTest } from 'ember-qunit';
-import { click, render, triggerEvent } from '@ember/test-helpers';
+import { click, focus, render, triggerEvent } from '@ember/test-helpers';
 
 import EuiSheet from '#src/components/eui-sheet.gts';
 import { localRecords } from '#src/local-records.ts';
@@ -14,7 +17,8 @@ import {
   press,
   pressed,
   selected,
-  text
+  text,
+  type
 } from '../../helpers/sheet.ts';
 
 import type { EuiSheetField } from '#src/core/index.ts';
@@ -104,8 +108,8 @@ module('Integration | Component | EuiSheet ranges', function (hooks) {
     assert.strictEqual(editorFrame(), null, 'no editor');
     assert.strictEqual(
       document.activeElement,
-      cell(2, 1),
-      'focus goes to the head'
+      cell(0, 0),
+      'focus stays on the anchor (V03 batch 1)'
     );
     assert.strictEqual(store.log.length, 0, 'the checkbox did not toggle');
 
@@ -293,5 +297,94 @@ module('Integration | Component | EuiSheet ranges', function (hooks) {
     await click(cell(2, 1));
     assert.strictEqual(store.log.length, 1, 'the next click toggles');
     assert.true(store.records[2]!.done);
+  });
+  /* The active cell stays at the anchor (V03 batch 1) */
+
+  const WIDE: EuiSheetField<Row>[] = [
+    { id: 'name' },
+    { id: 'city' },
+    { id: 'a' },
+    { id: 'b' },
+    { id: 'c' }
+  ];
+
+  test('AN1 after a mouse drag from (0,1) to (0,4) focus is on (0,1); typing edits it', async function (assert) {
+    const store = await renderSheet(4, WIDE);
+    // a real press focuses the pressed cell
+    await triggerEvent(cell(0, 1), 'mousedown', { button: 0 });
+    await focus(cell(0, 1));
+    for (const col of [2, 3, 4]) await triggerEvent(cell(0, col), 'mouseover');
+    await release([0, 4]);
+    assert.deepEqual(selected(), ['0:1', '0:2', '0:3', '0:4'], '1×4');
+    assert.strictEqual(document.activeElement, cell(0, 1), 'the anchor');
+    await type('z');
+    assert.ok(editorFrame(), 'typing opens the editor');
+    const frame = editorFrame()!.getBoundingClientRect();
+    const anchor = cell(0, 1).getBoundingClientRect();
+    assert.true(Math.abs(frame.left - anchor.left) < 2, 'over the anchor');
+    await press('Enter');
+    assert.deepEqual(
+      store.log.map((set) =>
+        set.patches.map((p) => `${p.recordId}.${p.fieldId}=${String(p.to)}`)
+      ),
+      [['r0.city=z']],
+      'the anchor cell is edited'
+    );
+  });
+
+  test('AN2 Shift+ArrowRight ×3 then Shift+ArrowDown: focus on the anchor, a 2×4 range', async function (assert) {
+    await renderSheet(4, WIDE);
+    await focusCell(0, 1);
+    for (let i = 0; i < 3; i++) {
+      assert.true(
+        await pressed('ArrowRight', { shiftKey: true }),
+        'the sheet’s'
+      );
+    }
+    await press('ArrowDown', { shiftKey: true });
+    assert.deepEqual(selected(), [
+      '0:1',
+      '0:2',
+      '0:3',
+      '0:4',
+      '1:1',
+      '1:2',
+      '1:3',
+      '1:4'
+    ]);
+    assert.strictEqual(document.activeElement, cell(0, 1), 'the anchor');
+    // at the last field Shift+ArrowRight stays
+    await press('ArrowRight', { shiftKey: true });
+    assert.strictEqual(selected().length, 8, 'clamped');
+    // Delete clears the whole range
+    await press('Delete');
+    assert.deepEqual([text(1, 1), text(0, 4)], ['', '']);
+  });
+
+  test('AN3 Escape collapses the range to the active cell; a plain arrow moves from it', async function (assert) {
+    await renderSheet(4, WIDE);
+    await focusCell(1, 1);
+    await press('ArrowRight', { shiftKey: true });
+    await press('ArrowDown', { shiftKey: true });
+    assert.strictEqual(selected().length, 4);
+    assert.true(await pressed('Escape'), 'the sheet’s');
+    assert.deepEqual(selected(), ['1:1'], 'collapsed to the anchor');
+    assert.strictEqual(document.activeElement, cell(1, 1));
+    await press('ArrowDown', { shiftKey: true });
+    await press('ArrowDown');
+    assert.deepEqual(selected(), ['2:1'], 'from the active cell');
+  });
+
+  test('AN4 Shift+click extends; focus stays; a press on the active cell collapses without editing', async function (assert) {
+    await renderSheet(4, WIDE);
+    await focusCell(0, 1);
+    await click(cell(2, 3), { shiftKey: true });
+    assert.strictEqual(selected().length, 9, '3×3');
+    assert.strictEqual(document.activeElement, cell(0, 1), 'the anchor');
+    await click(cell(0, 1));
+    assert.deepEqual(selected(), ['0:1'], 'collapsed');
+    assert.strictEqual(editorFrame(), null, 'no edit');
+    await click(cell(0, 1));
+    assert.ok(editorFrame(), 'a second click on the active cell edits');
   });
 });

@@ -45,6 +45,8 @@ type ForwardedArgs<Doc> = Pick<
   | 'rowHeight'
   | 'onRowHeightChange'
   | 'frozenFields'
+  | 'fieldDrag'
+  | 'headerLines'
   | 'summary'
   | 'onFilterByField'
   | 'readOnly'
@@ -210,6 +212,8 @@ export default class EuiSheetSearch<Doc extends object> extends Component<
       @rowHeight={{@rowHeight}}
       @onRowHeightChange={{@onRowHeightChange}}
       @frozenFields={{@frozenFields}}
+      @fieldDrag={{@fieldDrag}}
+      @headerLines={{@headerLines}}
       @summary={{@summary}}
       @onFilterByField={{@onFilterByField}}
       @readOnly={{@readOnly}}

@@ -171,8 +171,10 @@ your own store, remove those records.
 | `@registerApi` | `(api) => void`: receives the sheet's API once, after the first render (below). |
 | `@hiddenFields` | Fields that exist but are not columns: shown in the expanded record after `@fields`, copied by duplicate, put back by undo, given to the blocks (`showField`). |
 | `@onHiddenFieldsChange` | `(fieldIds) => void`: the new list of hidden ids after "Hide column" or a block's `hideField` / `showField`. With it, update `@fields` and `@hiddenFields`; without it the sheet hides and shows fields itself. |
-| `@onFieldOrderChange` | `(fieldIds) => void`: the visible ids in their new order after "Move left/right". With it, update `@fields`; without it the sheet keeps its own order. |
-| `@fieldWidths`, `@onFieldWidthChange` | Widths in px by field id (over `field.width`); `(fieldId, width) => void` after a resize. Without the handler the grid keeps a resized width until its columns change (a hide or a move drops it); keep them in `@fieldWidths` to keep them. |
+| `@onFieldOrderChange` | `(fieldIds) => void`: the visible ids in their new order after "Move left/right" or a header drag. With it, update `@fields`; without it the sheet keeps its own order. |
+| `@fieldDrag` | Drag a header to reorder the fields (also Space, the arrows and Space on a focused header). Default `true`; `false` turns it off. |
+| `@headerLines` | `1` (default), `2` or `3`: the lines a header label may wrap to. The header row grows to fit; a cut label keeps its full text as the header's tooltip. |
+| `@fieldWidths`, `@onFieldWidthChange` | Widths in px by field id (over `field.width`); `(fieldId, width) => void` after a resize. Without the handler the sheet keeps a resized width itself, also when the columns are hidden, shown or moved; keep them in `@fieldWidths` to keep them across renders of the sheet. |
 | `@rowHeight`, `@onRowHeightChange` | `'short'` (default, one line), `'medium'` (2 lines), `'tall'` (4), `'extraTall'` (6); changed by a block's `setRowHeight`. With the handler, update `@rowHeight`. |
 | `@sort`, `@onSortChange` | Your sort, `[{ field, direction: 'asc' or 'desc' }]`, drawn as header arrows; the menu's "Sort" items call the handler with the whole new sort. Without the handler there are no sort items and no arrows. The sheet never sorts. |
 | `@onFilterByField` | `(fieldId) => void`: adds "Filter by this field" to the column menu. |
@@ -335,6 +337,21 @@ really hides (the field goes to the hidden list and the expanded record),
 and copy and paste skip hidden fields. The first field cannot be hidden or
 moved, and nothing can move before it.
 
+Drag a header to move its field (`@fieldDrag`, on by default): the drop
+calls `@onFieldOrderChange` with the new order, as "Move left/right" does,
+or moves the column itself without the handler. A drop before the first
+field puts the field second. With the keyboard, focus a header, press
+Space, move it with the arrows and press Space to drop it (Escape
+cancels); Enter still opens the header menu. A click on a title still
+selects the column. Drags start from a mouse or a pen, not a touch: on a
+phone use the menu's "Move left/right". The row-number column cannot be
+dragged. `@fieldDrag={{false}}` gives the header the DOM of v0.2 (no drag
+wrappers; the column resizer inside the header cell).
+
+`@headerLines={{2}}` (or `3`) lets long header labels wrap instead of
+being cut, independently of `@rowHeight`: the header row grows and the
+rows start below it.
+
 ## Summary bar
 
 Pass `@summary` (even `{}`) to show a footer row under the grid: each
@@ -424,6 +441,7 @@ store:
 | `expandRecord(id)` | Opens that record (`null` closes it). |
 | `insertRecord({ anchor?, values? })` | Emits the insert of one record, next to `anchor` (`{ recordId, position: 'before' or 'after' }`) or at the end. `values` default to `@newRecordValues`. |
 | `deleteRecords(ids)` | Emits the delete of those records. |
+| `showShortcuts()` | Opens the shortcut list (as Ctrl/Cmd+/ on the grid). The blocks have `showShortcuts()` too, for a toolbar button. |
 
 When you replace `@records` with records the sheet did not change
 (another sort, another page, a reload), the selection follows its record:
@@ -443,8 +461,10 @@ properties set by a class on the sheet's wrapper (`--euiSheet-primary`,
 `--euiSheet-textDanger`, `--euiSheet-dangerFilled`,
 `--euiSheet-textInverse`, `--euiSheet-shadow`, `--euiSheet-subdued`,
 `--euiSheet-border`, `--euiSheet-link` (link text and file names),
-`--euiSheet-star` (a rating's stars), and `--euiSheet-highlight` for what
-is coming). To change
+`--euiSheet-star` (a rating's stars), `--euiSheet-checked` (checked rows),
+`--euiSheet-elevation` (the open editor's and the row menu's shadow), and
+`--euiSheet-highlight` for what is coming). `--euiSheet-selected`, the
+range tint, is the theme's primary at 12 % (20 % in dark). To change
 one, set it on the sheet itself, which takes attributes
 (`<EuiSheet style="--euiSheet-selected: #E6F0FF" …>`) or a more specific
 selector; set on a parent element, it loses to the sheet's class. The
@@ -624,13 +644,13 @@ default the whole text is one part and its value is the cell's value.
 | Arrows; Home, End (row start, end); Ctrl+Home, Ctrl+End (first, last cell) | Move (the grid's keys). Home and Ctrl+Home go to the first field; ArrowLeft from it reaches the row number | Move in the text |
 | Ctrl/Cmd+arrows | Jump to the edge of the data, as in Excel: to the last filled cell of a block, else to the next filled cell, else to the last cell. With Shift, extend the range to it | Move in the text |
 | PageUp, PageDown | Move by the rows in view (with Shift, extend the range) | |
-| Shift+arrows, Shift+click, a mouse drag | Select a range | Move in the text |
+| Shift+arrows, Shift+click, a mouse drag | Select a range: its far corner moves, the active cell (where the range started) keeps focus | Move in the text |
 | Shift+Home, Shift+End; Ctrl/Cmd+Shift+Home, Ctrl/Cmd+Shift+End | Extend the range to the row's first or last field; to the first or the last record's last cell | Select text |
 | Ctrl/Cmd+A | Select every cell | Select the text |
 | A printable key | Opens the editor with that character. A date opens only on a digit; a checkbox has no editor. | Types |
 | Enter, F2, double-click | Opens the editor on the current value (a date: the browser's date input) | Enter saves and goes down |
 | Tab, Shift+Tab | Tab moves focus out of the grid, to the next element on the page | Save and go right / left |
-| Escape | The grid's | Closes without saving |
+| Escape | Ends the dashed mark of a copy; collapses a range to the active cell | Closes without saving |
 | Space | Toggles a checkbox; elsewhere expands the record | Types |
 | A digit | Sets a rating | |
 | Shift+Enter | Adds a record below and goes to it (without inserting: as Enter) | Saves and goes down; in long text, adds a line (also Alt+Enter) |
@@ -641,6 +661,18 @@ default the whole text is one part and its value is the cell's value.
 | Ctrl/Cmd+D | Fill down: the top row of the range into the cells below it; on one row, the row above into it | The browser's |
 | Ctrl/Cmd+R | Fill right: the left column of the range into the cells right of it; on one column, the column to its left into it. Taken from the browser's reload while a cell has focus | The browser's |
 | Ctrl/Cmd+Z; Ctrl/Cmd+Shift+Z, Ctrl+Y | Undo; redo | The input's own |
+| Ctrl/Cmd+/ | Opens the shortcut list | |
+
+Ctrl/Cmd+/ on a cell, a row number or a header opens the shortcut list:
+every key of this table, by section, without the rows of features that
+are off (`@readOnly`, `@canInsert`, row numbers, column drag). Escape
+closes it and focus goes back to the cell. Its texts are messages
+(`euiSheet.shortcuts`, `euiSheet.shortcutFillDown`, key names such as
+`euiSheet.shortcutKeyEnter`), so `@messages` and `eui-i18n` translate it.
+`?` is not a shortcut: it is a printable key and opens the editor.
+
+On a header: Enter opens the header menu, and Space lifts the column to
+move it with the arrows (Space drops it, Escape cancels).
 
 On a row number: Space toggles the checkbox, Enter expands the record,
 Shift+ArrowUp/Down selects rows, Shift+F10 opens the menu, and Delete
@@ -652,6 +684,28 @@ With the mouse, as in Airtable: a click selects a cell (a blue ring), a
 click on the selected cell edits it, and a double-click edits at once.
 Pressing on a cell and dragging over others selects that range (the
 release does not edit or toggle); Shift+arrows then continue from it.
+
+The active cell stays where a range started, as in Airtable and
+spreadsheets: a drag, Shift+click, Shift+arrows and the Shift+Ctrl/Cmd
+jumps move only the range's far corner, which is scrolled into view, and
+the ring stays on the first cell. Typing or Enter edits that cell; a
+plain arrow or click moves it and collapses the range; Delete, copy, cut,
+paste and fill use the whole range. A range of more than one cell has a
+3 px outline, and the active cell inside it keeps a plain background. The
+headers of the range's columns and the numbers of its rows are marked in
+the primary colour; a selected column's header and a selected row's
+number also get a 3 px bar. Checked rows have a light tint.
+
+After a copy or a cut the copied cells keep a dashed outline until
+Escape, a change or the next copy. The cells a paste, fill, undo or redo
+changed flash briefly (not with reduced motion). While the fill handle is
+dragged, its target area has a dashed outline. A right-click (or a long
+press) on a cell or a row number opens the row menu, on a header the
+header menu; Shift+F10 opens the row menu from the keyboard.
+
+With no records (and not `@isLoading`) the sheet shows "No records" under
+the grid; the add row stays the way to add one (`@messages` `noRecords`;
+an `<:empty>` block replaces the message).
 Holding the pointer near an edge of the grid, or past it, scrolls the
 grid (faster the farther out) and the range follows.
 Select and date cells show a ▾ or calendar button on the hovered or

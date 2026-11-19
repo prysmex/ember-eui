@@ -159,6 +159,8 @@ export interface SheetApi {
   }): void;
   /** Emits the delete of these records (ids not in `@records` are ignored). */
   deleteRecords(ids: RecordId[]): void;
+  /** Opens the shortcut list (as Ctrl/Cmd+/ on the grid). */
+  showShortcuts(): void;
 }
 
 /** An app item of the row menu (`@rowActions`). */
@@ -201,6 +203,8 @@ export interface SheetBlockApi<T = any> {
   setRowHeight(rowHeight: SheetRowHeight): void;
   /** Calls `@onSortChange`; nothing without it. */
   setSort(sort: SheetSort[]): void;
+  /** Opens the shortcut list: for a toolbar button. */
+  showShortcuts(): void;
 }
 
 /** The cell's box relative to the sheet's wrapper, in CSS px. */
@@ -241,7 +245,7 @@ export interface EuiSheetSignature<T> {
     validate?: (
       context: ValidateContext<T>
     ) => CellErrors | Promise<CellErrors>;
-    /** Receives the sheet's API (`undo`, `redo`, `focusCell`, `remapIds`, `clearHistory`, `expandRecord`, `insertRecord`, `deleteRecords`) once, after the first render. */
+    /** Receives the sheet's API (`undo`, `redo`, `focusCell`, `remapIds`, `clearHistory`, `expandRecord`, `insertRecord`, `deleteRecords`, `showShortcuts`) once, after the first render. */
     registerApi?: (api: SheetApi) => void;
     /**
      * Fields that exist but are not shown in the grid: listed in the
@@ -257,8 +261,12 @@ export interface EuiSheetSignature<T> {
      * fields itself.
      */
     onHiddenFieldsChange?: (fieldIds: string[]) => void;
-    /** The visible ids in their new order after a "Move left/right". With it, update `@fields`; without it the sheet keeps its own order. */
+    /** The visible ids in their new order after a "Move left/right" or a header drag (the first field stays first). With it, update `@fields`; without it the sheet keeps its own order. */
     onFieldOrderChange?: (fieldIds: string[]) => void;
+    /** Drag a header to reorder the fields (with the pointer, or Space and the arrows on a focused header); emits `@onFieldOrderChange`. Default true. */
+    fieldDrag?: boolean;
+    /** Lines a header label may wrap to. Default 1. */
+    headerLines?: 1 | 2 | 3;
     /** Column widths in px by field id; wins over `field.width`. */
     fieldWidths?: Record<string, number>;
     /** Called after a column is resized. Without it the sheet keeps the width itself. */
@@ -333,5 +341,7 @@ export interface EuiSheetSignature<T> {
     toolbar: [SheetBlockApi<T>];
     /** Below the grid: paging, counts. */
     footer: [SheetBlockApi<T>];
+    /** Replaces the "No records" message shown under the grid when `@records` is empty and not loading. */
+    empty: [SheetBlockApi<T>];
   };
 }

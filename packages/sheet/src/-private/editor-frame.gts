@@ -36,6 +36,11 @@ interface EditorFrameSignature {
     rect?: SheetEditorRect;
     layout: 'cell' | 'panel' | 'expand' | 'inline';
     placement?: 'below' | 'above';
+    /**
+     * px the 'cell' and 'expand' frames grow past the cell on each side
+     * (V03 batch 1: 2, less where the grid body's visible area ends).
+     */
+    grow?: { top: number; right: number; bottom: number; left: number };
     onFocusOut: () => void;
   };
   Blocks: { default: [] };
@@ -48,16 +53,29 @@ export default class EditorFrame extends Component<EditorFrameSignature> {
 
   get style() {
     if (this.args.layout === 'inline' || !this.args.rect) return undefined;
-    const { top, left, width, height, wrapperHeight } = this.args.rect;
-    if (this.args.layout === 'cell') {
+    const { wrapperHeight } = this.args.rect;
+    let { top, left, width, height } = this.args.rect;
+    const layout = this.args.layout;
+    // lifted past the cell; the padding keeps the text where it was (3 px
+    // border, the cell's 6 px padding)
+    let padding = '';
+    if ((layout === 'cell' || layout === 'expand') && this.args.grow) {
+      const grow = this.args.grow;
+      top -= grow.top;
+      left -= grow.left;
+      width += grow.left + grow.right;
+      height += grow.top + grow.bottom;
+      padding = `--euiSheetEditorPadX:${3 + grow.left}px;--euiSheetEditorPadY:${3 + grow.top}px;`;
+    }
+    if (layout === 'cell') {
       return htmlSafe(
-        `top:${top}px;left:${left}px;width:${width}px;height:${height}px;`
+        `top:${top}px;left:${left}px;width:${width}px;height:${height}px;${padding}`
       );
     }
-    if (this.args.layout === 'expand') {
+    if (layout === 'expand') {
       // starts at the cell's box; the editor grows it (long text)
       return htmlSafe(
-        `top:${top}px;left:${left}px;min-width:${Math.max(width, 240)}px;min-height:${height}px;`
+        `top:${top}px;left:${left}px;min-width:${Math.max(width, 240)}px;min-height:${height}px;${padding}`
       );
     }
     const minWidth = Math.max(width, 240);

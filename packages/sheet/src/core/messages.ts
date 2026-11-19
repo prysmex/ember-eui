@@ -89,6 +89,124 @@ export interface SheetMessages {
   noMatches: () => string;
   /** 'Could not load the options': a picker whose search failed. */
   searchFailed: () => string;
+  /** 'Keyboard shortcuts': the shortcut list's title (Ctrl/Cmd+/). */
+  shortcuts: () => string;
+  /** 'Navigation': a section of the shortcut list. */
+  shortcutsNavigation: () => string;
+  /** 'Selection' */
+  shortcutsSelection: () => string;
+  /** 'Editing' */
+  shortcutsEditing: () => string;
+  /** 'Records and fields' */
+  shortcutsRecords: () => string;
+  /** 'Clipboard and history' */
+  shortcutsClipboard: () => string;
+  /** 'Move to the next cell': a row of the shortcut list. */
+  shortcutMove: () => string;
+  /** 'Go to the first or last field of the row' */
+  shortcutRowEdges: () => string;
+  /** 'Go to the first or last cell' */
+  shortcutDataEdges: () => string;
+  /** 'Jump to the edge of the data' */
+  shortcutJump: () => string;
+  /** 'Move by the rows in view' */
+  shortcutPage: () => string;
+  /** 'Leave the grid' */
+  shortcutLeave: () => string;
+  /** 'Extend the selection' */
+  shortcutExtend: () => string;
+  /** 'Extend to the first or last field of the row' */
+  shortcutExtendRow: () => string;
+  /** 'Extend to the first or last record' */
+  shortcutExtendRecords: () => string;
+  /** 'Extend to the edge of the data' */
+  shortcutExtendJump: () => string;
+  /** 'Select every cell' */
+  shortcutSelectAll: () => string;
+  /** 'Select rows (on a row number)' */
+  shortcutSelectRows: () => string;
+  /** 'Edit the cell' */
+  shortcutEdit: () => string;
+  /** 'Type to replace the value' */
+  shortcutType: () => string;
+  /** 'Save and go down (in an editor)' */
+  shortcutSaveDown: () => string;
+  /** 'Save and go right or left (in an editor)' */
+  shortcutSaveRight: () => string;
+  /** 'Close the editor without saving' */
+  shortcutCancelEdit: () => string;
+  /** 'Clear the selected cells' */
+  shortcutClear: () => string;
+  /** 'Toggle a checkbox, or expand the record' */
+  shortcutSpace: () => string;
+  /** 'Fill down' */
+  shortcutFillDown: () => string;
+  /** 'Fill right' */
+  shortcutFillRight: () => string;
+  /** 'Add a record below' */
+  shortcutInsertBelow: () => string;
+  /** 'Add a record (on the add row)' */
+  shortcutAddRecord: () => string;
+  /** 'Expand the record (on a row number)' */
+  shortcutExpand: () => string;
+  /** 'Check the row (on a row number)' */
+  shortcutCheckRow: () => string;
+  /** 'Open the row menu' */
+  shortcutRowMenu: () => string;
+  /** 'Open the field menu (on a header)' */
+  shortcutFieldMenu: () => string;
+  /** 'Move the field: Space, the arrows, Space (on a header)' */
+  shortcutMoveField: () => string;
+  /** 'Copy' */
+  shortcutCopy: () => string;
+  /** 'Cut' */
+  shortcutCut: () => string;
+  /** 'Paste' */
+  shortcutPaste: () => string;
+  /** 'Undo' */
+  shortcutUndo: () => string;
+  /** 'Redo' */
+  shortcutRedo: () => string;
+  /** 'Show this list' */
+  shortcutShowList: () => string;
+  /** 'Ctrl': a key name in the shortcut list. */
+  shortcutKeyCtrl: () => string;
+  /** 'Shift' */
+  shortcutKeyShift: () => string;
+  /** 'Alt' */
+  shortcutKeyAlt: () => string;
+  /** 'Enter' */
+  shortcutKeyEnter: () => string;
+  /** 'Esc' */
+  shortcutKeyEscape: () => string;
+  /** 'Tab' */
+  shortcutKeyTab: () => string;
+  /** 'Space' */
+  shortcutKeySpace: () => string;
+  /** 'Delete' */
+  shortcutKeyDelete: () => string;
+  /** 'Backspace' */
+  shortcutKeyBackspace: () => string;
+  /** 'Home' */
+  shortcutKeyHome: () => string;
+  /** 'End' */
+  shortcutKeyEnd: () => string;
+  /** 'Page Up' */
+  shortcutKeyPageUp: () => string;
+  /** 'Page Down' */
+  shortcutKeyPageDown: () => string;
+  /** 'Arrows' */
+  shortcutKeyArrows: () => string;
+  /** 'Menu' */
+  shortcutKeyMenu: () => string;
+  /** 'A letter or digit' */
+  shortcutKeyCharacter: () => string;
+  /** 'or': between two keys of one row. */
+  shortcutOr: () => string;
+  /** 'Right-click, long press': the row and header menus by pointer, in the shortcut list. */
+  shortcutKeyRightClick: () => string;
+  /** 'No records': the sheet with an empty `@records` (V03 batch 1). */
+  noRecords: () => string;
 }
 
 export interface SheetMessageToken {
@@ -307,6 +425,301 @@ export const sheetMessageTokens: Readonly<
   searchFailed: {
     token: 'euiSheet.searchFailed',
     defaultMessage: 'Could not load the options',
+    params: []
+  },
+  shortcuts: {
+    token: 'euiSheet.shortcuts',
+    defaultMessage: 'Keyboard shortcuts',
+    params: []
+  },
+  shortcutsNavigation: {
+    token: 'euiSheet.shortcutsNavigation',
+    defaultMessage: 'Navigation',
+    params: []
+  },
+  shortcutsSelection: {
+    token: 'euiSheet.shortcutsSelection',
+    defaultMessage: 'Selection',
+    params: []
+  },
+  shortcutsEditing: {
+    token: 'euiSheet.shortcutsEditing',
+    defaultMessage: 'Editing',
+    params: []
+  },
+  shortcutsRecords: {
+    token: 'euiSheet.shortcutsRecords',
+    defaultMessage: 'Records and fields',
+    params: []
+  },
+  shortcutsClipboard: {
+    token: 'euiSheet.shortcutsClipboard',
+    defaultMessage: 'Clipboard and history',
+    params: []
+  },
+  shortcutMove: {
+    token: 'euiSheet.shortcutMove',
+    defaultMessage: 'Move to the next cell',
+    params: []
+  },
+  shortcutRowEdges: {
+    token: 'euiSheet.shortcutRowEdges',
+    defaultMessage: 'Go to the first or last field of the row',
+    params: []
+  },
+  shortcutDataEdges: {
+    token: 'euiSheet.shortcutDataEdges',
+    defaultMessage: 'Go to the first or last cell',
+    params: []
+  },
+  shortcutJump: {
+    token: 'euiSheet.shortcutJump',
+    defaultMessage: 'Jump to the edge of the data',
+    params: []
+  },
+  shortcutPage: {
+    token: 'euiSheet.shortcutPage',
+    defaultMessage: 'Move by the rows in view',
+    params: []
+  },
+  shortcutLeave: {
+    token: 'euiSheet.shortcutLeave',
+    defaultMessage: 'Leave the grid',
+    params: []
+  },
+  shortcutExtend: {
+    token: 'euiSheet.shortcutExtend',
+    defaultMessage: 'Extend the selection',
+    params: []
+  },
+  shortcutExtendRow: {
+    token: 'euiSheet.shortcutExtendRow',
+    defaultMessage: 'Extend to the first or last field of the row',
+    params: []
+  },
+  shortcutExtendRecords: {
+    token: 'euiSheet.shortcutExtendRecords',
+    defaultMessage: 'Extend to the first or last record',
+    params: []
+  },
+  shortcutExtendJump: {
+    token: 'euiSheet.shortcutExtendJump',
+    defaultMessage: 'Extend to the edge of the data',
+    params: []
+  },
+  shortcutSelectAll: {
+    token: 'euiSheet.shortcutSelectAll',
+    defaultMessage: 'Select every cell',
+    params: []
+  },
+  shortcutSelectRows: {
+    token: 'euiSheet.shortcutSelectRows',
+    defaultMessage: 'Select rows (on a row number)',
+    params: []
+  },
+  shortcutEdit: {
+    token: 'euiSheet.shortcutEdit',
+    defaultMessage: 'Edit the cell',
+    params: []
+  },
+  shortcutType: {
+    token: 'euiSheet.shortcutType',
+    defaultMessage: 'Type to replace the value',
+    params: []
+  },
+  shortcutSaveDown: {
+    token: 'euiSheet.shortcutSaveDown',
+    defaultMessage: 'Save and go down (in an editor)',
+    params: []
+  },
+  shortcutSaveRight: {
+    token: 'euiSheet.shortcutSaveRight',
+    defaultMessage: 'Save and go right or left (in an editor)',
+    params: []
+  },
+  shortcutCancelEdit: {
+    token: 'euiSheet.shortcutCancelEdit',
+    defaultMessage: 'Close the editor without saving',
+    params: []
+  },
+  shortcutClear: {
+    token: 'euiSheet.shortcutClear',
+    defaultMessage: 'Clear the selected cells',
+    params: []
+  },
+  shortcutSpace: {
+    token: 'euiSheet.shortcutSpace',
+    defaultMessage: 'Toggle a checkbox, or expand the record',
+    params: []
+  },
+  shortcutFillDown: {
+    token: 'euiSheet.shortcutFillDown',
+    defaultMessage: 'Fill down',
+    params: []
+  },
+  shortcutFillRight: {
+    token: 'euiSheet.shortcutFillRight',
+    defaultMessage: 'Fill right',
+    params: []
+  },
+  shortcutInsertBelow: {
+    token: 'euiSheet.shortcutInsertBelow',
+    defaultMessage: 'Add a record below',
+    params: []
+  },
+  shortcutAddRecord: {
+    token: 'euiSheet.shortcutAddRecord',
+    defaultMessage: 'Add a record (on the add row)',
+    params: []
+  },
+  shortcutExpand: {
+    token: 'euiSheet.shortcutExpand',
+    defaultMessage: 'Expand the record (on a row number)',
+    params: []
+  },
+  shortcutCheckRow: {
+    token: 'euiSheet.shortcutCheckRow',
+    defaultMessage: 'Check the row (on a row number)',
+    params: []
+  },
+  shortcutRowMenu: {
+    token: 'euiSheet.shortcutRowMenu',
+    defaultMessage: 'Open the row menu',
+    params: []
+  },
+  shortcutFieldMenu: {
+    token: 'euiSheet.shortcutFieldMenu',
+    defaultMessage: 'Open the field menu (on a header)',
+    params: []
+  },
+  shortcutMoveField: {
+    token: 'euiSheet.shortcutMoveField',
+    defaultMessage: 'Move the field: Space, the arrows, Space (on a header)',
+    params: []
+  },
+  shortcutCopy: {
+    token: 'euiSheet.shortcutCopy',
+    defaultMessage: 'Copy',
+    params: []
+  },
+  shortcutCut: {
+    token: 'euiSheet.shortcutCut',
+    defaultMessage: 'Cut',
+    params: []
+  },
+  shortcutPaste: {
+    token: 'euiSheet.shortcutPaste',
+    defaultMessage: 'Paste',
+    params: []
+  },
+  shortcutUndo: {
+    token: 'euiSheet.shortcutUndo',
+    defaultMessage: 'Undo',
+    params: []
+  },
+  shortcutRedo: {
+    token: 'euiSheet.shortcutRedo',
+    defaultMessage: 'Redo',
+    params: []
+  },
+  shortcutShowList: {
+    token: 'euiSheet.shortcutShowList',
+    defaultMessage: 'Show this list',
+    params: []
+  },
+  shortcutKeyCtrl: {
+    token: 'euiSheet.shortcutKeyCtrl',
+    defaultMessage: 'Ctrl',
+    params: []
+  },
+  shortcutKeyShift: {
+    token: 'euiSheet.shortcutKeyShift',
+    defaultMessage: 'Shift',
+    params: []
+  },
+  shortcutKeyAlt: {
+    token: 'euiSheet.shortcutKeyAlt',
+    defaultMessage: 'Alt',
+    params: []
+  },
+  shortcutKeyEnter: {
+    token: 'euiSheet.shortcutKeyEnter',
+    defaultMessage: 'Enter',
+    params: []
+  },
+  shortcutKeyEscape: {
+    token: 'euiSheet.shortcutKeyEscape',
+    defaultMessage: 'Esc',
+    params: []
+  },
+  shortcutKeyTab: {
+    token: 'euiSheet.shortcutKeyTab',
+    defaultMessage: 'Tab',
+    params: []
+  },
+  shortcutKeySpace: {
+    token: 'euiSheet.shortcutKeySpace',
+    defaultMessage: 'Space',
+    params: []
+  },
+  shortcutKeyDelete: {
+    token: 'euiSheet.shortcutKeyDelete',
+    defaultMessage: 'Delete',
+    params: []
+  },
+  shortcutKeyBackspace: {
+    token: 'euiSheet.shortcutKeyBackspace',
+    defaultMessage: 'Backspace',
+    params: []
+  },
+  shortcutKeyHome: {
+    token: 'euiSheet.shortcutKeyHome',
+    defaultMessage: 'Home',
+    params: []
+  },
+  shortcutKeyEnd: {
+    token: 'euiSheet.shortcutKeyEnd',
+    defaultMessage: 'End',
+    params: []
+  },
+  shortcutKeyPageUp: {
+    token: 'euiSheet.shortcutKeyPageUp',
+    defaultMessage: 'Page Up',
+    params: []
+  },
+  shortcutKeyPageDown: {
+    token: 'euiSheet.shortcutKeyPageDown',
+    defaultMessage: 'Page Down',
+    params: []
+  },
+  shortcutKeyArrows: {
+    token: 'euiSheet.shortcutKeyArrows',
+    defaultMessage: 'Arrows',
+    params: []
+  },
+  shortcutKeyMenu: {
+    token: 'euiSheet.shortcutKeyMenu',
+    defaultMessage: 'Menu',
+    params: []
+  },
+  shortcutKeyCharacter: {
+    token: 'euiSheet.shortcutKeyCharacter',
+    defaultMessage: 'A letter or digit',
+    params: []
+  },
+  shortcutOr: {
+    token: 'euiSheet.shortcutOr',
+    defaultMessage: 'or',
+    params: []
+  },
+  shortcutKeyRightClick: {
+    token: 'euiSheet.shortcutKeyRightClick',
+    defaultMessage: 'Right-click, long press',
+    params: []
+  },
+  noRecords: {
+    token: 'euiSheet.noRecords',
+    defaultMessage: 'No records',
     params: []
   }
 };

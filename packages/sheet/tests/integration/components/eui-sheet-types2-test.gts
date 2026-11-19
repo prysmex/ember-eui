@@ -820,8 +820,11 @@ module(
           ['mailto:ana@x.com', '_blank', 'noopener'],
           ['tel:+52811234', '_blank', 'noopener']
         ]);
-        // beside the text: a normal click (the second one edits)
-        await click(cell(0, 0));
+        // beside the text: a normal click (the second one edits). Focus
+        // first goes to a cell in view: after the clicks on the link
+        // cells the grid is scrolled and column virtualization may have
+        // dropped the first field (V03 batch 1: it did, with column drag)
+        await click(cell(0, 8));
         await click(cell(0, 9));
         assert.strictEqual(editorFrame(), null, 'the first click selects');
         // as in LT1: the grid's scroll to the focused column comes a frame

@@ -101,6 +101,10 @@ here: every claim about them is **S**.
 
 ## Worth it, grouped into possible batches
 
+**Scheduled (the user's decision, 2026-11-19):** after v0.3 batch 5, in
+the order D, A, B, C. D's value still depends on whether Prysmex's tables
+are too big to load at once (to confirm with the user before building it).
+
 Line counts are estimates. None is known to need a core change. Two are untested: the double-click on the resizer (1) and the sheet's own fullscreen (2).
 
 **Batch A: small presentation items (about 390 lines).**

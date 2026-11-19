@@ -2910,7 +2910,7 @@ export default class EuiSheet<T extends object> extends Component<
     const entry = this.undoStack.pop();
     if (!entry) return;
     this.redoStack.push(entry);
-    this.applyHistory(
+    const applied = this.applyHistory(
       undoChangeSet(
         entry.changeSet,
         this.args.records,
@@ -2921,6 +2921,12 @@ export default class EuiSheet<T extends object> extends Component<
       'undo',
       focus
     );
+    // none of its records is in @records (another page of the owner's
+    // data): skipped, and kept on the stack for when they are back (7.3)
+    if (!applied && !this.touchesRecords(entry)) {
+      this.redoStack.pop();
+      this.undoStack.push(entry);
+    }
   }
 
   /**
@@ -2932,7 +2938,7 @@ export default class EuiSheet<T extends object> extends Component<
     const entry = this.redoStack.pop();
     if (!entry) return;
     this.undoStack.push(entry);
-    this.applyHistory(
+    const applied = this.applyHistory(
       redoChangeSet(
         entry.changeSet,
         this.args.records,
@@ -2943,6 +2949,10 @@ export default class EuiSheet<T extends object> extends Component<
       'redo',
       focus
     );
+    if (!applied && !this.touchesRecords(entry)) {
+      this.undoStack.pop();
+      this.redoStack.push(entry);
+    }
   }
 
   clearHistory(): void {
@@ -3027,12 +3037,31 @@ export default class EuiSheet<T extends object> extends Component<
    * restores (redo) the entry's rejected texts, and selects what changed.
    * An entry with only rejections emits nothing: the data does not change.
    */
+  /**
+   * Whether a record the entry changed, inserted or deleted is in
+   * `@records`. An entry with none (the owner shows another page or query)
+   * is kept on its stack when undo or redo finds nothing to do.
+   */
+  touchesRecords(entry: HistoryEntry): boolean {
+    const { changeSet } = entry;
+    const ids = new Set(
+      this.args.records.map((record) => String(this.args.getRecordId(record)))
+    );
+    return (
+      changeSet.patches.some((patch) => ids.has(String(patch.recordId))) ||
+      changeSet.inserts.some((insert) => ids.has(insert.tempId)) ||
+      (changeSet.deletes ?? []).some((id) => ids.has(String(id))) ||
+      entry.rejections.some((rejection) => ids.has(String(rejection.id)))
+    );
+  }
+
+  /** Returns whether it emitted a change set or changed the rejected texts shown. */
   applyHistory(
     changeSet: ChangeSet | null,
     entry: HistoryEntry,
     direction: 'undo' | 'redo',
     focus: boolean
-  ): void {
+  ): boolean {
     const before = this.args.records.length;
     let shown: Rejection[] = [];
     if (direction === 'undo' && entry.rejections.length) {
@@ -3076,7 +3105,7 @@ export default class EuiSheet<T extends object> extends Component<
         this.rejections = next;
       }
     }
-    if (!changeSet && !shown.length) return;
+    if (!changeSet && !shown.length) return false;
     this.selectChanged(
       changeSet ?? { ...EMPTY_CHANGE_SET, source: direction },
       before,
@@ -3086,6 +3115,7 @@ export default class EuiSheet<T extends object> extends Component<
       })),
       focus
     );
+    return true;
   }
 
   /**

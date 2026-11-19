@@ -71,6 +71,7 @@ const SPANISH = {
   nextRecord: 'Registro siguiente',
   close: 'Cerrar',
   filterByField: 'Filtrar por este campo',
+  reapply: 'Volver a aplicar',
 };
 
 // the English defaults, to put back

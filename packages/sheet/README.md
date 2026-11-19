@@ -139,6 +139,58 @@ horizontal scroll. While a field is frozen the grid renders every column of
 the rows in view (rows stay virtualized); above 50 visible fields the sheet
 does not freeze.
 
+## EmberSearchUi
+
+`@ember-eui/sheet/search-ui` shows an
+[EmberSearchUi](https://github.com/bengala-tech/ember-search-ui) driver's
+results in a sheet. The driver owns the query; neither package depends on
+the other (the connector is typed against the few `SearchDriver` members it
+uses, `SheetSearchDriver`).
+
+```gjs
+import { EuiSheetSearch } from '@ember-eui/sheet/search-ui';
+
+<template>
+  <EuiSheetSearch
+    @driver={{this.driver}}
+    @getRecordId={{this.getId}}
+    @onChange={{this.save}}
+    @fields={{this.fields}}
+  >
+    <:toolbar as |sheet|>
+      {{! your views; sheet.search is the connector }}
+    </:toolbar>
+  </EuiSheetSearch>
+</template>
+```
+
+- `@records` are the last successful results with your edits since then on
+  top; `@sort`/`@onSortChange` are the driver's sort; `@highlight` its query
+  term; `@isLoading` its loading state; `@rowNumberOffset` the page of the
+  shown rows. The footer has an `EuiTablePagination` under offset paging
+  (`@paging={{false}}` drops it). `@fields` defaults to
+  `fieldsFromSchema(driver.schema)`.
+- **Stable while editing**: `@onChange` persists the change set (it may
+  return a promise) and the connector does not search again, so rows do not
+  move under the user. A "Re-apply" button (message `reapply`) waits for
+  pending saves and calls `driver.refresh()`; any other search does the
+  same. `@refreshOnChange={{true}}` re-applies after each change set.
+- A rejected save keeps the edit shown and re-throws the error; undo works by
+  record id across searches (a change on another page is skipped and stays
+  on the stack).
+- The blocks yield the sheet's block API plus `search` (`records`, `sort`,
+  `term`, `isLoading`, `error`, `total`, `page`, `rowNumberOffset`,
+  `isStale`, `setSort`, `setPage`, `setPerPage`, `reapply`, `apply`). Your
+  toolbar content comes after "Re-apply", your footer content after the
+  pager.
+- For an `EuiSheet` argument the component does not pass on, use
+  `searchRecords(this, driver, { getRecordId, onChange })` with your own
+  `<EuiSheet>` (`@records={{search.records}}`, `@onChange={{search.apply}}`,
+  ...).
+
+`ember-search-ui-driver` is not a dependency of this package: install
+EmberSearchUi in your app.
+
 ## Your own store
 
 `localRecords` is a small tracked store for demos and simple pages. With
@@ -219,8 +271,9 @@ usual):
   inserted is not removed either.
 - An undone delete puts each record back after the neighbour it had, even
   when the records were re-sorted since. A change whose records are not in
-  `@records` (another page) is skipped; `api.clearHistory()` drops the
-  history when your data changes wholesale.
+  `@records` (another page) is skipped and stays on the stack, for when they
+  are back; `api.clearHistory()` drops the history when your data changes
+  wholesale.
 - A change's rejected texts are part of it: undoing a paste removes the
   texts it could not read too (also a paste where every cell was rejected),
   and redo shows them again where the cell still holds the value it had.
@@ -421,7 +474,8 @@ like EUI's own, with English defaults and these tokens:
 (`{count}`), `expandRecord`, `copyRow`, `copyRows` (`{count}`),
 `deleteRecord`, `deleteRecords` (`{count}`), `selectRow`, `selectAllRows`,
 `rowNumber` (`{n}`), `recordTitle` (`{n}`), `previousRecord`, `nextRecord`,
-`close`, `filterByField` (all under `euiSheet.`).
+`close`, `filterByField`, and `reapply` (the EmberSearchUi connector's
+button) (all under `euiSheet.`).
 
 ```ts
 this.euiI18n.addTranslations({
@@ -552,5 +606,5 @@ version you use; this package does not depend on it.
 
 No cut, fill handle, fill right, auto-scroll while dragging, grouping,
 fullscreen or IME composition yet. Sorting, filtering, search and paging
-are the owner's (see above). Pasted text in a field whose type returns
+are the owner's (see above, and the EmberSearchUi connector). Pasted text in a field whose type returns
 `{ unresolved }` is a rejection (bulk resolve on paste is planned).

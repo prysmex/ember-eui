@@ -57,6 +57,9 @@ const CSS = `
 .euiSheet__checkbox--checked::after { content: ''; position: absolute; left: 4px; top: 1px; width: 4px; height: 8px; border: solid var(--euiSheet-textInverse, #FFF); border-width: 0 2px 2px 0; transform: rotate(45deg); }
 .euiSheet__toolbar { margin-bottom: 8px; }
 .euiSheet__footer { margin-top: 8px; }
+.euiSheetSearch > .euiSheet__toolbar:not(:has(> *)), .euiSheetSearch > .euiSheet__footer:not(:has(> *)) { display: none; }
+.euiSheetSearch__bar { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+.euiSheetSearch__footer { display: flex; flex-direction: column; gap: 8px; }
 .euiSheet__grid { position: relative; }
 .euiSheet__loading { z-index: 4; }
 .euiSheet__headerTip { display: inline-flex; margin-left: 4px; vertical-align: middle; }

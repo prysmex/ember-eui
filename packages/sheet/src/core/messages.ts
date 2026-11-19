@@ -63,6 +63,8 @@ export interface SheetMessages {
   close: () => string;
   /** 'Filter by this field': the column menu's item with `@onFilterByField`. */
   filterByField: () => string;
+  /** 'Re-apply': the EmberSearchUi connector's button that runs the search again after edits. */
+  reapply: () => string;
 }
 
 export interface SheetMessageToken {
@@ -211,6 +213,11 @@ export const sheetMessageTokens: Readonly<
   filterByField: {
     token: 'euiSheet.filterByField',
     defaultMessage: 'Filter by this field',
+    params: []
+  },
+  reapply: {
+    token: 'euiSheet.reapply',
+    defaultMessage: 'Re-apply',
     params: []
   },
   close: {

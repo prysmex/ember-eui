@@ -1557,6 +1557,9 @@ importers:
       ember-qunit:
         specifier: ^9.0.2
         version: 9.1.0(@ember/test-helpers@5.5.0(@babel/core@7.29.7(supports-color@10.2.2))(supports-color@10.2.2))(qunit@2.26.0)(supports-color@10.2.2)
+      ember-search-ui-driver:
+        specifier: 2.0.0-beta.2
+        version: 2.0.0-beta.2
       ember-source:
         specifier: ~7.3.1
         version: 7.3.1(@glimmer/component@2.1.1(supports-color@10.2.2))(supports-color@10.2.2)
@@ -1915,6 +1918,9 @@ importers:
       '@elastic/eui-illustrations':
         specifier: 1.1.0
         version: 1.1.0
+      '@elastic/search-ui':
+        specifier: ^1.24.2
+        version: 1.24.2
       '@ember-eui/changeset-form':
         specifier: workspace:*
         version: link:../packages/changeset-form
@@ -2059,6 +2065,15 @@ importers:
       ember-resolver:
         specifier: ^13.2.0
         version: 13.2.0
+      ember-search-ui:
+        specifier: 2.0.0-beta.2
+        version: 2.0.0-beta.2(@babel/core@7.29.7(supports-color@10.2.2))(@elastic/search-ui@1.24.2)(@glimmer/component@2.1.1(supports-color@10.2.2))(supports-color@10.2.2)(tracked-built-ins@4.1.2(@babel/core@7.29.7(supports-color@10.2.2))(supports-color@10.2.2))
+      ember-search-ui-driver:
+        specifier: 2.0.0-beta.2
+        version: 2.0.0-beta.2
+      ember-search-ui-views:
+        specifier: 2.0.0
+        version: 2.0.0(ea6b65e89efcad90fa8f622087f062b6)
       ember-set-helper:
         specifier: ^3.1.0
         version: 3.1.0(@babel/core@7.29.7(supports-color@10.2.2))(supports-color@10.2.2)
@@ -2116,6 +2131,9 @@ importers:
       testem:
         specifier: ^3.21.0
         version: 3.21.0(@babel/core@7.29.7(supports-color@10.2.2))(ejs@3.1.10)(handlebars@4.7.10)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(supports-color@10.2.2)(underscore@1.13.8)
+      tracked-built-ins:
+        specifier: ^4.1.2
+        version: 4.1.2(@babel/core@7.29.7(supports-color@10.2.2))(supports-color@10.2.2)
       typescript:
         specifier: ^6.0.3
         version: 6.0.3
@@ -3451,6 +3469,9 @@ packages:
 
   '@elastic/prismjs-esql@4.30.0':
     resolution: {integrity: sha512-zJde8WINbFTLPJ8AuC1rmEwAZH8P+LaMAhHQ7/Ly87cOxqbiGKDg+CvZrKe2vVlSguVUu1bsHlcsrX6uql+vFQ==}
+
+  '@elastic/search-ui@1.24.2':
+    resolution: {integrity: sha512-fQ/BGEbh4EvX+IWw89xiSUXD3p3iDvZPA46WCHwH+jfEtKiC9P+274UiR32POI3znaWfZElxm9kIyNioVGin0Q==}
 
   '@ember-data/rfc395-data@0.0.4':
     resolution: {integrity: sha512-tGRdvgC9/QMQSuSuJV45xoyhI0Pzjm7A9o/MVVA3HakXIImJbbzx/k/6dO9CUEQXIyS2y0fW6C1XaYOG7rY0FQ==}
@@ -6599,6 +6620,9 @@ packages:
     resolution: {integrity: sha512-BS8PfmtDGnrgYdOonGZQdLZslWIeCGFP9tpan0hi1Co2Zr2NKADsvGYA8XxuG/4UWgJ6Cjtv+YJnB6MM69QGlQ==}
     engines: {node: '>= 0.4'}
 
+  date-fns@1.30.1:
+    resolution: {integrity: sha512-hBSVCvSmWC+QypYObzwGOd9wqdDpOt+0wl0KbU+R+uuZBS1jN8VsD1ss3irQDknRj5NvxiTF6oj/nDRnN/UQNw==}
+
   date-fns@3.6.0:
     resolution: {integrity: sha512-fRHTG8g/Gif+kSh50gaGEdToemgfj74aRX3swtiouboip5JDLAyDE9F11nHMIcvOaXeOC6D7SpNhi7uFyB7Uww==}
 
@@ -6652,6 +6676,14 @@ packages:
     resolution: {integrity: sha512-IB+0RqnJpuS7ndH4dVY5dfWTZsrCzN3avWFdjSiET0uT2U24jKywjpVEK97TflnZkZgiSRfmeqc1WfS+1CI23w==}
     peerDependencies:
       '@babel/core': ^7.23.0 || ^8.0.0
+
+  deep-equal@1.1.2:
+    resolution: {integrity: sha512-5tdhKF6DbU7iIzrIOa1AOUt39ZRm13cmL1cGEh//aqR8x9+tNfbywRf0n5FD/18OKMdo7DNEtrX2t22ZAkI+eg==}
+    engines: {node: '>= 0.4'}
+
+  deep-equal@2.2.3:
+    resolution: {integrity: sha512-ZIwpnevOurS8bpT4192sqAowWM76JDKSHYzMLty3BZGSswgq6pBaH3DhCSW5xVAZICZyKdOBPjwww5wfgT/6PA==}
+    engines: {node: '>= 0.4'}
 
   deep-is@0.1.4:
     resolution: {integrity: sha512-oIPzksmTg4/MriiaYGO+okXDT7ztn/w3Eptv/+gSIdMdKsJo0u4CfYNFJPy+4SKMuCqGw2wxnA+URMg3t8a/bQ==}
@@ -6990,6 +7022,29 @@ packages:
     resolution: {integrity: sha512-89oVHVJwmLDvGvAUWgS87KpBoRhy3aZ6U0Ql6HOmU4TrPkyaa8pM0W81wj9cIwjYprcQtN9EwzZMHnq46+oUyw==}
     engines: {node: 8.* || 10.* || >= 12}
 
+  ember-search-ui-driver@2.0.0-beta.2:
+    resolution: {integrity: sha512-IbGhMbDeHHRFKc5Hgqz1uBoddIugtUhF6YnE6Dc7CPPfNlgInXnsnnojy96pC6IM9ODEKyRIEwxmaeD+0R/0GA==}
+    engines: {node: '>= 20'}
+
+  ember-search-ui-views@2.0.0:
+    resolution: {integrity: sha512-sRGM1f6WcRABGAkg7NFxdr40uP0cd6OMA8NCvRXx/MsVZd9gJXOwnFauRCpzMZRHoOSO5wenUq7lr3DdPNOPxQ==}
+    engines: {node: '>= 20'}
+    peerDependencies:
+      '@glimmer/component': ^2.0.0
+      ember-basic-dropdown: ^9.0.0
+      ember-concurrency: ^5.1.0
+      ember-power-select: ^9.0.0
+      ember-search-ui: ^2.0.0-beta.2
+      ember-search-ui-driver: ^2.0.0-beta.2
+
+  ember-search-ui@2.0.0-beta.2:
+    resolution: {integrity: sha512-KdeDdembPrq3bQ9bu+hbdtOWokKonCXyDreqk1BQZKTOqaXJfQCcbrgirKIPUenTN6TWlGEa8/1a9mJtimPSSw==}
+    engines: {node: '>= 20'}
+    peerDependencies:
+      '@elastic/search-ui': ^1.5.0
+      '@glimmer/component': ^2.0.0
+      tracked-built-ins: ^3.4.0 || ^4.0.0
+
   ember-set-helper@3.1.0:
     resolution: {integrity: sha512-5BTcvqktYjpDbi1HRaSKjuIZsSioilWczDDY3AevwbxoEiasfQMLuXFJkiCKm4aW34OXz652Upo7mumCVXJKOw==}
 
@@ -7132,6 +7187,9 @@ packages:
   es-errors@1.3.0:
     resolution: {integrity: sha512-Zf5H2Kxt2xjTvbJvP2ZWLEICxA6j+hAmMzIlypy4xcBg1vKVnx89Wy0GbS+kf5cwCVFFzdCFh2XSCFNULS6csw==}
     engines: {node: '>= 0.4'}
+
+  es-get-iterator@1.1.3:
+    resolution: {integrity: sha512-sPZmqHBe6JIiTfN5q2pEi//TwxmAFHwj/XEuYjTuse78i8KxaqMTTzxPoFKuzRpDpTJ+0NAbpfenkmH2rePtuw==}
 
   es-module-lexer@2.3.2:
     resolution: {integrity: sha512-poHGpORABojJJucnV9KbOavETW8lBVnphkW77ER5/BQ5Fz7oXSoCNek7IH3vR5nRjdsEz926ibFYX8KtLQmdyw==}
@@ -7994,6 +8052,9 @@ packages:
   heimdalljs@0.2.6:
     resolution: {integrity: sha512-o9bd30+5vLBvBtzCPwwGqpry2+n0Hi6H1+qwt6y+0kwRHGGF8TFIhJPmnuM0xO97zaKrDZMwO/V56fAnn8m/tA==}
 
+  history@4.10.1:
+    resolution: {integrity: sha512-36nwAD620w12kuzPAsyINPWJqlNbij+hpK1k9XRloDtym8mxzGYl2c17LnV6IAGB2Dmg4tEa7G7DlawS0+qjew==}
+
   hoist-non-react-statics@3.3.2:
     resolution: {integrity: sha512-/gGivxi8JPKWNm/W0jSmzcMPpfpPLc3dY/6GxhX2hQ9iGj3aDfklV4ET7NjKpSinLpJ5vafa9iiGIEZg10SfBw==}
 
@@ -8208,6 +8269,10 @@ packages:
 
   is-alphanumerical@2.0.1:
     resolution: {integrity: sha512-hmbYhX/9MUMF5uh7tOXyK/n0ZvWpad5caBA17GsC6vyuCqaWliRG5K1qS9inmUhEMaOBIW7/whAnSwveW/LtZw==}
+
+  is-arguments@1.2.0:
+    resolution: {integrity: sha512-7bVbi0huj/wrIAOzb8U1aszg9kdi3KN/CyU19CTI7tAoZYEZoL9yCDXpbXN+uPsuWnP02cyug1gleqq+TU+YCA==}
+    engines: {node: '>= 0.4'}
 
   is-array-buffer@3.0.2:
     resolution: {integrity: sha512-y+FyyR/w8vfIRq4eQcM1EYgSTnmHXPqaF+IgzgraytCFq5Xh8lllDVmAZolPJiZttZLeFSINPYMaEJ7/vWUa1w==}
@@ -9345,6 +9410,10 @@ packages:
     resolution: {integrity: sha512-W67iLl4J2EXEGTbfeHCffrjDfitvLANg0UlX3wFUUSTx92KXRFegMHUVgSqE+wvhAbi4WqjGg9czysTV2Epbew==}
     engines: {node: '>= 0.4'}
 
+  object-is@1.1.6:
+    resolution: {integrity: sha512-F8cZ+KfGlSGi09lJT7/Nd6KJZ9ygtvYC0/UYYLI9nmQKLMnydpB9yvbv9K1uSkEu7FU9vYPmVwLg328tX+ot3Q==}
+    engines: {node: '>= 0.4'}
+
   object-keys@1.1.1:
     resolution: {integrity: sha512-NuAESUOUMrlIXOfHKzD6bpPu3tYt3xvjNdRIQ+FeT0lNb4K8WR70CaDxhuNguS2XG+GjkyMwOzsN5ZktImfhLA==}
     engines: {node: '>= 0.4'}
@@ -10145,6 +10214,9 @@ packages:
     resolution: {integrity: sha512-i1xevIst/Qa+nA9olDxLWnLk8YZbi8R/7JPbCMcgyWaFR6bKWaexgJgEB5oc2PKMjYdrHynyz0NY+if+H98t1w==}
     engines: {node: '>= 0.8'}
 
+  resolve-pathname@3.0.0:
+    resolution: {integrity: sha512-C7rARubxI8bXFNB/hqcp/4iUeIXJhJZvFPFPiSPRnhU5UPxzMFIl+2E6yY6c4k9giDJAhtV+enfA+G89N6Csng==}
+
   resolve-pkg-maps@1.0.0:
     resolution: {integrity: sha512-seS2Tj26TBVOC2NIc2rOe2y2ZO7efxITtLZcGSOnHHNOQ7CkiUBfw0Iw2ck6xkIhPwLhKNLS8BO+hEpngQlqzw==}
 
@@ -10840,6 +10912,9 @@ packages:
   tiny-lr@2.0.0:
     resolution: {integrity: sha512-f6nh0VMRvhGx4KCeK1lQ/jaL0Zdb5WdR+Jk8q9OSUQnaSDxAEGH1fgqLZ+cMl5EW3F2MGnCsalBO1IsnnogW1Q==}
 
+  tiny-warning@1.0.3:
+    resolution: {integrity: sha512-lBN9zLN/oAf68o3zNXYrdCt1kP8WsiGW8Oo2ka41b2IM5JL/S1CTyX1rW0mb/zSuJun0ZUrDxx4sqvYS2FWzPA==}
+
   tinyglobby@0.2.17:
     resolution: {integrity: sha512-wXR/dYpcqKmfWpEdZjiKJOwCNFndD0DMnrW/cYjVGttEkBfVgcLFHoNrlj47mjOVic9yyNu65alsgF4NQyTa2g==}
     engines: {node: '>=12.0.0'}
@@ -10879,6 +10954,9 @@ packages:
   tr46@5.0.0:
     resolution: {integrity: sha512-tk2G5R2KRwBd+ZN0zaEXpmzdKyOYksXwywulIX95MBODjSzMIuQnQ3m8JxgbhnL1LeVo7lqQKsYa1O3Htl7K5g==}
     engines: {node: '>=18'}
+
+  tracked-built-ins@4.1.2:
+    resolution: {integrity: sha512-KiiV/Pzi7VNKTn9Fip6Ic54AjKgFfqows1Jq3L0WLVqZcvfswdhVxQ9yqqhTXsmgLhVzIgtdzNBH4ExqWf34BQ==}
 
   tree-kill@1.2.2:
     resolution: {integrity: sha512-L0Orpi8qGpRG//Nd+H90vFB+3iHnue1zSSGmNOOCh1GLJ7rUKVwV2HvijphGQS2UmhUZewS9VgvxYIdgr+fG1A==}
@@ -11259,6 +11337,9 @@ packages:
 
   validated-changeset@1.4.1:
     resolution: {integrity: sha512-GPs6R5bBGP8aY+QIYaDKeO1jJvYzaUhOuZiO6nczUS7MFlgV5oOBq21ShDVrpn28308/6h2fYfC9voJKl4eMtQ==}
+
+  value-equal@1.0.1:
+    resolution: {integrity: sha512-NOJ6JZCAWr0zlxZt+xqCHNTEKOsrks2HQd4MqhP1qy4z1SkbEP467eNx6TgDKXMvUOb+OENfJCZwM+16n7fRfw==}
 
   vary@1.1.2:
     resolution: {integrity: sha512-BNGbWLfd0eUPabhkXUVm0j8uuvREyTh5ovRa/dyow/BqAbZJyC+5fU+IzQOzmAKzYqYRAISoRhdQr3eIZ/PXqg==}
@@ -13910,6 +13991,13 @@ snapshots:
   '@elastic/prismjs-esql@4.30.0':
     dependencies:
       '@elastic/esql-definitions': 4.30.0
+
+  '@elastic/search-ui@1.24.2':
+    dependencies:
+      date-fns: 1.30.1
+      deep-equal: 1.1.2
+      history: 4.10.1
+      qs: 6.16.1
 
   '@ember-data/rfc395-data@0.0.4': {}
 
@@ -17650,6 +17738,8 @@ snapshots:
       es-errors: 1.3.0
       is-data-view: 1.0.2
 
+  date-fns@1.30.1: {}
+
   date-fns@3.6.0: {}
 
   debug@2.6.9(supports-color@10.2.2):
@@ -17702,6 +17792,36 @@ snapshots:
     dependencies:
       '@babel/core': 7.29.7(supports-color@10.2.2)
       babel-import-util: 3.0.1
+
+  deep-equal@1.1.2:
+    dependencies:
+      is-arguments: 1.2.0
+      is-date-object: 1.1.0
+      is-regex: 1.2.1
+      object-is: 1.1.6
+      object-keys: 1.1.1
+      regexp.prototype.flags: 1.5.4
+
+  deep-equal@2.2.3:
+    dependencies:
+      array-buffer-byte-length: 1.0.2
+      call-bind: 1.0.9
+      es-get-iterator: 1.1.3
+      get-intrinsic: 1.3.0
+      is-arguments: 1.2.0
+      is-array-buffer: 3.0.5
+      is-date-object: 1.1.0
+      is-regex: 1.2.1
+      is-shared-array-buffer: 1.0.4
+      isarray: 2.0.5
+      object-is: 1.1.6
+      object-keys: 1.1.1
+      object.assign: 4.1.7
+      regexp.prototype.flags: 1.5.4
+      side-channel: 1.1.1
+      which-boxed-primitive: 1.1.1
+      which-collection: 1.0.2
+      which-typed-array: 1.1.24
 
   deep-is@0.1.4: {}
 
@@ -18324,6 +18444,38 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
+  ember-search-ui-driver@2.0.0-beta.2: {}
+
+  ember-search-ui-views@2.0.0(ea6b65e89efcad90fa8f622087f062b6):
+    dependencies:
+      '@ember/render-modifiers': 4.0.0(supports-color@10.2.2)
+      '@embroider/addon-shim': 1.10.3(supports-color@10.2.2)
+      '@glimmer/component': 2.1.1(supports-color@10.2.2)
+      decorator-transforms: 2.4.0(@babel/core@7.29.7(supports-color@10.2.2))
+      ember-basic-dropdown: 9.0.0(@babel/core@7.29.7(supports-color@10.2.2))(@ember/test-helpers@5.5.0(@babel/core@7.29.7(supports-color@10.2.2))(supports-color@10.2.2))(@embroider/macros@1.21.1(@babel/core@7.29.7(supports-color@10.2.2))(@glint/template@1.9.0)(supports-color@10.2.2))(@glimmer/component@2.1.1(supports-color@10.2.2))(supports-color@10.2.2)
+      ember-concurrency: 5.3.0(@babel/core@7.29.7(supports-color@10.2.2))(@glint/template@1.9.0)(supports-color@10.2.2)
+      ember-element-helper: 0.8.8(supports-color@10.2.2)
+      ember-power-select: 9.0.2(@babel/core@7.29.7(supports-color@10.2.2))(@ember/test-helpers@5.5.0(@babel/core@7.29.7(supports-color@10.2.2))(supports-color@10.2.2))(@glimmer/component@2.1.1(supports-color@10.2.2))(ember-basic-dropdown@9.0.0(@babel/core@7.29.7(supports-color@10.2.2))(@ember/test-helpers@5.5.0(@babel/core@7.29.7(supports-color@10.2.2))(supports-color@10.2.2))(@embroider/macros@1.21.1(@babel/core@7.29.7(supports-color@10.2.2))(@glint/template@1.9.0)(supports-color@10.2.2))(@glimmer/component@2.1.1(supports-color@10.2.2))(supports-color@10.2.2))(ember-concurrency@5.3.0(@babel/core@7.29.7(supports-color@10.2.2))(@glint/template@1.9.0)(supports-color@10.2.2))(supports-color@10.2.2)
+      ember-search-ui: 2.0.0-beta.2(@babel/core@7.29.7(supports-color@10.2.2))(@elastic/search-ui@1.24.2)(@glimmer/component@2.1.1(supports-color@10.2.2))(supports-color@10.2.2)(tracked-built-ins@4.1.2(@babel/core@7.29.7(supports-color@10.2.2))(supports-color@10.2.2))
+      ember-search-ui-driver: 2.0.0-beta.2
+    transitivePeerDependencies:
+      - '@babel/core'
+      - supports-color
+
+  ember-search-ui@2.0.0-beta.2(@babel/core@7.29.7(supports-color@10.2.2))(@elastic/search-ui@1.24.2)(@glimmer/component@2.1.1(supports-color@10.2.2))(supports-color@10.2.2)(tracked-built-ins@4.1.2(@babel/core@7.29.7(supports-color@10.2.2))(supports-color@10.2.2)):
+    dependencies:
+      '@elastic/search-ui': 1.24.2
+      '@ember/test-waiters': 4.1.2(supports-color@10.2.2)
+      '@embroider/addon-shim': 1.10.3(supports-color@10.2.2)
+      '@glimmer/component': 2.1.1(supports-color@10.2.2)
+      decorator-transforms: 2.4.0(@babel/core@7.29.7(supports-color@10.2.2))
+      deep-equal: 2.2.3
+      ember-search-ui-driver: 2.0.0-beta.2
+      tracked-built-ins: 4.1.2(@babel/core@7.29.7(supports-color@10.2.2))(supports-color@10.2.2)
+    transitivePeerDependencies:
+      - '@babel/core'
+      - supports-color
+
   ember-set-helper@3.1.0(@babel/core@7.29.7(supports-color@10.2.2))(supports-color@10.2.2):
     dependencies:
       '@embroider/addon-shim': 1.10.3(supports-color@10.2.2)
@@ -18631,6 +18783,18 @@ snapshots:
   es-define-property@1.0.1: {}
 
   es-errors@1.3.0: {}
+
+  es-get-iterator@1.1.3:
+    dependencies:
+      call-bind: 1.0.9
+      get-intrinsic: 1.3.0
+      has-symbols: 1.1.0
+      is-arguments: 1.2.0
+      is-map: 2.0.3
+      is-set: 2.0.3
+      is-string: 1.1.1
+      isarray: 2.0.5
+      stop-iteration-iterator: 1.1.0
 
   es-module-lexer@2.3.2: {}
 
@@ -19812,6 +19976,15 @@ snapshots:
     dependencies:
       rsvp: 3.2.1
 
+  history@4.10.1:
+    dependencies:
+      '@babel/runtime': 7.29.10
+      loose-envify: 1.4.0
+      resolve-pathname: 3.0.0
+      tiny-invariant: 1.3.3
+      tiny-warning: 1.0.3
+      value-equal: 1.0.1
+
   hoist-non-react-statics@3.3.2:
     dependencies:
       react-is: 16.13.1
@@ -20050,6 +20223,11 @@ snapshots:
     dependencies:
       is-alphabetical: 2.0.1
       is-decimal: 2.0.1
+
+  is-arguments@1.2.0:
+    dependencies:
+      call-bound: 1.0.4
+      has-tostringtag: 1.0.2
 
   is-array-buffer@3.0.2:
     dependencies:
@@ -21336,6 +21514,11 @@ snapshots:
 
   object-inspect@1.13.4: {}
 
+  object-is@1.1.6:
+    dependencies:
+      call-bind: 1.0.9
+      define-properties: 1.2.1
+
   object-keys@1.1.1: {}
 
   object.assign@4.1.5:
@@ -22244,6 +22427,8 @@ snapshots:
     dependencies:
       http-errors: 1.6.3
       path-is-absolute: 1.0.1
+
+  resolve-pathname@3.0.0: {}
 
   resolve-pkg-maps@1.0.0: {}
 
@@ -23246,6 +23431,8 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
+  tiny-warning@1.0.3: {}
+
   tinyglobby@0.2.17:
     dependencies:
       fdir: 6.5.0(picomatch@4.0.7)
@@ -23286,6 +23473,14 @@ snapshots:
   tr46@5.0.0:
     dependencies:
       punycode: 2.3.1
+
+  tracked-built-ins@4.1.2(@babel/core@7.29.7(supports-color@10.2.2))(supports-color@10.2.2):
+    dependencies:
+      '@embroider/addon-shim': 1.10.3(supports-color@10.2.2)
+      decorator-transforms: 2.4.0(@babel/core@7.29.7(supports-color@10.2.2))
+    transitivePeerDependencies:
+      - '@babel/core'
+      - supports-color
 
   tree-kill@1.2.2: {}
 
@@ -23701,6 +23896,8 @@ snapshots:
   validated-changeset@1.4.1:
     dependencies:
       '@ungap/structured-clone': 0.3.4
+
+  value-equal@1.0.1: {}
 
   vary@1.1.2: {}
 

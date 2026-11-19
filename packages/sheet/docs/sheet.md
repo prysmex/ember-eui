@@ -137,8 +137,10 @@ your own store, remove those records.
   the record's id; if your server gave the restored record a new id,
   call `remapIds` for it too.
 - A change whose records are not in `@records` any more (another page, a
-  filter) is skipped. Call `api.clearHistory()` when your data changes
-  wholesale.
+  filter) is skipped, and stays on the stack: Ctrl/Cmd+Z does nothing
+  until those records are back (the page where you made it), then undoes
+  it. Call `api.clearHistory()` when your data changes wholesale (or on a
+  page change, if you prefer that).
 - Rejected texts are part of the change that made them: undoing a paste
   also removes the texts it could not read (the cells show their values
   again, without the red border), and a redo shows them again on the
@@ -228,7 +230,95 @@ without them; `setSort` does nothing without `@onSortChange`).
 Sorting a local array needs a few lines in your component (the "View
 intents" example does it with each type's `compare`). For filtering,
 search and paging over local data, an EmberSearchUi driver with its
-in-memory backend does the work.
+in-memory backend does the work, shown through the connector below.
+
+## EmberSearchUi
+
+`@ember-eui/sheet/search-ui` renders the sheet as an
+[EmberSearchUi](https://github.com/bengala-tech/ember-search-ui) results
+view. The driver owns the query (filter, search, sort, paging, over a
+server or `memoryBackend`); the sheet shows its results and edits them.
+Neither package depends on the other: the connector is typed against the
+few driver members it uses (`SheetSearchDriver`), which
+`ember-search-ui-driver`'s `SearchDriver` has.
+
+```gjs
+import { EuiSheetSearch } from '@ember-eui/sheet/search-ui';
+
+<template>
+  <EuiSheetSearch
+    @driver={{this.driver}}
+    @getRecordId={{this.getId}}
+    @onChange={{this.save}}
+    @fields={{this.fields}}
+  >
+    <:toolbar as |sheet|>
+      {{! EmberSearchUi views, a field picker; sheet.search is the connector }}
+    </:toolbar>
+  </EuiSheetSearch>
+</template>
+```
+
+What it maps:
+
+| Sheet | Driver |
+| --- | --- |
+| `@records` | the last successful results, with your edits since then on top |
+| `@sort`, header "Sort" items | `state.sort`, `driver.setSort` (back to page 1) |
+| `@highlight` | `state.query.term` |
+| `@isLoading` | `result.status === 'loading'` (the rows stay meanwhile) |
+| `@rowNumberOffset` | `(page - 1) * perPage` of the page the rows came from |
+| the pager in the footer | `EuiTablePagination` on `driver.setPage`, `driver.setPerPage` (offset paging only) |
+| `@fields` (default) | `fieldsFromSchema(driver.schema)` |
+| `@onChange` | your `@onChange` only: the driver has no write method |
+
+**Stable while editing.** `@onChange` persists the change set (an API
+call, or writing the docs a `memoryBackend` reads); it may return a
+promise. The connector shows the edit at once over the last results and
+does not search again, so rows do not move, vanish or re-sort under the
+user. A **Re-apply** button (message `reapply`) appears in the toolbar;
+it waits for your pending `@onChange` promises and calls
+`driver.refresh()`, and the rows come back as the query puts them. Any
+other search (a sort, a page, a filter) does the same. A search that
+finishes while a save is still running is followed by one more refresh
+when the save settles. With `@refreshOnChange={{true}}` the connector
+re-applies after each change set (a live view).
+
+- Inserted rows show at their place until the next search, under their
+  `tempId` (`createRecord(values, tempId)` builds them; default `{ id:
+  tempId, ...values }`). A server that gives them real ids tells the sheet
+  with `api.remapIds` (from `@registerApi`), as with any owner.
+- A rejected `@onChange` promise leaves the edit shown and re-throws the
+  error to your error handling; nothing is undone (call `api.undo()` if
+  you want that).
+- Undo works by record id across searches: a change on another page is
+  skipped and stays on the stack (see "Undo and redo").
+- The blocks yield the sheet's block API plus `search`: `records`,
+  `sort`, `term`, `isLoading`, `error`, `total`, `page` (`{ page, perPage,
+  pageCount }`, offset paging only), `rowNumberOffset`, `isStale`,
+  `apply`, `setSort`, `setPage`, `setPerPage`, `reapply`. Your
+  `<:toolbar>` content comes after "Re-apply", your `<:footer>` content
+  after the pager; `@paging={{false}}` drops the pager (with cursor paging
+  there is none: page in `<:footer>`).
+- `fieldsFromSchema` turns `keyword` with options into `singleSelect`,
+  `number` into `number`, `date` into `date`, `boolean` into `checkbox`,
+  anything else into `text`, with the schema's label; it leaves out nested
+  and `geo` fields and dotted paths (a sheet field reads one key). It sets
+  no widths, rules or read-only flags: real apps pass `@fields`.
+- `@summary` is not mapped: turn `result.aggregations` into texts
+  yourself.
+- `EuiSheetSearch` passes the other `EuiSheet` arguments through
+  (`@hiddenFields`, `@readOnly`, `@validate`, `@registerApi`, ...). For an
+  argument it does not take, use `searchRecords(this, driver, { getRecordId,
+  onChange })` with your own `<EuiSheet>`: its properties are the
+  arguments (`@records={{search.records}}`, `@onChange={{search.apply}}`,
+  `@sort`, `@onSortChange={{search.setSort}}`, `@highlight={{search.term}}`,
+  `@isLoading`, `@rowNumberOffset`). It unsubscribes when `this` is
+  destroyed and never destroys the driver.
+
+The "Sheet with EmberSearchUi" example below uses EmberSearchUi's own
+views (search box, sort menu, filter bar, chips, paging info) in the
+blocks.
 
 ## Presentation state
 
@@ -475,9 +565,10 @@ These are not in yet:
 - Cut (Ctrl/Cmd+X), a fill handle, and fill right (Ctrl/Cmd+R).
 - Scrolling the grid while a drag reaches its edge: drag within the
   visible rows, or use Shift+click.
-- Grouping rows (planned after the EmberSearchUi connector). Sorting,
+- Grouping rows (planned for a later version: the groups must come from
+  the owner, and no EmberSearchUi backend provides them yet). Sorting,
   filtering, search and paging are not "not yet": they are the owner's
-  (above), and the sheet draws them.
+  (above, and the EmberSearchUi connector), and the sheet draws them.
 - Multi-select, linked record, user and attachment fields.
 - Resolving pasted text through your API (bulk resolve). A pasted text
   in a field whose type returns `{ unresolved }`, such as the zone

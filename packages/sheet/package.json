@@ -46,6 +46,10 @@
       "types": "./declarations/core/index.d.ts",
       "default": "./dist/core/index.js"
     },
+    "./search-ui": {
+      "types": "./declarations/search-ui/index.d.ts",
+      "default": "./dist/search-ui/index.js"
+    },
     "./*": {
       "types": "./declarations/*.d.ts",
       "default": "./dist/*.js"
@@ -130,6 +134,7 @@
     "ember-keyboard": "^9.0.4",
     "ember-power-select": "^9.0.2",
     "ember-qunit": "^9.0.2",
+    "ember-search-ui-driver": "2.0.0-beta.2",
     "ember-source": "~7.3.1",
     "ember-strict-application-resolver": "^0.1.1",
     "ember-template-lint": "^6.1.0",

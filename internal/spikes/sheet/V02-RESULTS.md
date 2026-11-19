@@ -929,3 +929,338 @@ Production docs build, Playwright keyboard and mouse:
   only): 128 ms per step frozen, 65 ms unfrozen.
 - d01 Dark: the frozen Name column has the dark background like the other
   cells (`v02-b3-dark-frozen.png`); numbers are right-aligned.
+
+## Batch 4: EmberSearchUi connector
+
+Built 2026-11-19 on `92733b31` (uncommitted when this was written). Scope as
+`V02-DESIGN.md` 7: the optional entry `@ember-eui/sheet/search-ui`
+(`SearchRecords`/`searchRecords`, `fieldsFromSchema`, `EuiSheetSearch`), its
+tests, the docs and the "Sheet with EmberSearchUi" demo. Group by stays
+deferred (7.6). `packages/core/src` was not changed. Nothing of batch 5 was
+started. The EmberSearchUi repository was read, not edited.
+
+### What was built
+
+| File | Change |
+| --- | --- |
+| `packages/sheet/src/search-ui/index.ts` (new) | Barrel of the entry. |
+| `packages/sheet/src/search-ui/search-records.ts` (new) | `SheetSearchDriver` (structural), `SheetSearchSnapshot`, `SheetSearchPage`, `SheetSearchFieldDefinition`, `SearchRecordsOptions`, `SearchRecords`, `searchRecords`. Imports nothing from EmberSearchUi. |
+| `packages/sheet/src/search-ui/fields-from-schema.ts` (new) | `fieldsFromSchema`. |
+| `packages/sheet/src/search-ui/eui-sheet-search.gts` (new) | `EuiSheetSearch`, `EuiSheetSearchSignature`, `SheetSearchBlockApi`. Not app-re-exported. |
+| `packages/sheet/src/core/messages.ts` | Token `euiSheet.reapply` ("Re-apply"). |
+| `packages/sheet/src/components/eui-sheet.gts` | Undo/redo keep a skipped entry on its stack when none of its records is in `@records` (deviation 1): `touchesRecords`, `applyHistory` returns whether it did something. |
+| `packages/sheet/src/-private/styles.ts` | Three rules: the connector's toolbar row, its footer column, and hiding its empty toolbar/footer. |
+| `packages/sheet/package.json` | `exports["./search-ui"]` (`declarations/search-ui/index.d.ts`, `dist/search-ui/index.js`); devDependency `ember-search-ui-driver` `2.0.0-beta.2`. No peer, no dependency. |
+| `site/package.json` | devDependencies `ember-search-ui` `2.0.0-beta.2`, `ember-search-ui-driver` `2.0.0-beta.2`, `ember-search-ui-views` `2.0.0`, `@elastic/search-ui` `^1.24.2`, `tracked-built-ins` `^4.1.2`. |
+| `pnpm-lock.yaml` | Additions only (below). |
+| `packages/sheet/tests/unit/search-records-test.ts` (new), `search-driver-types-test.ts` (new), `tests/integration/components/eui-sheet-search-test.gts` (new), `tests/unit/core-boundary-test.ts` (B2) | Tests. |
+| `packages/sheet/docs/sheet.md`, `README.md`, `docs/sheet-demo/d07-translations.md`, new `docs/sheet-demo/d14-search-ui.md` | Docs. |
+
+### API
+
+Additive, all from `@ember-eui/sheet/search-ui`:
+
+- `searchRecords(owner, driver, { getRecordId, onChange, createRecord?, refreshOnChange? })`
+  → `SearchRecords`: `records`, `sort`, `term`, `isLoading`, `error`,
+  `total`, `page` (`{ page, perPage, pageCount }`, offset paging only),
+  `rowNumberOffset`, `isStale`, `apply`, `setSort`, `setPage` (1-based,
+  no-op under cursor paging), `setPerPage`, `reapply`, and `disconnect()`
+  (deviation 3). Unsubscribes when `owner` is destroyed; never destroys the
+  driver.
+- `fieldsFromSchema(schema)`.
+- `EuiSheetSearch`: `@driver`, `@getRecordId`, `@onChange`, `@createRecord`,
+  `@refreshOnChange`, `@fields` (default `fieldsFromSchema(driver.schema)`),
+  `@paging` (default true), and these `EuiSheet` arguments passed as they
+  are: `@hiddenFields`, `@onHiddenFieldsChange`, `@onFieldOrderChange`,
+  `@fieldWidths`, `@onFieldWidthChange`, `@rowHeight`, `@onRowHeightChange`,
+  `@frozenFields`, `@summary`, `@onFilterByField`, `@readOnly`, `@canInsert`,
+  `@canDelete`, `@cellErrors`, `@validate`, `@fieldTypes`, `@messages`,
+  `@height`, `@rowNumbers`, `@rowLabel`, `@rowActions`, `@newRecordValues`,
+  `@expandedRecord`, `@expandedRecordId`, `@onExpandedRecordChange`,
+  `@checkedRecordIds`, `@onCheckedChange`, `@registerApi`, `@ariaLabel`
+  (`@onResolve` does not exist yet: batch 5). Blocks `<:toolbar>` and
+  `<:footer>` yield `SheetBlockApi & { search }`.
+- Types `SheetSearchDriver`, `SheetSearchSnapshot`, `SheetSearchPage`,
+  `SheetSearchFieldDefinition`, `SearchRecordsOptions`,
+  `EuiSheetSearchSignature`, `SheetSearchBlockApi`.
+- Message `reapply` (`euiSheet.reapply`), also in `SheetMessages`.
+
+Not purely additive: an undo or redo that finds nothing to do because none of
+the entry's records is in `@records` now leaves the entry on its stack
+(before, it moved to the other stack). This affects every sheet, not only
+the connector (deviation 1).
+
+### Dependencies and the lockfile
+
+Registry (`npm view`, 2026-11-19): `ember-search-ui-driver` 2.0.0-beta.2,
+`ember-search-ui` 2.0.0-beta.2 and `ember-search-ui-views` 2.0.0 are
+published, all three under the dist-tag `next`. The `latest` tags point to
+older versions (beta.1, 1.0.2, 1.0.0), so the specifiers are exact pins. The
+site already had the views' peers `ember-power-select` 9.0.2,
+`ember-basic-dropdown` 9.0.0 and `ember-concurrency` 5.3.0. It also needs
+`@elastic/search-ui`, because `ember-search-ui`'s index re-exports
+`SearchProvider`, which imports it at run time (`dist/components/search-provider.js`),
+and `tracked-built-ins` (`WithSearch`). Both are peers of `ember-search-ui`.
+
+In the scratch copy, a control `pnpm install` with no package change left
+the lockfile identical (`b4-install-control.log`, `b4-lock-control.diff`:
+0 lines). After the `package.json` edits, one non-frozen `pnpm install`
+(`b4-install.log`: "+20" packages, 1 downloaded; peer warnings are about
+packages that were there before, `b4-peers.log`) changed the lockfile by
+**197 added lines and 0 removed** (`b4-lock.diff`): the five site importer
+entries and the sheet's devDependency, and the packages `@elastic/search-ui`
+1.24.2, `date-fns` 1.30.1, `deep-equal` 1.1.2 and 2.2.3, `ember-search-ui`,
+`ember-search-ui-driver`, `ember-search-ui-views`, `es-get-iterator`,
+`history` 4.10.1, `is-arguments`, `object-is`, `resolve-pathname`,
+`tiny-warning`, `tracked-built-ins` 4.1.2, `value-equal`. Nothing else
+changed. Only `pnpm-lock.yaml` was copied back to the repository.
+
+In the scratch copy, `pnpm install --frozen-lockfile` with the copied-back
+lockfile passed ("Lockfile is up to date", `b4-install-frozen.log`).
+
+On the Mac, in `~/prysmex/ember-eui`:
+
+```sh
+pnpm install --frozen-lockfile   # the lockfile already has the new entries
+pnpm --filter @ember-eui/sheet test
+pnpm start                        # docs site: Sheet page, "Sheet with EmberSearchUi"
+```
+
+### Verification items (section 12)
+
+| # | Item | Outcome |
+| --- | --- | --- |
+| N8 | What `snapshot.result.results` holds while loading; whether `EuiTablePagination`'s `activePage` is 0-based. | Read in `driver.ts`. A command emits the new state with the **same result object**. The loading emit is `{ ...previous result, status: 'loading' }` (the previous results stay), and an error keeps the results too. So the connector replaces its rows only on a `'success'` result whose object is new (SR1b covers state-only, loading and error snapshots with an overlay). `activePage` is 0-based (`eui-table-pagination.gts`: "The current page, from `0`"; `onChangePage` gets the 0-based index). SS4 checks that page 2 of the driver is `pagination-button-1` with `aria-current="page"`. |
+| N9 | `ember-search-ui-views` on npm; it and its peers build in the docs site. | Published (2.0.0, dist-tag `next`). It installed with the peers the site already had. The production site build passed (`b4-site.log`), and the d14 chunk was emitted. In a headless smoke run of the built site (`b4-smoke.mjs`, `b4-smoke.log`, 10/10), d14 rendered its rows, `SearchBox`, `Sorting`, `FilterBar` and the pager, and `PagingInfo` read "Showing 1 - 50 out of 2000". A DOM click on page 2 showed row number 51 and "Marta 51". There were no exceptions or console errors. That run used DOM calls, not trusted input. |
+| N10 | The views' arguments and that they work under `Search` with the demo's driver. | Read in the views' sources. `SearchBox`, `Sorting`, `Facet` and `PagingInfo` take a search-ui-style `@driver` (`SearchUiDriver \| SearchUiCompat`): the demo passes `searchUiCompat(driver)` (from the driver package). `FilterBar` and `FilterChips` take `@search` (the `TrackedSearch` that `<Search @driver>` yields) and `@properties` (`defineProperty`). `Facet` was left out: it reads facets from `result.aggregations['facets']` (`compat/search-ui.ts`), and `memoryBackend` returns only `{ results, total }`, so it would have nothing to show. That conclusion comes from the source; `Facet` was not rendered (deviation 8). These views ran only in the smoke check above, without real input. |
+| N14 | Performance. | Not measured. The demo's `write` runs `applyChangeSet` over 2,000 docs per change set, and the overlay applies one change set over the page per edit. |
+
+### Tests
+
+Baseline: 229/229 at HEAD (batch 3's `b3-c2.log`). Filtered runs while
+building:
+- `b4-run1.log`: 24/26. SR1 asserted offset 0 before any result. SS3 assumed
+  focus stayed on the edited row, but Enter moves down a row. Both were
+  test premises, fixed in the tests (`b4-dbg1.log` showed the second).
+- `b4-run2.log`: 25/26. SS3 found DOM focus on `body` after "Re-apply"
+  (deviation 7).
+- `b4-run3.log`: 26/26.
+
+Full runs: `b4-c1.log` 256/256, with ESLint failing on the new tests. `b4-c2.log`
+256/256 with lint clean. Final: **256/256**, 0 failed (`b4-c3.log`, 09:14 UTC, after the last source
+and test edit; lint `b4-lint-c3.log`, Prettier `b4-prettier-c3.log`). Logs are in the session
+scratchpad
+(`/tmp/claude-1000/-Users-betocantu93-prysmex/df04f7e2-a347-4eab-a276-4d9974f4dbc1/scratchpad/`).
+
+New (27):
+
+- `tests/unit/search-records-test.ts` (13, fake driver): SR1–SR10 as in 7.4.
+  Added:
+  - SR1b: state-only, loading and error snapshots keep the rows and the
+    overlay.
+  - SR11: a rejected `onChange` keeps the edit shown, reaches
+    `unhandledrejection`, and nothing is undone or re-queried.
+  - SR12: `disconnect()` without `searchRecords`.
+  - SR6 also checks that a search finishing during the save plus
+    `refreshOnChange` gives one refresh, not two.
+- `tests/unit/search-driver-types-test.ts` (3, real `SearchDriver` +
+  `memoryBackend`): SR1 (records, sort, page, offset, query; `settled()`
+  waits for the driver's searches), SR2/SR3, SR9 on a real `FieldSchema`.
+  The compile-time half is described below.
+- `tests/integration/components/eui-sheet-search-test.gts` (10, real
+  driver): SS1–SS9 as in 7.4, plus SS3b (a re-query while a data cell has
+  focus moves focus with its record).
+  - SS1 also renders the default fields from the schema.
+  - SS7 also checks that the empty toolbar and footer are `display: none`.
+  - SS8 needed deviation 1.
+- `tests/unit/core-boundary-test.ts` B2: no file under `src` imports
+  `ember-search-ui*` or `@elastic/search-ui`.
+
+The type test: `tsconfig.json` includes only `src`, so `pnpm lint` does not
+check tests. `ember-tsc --noEmit -p tsconfig.eslint.json` reports no error
+in the new files (`b4-tsc-tests-c3.log`; the errors it lists are in older
+test files and were there before, e.g. `.at` on arrays and
+`ember-keyboard` types). It checks that a real `SearchDriver<Doc>` is
+assignable to `SheetSearchDriver<Doc>`. It also checks a negative case under
+`@ts-expect-error`: an `Omit<SearchDriver, 'setSort'>` is not assignable.
+With that directive removed, the check fails with TS2345
+(`b4-tsc-negative.log`), so the test is not vacuous.
+
+No existing test changed.
+
+Not executed by any test:
+- d14 with real input;
+- `@refreshOnChange` through the component (unit only);
+- a new `@driver` on a rendered `EuiSheetSearch` (reconnect);
+- cursor paging in the component (no pager; unit only);
+- `search.error` in a UI (the component shows no error);
+- `Facet`.
+
+Lint (`pnpm lint`: `ember-tsc --noEmit`, ESLint, stylelint): exit 0
+(`b4-lint-c3.log`). Prettier `--check src tests/integration tests/unit
+tests/helpers README.md`: everything batch 4 touched is clean. The only
+warning is `tests/helpers/index.js`, unclean at HEAD (`b4-prettier-c3.log`).
+Sources, tests and `README.md` were formatted with `--write` in the scratch
+copy and copied back (`b4-prettier-write.log`). One README code block was
+then rewritten by hand into a layout Prettier also accepts. Docs Markdown is
+not Prettier-formatted here.
+
+Root checks after `build:js` of the packages: `node --test
+scripts/dist-hygiene.test.mjs` 9/9 (`b4-dist-hygiene.log`; the new modules
+do only registration on import), and `pnpm docs:api:check` exit 0
+(`b4-docs-api-check.log`; the sheet has no API-docs page).
+
+### Deviations from the design
+
+1. **A skipped undo entry stays on the stack: a sheet change.** 7.3 says an
+   entry whose record is not on the current page "is skipped (3.4), and
+   stays on the stack", and SS8 tests it. Batch 1's `undo()`/`redo()` moved
+   the entry to the other stack even when nothing was emitted, so SS8 could
+   not pass with the connector alone. Now, when undo or redo emits nothing
+   and changes no rejected text, and none of the entry's records (patched,
+   inserted `tempId`s, deleted, rejected) is in `@records`, the entry goes
+   back on its stack. An entry skipped for another reason (its cells were
+   changed since, U3) still moves, as before. Side effect, as Q17 warns:
+   such an entry at the top blocks the older ones until its records are
+   back.
+2. **`SheetSearchDriver` has two optional members**, `isSettled` and
+   `settled()` (`SearchDriver` has both). Without them the test waiter would
+   miss the time between a command and the start of its search (the
+   driver's debounce timer), and `await settled()` would return too early.
+   The connector checks again in a microtask after each snapshot, because
+   the driver sets its timer after emitting. Drivers without these members
+   get a waiter while `status` is `'loading'` or a save runs. The snapshot
+   and page shapes have names (`SheetSearchSnapshot`, `SheetSearchPage`),
+   and `SheetSearchFieldDefinition` has `nested` (it is a flag on
+   `FieldDefinition`, not a type).
+3. **`SearchRecords.disconnect()` is public**, so the class works without
+   `searchRecords` (as `TrackedSearch.disconnect()`).
+4. **`rowNumberOffset` comes from the page of the last successful result**,
+   not from the requested page. Row numbers change with the rows, not 150
+   ms before them. `page` is the requested page, so the pager responds at
+   once.
+5. **The connector reads `driver.snapshot` and subscribes without
+   `immediate`**, as `TrackedSearch` does. A snapshot that is still loading
+   shows the results it holds.
+6. **`fieldsFromSchema`:**
+   - It leaves out dotted paths too (`custom.due`), because a sheet field
+     reads one key (`valueOf` is `record[id]`).
+   - Options whose value is not a string or a number are dropped, and a
+     keyword left with no options is `text`.
+   - "`label` → `label`" in 7.3 was read as the field's label (default: the
+     path); the sheet has no `label` type.
+   - `nested` is the flag or the type.
+7. **`EuiSheetSearch` details:**
+   - `@onResolve` is not forwarded (batch 5 adds it to the sheet).
+   - "Re-apply" moves focus back to the grid's tab-stop cell before it
+     re-queries. The result removes the button, and SS3 found DOM focus on
+     `body` (`b4-run2.log`). With focus on a cell, the sheet's 3.2 rule
+     moves it with the record (SS3, SS3b).
+   - A new `@driver` connects again; the old connection only unsubscribes.
+   - The component always passes both blocks to `EuiSheet`, so an empty
+     toolbar or footer is hidden with CSS (`.euiSheetSearch >
+     .euiSheet__toolbar:not(:has(> *))`), which needs a browser with
+     `:has()`.
+8. **The demo's toolbar has no `Facet`.** It uses `FilterBar` and
+   `FilterChips`, which also come from the views, for the select field,
+   because `memoryBackend` gives no aggregations (N10). The other views
+   follow the design: `SearchBox`, `Sorting` and `PagingInfo` (through
+   `searchUiCompat`) inside `Search`. The Q16 fallback (EUI controls) was
+   not needed. Its `Sorting` options are single-key (the compat API), and
+   the header's sort sets the same driver state.
+9. **Exact versions** (`2.0.0-beta.2`, `2.0.0`) instead of ranges, because
+   `latest` points to older majors.
+10. **Open questions** took the design's defaults:
+    - Q16: the views, since they install and build.
+    - Q17: keep the history.
+    - Q19: the button and the pager are rendered, `@paging={{false}}` drops
+      the pager, and `search.isStale` is yielded.
+    - Q18: group by stays deferred.
+
+### Docs
+
+- `docs/sheet.md`:
+  - A new section "EmberSearchUi": what it maps, "stable while editing",
+    inserts and `remapIds`, rejected saves, undo across pages, the blocks,
+    `fieldsFromSchema`, `@summary` not mapped, and `searchRecords` with an
+    own `<EuiSheet>`.
+  - "Undo and redo": a skipped change stays on the stack.
+  - "Not yet": grouping is planned for later, and the owner's queries
+    include the connector.
+- `README.md`: the same, shorter. Also the `reapply` token and "Limits".
+- `d07-translations.md`: Spanish `reapply`.
+- New `d14-search-ui.md` "Sheet with EmberSearchUi", as 7.5:
+  - 2,000 docs in a tracked store and `memoryBackend(() => store.docs, {
+    latencyMs: 150 })`, 50 per page.
+  - `@onChange` writes the store with `applyChangeSet`.
+  - The toolbar has `SearchBox`, `Sorting`, `FilterBar` and `FilterChips`;
+    the footer has the pager and `PagingInfo`.
+  - A walkthrough.
+
+### Docs site build
+
+In the scratch copy: `build:js` of core, sheet, flatpickr, pikaday,
+changeset-form and validated-form, then in `site` `pnpm clean:docfy && node
+../scripts/generate-llms-txt.mjs && pnpm exec vite build --mode production`:
+exit 0 (`b4-site.log`, `b4-site-summary.log`, 09:12 UTC; rebuilt after the
+last demo text edit: `b4-site2.log`, `b4-site2-summary.log`, 09:17 UTC, whose
+`dist` is the one left, smoke `b4-smoke2.log` 10/10 on it). d14 has its own chunk
+(`docfy-demo-docs-sheet-d14-search-ui-*.js` and a `.css` with the views'
+styles). The log has the same seven docfy `getRepoEditUrl` TypeErrors as
+the earlier batches (no `.git` in the scratch copy). `site/dist` is left in
+the scratch copy. In the scratch copy the site links the packages
+(symlinks). On the Mac it uses injected copies, which `pnpm start` syncs
+(`sync-injected.mjs`).
+
+### For the orchestrator to check with real input (docs site, Sheet page, "Sheet with EmberSearchUi")
+
+1. On load: a thin loading bar for about 150 ms, then 50 rows ("Ana 1"
+   first) and the pager "Rows per page: 50", pages 1…40. Under it, "Showing
+   1 - 50 out of 2000".
+2. Name's ⋯ menu → "Sort A-Z": after about 150 ms the rows are sorted, the
+   arrow is on Name, and the toolbar's sort menu shows "Name A-Z". Then pick
+   "Most hours" in the toolbar menu: the arrow moves to Hours.
+3. With Name A-Z, type `Zz` over the first name and press Enter. The row
+   stays first and "Re-apply" appears at the top left. Click it: the row
+   leaves page 1 and focus stays on a cell in the grid, not lost. Then
+   page 40: "Zz" is last.
+4. Do the same with the keyboard: Tab to "Re-apply" and press Enter. Focus
+   must land back in the grid.
+5. Type `ana` in the search box: only Anas, with "ana" marked in the cells;
+   back on page 1.
+6. Page 2: the row numbers go 51…100. Ctrl/Cmd+Z there does nothing if the
+   last edit was on page 1. Back on page 1, Ctrl/Cmd+Z undoes it.
+7. "+ Add record" (last row of the page): type a name. The row shows at
+   once with "Re-apply"; after Re-apply it is where the sort puts it.
+8. Filter bar: add a Status filter (e.g. Done). The rows and the chips
+   follow, and the chip's × removes it.
+9. Rows per page → 25: back to page 1, 80 pages.
+10. Look at the toolbar's layout: the views are unstyled `sui-*` markup
+    inside an EUI page; check that it is legible.
+11. Dark mode was not looked at.
+
+### Notes for batch 5
+
+- `@onResolve`: add it to `ForwardedArgs` and to the template in
+  `eui-sheet-search.gts`. A `'resolve'` change set goes through
+  `search.apply` like any other (pending, `onChange`, shown at once).
+- `fieldsFromSchema` maps only the v0.1 types. Batch 5's types (a keyword
+  list → multiSelect, url/email) could get rules there.
+- The undo rule of deviation 1 reads patch ids, insert `tempId`s, deletes and
+  rejection ids. The `'resolve'` merge does not change which records an
+  entry touches.
+- Pending saves are tracked by promise identity; batch 5's async resolve
+  in the sheet is separate from them.
+
+### Batch 4: real input in Chromium (orchestrator, 2026-11-19)
+
+The docs site was a production build served by `vite preview`. The checks ran on the "Sheet with EmberSearchUi" demo, the 14th grid on the page, using Playwright real input (clicks, typing, keys). Screenshot: `v02-b4-search-ui.png`.
+
+- **Load:** the page shows "Showing 1 - 50 out of 2000", and the row numbers are 1–50.
+- **Header sort:** focus the Name header, press Enter, choose "Sort A-Z". The rows come back sorted from the driver ("Ana 1", "Ana 1001", "Ana 1009", …), and the toolbar's sort select follows ("Name A-Z").
+- **Stable rows and Re-apply:** with Name sorted, typing `Zz` and Enter in the first row leaves the row in place and shows "Re-apply". Clicking it moves the row off page 1, and focus stays in the grid.
+- **Search:** searching `ana` gives "Showing 1 - 50 out of 249 for: ana", and the matches are highlighted with `<mark>` (12 in the rendered rows). Clearing the search brings back all 2000.
+- **Paging:** page 2 shows row numbers 51–100 ("Showing 51 - 100 out of 2000"). On page 2, Ctrl+Z changes nothing, because the edited record is not on that page.
+- **Off-page undo stays on its stack:** back on page 1, Ctrl+Z also changes nothing, because after Re-apply the "Zz" record sorts to the last page. Searching `Zz` shows that record alone. Ctrl+Z there gives "Ana 1" (the row stays, and "Re-apply" shows), and Ctrl+Shift+Z gives "Zz" again.
+
+Not checked with real input: adding a record, the Status filter chips, rows per page, Firefox, Safari.

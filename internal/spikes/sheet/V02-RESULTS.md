@@ -559,3 +559,373 @@ Production docs build, Playwright keyboard and mouse:
   closes it.
 - d06 in the flyout: the Due field opens the flatpickr calendar; a click on
   day 20 saves 20/11/2026 in the form and the cell, the flyout stays open.
+
+## Batch 3: view intents
+
+Built 2026-11-19 on `9222ff25` (uncommitted when this was written). Scope as
+`V02-DESIGN.md` 6: sort arrows and the header menu (sort, hide, move, filter),
+presentation state controlled with a handler and local without one, the
+`<:toolbar>` and `<:footer>` blocks, `@highlight`, `@isLoading`, field
+descriptions, the owner-provided summary bar with the core's `summarize`, and
+the frozen primary field (9.2). `packages/core/src` was not changed. Nothing of
+batch 4 was started.
+
+### The frozen field gate (9.3): passed
+
+The acceptance test was written and run first, against a first cut of the
+9.2 mechanism plus the minimal widths and summary plumbing it needs, filtered
+to its module. Headless Chrome 155:
+
+- First run (`b3-fz1.log`): FZ1, FZ2, FZ4, FZ6–FZ9 passed. FZ3, FZ5 and FZ10
+  failed, all three on test errors, not the mechanism: FZ3 asserted that the
+  header of column `f5` was in view at `scrollLeft = 700`, but it sits under
+  the frozen columns there (64 + 5 × 150 − 700 = 114 px, inside the 214 px
+  frozen edge); FZ5 passed `pageX` to `triggerEvent`, which is not an event
+  init field (the drag went the wrong way); FZ10's position checks passed
+  and only `hasText` failed on the footer cell's copy marker (`↦`). Fixed
+  in the tests (FZ3 checks `f7`, FZ5 uses `clientX`, FZ10 reads
+  `.euiSheet__summary`).
+- Second run (`b3-fz2.log`): FZ1–FZ5, FZ7–FZ10 passed. FZ6 failed on an
+  assertion I added beyond 9.3: after a focus on the frozen cell while
+  scrolled to 700, the grid's `scrollCellIntoView` scrolled back to 64 (the
+  frozen column's own left edge). The editor did cover the cell. See
+  deviation 1 for the sheet-side fix.
+- With that fix, `b3-fz3.log` had 9/10. FZ4 failed on another assertion I
+  had added ("still scrolled" after ArrowLeft down to column 1). Its premise
+  was wrong: column 1 starts at the frozen edge, so the correction rightly
+  scrolls to 0. The test now scrolls to 400 first. `b3-fz4.log`: 10/10, and
+  the full suite since.
+
+So FZ1–FZ4 and FZ10 pass in headless Chrome and the sheet-only mechanism of
+9.2 was kept; the 9.4 grid extension was not needed. Firefox and Safari were
+not checked (9.3 makes them a manual check).
+
+What the gate showed about the mechanism, read from the passing assertions:
+two sticky floated cells (row number at `left:0`, the first field at
+`left:64px`) stay at their x and at the row's y at `scrollLeft = 700`; the
+frozen cell is what `elementFromPoint` returns over it; the frozen header
+cells stay at their x and y over a vertical scroll of 2000 px and paint over
+the body; the footer row is `width: fit-content` (generated styles), so its
+sticky cells stay too (FZ10); a drag on the frozen field's resizer widens it
+(by more than 10 screen px, as asserted), moves the next cell by the same
+amount and keeps it frozen (FZ5); with
+`@frozenFields={{0}}` cells are `position:absolute` again and the last column
+is not rendered at `scrollLeft = 0` (column window back, FZ8).
+
+### What was built (files, under `packages/sheet/`)
+
+| File | Change |
+| --- | --- |
+| `src/components/eui-sheet.gts` | Fields: `visibleFields` (with the local hidden set and order), `hiddenFields`, `canHide`, `hideField`/`showField`/`setFieldOrder`, `setVisibleColumns` turning the grid's calls into intents; widths (`givenWidth`, `resizedWidths`, `frozenWidth`, `onColumnResize`); `sorting`/`onGridSort`/`setSort`; row heights; `columns` (initial width, schema, `isSortable`, `actions`, `display`, frozen header class); the frozen field (`frozenCount`, `frozenLayout`, `frozenCellProps`, `frozenStyle`, `virtualizationOptions`, `clearFrozenOverlap`, `keepFrozenScroll`); `blockApi`; the dev warning `expectUpdate`; template: `<:toolbar>`, `div.euiSheet__grid` (frozen custom properties, `EuiProgress`), the grid's new arguments, `<:controlFooterCell>`, `<:footer>`, `euiSheet--scrolledX`. |
+| `src/-private/footer-cell.gts` (new) | `SheetFooterCell` (`@renderFooterCellValue`) and `SheetControlFooterCell` (`@summary['']`), frozen footer props. |
+| `src/-private/sheet-cell.gts` | Frozen style and class; `@highlight` to cell components; `EuiHighlight` for plain text. |
+| `src/-private/row-number-cell.gts` | Frozen style and class. |
+| `src/-private/record-form-field.gts` | The field's description under its label. |
+| `src/-private/styles.ts` | Toolbar, footer, loading bar, header tip, form description; frozen cells (opaque base, hover and selection as an image over it), frozen headers (sticky, `left` from `--euiSheetFrozenLeft-<i>`, rules for indexes 0–51), footer cells, the edge shadow while scrolled. |
+| `src/core/summary.ts` (new) | `summarize`, `SheetSummaryKind`. |
+| `src/core/types.ts` | `EuiSheetField.description`, `width`, `sortable`, `hideable`; `FieldType.toNumber`. |
+| `src/core/field-types/number.ts` | `toNumber`. |
+| `src/core/messages.ts` | `filterByField` (`euiSheet.filterByField`, "Filter by this field"). |
+| `src/core/index.ts`, `src/index.ts` | Export `summary.ts`; types `SheetBlockApi`, `SheetSort`, `SheetRowHeight`. |
+| `src/types.ts` | `EuiSheetFieldType.schema`; `SheetCellSignature.Args.highlight`; `SheetSort`, `SheetRowHeight`, `SheetBlockApi`; the new arguments; `Blocks` (`toolbar`, `footer`). |
+| `src/field-types.ts` | `schema`: number `'numeric'`, checkbox `'boolean'`, date `'datetime'`. |
+| Tests, docs | Below. |
+
+### API changes
+
+Additive: arguments `@sort` + `@onSortChange`, `@onFilterByField`,
+`@highlight`, `@isLoading`, `@summary`, `@onHiddenFieldsChange`,
+`@onFieldOrderChange`, `@fieldWidths` + `@onFieldWidthChange`, `@rowHeight` +
+`@onRowHeightChange`, `@frozenFields`; blocks `<:toolbar>` and `<:footer>`
+yielding `SheetBlockApi` (`api`, `fields`, `hiddenFields`, `sort`,
+`rowHeight`, `checkedRecords`, `hideField`, `showField`, `setRowHeight`,
+`setSort`); field options `description`, `width`, `sortable`, `hideable`;
+`FieldType.toNumber`; `EuiSheetFieldType.schema`; cell argument `@highlight`;
+core `summarize` and `SheetSummaryKind`; types `SheetBlockApi`, `SheetSort`,
+`SheetRowHeight`; message `filterByField`.
+
+Not purely additive, as the design lists them: **C6** ("Hide column" really
+hides; with the handlers the menu only calls them) and **C7** (the first field
+is frozen by default: a 200 px first column unless a width is given, sticky
+cells, every column of the rendered rows rendered). Also, not in 3.7:
+
+- The first field has no column menu at all unless `@onSortChange` or
+  `@onFilterByField` is passed: its other items (hide, move) are off by 6.3,
+  and the grid hides the button when every item is off. In v0.1 and batch 2
+  it had "Hide column" and "Move right".
+- The second field has no "Move left" (nothing moves before the first).
+- Number columns are right-aligned, and number, date and checkbox headers get
+  the grid's schema class and alignment, because the built-ins now have a
+  `schema` (6.2).
+- Focusing a frozen cell by a key or a press keeps the horizontal scroll, and
+  Home scrolls to the left edge (deviation 1).
+
+### Verification items (section 12)
+
+| # | Item | Outcome |
+| --- | --- | --- |
+| N5 | The grid's sort labels per schema, and whether a column `schema` alone (no `@inMemory`) is enough. | Enough: `column-actions.gts` reads `grid.schema[column.id]`, and `grid.schema` is `mergeSchema(detectSchema(...), columns)`, which keeps a column's own `schema` without `@inMemory`. VW3 sees "Sort Low-High" and calls "Sort High-Low" on the number field; VW2 sees "Sort A-Z" on a text field. The date and checkbox labels ("Old-New", "False-True") are read from `utils/data-grid/schema.ts`, not run. The header class half was batch 2. |
+| N6 | Whether a changed `initialWidth` re-applies to an existing column; `EuiProgress` and `EuiIconTip` arguments. | It re-applies when the sheet passes a new `@columns` array: `body-base.ts` keeps resized widths only while `grid.columns` is the same array, and `initialColumnWidths` is cached on it. The sheet's `columns` depends on `@fieldWidths`, so a new value is a new array. VW8 checks 150 → 240 on `name`. The same rule drops resized widths whenever the columns change for another reason (a hide, a move): VW8 checks that a resize without `@onFieldWidthChange` is dropped by a later hide. As 6.4 and 10 say ("the grid keeps them"), the sheet does not keep them itself; an owner keeps them with `@fieldWidths` and the handler. The sheet mirrors the grid's kept widths only for the frozen offsets. `EuiProgress`: `@size="xs" @position="absolute" @color="primary"`, with attributes (VW12). `EuiIconTip`: `@content`, `@type`, `@size`, `@color`. It renders a `tabindex="0"` icon in the header cell, which already has a tabbable child (its actions button), so the cell's focus trap was there before. |
+| N7 | Section 9 on the real grid, and in Firefox and Safari. | Headless Chrome: FZ1–FZ11 pass. Firefox and Safari not run. |
+| N14 | Performance. | FZ9, 10,000 rows × 30 fields at 600 × 400 px, 20 vertical scroll steps of 600 px (each replaces the whole row window), in a `?report` run (`b3-fz9-report.log`): frozen on **195.6 ms per step, 372 cells rendered**; frozen off **49.6 ms, 72 cells**. A second report run on the final code, with nothing else running (`b3-fz9-report2.log`): 196.6 ms and 47.3 ms. Each step includes `settled()` and one animation frame, in headless Chrome with software rendering, so these are comparisons, not frame times. The cost is linear in the rendered cells (about 5× the cells, 4× the time). Not measured on the Mac or in d08. |
+
+### Tests
+
+Baseline at HEAD in the scratch copy: 195/195 (`b3-baseline.log`). The first
+full run (`b3-run1.log`) had the 195 existing tests and the 10 FZ tests: 203
+passed, and 2 failed (TH3 and TH5, below). Final: **229/229**, 0 failed
+(`b3-c2.log`, 08:37 UTC, after the last source and test edit). An earlier
+228/228 (`b3-c1.log`) was before FZ12 and the width change (deviation 6). Logs are in the session scratchpad
+(`/tmp/claude-1000/-Users-betocantu93-prysmex/df04f7e2-a347-4eab-a276-4d9974f4dbc1/scratchpad/`).
+
+New (34):
+
+- `tests/integration/components/eui-sheet-frozen-test.gts` (new, 12): FZ1–FZ10
+  as in 9.3, plus:
+  - FZ11: 51 visible fields are not frozen; 50 are.
+  - FZ12: `@frozenFields={{2}}` with `@rowNumbers={{false}}`. Both fields
+    stay, the edge class is on the second, the header follows, and ArrowLeft
+    never lands under them. A drag that starts on a frozen cell while
+    scrolled keeps the scroll (simulated `pointerdown`/`pointerup`, so the
+    grid's pointerup scroll runs). FZ4 also
+  checks that ArrowLeft into the frozen field while scrolled keeps the scroll,
+  and that Home scrolls to 0. FZ6 opens the editor after a **click** on the
+  frozen cell and checks the scroll is kept. FZ9 measures frozen on and off.
+- `tests/integration/components/eui-sheet-view-test.gts` (new, 13): VW1–VW13 as
+  in 6.9. VW3 also covers `sortable: false`; VW4 `hideable: false`; VW6 that
+  the first field has no menu and the second no "Move left"; VW8 the N6 cases (and, without the handler, that
+  the other columns keep their widths and a hide drops the resized one);
+  VW10 the block API both local and with handlers, and that `hideField` on the
+  first field does nothing.
+- `tests/integration/components/eui-sheet-summary-test.gts` (new, 4): SU1–SU4.
+- `tests/unit/summary-test.ts` (new, 5): SM1–SM5.
+
+Changed on purpose:
+
+- **TH5** (`eui-sheet-theme-test.gts`): it checked the focused cell (0, 0)'s
+  `background-color` for the app's `--euiSheet-selected`. That cell is now
+  frozen (C7), so its selection is drawn as
+  `background-image: linear-gradient(rgb(4, 5, 6), rgb(4, 5, 6))` over an
+  opaque base. The test now checks that exact value: same cell, same colour,
+  another property.
+- **TH3** was not changed. It failed because the frozen styles first read
+  `--euiSheet-frozenBase` and `--euiSheet-frozen-left-<i>`, which are not theme
+  colours. They were renamed instead (deviation 2).
+
+Not executed by any test:
+- the dev warning (6.11);
+- a resize while an editor is open (6.8);
+- the edge shadow (`euiSheet--scrolledX`);
+- hover over frozen cells, and dark mode for frozen cells;
+- that a wheel or scrollbar scroll after a key is not undone (deviation 1);
+- the date and checkbox sort labels;
+- Firefox and Safari;
+- the d12, d13 and new d08 demos at runtime (built, not run).
+
+Lint (`pnpm lint`: `ember-tsc --noEmit`, ESLint, stylelint): exit 0
+(`b3-lint-c2.log`). Prettier `--check src tests/integration tests/unit
+tests/helpers README.md`: everything batch 3 touched is clean. The one warning
+is `tests/helpers/index.js`, which is not Prettier-clean at HEAD and was not
+touched (`b3-prettier-c2.log`, exit 1 for that file only). The sources were
+formatted with `--write` in the scratch copy and copied back
+(`b3-prettier-write.log`). Docs Markdown is not Prettier-formatted here.
+
+### Deviations from the design
+
+1. **A frozen cell keeps the horizontal scroll when it gets focus.** This is
+   added beyond 9.2. The grid's `scrollCellIntoView` only knows a column's
+   own left edge, so focusing the first field while scrolled (ArrowLeft into
+   it, a click on it, the sheet's own `setFocusedCell`) scrolled the grid back
+   to `left = 64` (FZ6, `b3-fz2.log`). The fix is sheet-only, in the same
+   spirit as 9.1's focus correction. A keydown, a mousedown or the sheet's own
+   focus call records `scrollLeft`. When focus lands on a frozen cell, the
+   sheet scrolls back to it once: after the render for a key, or on the click
+   for a press, because the grid scrolls on pointerup. A drag that starts on
+   a frozen cell also scrolls back on release (FZ12). A later scroll event
+   drops the recorded value; the intent is that a stale one never undoes a
+   wheel scroll, but no test checks it. Home records 0, so it goes to the
+   left edge. Removing this brings back the jump left. Limits:
+   - A focus with no key or press first (a script's `element.focus()`, or
+     the grid re-focusing a re-mounted cell) is not corrected.
+   - The grid's scroll and the sheet's restore happen in the same task
+     (keys) or in consecutive events (press); no flicker was looked for.
+
+   The 9.4 extension would do this inside `scrollCellIntoView`.
+2. **Internal custom properties** are `--euiSheetFrozenLeft-<i>` and
+   `--euiSheetFrozenBase`, not `--euiSheet-frozen-left-<i>` (9.2). TH3 requires
+   every `--euiSheet-*` property the CSS reads to be a theme colour, and these
+   are layout values. They are set on a new `div.euiSheet__grid` around the
+   grid, not on the wrapper: the wrapper's `style` attribute is the app's
+   (TH5 sets one), and a bound `style` would clash with it.
+3. **The loading bar is over the grid**, inside `div.euiSheet__grid`, not at
+   the top of the wrapper (6.4). 3.5 says "over the grid", and with a toolbar
+   the wrapper's top is the toolbar.
+4. **Frozen cells' hover and selection** are a `background-image` gradient
+   over an opaque `background-color`. The sheet's colours are translucent, so
+   as a plain `background-color` the scrolled cells showed through. Frozen
+   header and footer cells use `background-color: inherit` (their rows have
+   the opaque colour).
+5. **The local hide fallback also covers `@hiddenFields`.** Without
+   `@onHiddenFieldsChange`, `showField` on a field of `@hiddenFields` shows it,
+   after the others, not only fields of `@fields`. 6.4 says "applied over
+   `@fields`". The block API's `showField` needs it to do anything on a bare
+   sheet with hidden fields.
+6. **Widths without a handler** are the grid's, as designed: it drops them
+   when its columns change, for example on a hide or a move (N6, VW8). The
+   sheet mirrors them for the frozen offsets only. A first version fed
+   resized widths back as `initialWidth`, so that they survived a hide. It
+   was dropped: it changed the grid's fill. Columns without a width share
+   the space the sized ones leave, so widening one column shrank the others
+   instead of widening the grid.
+7. **The dev warning** (6.11) covers only the presentation handlers: hidden
+   fields, order, widths and row height. Sort is excluded, because an owner's
+   sort is often an async query and would warn wrongly. It runs one `next()`
+   after the handler, uses `@ember/debug`'s `warn` (dropped in production),
+   and fires once per argument. Untested.
+8. **`@highlight`** marks every match (`@highlightAll={{true}}`; `EuiHighlight`
+   marks only the first by default), ignoring case and accents (its default).
+   The built-in single-select cell does not mark its badge; custom cells get
+   `@highlight`.
+9. **The description in the expanded record** is help text under the label,
+   as 6.2 says. VW13's "tooltip ... in the form" was read as that.
+10. **Sort items** are turned off (`showSortAsc/Desc: false`) without
+    `@onSortChange`, not only left without `@sorting`, so they do not count
+    toward the grid's "has column actions". Otherwise the first field would
+    show an empty menu.
+11. **`summarize`** rounds `percentFilled` to a whole percent and does not
+    round `average` (`format(3.375)` is "3.375"). Min and max use `toNumber`
+    when the type has it, else `compare`, so text has a min and a max.
+    `unique` compares `copyText` and is case-sensitive.
+12. **FZ9's numbers** reach the log only in a run with `report` in the page's
+    query: the test then pushes a failing assertion that carries them,
+    because TAP prints only failures. A normal run checks only that they are
+    numbers. `b3-fz9-report.log` is such a run.
+13. **Open questions** took the design's defaults. Q2 is the sheet-only
+    frozen field, gated by 9.3, which passed. Q15 is no sorter in the sheet:
+    d12's owner sorts with the built-in types' `compare`.
+
+### Docs
+
+- `docs/sheet.md`: the arguments table (11 new rows, the new field options);
+  new sections "The owner" (what the sheet never does, the intents table, the
+  blocks), "Presentation state" (controlled with a handler, local without),
+  "Summary bar" (`summarize`, the kinds), "Frozen field" (with its limit). A
+  paragraph on `schema`, `toNumber` and `@highlight` for types. "Not yet" lost
+  sorting/filtering UI, frozen columns and hiding columns, and now says that
+  sorting, filtering, search and paging are the owner's; grouping is listed as
+  later.
+- `README.md`: the same, shorter: argument rows, the blocks, "The owner:
+  queries and presentation", the `toNumber`, `schema` and `@highlight` rows
+  for custom types, the `filterByField` token, and "Limits".
+- New `d12-view-intents.md`: an owner component that sorts its array (300 ms
+  fake latency with `@isLoading`) and keeps visible fields, order, widths and
+  row height. Its `<:toolbar>` has a search box (it filters and passes
+  `@highlight`), a row-height button group (`setRowHeight`) and a field picker
+  (`hideField`/`showField`). It also has `@onFilterByField` (logged), two
+  descriptions, a `<:footer>` line and an intents log.
+- New `d13-summary.md`: `@summary` computed with `summarize` over every
+  record, with two button groups in `<:toolbar>` choosing what to summarize.
+- `d08-large-data.md`: 30 fields (24 numeric "Week" columns), the first
+  frozen, a "Freeze the first field" switch to compare, and a paragraph on the
+  cost.
+- `d07-translations.md`: the Spanish `filterByField`.
+
+### Docs site build
+
+In the scratch copy: `build:js` of core, sheet, flatpickr, pikaday,
+changeset-form and validated-form, then in `site` `pnpm clean:docfy && node
+../scripts/generate-llms-txt.mjs && pnpm exec vite build --mode production`:
+exit 0 (`b3-site.log`, `b3-site-summary.log`, 08:39 UTC, after the last source
+and docs edit; a first build at 08:27 was overwritten). d13 has its own chunk (`docfy-demo-docs-sheet-d13-summary-*.js`);
+d12 has none by that name. Texts of d12 ("Search name, city, notes"), d13
+("Hours summary"), d08 ("Freeze the first field") and d07's
+"Filtrar por este campo" are in the sheet route's chunk
+(`-embroider-route-entrypoint.js_route_docs.sheet.docs.sheet-*.js`). The log
+has the same seven docfy `getRepoEditUrl` TypeErrors as batches 1 and 2 (no
+`.git` in the scratch copy). The demos were built, not run; `site/dist` is left
+in the scratch copy.
+
+### For the orchestrator to check with real input (docs site, Sheet page)
+
+- **d12 View intents**:
+  - Sorting: City's ⋯ menu → "Sort A-Z": a thin bar for about 300 ms, then
+    the rows sorted by city and an up arrow on City. Hours' menu → "Sort
+    Low-High": a second key, and the footer says "sorted by City asc, then
+    Hours asc". The same item again unsorts.
+  - Hiding and moving: City's menu → "Hide column": the column goes and its
+    switch turns off; switch it back on (it comes back last). City → "Move
+    right". Name's ⋯ menu has only sort and "Filter by this field" (no hide,
+    no move), and its switch is disabled.
+  - Widths and row height: drag Name's right edge (the log shows
+    `onFieldWidthChange`), and check that the other columns keep their
+    widths. Then "Tall", then "Short".
+  - Search: type `an`: the rows are filtered and "an" is marked in names and
+    cities. Clear it.
+  - Filter and descriptions: "Filter by this field" is logged. Hover the
+    info icons of Name and Notes (Notes is hidden by default: switch it on).
+    Space on a cell: the flyout shows the descriptions under the labels.
+  - Scroll right: Name and the row numbers stay, with a shadow on their
+    right edge.
+- **d13 Summary bar**:
+  - The footer shows the record count, "Filled 40", "Sum …", "Earliest …",
+    "Checked …", "Unique 3".
+  - Switch Hours to Average, then Max. Edit an hour: the sum or average
+    follows.
+  - Delete a record (row menu): the count drops. Ctrl/Cmd+Z restores it.
+  - Scroll right: the count and Name's summary stay in place over the
+    scrolled ones.
+- **d01 Basics** (no handlers): resize a column, then hide another from its
+  menu. The resized width resets, which is the grid's rule (deviation 6).
+- **d08 Large data** (30 fields):
+  - Scroll right: Code and the row numbers stay, and the header stays too
+    on vertical scroll.
+  - Focus a far-right cell and hold ArrowLeft to Code: no focused cell is
+    hidden under Code.
+  - Scroll right, click a Code cell: the grid does not jump left. Home goes
+    to the left edge.
+  - Type on a Code cell while scrolled: the editor covers it.
+  - Drag across Code and Name: both are drawn selected.
+  - Turn "Freeze the first field" off and compare the vertical scroll's
+    smoothness (FZ9 measured about 4× the time per full-window step frozen).
+- **d01 with the Dark switch**: the frozen cells and headers are opaque and
+  dark, not white. Check which focus ring shows on a frozen cell (batch 1's
+  TH1 note: the grid draws its own).
+- **Firefox and Safari** (if Playwright has them): d08's frozen column and
+  header on horizontal and vertical scroll (9.3 makes them a manual check).
+
+### Notes for batch 4
+
+- The connector maps these:
+  - `@sort`/`@onSortChange` to the driver's sort. The sheet appends a new key
+    to the existing ones; keep the last item for single-key backends.
+  - `@highlight` to the query text, and `@isLoading` to the search state.
+  - `@summary` to `SearchResult.aggregations`, and `@rowNumberOffset` to the
+    page.
+  - `@onFilterByField` to the app's filter UI.
+  - The pager goes in `<:footer>` (the block yields `api` and
+    `checkedRecords`). The search box and views go in `<:toolbar>`.
+- An async sort replaces `@records` after the intent. C14 then moves the
+  selection and focus to their record. The dev warning does not cover sort,
+  so a slow driver does not warn.
+- FZ9: with many fields, frozen costs about 4× per scrolled row window. A
+  connector demo with wide records may want `@frozenFields={{0}}` (Q2: the
+  9.4 extension keeps column virtualization).
+- A column menu now exists only for fields with an item. Sort and filter
+  items come with their handlers, so a connector that passes
+  `@onSortChange` gives every sortable field a menu.
+
+### Batch 3: real input in Chromium (orchestrator, 2026-11-19)
+
+Production docs build, Playwright keyboard and mouse:
+- d12: Enter on the City header opens its menu (Hide column, Sort A-Z,
+  Sort Z-A, Move right, Filter by this field); "Sort A-Z" goes to the owner
+  and the rows come back sorted (Bogotá first). Typing `an` in the demo's
+  search filters the rows (Ana 7, Ana 19, …) and marks the match with
+  `EuiMark`. Row height Tall: rows go from 36 to 108 px.
+- d08 (10,000 × 30): scrolled 900 px right, Code keeps its place (left edge
+  353 px before and after) with an edge shadow; a click on a Code cell while
+  scrolled keeps the scroll (no jump left) (`v02-b3-frozen.png`). Rough
+  timing of 20 vertical scroll steps (two frames each, headless, relative
+  only): 128 ms per step frozen, 65 ms unfrozen.
+- d01 Dark: the frozen Name column has the dark background like the other
+  cells (`v02-b3-dark-frozen.png`); numbers are right-aligned.

@@ -238,9 +238,11 @@ module('Integration | Component | EuiSheet theme', function (hooks) {
       </template>
     );
     await focusCell(0, 0);
+    // the first field is frozen (v0.2 C7): its selection is drawn as an
+    // image over its opaque background
     assert.strictEqual(
-      css(cell(0, 0)).backgroundColor,
-      'rgb(4, 5, 6)',
+      css(cell(0, 0)).backgroundImage,
+      'linear-gradient(rgb(4, 5, 6), rgb(4, 5, 6))',
       'on the sheet element: applies'
     );
     assert.notStrictEqual(

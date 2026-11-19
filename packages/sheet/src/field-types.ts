@@ -34,13 +34,15 @@ export const textType: EuiSheetFieldType<string, TextField> = {
 
 export const numberType: EuiSheetFieldType<number | null, NumberField> = {
   ...numberFieldType,
-  editor: InputEditor
+  editor: InputEditor,
+  schema: 'numeric'
 };
 
 /** No editor: Space (navKey) or a click anywhere in the cell toggles it (P7). */
 export const checkboxType: EuiSheetFieldType<boolean, CheckboxField> = {
   ...checkboxFieldType,
   cell: CheckboxCell,
+  schema: 'boolean',
   onCellClick: (value) => ({ value: value !== true })
 };
 
@@ -66,6 +68,7 @@ export const singleSelectType: EuiSheetFieldType<
 export const dateType: EuiSheetFieldType<string | null, DateField> = {
   ...dateFieldType,
   editor: DateEditor,
+  schema: 'datetime',
   opener: 'calendar',
   opensOnKey: (key) => /^\d$/.test(key)
 };

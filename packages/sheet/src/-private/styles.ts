@@ -55,7 +55,37 @@ const CSS = `
 .euiSheetRecord__box--invalid { border-color: var(--euiSheet-danger, #BD271E); color: var(--euiSheet-textDanger, #BD271E); }
 .euiSheetRecord__errors { margin-top: 4px; font-size: 12px; line-height: 16px; color: var(--euiSheet-textDanger, #BD271E); }
 .euiSheet__checkbox--checked::after { content: ''; position: absolute; left: 4px; top: 1px; width: 4px; height: 8px; border: solid var(--euiSheet-textInverse, #FFF); border-width: 0 2px 2px 0; transform: rotate(45deg); }
+.euiSheet__toolbar { margin-bottom: 8px; }
+.euiSheet__footer { margin-top: 8px; }
+.euiSheet__grid { position: relative; }
+.euiSheet__loading { z-index: 4; }
+.euiSheet__headerTip { display: inline-flex; margin-left: 4px; vertical-align: middle; }
+.euiSheetRecord__description { margin: -2px 0 4px; font-size: 12px; line-height: 16px; color: var(--euiSheet-textSubdued, #69707D); }
+.euiSheet .euiDataGridRowCell.euiSheet__cell--frozen { --euiSheetFrozenBase: var(--euiSheet-plain, #FFF); background-color: var(--euiSheetFrozenBase); background-image: none; }
+.euiSheet .euiDataGridRowCell.euiSheet__rowCell.euiSheet__cell--frozen { --euiSheetFrozenBase: var(--euiSheet-subdued, #F7F8FC); }
+.euiSheet .euiDataGridRow:hover .euiDataGridRowCell.euiSheet__cell--frozen { background-color: var(--euiSheetFrozenBase); background-image: linear-gradient(var(--euiSheet-hover, rgba(105, 112, 125, 0.06)), var(--euiSheet-hover, rgba(105, 112, 125, 0.06))); }
+.euiSheet .euiDataGridRowCell.euiSheet__cell--frozen.euiSheet__cell--selected, .euiSheet .euiDataGridRowCell.euiSheet__cell--frozen.euiSheet__rowCell--selected { background-color: var(--euiSheetFrozenBase); background-image: linear-gradient(var(--euiSheet-selected, rgba(0, 119, 204, 0.12)), var(--euiSheet-selected, rgba(0, 119, 204, 0.12))); }
+.euiSheet .euiDataGridFooterCell.euiSheet__cell--frozen { background-color: inherit; background-image: none; }
+.euiSheet .euiDataGridHeaderCell.euiSheet__frozenHeader { position: sticky; z-index: 3; background-color: inherit; }
+.euiSheet--scrolledX .euiSheet__frozenEdge { box-shadow: 4px 0 4px -2px var(--euiSheet-shadow, rgba(0, 0, 0, 0.2)); }
+.euiSheet--scrolledX .euiSheet__frozenEdge.euiSheet__cell--invalid { box-shadow: inset 0 0 0 1px var(--euiSheet-danger, #BD271E), 4px 0 4px -2px var(--euiSheet-shadow, rgba(0, 0, 0, 0.2)); }
+${frozenHeaderLefts()}
 `;
+
+/**
+ * `left` of each frozen header cell, from a custom property the sheet sets
+ * per grid column index (the header cell's own style is the grid's).
+ * Index 0 is the row-number column; up to FROZEN_MAX_COLUMNS fields.
+ */
+function frozenHeaderLefts(): string {
+  const rules: string[] = [];
+  for (let i = 0; i <= 51; i++) {
+    rules.push(
+      `.euiSheet .euiSheet__frozenHeader--${i} { left: var(--euiSheetFrozenLeft-${i}, 0px); }`
+    );
+  }
+  return rules.join('\n');
+}
 
 export function ensureStyles(): void {
   if (typeof document === 'undefined') return;

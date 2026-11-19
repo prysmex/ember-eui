@@ -55,8 +55,14 @@ export class RowNumberCell extends Component<RowNumberCellSignature> {
 
   // as SheetCell: setCellProps only schedules, so calling it in render is allowed
   get cellProps(): string {
-    const props: Record<string, string> = {};
+    const props: Record<string, unknown> = {};
     const classes = ['euiSheet__rowCell'];
+    // frozen with the first field (V02-DESIGN.md 6.7)
+    const frozen = this.sheet.frozenCellProps(0);
+    if (frozen) {
+      classes.push(frozen.className);
+      props['style'] = frozen.style;
+    }
     const messages = this.sheet.messages;
     if (this.isAddRow) {
       classes.push('euiSheet__rowCell--add');

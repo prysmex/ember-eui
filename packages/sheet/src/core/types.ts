@@ -26,6 +26,14 @@ export interface EuiSheetField<T = any> {
   required?: RecordFlag<T>;
   /** Extra sync rule for this field. Runs on non-empty values. */
   validate?: (value: unknown, record: T) => string | string[] | undefined;
+  /** Shown as a tooltip in the column header and under the label in the expanded record. */
+  description?: string;
+  /** Default width in px; `@fieldWidths[id]` wins. */
+  width?: number;
+  /** Whether the header menu offers "Sort" (with `@onSortChange`). Default true. */
+  sortable?: boolean;
+  /** Whether the header menu offers "Hide". Default true; the first field is never hidden. */
+  hideable?: boolean;
   /** Options of the field's type (below) and of app types. */
   [option: string]: unknown;
 }
@@ -98,8 +106,10 @@ export interface FieldType<
   ): string;
   /** Rules on a stored, non-empty value. */
   validate?(value: V, field: F, context: TypeContext): string[];
-  /** For owners that sort their records. The sheet does not call it in v0.1. */
+  /** For owners that sort their records, and `summarize`'s min and max. The sheet never calls it. */
   compare?(a: V | null | undefined, b: V | null | undefined, field: F): number;
+  /** The value as a number, for `summarize`'s sum, average, min and max; `null` when it has none. */
+  toNumber?(value: V | null | undefined, field: F): number | null;
   /** Default: `value == null || value === ''`. */
   isEmpty?(value: unknown): boolean;
   /** A key pressed on the cell in nav mode that changes the value without an editor. */

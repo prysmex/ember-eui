@@ -61,6 +61,8 @@ export interface SheetMessages {
   nextRecord: () => string;
   /** 'Close' */
   close: () => string;
+  /** 'Filter by this field': the column menu's item with `@onFilterByField`. */
+  filterByField: () => string;
 }
 
 export interface SheetMessageToken {
@@ -204,6 +206,11 @@ export const sheetMessageTokens: Readonly<
   nextRecord: {
     token: 'euiSheet.nextRecord',
     defaultMessage: 'Next record',
+    params: []
+  },
+  filterByField: {
+    token: 'euiSheet.filterByField',
+    defaultMessage: 'Filter by this field',
     params: []
   },
   close: {

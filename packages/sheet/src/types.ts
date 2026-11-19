@@ -40,6 +40,12 @@ export interface EuiSheetFieldType<
     field: F,
     record: unknown
   ) => { value: V | null } | undefined;
+  /**
+   * The grid schema of the column (`'numeric'`, `'datetime'`, `'boolean'`,
+   * `'currency'`): the header menu's sort labels ("Sort Low-High") and the
+   * header's alignment. Default: none.
+   */
+  schema?: string;
 }
 
 export interface SheetCellSignature<
@@ -57,6 +63,8 @@ export interface SheetCellSignature<
     readOnly: boolean;
     /** Saves a value from the cell itself (a checkbox, a rating star). */
     onCommit: (value: V) => void;
+    /** The sheet's `@highlight`: a cell that shows text may mark it (`EuiHighlight`). */
+    highlight?: string;
   };
 }
 
@@ -143,6 +151,35 @@ export interface SheetRowAction<T = any> {
   onSelect: (records: T[]) => void;
 }
 
+/** One sort key. The same shape as EmberSearchUi's `SortItem`. */
+export interface SheetSort {
+  field: string;
+  direction: 'asc' | 'desc';
+}
+
+/** Row heights: one line, then 2, 4 and 6 lines. */
+export type SheetRowHeight = 'short' | 'medium' | 'tall' | 'extraTall';
+
+/** What the `<:toolbar>` and `<:footer>` blocks yield (V02-DESIGN.md 3.6). */
+export interface SheetBlockApi<T = any> {
+  api: SheetApi;
+  /** The visible fields, in display order. */
+  fields: EuiSheetField<T>[];
+  /** The fields that are not shown. */
+  hiddenFields: EuiSheetField<T>[];
+  /** `@sort`, or `[]`. */
+  sort: SheetSort[];
+  rowHeight: SheetRowHeight;
+  /** The checked records of `@records`, in their order. */
+  checkedRecords: T[];
+  /** Each calls the matching handler, or changes the sheet's own state without one. */
+  hideField(fieldId: string): void;
+  showField(fieldId: string): void;
+  setRowHeight(rowHeight: SheetRowHeight): void;
+  /** Calls `@onSortChange`; nothing without it. */
+  setSort(sort: SheetSort[]): void;
+}
+
 /** The cell's box relative to the sheet's wrapper, in CSS px. */
 export interface SheetEditorRect {
   top: number;
@@ -186,9 +223,41 @@ export interface EuiSheetSignature<T> {
     /**
      * Fields that exist but are not shown in the grid: listed in the
      * expanded record after `@fields`, copied by duplicate, restored by
-     * undo. (Hiding and showing them from the sheet is v0.2 batch 3.)
+     * undo, given to the blocks (`showField`).
      */
     hiddenFields?: EuiSheetField<T>[];
+    /**
+     * The ids of the hidden fields after a "Hide" (header menu, block
+     * `hideField`) or a block's `showField`: the ids of `@hiddenFields`
+     * plus or minus one. With it the sheet shows exactly `@fields`; update
+     * `@fields` and `@hiddenFields`. Without it the sheet hides and shows
+     * fields itself.
+     */
+    onHiddenFieldsChange?: (fieldIds: string[]) => void;
+    /** The visible ids in their new order after a "Move left/right". With it, update `@fields`; without it the sheet keeps its own order. */
+    onFieldOrderChange?: (fieldIds: string[]) => void;
+    /** Column widths in px by field id; wins over `field.width`. */
+    fieldWidths?: Record<string, number>;
+    /** Called after a column is resized. Without it the sheet keeps the width itself. */
+    onFieldWidthChange?: (fieldId: string, width: number) => void;
+    /** Row height. Default `'short'` (one line). */
+    rowHeight?: SheetRowHeight;
+    /** With it the sheet shows exactly `@rowHeight`; without it a block's `setRowHeight` changes it locally. */
+    onRowHeightChange?: (rowHeight: SheetRowHeight) => void;
+    /** The owner's sort, drawn as header arrows (only with `@onSortChange`). The sheet never sorts. */
+    sort?: SheetSort[];
+    /** The header menu's "Sort" items call it with the whole new sort. Without it there are no sort items and no arrows. */
+    onSortChange?: (sort: SheetSort[]) => void;
+    /** The header menu's "Filter by this field" (shown only with it). */
+    onFilterByField?: (fieldId: string) => void;
+    /** A term the owner searched for: matching text is highlighted in cells. */
+    highlight?: string;
+    /** Shows a thin progress bar over the grid; the grid stays usable. */
+    isLoading?: boolean;
+    /** Text per field id for the summary bar (`''`: the row-number column). Passing it, even `{}`, shows the bar. */
+    summary?: Record<string, string>;
+    /** Leading fields kept in view on horizontal scroll (the row numbers with them). Default 1; 0 turns it off. */
+    frozenFields?: number;
     /** The leading row-number column (position, checkbox, expand icon). Default true. */
     rowNumbers?: boolean;
     /** What the row-number cell shows. Default: the position, `rowNumberOffset + index + 1`. */
@@ -214,5 +283,11 @@ export interface EuiSheetSignature<T> {
     expandedRecord?: 'flyout' | 'modal';
     /** Extra items of the row menu, before "Delete". */
     rowActions?: SheetRowAction<T>[];
+  };
+  Blocks: {
+    /** Above the grid, inside the sheet: your own controls (field picker, search, sort). */
+    toolbar: [SheetBlockApi<T>];
+    /** Below the grid: paging, counts. */
+    footer: [SheetBlockApi<T>];
   };
 }

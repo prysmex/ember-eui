@@ -12,3 +12,4 @@ export * from './change-set.ts';
 export * from './history.ts';
 export * from './fill.ts';
 export * from './errors.ts';
+export * from './summary.ts';

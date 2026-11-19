@@ -9,7 +9,7 @@ import Component from '@glimmer/component';
 import { cached, tracked } from '@glimmer/tracking';
 import { action } from '@ember/object';
 import { on } from '@ember/modifier';
-import { assert } from '@ember/debug';
+import { assert, warn } from '@ember/debug';
 import { isDestroyed, isDestroying } from '@ember/destroyable';
 import { cancel, debounce, next, schedule } from '@ember/runloop';
 import { service } from '@ember/service';
@@ -18,6 +18,8 @@ import { buildWaiter } from '@ember/test-waiters';
 import { modifier } from 'ember-modifier';
 
 import EuiDataGrid from '@ember-eui/core/components/eui-data-grid';
+import EuiIconTip from '@ember-eui/core/components/eui-icon-tip';
+import EuiProgress from '@ember-eui/core/components/eui-progress';
 import {
   euiClass,
   getEuiThemeContext,
@@ -71,6 +73,9 @@ import {
   RowNumberHeader
 } from '../-private/row-number-cell.gts';
 import SheetCell from '../-private/sheet-cell.gts';
+import SheetFooterCell, {
+  SheetControlFooterCell
+} from '../-private/footer-cell.gts';
 import { ensureStyles } from '../-private/styles.ts';
 import { sheetThemeVars } from '../-private/theme.ts';
 
@@ -91,18 +96,27 @@ import type {
   EuiSheetFieldType,
   EuiSheetSignature,
   SheetApi,
+  SheetBlockApi,
   SheetEditorRect,
-  SheetEditorResult
+  SheetEditorResult,
+  SheetRowHeight,
+  SheetSort
 } from '../types.ts';
 import type EuiI18n from '@ember-eui/core/services/eui-i18n';
 import type {
   EuiDataGridColumn,
+  EuiDataGridColumnActions,
   EuiDataGridColumnVisibility,
   EuiDataGridControlColumn,
   EuiDataGridRefProps,
-  EuiDataGridStyle
+  EuiDataGridRowHeightsOptions,
+  EuiDataGridSorting,
+  EuiDataGridSortingColumn,
+  EuiDataGridStyle,
+  EuiDataGridVirtualizationOptions
 } from '@ember-eui/core/utils/data-grid/types';
 import type Owner from '@ember/owner';
+import type { ComponentLike } from '@glint/template';
 
 export type { EuiSheetSignature };
 
@@ -213,6 +227,48 @@ interface FocusedCell {
 const ROW_COLUMN_ID = 'euiSheetRow';
 /** Its width without `@rowLabel`. */
 const ROW_COLUMN_WIDTH = 64;
+
+/**
+ * The frozen field (V02-DESIGN.md 9): above this many visible fields the
+ * sheet stops freezing (it renders every column of the rendered rows while
+ * a field is frozen).
+ */
+const FROZEN_MAX_COLUMNS = 50;
+/** A frozen field's width without `@fieldWidths` or `field.width`. */
+const FROZEN_DEFAULT_WIDTH = 200;
+
+/** `@rowHeight` as the grid's row heights (6.4). */
+const ROW_HEIGHTS: Record<SheetRowHeight, EuiDataGridRowHeightsOptions> = {
+  short: {},
+  medium: { defaultHeight: { lineCount: 2 } },
+  tall: { defaultHeight: { lineCount: 4 } },
+  extraTall: { defaultHeight: { lineCount: 6 } }
+};
+
+/** Where the frozen columns are: each one's `left`, by grid column index, and their right edge. */
+interface FrozenLayout {
+  lefts: Map<number, number>;
+  /** The grid column index of the last frozen column. */
+  last: number;
+  /** The frozen columns' right edge, from the grid's left edge, in CSS px. */
+  right: number;
+}
+
+/** The header of a field with a description: its label and an info tip (6.3). */
+function headerDisplay(label: string, description: string): ComponentLike {
+  return <template>
+    <span class="euiSheet__headerTitle">{{label}}</span>
+    <span
+      class="euiSheet__headerTip"
+      data-test-subj="euiSheetFieldDescription"
+    ><EuiIconTip
+        @content={{description}}
+        @type="iInCircle"
+        @size="s"
+        @color="subdued"
+      /></span>
+  </template>;
+}
 
 /** What a range covers (V02-DESIGN.md 5.4). */
 type RangeKind = 'cells' | 'rows' | 'columns';
@@ -379,8 +435,27 @@ export default class EuiSheet<T extends object> extends Component<
   @tracked focused: FocusedCell | null = null;
   /** Texts a type could not read, by cellKey (PACKAGE-DESIGN.md 6, 7.5). */
   @tracked rejections: ReadonlyMap<string, Rejection> = new Map();
-  /** Column order set through the grid; null: the order of `@fields`. */
-  @tracked order: string[] | null = null;
+  /** Field order without `@onFieldOrderChange`; null: the order of `@fields`. */
+  @tracked localOrder: string[] | null = null;
+  /**
+   * Hidden or shown without `@onHiddenFieldsChange`, by field id: `true`
+   * hides a field of `@fields`, `false` shows one of `@hiddenFields`.
+   */
+  @tracked localHidden: ReadonlyMap<string, boolean> = new Map();
+  /**
+   * The widths the grid keeps after a resize, until it gets new columns
+   * (it drops them then, as this does): for the frozen offsets. Without
+   * `@onFieldWidthChange` these are the only record of a resize (6.4:
+   * "the grid keeps them").
+   */
+  @tracked resizedWidths: {
+    columns: EuiDataGridColumn[];
+    widths: Readonly<Record<string, number>>;
+  } | null = null;
+  /** The row height without `@onRowHeightChange`; null: `@rowHeight`. */
+  @tracked localRowHeight: SheetRowHeight | null = null;
+  /** The grid is scrolled horizontally (the frozen edge's shadow). */
+  @tracked scrolledX = false;
   /** The last applied `@validate` result. */
   @tracked validation: Validation | null = null;
   /** A drag over other cells is selecting a range (no text selection meanwhile). */
@@ -502,21 +577,117 @@ export default class EuiSheet<T extends object> extends Component<
     return { ...this.translatedMessages, ...this.args.messages };
   }
 
+  /* -------------------------------------------------------------------- */
+  /* Fields: visible, hidden, order (V02-DESIGN.md 3.5, 6.4)               */
+  /* -------------------------------------------------------------------- */
+
+  /**
+   * The visible fields, in display order: `@fields` as given, with the
+   * sheet's own hidden set and order applied for the parts the owner has
+   * no handler for.
+   */
   @cached
-  get columns(): EuiDataGridColumn[] {
-    return this.args.fields.map((field) => ({
-      id: field.id,
-      displayAsText: field.label ?? field.id,
-      isExpandable: false
-    }));
+  get visibleFields(): EuiSheetField<T>[] {
+    let fields = this.args.fields;
+    if (!this.args.onHiddenFieldsChange && this.localHidden.size) {
+      const local = this.localHidden;
+      fields = [
+        ...fields.filter((field) => local.get(field.id) !== true),
+        ...(this.args.hiddenFields ?? []).filter(
+          (field) => local.get(field.id) === false
+        )
+      ];
+    }
+    const order = this.args.onFieldOrderChange ? null : this.localOrder;
+    if (order) {
+      const rank = new Map(order.map((id, i) => [id, i]));
+      fields = fields
+        .map((field, i) => ({ field, i }))
+        .sort(
+          (a, b) =>
+            (rank.get(a.field.id) ?? order.length + a.i) -
+            (rank.get(b.field.id) ?? order.length + b.i)
+        )
+        .map(({ field }) => field);
+    }
+    return fields;
   }
 
   @cached
   get visibleFieldIds(): string[] {
-    const ids = this.args.fields.map((field) => field.id);
-    if (!this.order) return ids;
-    const kept = this.order.filter((id) => ids.includes(id));
-    return [...kept, ...ids.filter((id) => !kept.includes(id))];
+    return this.visibleFields.map((field) => field.id);
+  }
+
+  /** The fields that are not shown: `@hiddenFields`, or the sheet's own hidden ones. */
+  @cached
+  get hiddenFields(): EuiSheetField<T>[] {
+    const hidden = this.args.hiddenFields ?? [];
+    if (this.args.onHiddenFieldsChange || !this.localHidden.size) return hidden;
+    const visible = new Set(this.visibleFieldIds);
+    return [...this.args.fields, ...hidden].filter(
+      (field) => !visible.has(field.id)
+    );
+  }
+
+  /** Whether the header menu and `hideField` may hide this field: never the first one. */
+  canHide(fieldId: string): boolean {
+    const index = this.visibleFieldIds.indexOf(fieldId);
+    return index > 0 && this.visibleFields[index]!.hideable !== false;
+  }
+
+  /** "Hide": `@onHiddenFieldsChange`, or the sheet's own hidden set (C6). */
+  hideField = (fieldId: string): void => {
+    if (!this.canHide(fieldId)) return;
+    this.hideFields([fieldId]);
+  };
+
+  hideFields(fieldIds: string[]): void {
+    const handler = this.args.onHiddenFieldsChange;
+    if (handler) {
+      const ids = this.hiddenFields.map((field) => field.id);
+      this.expectUpdate('hiddenFields');
+      handler([...ids, ...fieldIds.filter((id) => !ids.includes(id))]);
+      return;
+    }
+    const next = new Map(this.localHidden);
+    for (const id of fieldIds) {
+      if (this.args.fields.some((field) => field.id === id)) next.set(id, true);
+      else next.delete(id);
+    }
+    this.localHidden = next;
+  }
+
+  /** A block's `showField`: `@onHiddenFieldsChange`, or the sheet's own hidden set. */
+  showField = (fieldId: string): void => {
+    if (!this.hiddenFields.some((field) => field.id === fieldId)) return;
+    const handler = this.args.onHiddenFieldsChange;
+    if (handler) {
+      this.expectUpdate('hiddenFields');
+      handler(
+        this.hiddenFields
+          .map((field) => field.id)
+          .filter((id) => id !== fieldId)
+      );
+      return;
+    }
+    const next = new Map(this.localHidden);
+    if (this.args.fields.some((field) => field.id === fieldId)) {
+      next.delete(fieldId);
+    } else {
+      next.set(fieldId, false);
+    }
+    this.localHidden = next;
+  };
+
+  /** "Move left/right": `@onFieldOrderChange`, or the sheet's own order. */
+  setFieldOrder(fieldIds: string[]): void {
+    const handler = this.args.onFieldOrderChange;
+    if (handler) {
+      this.expectUpdate('fields');
+      handler(fieldIds);
+      return;
+    }
+    this.localOrder = fieldIds;
   }
 
   @cached
@@ -527,15 +698,391 @@ export default class EuiSheet<T extends object> extends Component<
     };
   }
 
+  /**
+   * The grid's "Hide column" and "Move left/right" call this with the new
+   * visible ids: an id missing is a hide intent, another order an order
+   * intent (6.3).
+   */
   setVisibleColumns = (ids: string[]): void => {
-    this.order = ids;
+    const current = this.visibleFieldIds;
+    const removed = current.filter((id) => !ids.includes(id));
+    if (removed.length) {
+      const hideable = removed.filter((id) => this.canHide(id));
+      if (hideable.length) this.hideFields(hideable);
+      return;
+    }
+    const kept = ids.filter((id) => current.includes(id));
+    if (!sameIds(kept, current)) this.setFieldOrder(kept);
+  };
+
+  /* Widths (6.4) */
+
+  /** A field's width as given: `@fieldWidths`, else `field.width`. */
+  givenWidth(field: EuiSheetField<T>): number | undefined {
+    return this.args.fieldWidths?.[field.id] ?? field.width;
+  }
+
+  /** The width the grid shows a frozen field at (frozen fields always have one). */
+  frozenWidth(field: EuiSheetField<T>): number {
+    const resized = this.resizedWidths;
+    const kept =
+      resized && resized.columns === this.columns
+        ? resized.widths[field.id]
+        : undefined;
+    return kept ?? this.givenWidth(field) ?? FROZEN_DEFAULT_WIDTH;
+  }
+
+  onColumnResize = ({
+    columnId,
+    width
+  }: {
+    columnId: string;
+    width: number;
+  }): void => {
+    const resized = this.resizedWidths;
+    const widths =
+      resized && resized.columns === this.columns ? resized.widths : {};
+    this.resizedWidths = {
+      columns: this.columns,
+      widths: { ...widths, [columnId]: width }
+    };
+    const handler = this.args.onFieldWidthChange;
+    if (!handler) return;
+    this.expectUpdate('fieldWidths');
+    handler(columnId, width);
+  };
+
+  /* Sort (6.3): drawn and emitted, never applied */
+
+  @cached
+  get sorting(): EuiDataGridSorting | undefined {
+    if (!this.args.onSortChange) return undefined;
+    return {
+      columns: (this.args.sort ?? []).map(({ field, direction }) => ({
+        id: field,
+        direction
+      })),
+      onSort: this.onGridSort
+    };
+  }
+
+  onGridSort = (columns: EuiDataGridSortingColumn[]): void => {
+    this.setSort(
+      columns.map(({ id, direction }) => ({ field: id, direction }))
+    );
+  };
+
+  setSort = (sort: SheetSort[]): void => {
+    this.args.onSortChange?.(sort);
+  };
+
+  /* Row height (6.4) */
+
+  get rowHeight(): SheetRowHeight {
+    const given = this.args.rowHeight ?? 'short';
+    if (this.args.onRowHeightChange) return given;
+    return this.localRowHeight ?? given;
+  }
+
+  setRowHeight = (rowHeight: SheetRowHeight): void => {
+    const handler = this.args.onRowHeightChange;
+    if (handler) {
+      if (rowHeight !== this.rowHeight) this.expectUpdate('rowHeight');
+      handler(rowHeight);
+      return;
+    }
+    this.localRowHeight = rowHeight;
   };
 
   @cached
-  get visibleFields(): EuiSheetField<T>[] {
-    return this.visibleFieldIds
-      .map((id) => this.args.fields.find((field) => field.id === id))
-      .filter((field): field is EuiSheetField<T> => !!field);
+  get rowHeightsOptions(): EuiDataGridRowHeightsOptions | undefined {
+    const options = ROW_HEIGHTS[this.rowHeight];
+    return options.defaultHeight ? options : undefined;
+  }
+
+  /* Columns */
+
+  /** Header components of fields with a description, by field id. */
+  headerDisplays = new Map<
+    string,
+    { label: string; description: string; component: ComponentLike }
+  >();
+
+  displayFor(field: EuiSheetField<T>): ComponentLike | undefined {
+    const description = field.description;
+    if (!description) return undefined;
+    const label = field.label ?? field.id;
+    const cached = this.headerDisplays.get(field.id);
+    if (cached && cached.label === label && cached.description === description)
+      return cached.component;
+    const component = headerDisplay(label, description);
+    this.headerDisplays.set(field.id, { label, description, component });
+    return component;
+  }
+
+  /**
+   * The grid's columns. A new array makes the grid drop the widths it kept
+   * from resizes (`body-base.ts`), so this depends only on the fields,
+   * widths, the frozen count and which handlers exist: not on `@sort` or
+   * `@highlight`.
+   */
+  @cached
+  get columns(): EuiDataGridColumn[] {
+    const frozen = this.frozenCount;
+    const sortable = !!this.args.onSortChange;
+    const filter = this.args.onFilterByField;
+    const filterLabel = this.messages.filterByField();
+    return this.visibleFields.map((field, index) => {
+      const type = this.typeOf(field);
+      const canSort = sortable && field.sortable !== false;
+      const actions: EuiDataGridColumnActions = {
+        showHide: index > 0 && field.hideable !== false,
+        // the first field stays first (6.3)
+        showMoveLeft: index > 1,
+        showMoveRight: index > 0,
+        showSortAsc: canSort,
+        showSortDesc: canSort
+      };
+      if (filter) {
+        actions.additional = [
+          {
+            label: filterLabel,
+            iconType: 'filter',
+            color: 'text',
+            onClick: () => this.args.onFilterByField?.(field.id),
+            'data-test-subj': `euiSheetFilterByField-${field.id}`
+          }
+        ];
+      }
+      const width =
+        index < frozen
+          ? (this.givenWidth(field) ?? FROZEN_DEFAULT_WIDTH)
+          : this.givenWidth(field);
+      const column: EuiDataGridColumn = {
+        id: field.id,
+        displayAsText: field.label ?? field.id,
+        isExpandable: false,
+        isSortable: field.sortable !== false,
+        actions
+      };
+      if (width !== undefined) column.initialWidth = width;
+      if (type.schema) column.schema = type.schema;
+      const display = this.displayFor(field);
+      if (display) column.display = display;
+      if (index < frozen) {
+        column.displayHeaderCellProps = {
+          className: this.frozenHeaderClass(index + this.colOffset)
+        };
+      }
+      return column;
+    });
+  }
+
+  /* The frozen field (V02-DESIGN.md 6.7, 9.2) */
+
+  /** How many leading fields are frozen: `@frozenFields` (default 1), 0 above FROZEN_MAX_COLUMNS fields. */
+  @cached
+  get frozenCount(): number {
+    const count = this.visibleFields.length;
+    const wanted = this.args.frozenFields ?? 1;
+    if (wanted <= 0 || count === 0) return 0;
+    if (count > FROZEN_MAX_COLUMNS) {
+      warn(
+        `EuiSheet: ${count} visible fields: frozen fields are off above ${FROZEN_MAX_COLUMNS} (every column of the rendered rows would be rendered).`,
+        false,
+        { id: 'ember-eui.sheet.frozen-fields-off' }
+      );
+      return 0;
+    }
+    return Math.min(wanted, count);
+  }
+
+  @cached
+  get frozenLayout(): FrozenLayout | null {
+    const frozen = this.frozenCount;
+    if (!frozen) return null;
+    const lefts = new Map<number, number>();
+    let left = 0;
+    if (this.colOffset) {
+      lefts.set(0, 0);
+      left += this.rowColumnWidth;
+    }
+    const fields = this.visibleFields;
+    for (let i = 0; i < frozen; i++) {
+      lefts.set(i + this.colOffset, left);
+      left += this.frozenWidth(fields[i]!);
+    }
+    return { lefts, last: frozen - 1 + this.colOffset, right: left };
+  }
+
+  frozenHeaderClass(colIndex: number): string {
+    const last = this.frozenCount - 1 + this.colOffset;
+    return `euiSheet__frozenHeader euiSheet__frozenHeader--${colIndex}${colIndex === last ? ' euiSheet__frozenEdge' : ''}`;
+  }
+
+  /**
+   * The style and class of a frozen body cell (`footer`: a footer cell),
+   * or null: sticky at its `left`, floated so two sit side by side in the
+   * absolute row; footer cells are flex items, so no float (9.2).
+   */
+  frozenCellProps(
+    colIndex: number,
+    footer = false
+  ): { className: string; style: Record<string, string | number> } | null {
+    const layout = this.frozenLayout;
+    const left = layout?.lefts.get(colIndex);
+    if (!layout || left === undefined) return null;
+    const style: Record<string, string | number> = footer
+      ? { position: 'sticky', left, zIndex: 2 }
+      : { position: 'sticky', float: 'left', left, zIndex: 2 };
+    const className =
+      colIndex === layout.last
+        ? 'euiSheet__cell--frozen euiSheet__frozenEdge'
+        : 'euiSheet__cell--frozen';
+    return { className, style };
+  }
+
+  /** The frozen header cells' `left`s, as custom properties on the grid's container. */
+  @cached
+  get frozenStyle(): ReturnType<typeof htmlSafe> | undefined {
+    const layout = this.frozenLayout;
+    if (!layout) return undefined;
+    return htmlSafe(
+      [...layout.lefts]
+        .map(([index, left]) => `--euiSheetFrozenLeft-${index}:${left}px`)
+        .join(';')
+    );
+  }
+
+  /** While a field is frozen every column of a rendered row is rendered (9.1): a frozen cell must not unmount. */
+  @cached
+  get virtualizationOptions(): EuiDataGridVirtualizationOptions | undefined {
+    if (!this.frozenCount) return undefined;
+    return {
+      overscanColumnCount: this.visibleFields.length + this.colOffset
+    };
+  }
+
+  /**
+   * The grid scrolls a focused cell into view by its own left edge, which
+   * may leave it under the frozen columns (ArrowLeft). After the focus, the
+   * sheet scrolls it clear (9.1).
+   */
+  clearFrozenOverlap(pos: Pos): void {
+    const layout = this.frozenLayout;
+    if (!layout || pos.col < this.frozenCount) return;
+    const outer = this.scrollElement();
+    const cell = this.cellElement(pos);
+    if (!outer || !cell) return;
+    const box = outer.getBoundingClientRect();
+    const scale = outer.offsetWidth ? box.width / outer.offsetWidth : 1;
+    const cellLeft =
+      (cell.getBoundingClientRect().left - box.left) / scale - outer.clientLeft;
+    const overlap = layout.right - cellLeft;
+    if (overlap > 0.5) {
+      this.gridApi?.scrollTo?.({
+        scrollLeft: Math.max(0, outer.scrollLeft - overlap)
+      });
+    }
+  }
+
+  /**
+   * The grid's horizontal scroll before a focus move made by a key, a press
+   * or the sheet itself; null otherwise. A frozen cell is always in view,
+   * but the grid scrolls to its column's left edge when it gets focus
+   * (ArrowLeft into the first field, a click on it while scrolled): the
+   * sheet puts the scroll back once (`keepFrozenScroll`).
+   */
+  scrollLeftBeforeFocus: number | null = null;
+  /** A press is in progress: the grid scrolls the pressed cell into view on pointerup, so the click restores. */
+  pressing = false;
+
+  noteScrollLeft(): void {
+    if (!this.frozenCount) return;
+    this.scrollLeftBeforeFocus = this.scrollElement()?.scrollLeft ?? null;
+  }
+
+  keepFrozenScroll(): void {
+    const before = this.scrollLeftBeforeFocus;
+    this.scrollLeftBeforeFocus = null;
+    if (before === null || !this.frozenCount) return;
+    const outer = this.scrollElement();
+    if (outer && Math.abs(outer.scrollLeft - before) > 0.5) {
+      this.gridApi?.scrollTo?.({ scrollLeft: before });
+    }
+  }
+
+  /** Focus reached a frozen cell (`gridCol`: the grid's column index). */
+  onFrozenFocus(gridCol: number): void {
+    if (!this.frozenLayout?.lefts.has(gridCol)) return;
+    // a press restores on its click, after the grid's pointerup scroll
+    if (this.pressing) return;
+    afterRender(this, () => this.keepFrozenScroll());
+  }
+
+  /** The grid's scroll element. */
+  scrollElement(): HTMLElement | null {
+    return (
+      this.wrapper?.querySelector<HTMLElement>('.euiDataGrid__virtualized') ??
+      null
+    );
+  }
+
+  /* Blocks (3.6) */
+
+  @cached
+  get blockApi(): SheetBlockApi<T> {
+    return {
+      api: this.sheetApi,
+      fields: this.visibleFields,
+      hiddenFields: this.hiddenFields,
+      sort: this.args.sort ?? [],
+      rowHeight: this.rowHeight,
+      checkedRecords: this.checkedRecords,
+      hideField: this.hideField,
+      showField: this.showField,
+      setRowHeight: this.setRowHeight,
+      setSort: this.setSort
+    };
+  }
+
+  get hasSummary(): boolean {
+    return this.args.summary !== undefined;
+  }
+
+  /* A handler was called and its argument did not change (6.11) */
+
+  warnedUnchanged = new Set<string>();
+
+  /**
+   * In development, warns once per argument when a presentation handler
+   * was called and the argument is the same after the next render: the
+   * owner passed the handler but does not update the argument, so nothing
+   * changes on screen.
+   */
+  expectUpdate(
+    name: 'fields' | 'hiddenFields' | 'fieldWidths' | 'rowHeight'
+  ): void {
+    if (this.warnedUnchanged.has(name)) return;
+    const read = (): unknown =>
+      name === 'hiddenFields'
+        ? [this.args.fields, this.args.hiddenFields]
+        : this.args[name];
+    const before = read();
+    next(() => {
+      if (isDestroying(this) || isDestroyed(this)) return;
+      const after = read();
+      const same = Array.isArray(before)
+        ? before.every((value, i) => value === (after as unknown[])[i])
+        : before === after;
+      if (!same || this.warnedUnchanged.has(name)) return;
+      this.warnedUnchanged.add(name);
+      warn(
+        `EuiSheet: a handler for @${name} was called, but @${name} did not change. With the handler the sheet shows exactly the argument: update it.`,
+        false,
+        { id: 'ember-eui.sheet.controlled-argument' }
+      );
+    });
   }
 
   get range(): Range | null {
@@ -588,11 +1135,7 @@ export default class EuiSheet<T extends object> extends Component<
     return this.hasAddRow && row === this.args.records.length;
   }
 
-  get hiddenFields(): EuiSheetField<T>[] {
-    return this.args.hiddenFields ?? [];
-  }
-
-  /** The visible fields, then `@hiddenFields`: the expanded record, duplicate, undo. */
+  /** The visible fields, then the hidden ones: the expanded record, duplicate, undo. */
   @cached
   get allFields(): EuiSheetField<T>[] {
     return [...this.visibleFields, ...this.hiddenFields];
@@ -613,7 +1156,14 @@ export default class EuiSheet<T extends object> extends Component<
   @cached
   get leadingControlColumns(): EuiDataGridControlColumn[] | undefined {
     if (!this.showRowNumbers) return undefined;
-    return [{ id: ROW_COLUMN_ID, width: this.rowColumnWidth }];
+    const column: EuiDataGridControlColumn = {
+      id: ROW_COLUMN_ID,
+      width: this.rowColumnWidth
+    };
+    if (this.frozenCount) {
+      column.headerCellProps = { className: this.frozenHeaderClass(0) };
+    }
+    return [column];
   }
 
   /** The add row's class. */
@@ -867,6 +1417,7 @@ export default class EuiSheet<T extends object> extends Component<
 
   /** Focuses a cell by its position (data column). */
   focusGridCell(pos: Pos): void {
+    this.noteScrollLeft();
     this.gridApi?.setFocusedCell({
       rowIndex: pos.row,
       colIndex: pos.col + this.colOffset
@@ -1084,6 +1635,7 @@ export default class EuiSheet<T extends object> extends Component<
   /** Focuses a row's row-number cell. */
   focusRowNumberCell(row: number): void {
     if (!this.colOffset) return;
+    this.noteScrollLeft();
     this.gridApi?.setFocusedCell({ rowIndex: row, colIndex: 0 });
   }
 
@@ -1671,11 +2223,13 @@ export default class EuiSheet<T extends object> extends Component<
     const rowCell = this.rowNumberCell(event.target);
     if (rowCell) {
       this.focused = null;
+      if (this.frozenCount) this.onFrozenFocus(0);
       this.onRowNumberFocus(this.rowIndexOf(rowCell), keepRange);
       return;
     }
     const cell = this.dataCell(event.target);
     if (!cell) {
+      this.scrollLeftBeforeFocus = null;
       // the header, a control or an editor: no error box (an open editor
       // hides it anyway)
       if (!this.isInEditor(event.target)) this.focused = null;
@@ -1684,6 +2238,11 @@ export default class EuiSheet<T extends object> extends Component<
     const pos = this.cursor(cell);
     this.rowCursor = null;
     this.trackFocusedCell(pos, cell);
+    if (this.frozenCount) {
+      if (pos.col < this.frozenCount)
+        this.onFrozenFocus(pos.col + this.colOffset);
+      else afterRender(this, () => this.clearFrozenOverlap(pos));
+    }
     // the grid re-focuses the same cell when it re-mounts (scroll) and
     // after cancel(): that must not collapse a range
     if (samePos(pos, this.domCursor)) return;
@@ -1796,6 +2355,8 @@ export default class EuiSheet<T extends object> extends Component<
   @action
   onMouseDown(event: MouseEvent): void {
     this.extending = event.shiftKey;
+    this.noteScrollLeft();
+    this.pressing = true;
     const target = event.target as Element;
     // before the press moves focus: was this cell the focused one?
     const cell = this.dataCell(target);
@@ -1918,8 +2479,19 @@ export default class EuiSheet<T extends object> extends Component<
   onRelease = (): void => {
     const dragged = this.dragging;
     const kind = this.dragKind;
+    const from = this.dragFrom;
+    const before = this.scrollLeftBeforeFocus;
     this.endDrag();
     if (!dragged) return;
+    // the grid scrolled the pressed cell into view on pointerup; a frozen
+    // one is always in view, so the scroll goes back to the press's
+    if (
+      this.frozenCount &&
+      (kind === 'rows' || (from !== null && from.col < this.frozenCount))
+    ) {
+      this.scrollLeftBeforeFocus = before;
+      this.keepFrozenScroll();
+    }
     const head = this.head;
     if (!head || samePos(head, this.anchor)) return;
     // the click that follows is the end of the drag, not a click on a cell
@@ -1957,6 +2529,16 @@ export default class EuiSheet<T extends object> extends Component<
    */
   @action
   onClick(event: MouseEvent): void {
+    if (this.pressing) {
+      this.pressing = false;
+      const focused = document.activeElement;
+      const frozen =
+        (this.rowNumberCell(focused) && this.frozenCount) ||
+        (this.dataCell(focused) &&
+          this.cursor(this.dataCell(focused)!).col < this.frozenCount);
+      if (frozen) this.keepFrozenScroll();
+      else this.scrollLeftBeforeFocus = null;
+    }
     const pressOnFocusedCell = this.pressOnFocusedCell;
     this.pressOnFocusedCell = false;
     this.keepRangeOnFocus = false;
@@ -2096,6 +2678,8 @@ export default class EuiSheet<T extends object> extends Component<
   @action
   onKeyDown(event: KeyboardEvent): void {
     this.extending = event.shiftKey && ARROWS.has(event.key);
+    this.pressing = false;
+    this.noteScrollLeft();
     this.keepRangeOnFocus = false;
     const target = event.target;
     if (this.editing && this.isInEditor(target)) {
@@ -2241,6 +2825,8 @@ export default class EuiSheet<T extends object> extends Component<
     if (event.altKey || event.shiftKey || event.metaKey) return false;
     stop(event);
     this.focusGridCell({ row: event.ctrlKey ? 0 : row, col: 0 });
+    // Home also scrolls to the left edge (the frozen field is in view anyway)
+    if (this.frozenCount) this.scrollLeftBeforeFocus = 0;
     return true;
   }
 
@@ -2311,11 +2897,7 @@ export default class EuiSheet<T extends object> extends Component<
 
   /** What undo and redo need besides the records: every field id, visible and hidden (a restored record's values). */
   get historyOptions(): { fieldIds: string[] } {
-    return {
-      fieldIds: [...this.args.fields, ...this.hiddenFields].map(
-        (field) => field.id
-      )
-    };
+    return { fieldIds: this.allFields.map((field) => field.id) };
   }
 
   /**
@@ -2679,6 +3261,17 @@ export default class EuiSheet<T extends object> extends Component<
   onScroll(event: Event): void {
     // the editor scrolling its own content is not a grid scroll
     if (this.isInEditor(event.target)) return;
+    const target = event.target;
+    if (
+      target instanceof HTMLElement &&
+      target.classList.contains('euiDataGrid__virtualized')
+    ) {
+      const scrolledX = target.scrollLeft > 0;
+      if (scrolledX !== this.scrolledX) this.scrolledX = scrolledX;
+      // a key's focus move restored its scroll in the same task; a later
+      // scroll (wheel, scrollbar) must not be undone by a stale value
+      if (!this.pressing) this.scrollLeftBeforeFocus = null;
+    }
     // removes the editor before a stale position shows, and before the
     // re-mounted focused cell can pull focus
     if (this.editing) this.commit({ refocus: false });
@@ -3033,7 +3626,8 @@ export default class EuiSheet<T extends object> extends Component<
     <div
       class="euiSheet
         {{this.themeClass}}
-        {{if this.dragging 'euiSheet--dragging'}}"
+        {{if this.dragging 'euiSheet--dragging'}}
+        {{if this.scrolledX 'euiSheet--scrolledX'}}"
       data-test-subj="euiSheet"
       ...attributes
       {{this.setupWrapper}}
@@ -3051,30 +3645,62 @@ export default class EuiSheet<T extends object> extends Component<
       {{on "dblclick" this.onDoubleClick}}
       {{on "contextmenu" this.onContextMenu}}
     >
-      <EuiDataGrid
-        aria-label={{this.ariaLabel}}
-        @columns={{this.columns}}
-        @columnVisibility={{this.columnVisibility}}
-        @leadingControlColumns={{this.leadingControlColumns}}
-        @gridStyle={{this.gridStyle}}
-        @rowCount={{this.rowCount}}
-        @renderCellValue={{SheetCell}}
-        @cellContext={{this.cellContext}}
-        @registerApi={{this.registerGridApi}}
-        @toolbarVisibility={{false}}
-        @height={{@height}}
-      >
-        <:controlHeaderCell><RowNumberHeader
-            @sheet={{this}}
-          /></:controlHeaderCell>
-        <:controlCell as |cell|>
-          <RowNumberCell
-            @sheet={{this}}
-            @rowIndex={{cell.rowIndex}}
-            @setCellProps={{cell.setCellProps}}
+      {{#if (has-block "toolbar")}}
+        <div class="euiSheet__toolbar" data-test-subj="euiSheetToolbar">
+          {{yield this.blockApi to="toolbar"}}
+        </div>
+      {{/if}}
+      <div class="euiSheet__grid" style={{this.frozenStyle}}>
+        {{#if @isLoading}}
+          <EuiProgress
+            @size="xs"
+            @position="absolute"
+            @color="primary"
+            class="euiSheet__loading"
+            data-test-subj="euiSheetLoading"
           />
-        </:controlCell>
-      </EuiDataGrid>
+        {{/if}}
+        <EuiDataGrid
+          aria-label={{this.ariaLabel}}
+          @columns={{this.columns}}
+          @columnVisibility={{this.columnVisibility}}
+          @leadingControlColumns={{this.leadingControlColumns}}
+          @gridStyle={{this.gridStyle}}
+          @rowCount={{this.rowCount}}
+          @renderCellValue={{SheetCell}}
+          @renderFooterCellValue={{if this.hasSummary SheetFooterCell}}
+          @cellContext={{this.cellContext}}
+          @registerApi={{this.registerGridApi}}
+          @toolbarVisibility={{false}}
+          @height={{@height}}
+          @sorting={{this.sorting}}
+          @rowHeightsOptions={{this.rowHeightsOptions}}
+          @onColumnResize={{this.onColumnResize}}
+          @virtualizationOptions={{this.virtualizationOptions}}
+        >
+          <:controlHeaderCell><RowNumberHeader
+              @sheet={{this}}
+            /></:controlHeaderCell>
+          <:controlCell as |cell|>
+            <RowNumberCell
+              @sheet={{this}}
+              @rowIndex={{cell.rowIndex}}
+              @setCellProps={{cell.setCellProps}}
+            />
+          </:controlCell>
+          <:controlFooterCell as |cell|>
+            <SheetControlFooterCell
+              @sheet={{this}}
+              @setCellProps={{cell.setCellProps}}
+            />
+          </:controlFooterCell>
+        </EuiDataGrid>
+      </div>
+      {{#if (has-block "footer")}}
+        <div class="euiSheet__footer" data-test-subj="euiSheetFooter">
+          {{yield this.blockApi to="footer"}}
+        </div>
+      {{/if}}
       {{#if this.menu}}
         <RowMenu
           @top={{this.menu.top}}

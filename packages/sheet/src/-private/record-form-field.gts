@@ -84,6 +84,12 @@ export default class RecordFormField extends Component<RecordFormFieldSignature>
         class="euiSheetRecord__label"
         id={{this.labelId}}
       >{{this.label}}</div>
+      {{#if @field.description}}
+        <div
+          class="euiSheetRecord__description"
+          data-test-subj="euiSheetRecordDescription"
+        >{{@field.description}}</div>
+      {{/if}}
       {{#if this.showBox}}
         {{#if this.editable}}
           <div

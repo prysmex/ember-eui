@@ -154,7 +154,7 @@ your own store, remove those records.
 
 | Argument | Description |
 | --- | --- |
-| `@fields` | The columns, in order: `{ id, label?, type?, readOnly?, required?, validate?, ...options of the type }`. `readOnly` and `required` can be functions of the record. |
+| `@fields` | The visible columns, in order: `{ id, label?, type?, readOnly?, required?, validate?, description?, width?, sortable?, hideable?, ...options of the type }`. `readOnly` and `required` can be functions of the record. `description` is a tip in the header and help text in the expanded record; `width` a default width in px; `sortable: false` and `hideable: false` drop those menu items. |
 | `@records` | The rows. Pass a new array when they change. |
 | `@getRecordId` | `(record) => id`. |
 | `@onChange` | `(changeSet) => void`. Apply it to your records. |
@@ -166,7 +166,17 @@ your own store, remove those records.
 | `@height` | The grid's height. |
 | `@ariaLabel` | The grid's accessible name. Default `Sheet`. |
 | `@registerApi` | `(api) => void`: receives the sheet's API once, after the first render (below). |
-| `@hiddenFields` | Fields that exist but are not columns: shown in the expanded record after `@fields`, copied by duplicate, put back by undo. |
+| `@hiddenFields` | Fields that exist but are not columns: shown in the expanded record after `@fields`, copied by duplicate, put back by undo, given to the blocks (`showField`). |
+| `@onHiddenFieldsChange` | `(fieldIds) => void`: the new list of hidden ids after "Hide column" or a block's `hideField` / `showField`. With it, update `@fields` and `@hiddenFields`; without it the sheet hides and shows fields itself. |
+| `@onFieldOrderChange` | `(fieldIds) => void`: the visible ids in their new order after "Move left/right". With it, update `@fields`; without it the sheet keeps its own order. |
+| `@fieldWidths`, `@onFieldWidthChange` | Widths in px by field id (over `field.width`); `(fieldId, width) => void` after a resize. Without the handler the grid keeps a resized width until its columns change (a hide or a move drops it); keep them in `@fieldWidths` to keep them. |
+| `@rowHeight`, `@onRowHeightChange` | `'short'` (default, one line), `'medium'` (2 lines), `'tall'` (4), `'extraTall'` (6); changed by a block's `setRowHeight`. With the handler, update `@rowHeight`. |
+| `@sort`, `@onSortChange` | Your sort, `[{ field, direction: 'asc' or 'desc' }]`, drawn as header arrows; the menu's "Sort" items call the handler with the whole new sort. Without the handler there are no sort items and no arrows. The sheet never sorts. |
+| `@onFilterByField` | `(fieldId) => void`: adds "Filter by this field" to the column menu. |
+| `@highlight` | A term you searched for: matching text is marked in cells (any case, every match). |
+| `@isLoading` | A thin progress bar over the grid; the grid stays usable. |
+| `@summary` | `{ [fieldId]: text }` (and `''` for the row-number column): shows the summary bar (below). |
+| `@frozenFields` | Leading fields kept in view on horizontal scroll, with the row numbers. Default `1`; `0` turns it off. |
 | `@rowNumbers` | The row-number column. Default `true`; `false` hides it. |
 | `@rowLabel` | `(record, position) => string`: what a row number shows instead of its position (for example the record's id). The column widens to fit. |
 | `@rowNumberOffset` | The position of the first record when `@records` is one page of your data: page 2 of 50 passes `50`. Default `0`. |
@@ -176,6 +186,99 @@ your own store, remove those records.
 | `@expandedRecordId`, `@onExpandedRecordChange` | The expanded record, controlled the same way. |
 | `@expandedRecord` | `'flyout'` (default) or `'modal'`. |
 | `@rowActions` | Your items of the row menu: `{ id, label, icon?, color?: 'danger', isDisabled?(records), onSelect(records) }`. |
+
+## The owner
+
+The sheet is a view of the rows it is given. It never sorts, filters,
+searches, groups, pages or summarizes: those are queries, and they are
+yours (a store, a server, an EmberSearchUi driver). The sheet draws your
+state and tells you what the user asked for:
+
+| The user | The sheet calls | You |
+| --- | --- | --- |
+| Sort from a column's menu | `@onSortChange(sort)` | sort `@records`, pass `@sort` (the arrows) |
+| "Filter by this field" | `@onFilterByField(fieldId)` | open your filter UI |
+| Types in your search box | (nothing: the box is yours) | filter `@records`, pass `@highlight` |
+| Changes page in your pager | (nothing) | pass that page as `@records`, and `@rowNumberOffset` |
+| Waits | | pass `@isLoading` |
+| Hides, moves, resizes a column | `@onHiddenFieldsChange`, `@onFieldOrderChange`, `@onFieldWidthChange` | update `@fields`, `@hiddenFields`, `@fieldWidths` |
+| Picks a row height in your control | `@onRowHeightChange` (through the block's `setRowHeight`) | update `@rowHeight` |
+
+There is no built-in toolbar. Two blocks take your own controls, inside
+the sheet (so they get its theme) and outside the grid (so they are normal
+tabbable elements):
+
+```gjs
+<EuiSheet @fields={{this.fields}} @records={{this.records}} …>
+  <:toolbar as |sheet|>
+    {{! a search box, a field picker, a row-height control }}
+  </:toolbar>
+  <:footer as |sheet|>
+    {{! a pager, a count }}
+  </:footer>
+</EuiSheet>
+```
+
+Each yields the same object: `api` (the sheet's API, below), `fields` (the
+visible ones), `hiddenFields`, `sort`, `rowHeight`, `checkedRecords`, and
+`hideField(id)`, `showField(id)`, `setRowHeight(rowHeight)`,
+`setSort(sort)`, which call your handlers (or change the sheet's own state
+without them; `setSort` does nothing without `@onSortChange`).
+
+Sorting a local array needs a few lines in your component (the "View
+intents" example does it with each type's `compare`). For filtering,
+search and paging over local data, an EmberSearchUi driver with its
+in-memory backend does the work.
+
+## Presentation state
+
+Which fields show, their order, their widths and the row height work the
+same way: **with a handler, the sheet shows exactly the argument** and only
+calls the handler, so if you pass the handler and do not update the
+argument, nothing changes on screen (in development the sheet warns once).
+**Without a handler, the sheet keeps its own state**, so a sheet with only
+`@fields` still lets people hide, move and resize columns: "Hide column"
+really hides (the field goes to the hidden list and the expanded record),
+and copy and paste skip hidden fields. The first field cannot be hidden or
+moved, and nothing can move before it.
+
+## Summary bar
+
+Pass `@summary` (even `{}`) to show a footer row under the grid: each
+field's text under it, and `@summary['']` under the row numbers (a count,
+say). The cells are plain text: no editing, no selection. The sheet
+computes nothing, because with paged data a summary of the loaded page
+would be wrong: take the values from your backend (its aggregations), or,
+when you have every record, compute them with `summarize`:
+
+```js
+import { builtInFieldTypes, defaultMessages, summarize } from '@ember-eui/sheet';
+
+summarize({ types: builtInFieldTypes, messages: defaultMessages }, records, field, 'sum');
+```
+
+The kinds are `count`, `filled`, `empty`, `percentFilled`, `unique`,
+`sum`, `average`, `min`, `max`, `checked` and `unchecked`. Sums and
+averages use the type's `toNumber` (numbers have it), minimum and maximum
+`toNumber` or else `compare` (dates, text), and the text is formatted with
+the type's `format`. What to summarize is your control, in `<:toolbar>`
+or `<:footer>`.
+
+## Frozen field
+
+The first field stays in view when the grid scrolls sideways, and so do
+the row numbers, its header and its summary cell. `@frozenFields={{2}}`
+freezes two fields; `@frozenFields={{0}}` none. A frozen field always has a
+width (200 px unless `@fieldWidths` or `field.width` say otherwise), and
+resizing it moves the frozen edge. Keyboard focus that would land under
+the frozen columns scrolls the cell clear, and focusing a frozen cell
+(a click, ArrowLeft into it) does not scroll the grid.
+
+The limit: while a field is frozen the grid renders every column of the
+rows in view, not only the columns in view, so a frozen cell never
+unmounts. Rows stay virtualized; the cost is rows in view × all fields
+(the "Large data" example shows it with thirty fields). Above 50 visible
+fields the sheet does not freeze.
 
 ## The sheet's API
 
@@ -288,6 +391,13 @@ field's text; the arrows go to the previous and next record.
 
 Dates are shown as `DD/MM/YYYY` (or `MM/DD/YYYY`) and copied as ISO.
 
+Numbers, dates and checkboxes give their column a grid `schema`, so number
+columns are right-aligned and the column menu's sort items read "Sort
+Low-High", "Sort Old-New" and "Sort False-True" (text: "Sort A-Z"). An app
+type sets `schema` the same way, and may add `toNumber(value)` for
+`summarize`. A type's `cell` component also gets `@highlight` (the sheet's
+term) to mark matches itself.
+
 ## Keyboard
 
 | Key | On a cell | In an editor |
@@ -365,8 +475,9 @@ These are not in yet:
 - Cut (Ctrl/Cmd+X), a fill handle, and fill right (Ctrl/Cmd+R).
 - Scrolling the grid while a drag reaches its edge: drag within the
   visible rows, or use Shift+click.
-- Sorting and filtering UI, frozen columns, hiding columns from the
-  sheet (`@hiddenFields` is an input for now).
+- Grouping rows (planned after the EmberSearchUi connector). Sorting,
+  filtering, search and paging are not "not yet": they are the owner's
+  (above), and the sheet draws them.
 - Multi-select, linked record, user and attachment fields.
 - Resolving pasted text through your API (bulk resolve). A pasted text
   in a field whose type returns `{ unresolved }`, such as the zone

@@ -21,9 +21,12 @@ export type {
   EuiSheetFieldType,
   EuiSheetSignature,
   SheetApi,
+  SheetBlockApi,
   SheetCellSignature,
   SheetEditorRect,
   SheetEditorResult,
   SheetEditorSignature,
-  SheetRowAction
+  SheetRowAction,
+  SheetRowHeight,
+  SheetSort
 } from './types.ts';

@@ -6,6 +6,7 @@
 import Component from '@glimmer/component';
 import { cached } from '@glimmer/tracking';
 
+import EuiHighlight from '@ember-eui/core/components/eui-highlight';
 import EuiIcon from '@ember-eui/core/components/eui-icon';
 
 import type EuiSheet from '../components/eui-sheet.gts';
@@ -43,8 +44,14 @@ export default class SheetCell extends Component<{
   // props object, so everything goes in one call.
   get cellProps(): string {
     const view = this.view;
-    const props: Record<string, string> = {};
+    const props: Record<string, unknown> = {};
     const classes: string[] = [];
+    // the frozen field (V02-DESIGN.md 9.2): sticky, also on the add row
+    const frozen = this.sheet.frozenCellProps(this.args.colIndex);
+    if (frozen) {
+      classes.push(frozen.className);
+      props['style'] = frozen.style;
+    }
     if (view?.selected) {
       classes.push('euiSheet__cell--selected');
       props['aria-selected'] = 'true';
@@ -79,6 +86,11 @@ export default class SheetCell extends Component<{
     return view.type.opener;
   }
 
+  /** `@highlight`, when there is something to mark. */
+  get highlight(): string | undefined {
+    return this.sheet.args.highlight || undefined;
+  }
+
   onCommit = (value: unknown): void => {
     this.sheet.commitCellValue(this.args.rowIndex, this.col, value);
   };
@@ -100,6 +112,13 @@ export default class SheetCell extends Component<{
           @errors={{this.view.errors}}
           @readOnly={{this.view.readOnly}}
           @onCommit={{this.onCommit}}
+          @highlight={{this.highlight}}
+        />
+      {{else if this.highlight}}
+        <EuiHighlight
+          @text={{this.view.text}}
+          @search={{this.highlight}}
+          @highlightAll={{true}}
         />
       {{else}}
         {{this.view.text}}

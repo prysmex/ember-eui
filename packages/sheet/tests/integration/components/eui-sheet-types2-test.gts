@@ -543,7 +543,9 @@ module(
         }
       ]);
       assert.dom(editorFrame()).exists('still open after the upload');
-      assert.dom('[data-test-subj=euiSheetAttachment]').exists({ count: 3 });
+      assert
+        .dom('[data-test-subj=euiSheetAttachment]', document.body)
+        .exists({ count: 3 });
       await click(
         el(
           '[data-test-subj=euiSheetAttachment]:first-child [data-test-subj=euiSheetRemoveFile]'
@@ -562,7 +564,7 @@ module(
         files: [new File(['x'], 'fail.txt')]
       });
       assert
-        .dom('[data-test-subj=euiSheetUploadError]')
+        .dom('[data-test-subj=euiSheetUploadError]', document.body)
         .hasText('Upload failed');
       assert.strictEqual(store.log.length, 2, 'nothing saved');
     });
@@ -575,8 +577,20 @@ module(
       const over = await drag('dragover', cell(0, 1), [file]);
       assert.true(over.defaultPrevented, 'the cell takes the drop');
       assert.dom(cell(0, 1)).hasClass('euiSheet__cell--dropTarget');
+      // the drop target's look (V03 batch 2): the 3 px ring and the range tint
+      assert.strictEqual(getComputedStyle(cell(0, 1)).outlineWidth, '3px');
+      assert.notStrictEqual(
+        getComputedStyle(cell(0, 1)).backgroundColor,
+        'rgba(0, 0, 0, 0)',
+        'tinted'
+      );
       const name = await drag('dragover', cell(0, 0), [file]);
-      assert.false(name.defaultPrevented, 'a text cell does not');
+      // V03 batch 2: a text cell refuses the drop ("not allowed"), so the
+      // browser does not open the file either
+      // (a synthetic DataTransfer keeps dropEffect 'none' whatever is set:
+      // the not-allowed cursor is on the real-input list)
+      assert.true(name.defaultPrevented, 'the sheet answers for a text cell');
+      assert.dom(cell(0, 0)).doesNotHaveClass('euiSheet__cell--dropTarget');
       assert.dom(cell(0, 1)).doesNotHaveClass('euiSheet__cell--dropTarget');
       await drag('dragover', cell(0, 1), [file]);
       const dropEvent = new DragEvent('drop', {

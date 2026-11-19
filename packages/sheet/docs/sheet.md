@@ -157,7 +157,7 @@ your own store, remove those records.
 
 | Argument | Description |
 | --- | --- |
-| `@fields` | The visible columns, in order: `{ id, label?, type?, readOnly?, required?, validate?, description?, width?, sortable?, hideable?, ...options of the type }`. `readOnly` and `required` can be functions of the record. `description` is a tip in the header and help text in the expanded record; `width` a default width in px; `sortable: false` and `hideable: false` drop those menu items. |
+| `@fields` | The visible columns, in order: `{ id, label?, type?, readOnly?, required?, validate?, description?, width?, sortable?, hideable?, manageable?, ...options of the type }`. `readOnly` and `required` can be functions of the record. `description` is a tip in the header and help text in the expanded record; `width` a default width in px; `sortable: false` and `hideable: false` drop those menu items; `manageable: false` drops Edit, Duplicate and Delete field (a system field). |
 | `@records` | The rows. Pass a new array when they change. |
 | `@getRecordId` | `(record) => id`. |
 | `@onChange` | `(changeSet) => void`. Apply it to your records. |
@@ -178,6 +178,11 @@ your own store, remove those records.
 | `@rowHeight`, `@onRowHeightChange` | `'short'` (default, one line), `'medium'` (2 lines), `'tall'` (4), `'extraTall'` (6); changed by a block's `setRowHeight`. With the handler, update `@rowHeight`. |
 | `@sort`, `@onSortChange` | Your sort, `[{ field, direction: 'asc' or 'desc' }]`, drawn as header arrows; the menu's "Sort" items call the handler with the whole new sort. Without the handler there are no sort items and no arrows. The sheet never sorts. |
 | `@onFilterByField` | `(fieldId) => void`: adds "Filter by this field" to the column menu. |
+| `@onFieldCreate` | `(draft, { index, after?, copyOf? }) => void or Promise`: adds the "+" column at the right, "Insert left/right" and "Duplicate field" to the column menu (Fields, below). |
+| `@onFieldUpdate` | `(fieldId, draft, { previous }) => void or Promise`: adds "Edit field". |
+| `@onFieldDelete` | `(fieldId) => void or Promise`: adds "Delete field", after a confirmation. |
+| `@fieldEditor` | A component that replaces the field editor's content (the sheet keeps its frame). |
+| `@creatableFieldTypes` | The types the field editor offers, in order. Default: `text`, `longText`, `number`, `currency`, `percent`, `checkbox`, `singleSelect`, `multiSelect`, `date`, `duration`, `rating`, `url`, `email`, `phone`. |
 | `@highlight` | A term you searched for: matching text is marked in cells (any case, every match). |
 | `@isLoading` | A thin progress bar over the grid; the grid stays usable. |
 | `@summary` | `{ [fieldId]: text }` (and `''` for the row-number column): shows the summary bar (below). |
@@ -442,6 +447,8 @@ store:
 | `insertRecord({ anchor?, values? })` | Emits the insert of one record, next to `anchor` (`{ recordId, position: 'before' or 'after' }`) or at the end. `values` default to `@newRecordValues`. |
 | `deleteRecords(ids)` | Emits the delete of those records. |
 | `showShortcuts()` | Opens the shortcut list (as Ctrl/Cmd+/ on the grid). The blocks have `showShortcuts()` too, for a toolbar button. |
+| `addField({ index? })` | Opens the field editor to add a field at `index` among the visible fields (default: the end; never before the first field). With `@onFieldCreate`. The blocks have `addField()` too. |
+| `editField(fieldId)` | Opens the field editor on a field, also a hidden one (it opens under the "+" header then). With `@onFieldUpdate`. |
 
 When you replace `@records` with records the sheet did not change
 (another sort, another page, a reload), the selection follows its record:
@@ -468,8 +475,15 @@ range tint, is the theme's primary at 12 % (20 % in dark). To change
 one, set it on the sheet itself, which takes attributes
 (`<EuiSheet style="--euiSheet-selected: #E6F0FF" …>`) or a more specific
 selector; set on a parent element, it loses to the sheet's class. The
-expanded record's flyout or modal and the row menu get the class too. An
-editor gets that class as `@themeClass`: one that renders a part of
+expanded record's flyout or modal, the row menu, the field editor and the
+panel editors (`editorLayout: 'panel'`: the selects, linked records,
+users, attachments, an app type's picker) are rendered at the end
+of `<body>`, placed by their cell or header (below it, above it when there
+is no room below in the window), so a card, panel or tab with
+`overflow: hidden` around the sheet does not cut them off. They get the
+class too, and the overrides set on the sheet's own `style` when they
+open; CSS for an app's panel editor should not be scoped under
+`.euiSheet`. An editor gets that class as `@themeClass`: one that renders a part of
 itself outside the sheet (a wormholed list) adds it there; without it
 that part uses the light colours.
 
@@ -507,6 +521,76 @@ delete puts the same records back where they were.
 
 All of this works on the rows the sheet has: with a paging owner, the
 checkboxes and the selection are those of the page shown.
+
+## Fields
+
+The owner owns `@fields`. Adding, editing, duplicating and deleting a
+field from the grid are three intents, as in Airtable's grid; each
+handler shows its own controls, and without it there are none (there is
+no local fallback: fields are your data model). A bare app passes
+`localRecords`' handlers:
+
+```hbs
+<EuiSheet
+  @fields={{store.fields}}
+  @records={{store.records}}
+  @getRecordId={{this.getId}}
+  @onChange={{store.apply}}
+  @onFieldCreate={{store.createField}}
+  @onFieldUpdate={{store.updateField}}
+  @onFieldDelete={{store.deleteField}}
+/>
+```
+
+- **The "+" column** (with `@onFieldCreate`) is the last header: a click,
+  or Enter or Space on it (ArrowRight from the last header reaches it),
+  opens the field editor to add a field at the end. Its body cells are
+  empty: a click there selects the row's last field, and ArrowRight and
+  End stop at the last field.
+- **The column menu** has Edit field, Duplicate field, Insert left,
+  Insert right and Delete field (last, in red). Nothing is inserted to
+  the left of the first field and the first field cannot be deleted (it
+  stays first). Duplicate calls `@onFieldCreate` at once, with the
+  field's draft, the label "Name copy", the next index and `copyOf`: you
+  decide whether values are copied. Delete asks first.
+- **The field editor** opens under the header it belongs to: the name
+  (required; Enter saves), the type (`@creatableFieldTypes`, each labelled
+  by `type.label`), the type's options (a select's options and colours, a
+  currency's code and decimals, a percent's decimals, a rating's stars, a
+  date's day/month order, a duration's format), a description and
+  Required. Escape and Cancel close it and focus the header; a click
+  outside or a scroll of the grid cancels it. `@fieldEditor` replaces its
+  content: your component gets `mode` (`'create'` or `'edit'`), `field`,
+  `draft`, `types`, `isSaving`, `error`, `onSave(draft)`, `onCancel()`,
+  `messages` and `themeClass`.
+
+The **draft** is plain data: `{ label, type, description?, required?,
+...type options }`, without `id` and without the parts that are
+functions (`options(record)`, `validate`): the editor hides those, so
+`{ ...previous, ...draft }` keeps them. Build the field from it (`{ id,
+...draft }` on create), pass the new `@fields`, and for a create put it
+at `after` (the visible field before it) or `index` (among the visible
+fields). A handler that returns a promise keeps the editor open and busy;
+when the promise rejects, the editor stays open and shows
+`error.message` (a name your server refused).
+
+**Changing a type changes no value.** The cells show the stored values
+through the new type, whatever they are. To convert them, apply
+`convertField(ctx, records, previous, next)`: the change set that writes
+each value as the new type reads it, through the paste path (the old
+type's copy text, then the new type's `parse`). What could be pasted
+converts; what could not becomes empty, with a `rejected` entry (the
+text and the reason) so you can say what was lost; select options a
+`createOnPaste` field would create are in `newOptions`.
+`localRecords.updateField` does exactly that and keeps the change set in
+`log`.
+
+**Field operations are not undoable from the sheet**: undo holds values
+by record and field, and only you have every value of a deleted field.
+When a field leaves `@fields` and `@hiddenFields`, or its type changes,
+the sheet drops that field from its undo history (an entry left empty is
+removed), its rejected texts and pending cells, and closes an editor on
+it. You can make them undoable in your own UI.
 
 ## Expanded record
 
@@ -601,6 +685,17 @@ Low-High", "Sort Old-New" and "Sort False-True" (text: "Sort A-Z"). An app
 type sets `schema` the same way, and may add `toNumber(value)` for
 `summarize`. A type's `cell` component also gets `@highlight` (the sheet's
 term) to mark matches itself.
+
+### In the field editor
+
+A type can name itself in the field editor's type select with `label`
+(default: the built-in name, "Single line text", "Single select", …) and
+add its own part of the editor with `fieldOptions`, a component that gets
+`draft`, `field` (on edit), `messages` and `onChange(patch)`, which merges
+keys into the draft. List the type in `@creatableFieldTypes` to offer it.
+`linkedRecord`, `user` and `attachment` are not offered by default: they
+need `search` or `upload` functions, which a draft cannot hold; list them
+and complete the field in your handler.
 
 ## Bulk resolve
 

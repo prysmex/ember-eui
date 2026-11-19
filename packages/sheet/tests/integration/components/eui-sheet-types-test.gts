@@ -112,6 +112,16 @@ function option(label: string): HTMLElement {
 module('Integration | Component | EuiSheet field types', function (hooks) {
   setupRenderingTest(hooks);
 
+  // N21 moves the test container (the panel is placed in the viewport)
+  let containerStyle: string | null = null;
+  hooks.afterEach(function () {
+    if (containerStyle === null) return;
+    const box = document.getElementById('ember-testing-container')!;
+    if (containerStyle) box.setAttribute('style', containerStyle);
+    else box.removeAttribute('style');
+    containerStyle = null;
+  });
+
   async function renderSheet(
     options: {
       records?: (records: Task[]) => Task[];
@@ -368,10 +378,12 @@ module('Integration | Component | EuiSheet field types', function (hooks) {
     const frame = editorFrame()!;
     assert.dom(frame).hasClass('euiSheet__editor--panel');
     assert.false(el('.euiDataGrid').contains(frame), 'outside the grid');
-    assert.true(
+    // the sheet's layer, portaled (V03 batch 2, after the real-input check)
+    assert.false(
       el('[data-test-subj=euiSheet]').contains(frame),
-      'inside the wrapper'
+      'not inside the wrapper'
     );
+    assert.ok(frame.closest('[data-eui-sheet-layer]'), "in the sheet's layer");
     assert.strictEqual(
       document.activeElement,
       editor(),
@@ -475,7 +487,7 @@ module('Integration | Component | EuiSheet field types', function (hooks) {
     assert.strictEqual(document.activeElement, cell(3, 3), 'focus moved down');
   });
 
-  test('N21 the select panel is not clipped and flips above near the bottom (V6)', async function (assert) {
+  test('N21 the select panel is not clipped and flips above near the viewport bottom (V6)', async function (assert) {
     await renderSheet({ count: 30, height: 400 });
     /** Whether the point is painted by the panel (not clipped, not covered). */
     const paintsAt = (frame: HTMLElement, x: number, y: number) => {
@@ -510,6 +522,16 @@ module('Integration | Component | EuiSheet field types', function (hooks) {
         (row) => cell(row, 3).getBoundingClientRect().bottom <= wrapper.bottom
       )
     );
+    // the panel is placed in the viewport (V03 batch 2, after the
+    // real-input check): the test container is fixed so that row ends 40 px
+    // above the viewport's bottom
+    const container = document.getElementById('ember-testing-container')!;
+    containerStyle = container.getAttribute('style') ?? '';
+    container.style.position = 'fixed';
+    container.style.left = '8px';
+    container.style.top = '0px';
+    container.style.bottom = 'auto';
+    container.style.top = `${window.innerHeight - 40 - cell(last, 3).getBoundingClientRect().bottom}px`;
     await focusCell(last, 3);
     await press('Enter');
     frame = editorFrame()!;

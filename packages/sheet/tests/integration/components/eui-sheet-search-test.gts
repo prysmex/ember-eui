@@ -213,6 +213,10 @@ module('Integration | Component | EuiSheetSearch', function (hooks) {
       'saved'
     );
     assert.dom('[data-test-subj=euiSheetSearchReapply]').hasText('Re-apply');
+    // V03 batch 2: a small primary button, not a subdued link
+    assert
+      .dom('[data-test-subj=euiSheetSearchReapply]')
+      .hasClass('euiButton', 'a button with a background');
 
     await focusCell(0, 0); // Enter moved down: back on the edited record
     await click(reapplyButton()!);

@@ -12,7 +12,7 @@ import { on } from '@ember/modifier';
 import { associateDestroyableChild, destroy } from '@ember/destroyable';
 import { service } from '@ember/service';
 
-import EuiButtonEmpty from '@ember-eui/core/components/eui-button-empty';
+import EuiButton from '@ember-eui/core/components/eui-button';
 import EuiTablePagination from '@ember-eui/core/components/eui-table-pagination';
 
 import EuiSheet from '../components/eui-sheet.gts';
@@ -47,6 +47,11 @@ type ForwardedArgs<Doc> = Pick<
   | 'frozenFields'
   | 'fieldDrag'
   | 'headerLines'
+  | 'onFieldCreate'
+  | 'onFieldUpdate'
+  | 'onFieldDelete'
+  | 'fieldEditor'
+  | 'creatableFieldTypes'
   | 'summary'
   | 'onFilterByField'
   | 'readOnly'
@@ -214,6 +219,11 @@ export default class EuiSheetSearch<Doc extends object> extends Component<
       @frozenFields={{@frozenFields}}
       @fieldDrag={{@fieldDrag}}
       @headerLines={{@headerLines}}
+      @onFieldCreate={{@onFieldCreate}}
+      @onFieldUpdate={{@onFieldUpdate}}
+      @onFieldDelete={{@onFieldDelete}}
+      @fieldEditor={{@fieldEditor}}
+      @creatableFieldTypes={{@creatableFieldTypes}}
       @summary={{@summary}}
       @onFilterByField={{@onFilterByField}}
       @readOnly={{@readOnly}}
@@ -246,12 +256,14 @@ export default class EuiSheetSearch<Doc extends object> extends Component<
             data-test-subj="euiSheetSearchToolbar"
           >
             {{#if this.search.isStale}}
-              <EuiButtonEmpty
+              {{! a small primary button: stale results must be noticed (V03 batch 2) }}
+              <EuiButton
                 @iconType="refresh"
                 @size="s"
+                @color="primary"
                 data-test-subj="euiSheetSearchReapply"
                 {{on "click" this.reapply}}
-              >{{this.reapplyLabel}}</EuiButtonEmpty>
+              >{{this.reapplyLabel}}</EuiButton>
             {{/if}}
             {{yield (this.withSearch sheet) to="toolbar"}}
           </div>

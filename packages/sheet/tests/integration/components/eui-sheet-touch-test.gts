@@ -95,7 +95,9 @@ module('Integration | Component | EuiSheet touch', function (hooks) {
       link.dispatchEvent(event);
       await settled();
       assert.true(event.defaultPrevented);
-      assert.dom('[data-test-subj=euiSheetRowMenu]').exists({ count: 1 });
+      assert
+        .dom('[data-test-subj=euiSheetRowMenu]', document.body)
+        .exists({ count: 1 });
       link.dispatchEvent(touch('pointerup', link));
       // the compatibility mouse events and the click the browser may send
       await click(link);

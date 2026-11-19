@@ -40,6 +40,14 @@ import SelectEditor from './-private/editors/select-editor.gts';
 import TextareaEditor, {
   isLineBreakKey
 } from './-private/editors/textarea-editor.gts';
+import SelectOptions from './-private/field-options/select-options.gts';
+import {
+  CurrencyOptions,
+  DateOptions,
+  DurationOptions,
+  PercentOptions,
+  RatingOptions
+} from './-private/field-options/simple-options.gts';
 
 import type {
   AttachmentField,
@@ -94,7 +102,8 @@ export const singleSelectType: EuiSheetFieldType<
   opener: 'arrowDown',
   // any printable key but Space (which never opens an editor) filters the list
   opensOnKey: (key) => key !== ' ',
-  handlesKey: (event) => listKeys(event)
+  handlesKey: (event) => listKeys(event),
+  fieldOptions: SelectOptions
 };
 
 /** Typing a digit opens the text input; Enter, F2 or a double-click the native date input. */
@@ -103,7 +112,8 @@ export const dateType: EuiSheetFieldType<string | null, DateField> = {
   editor: DateEditor,
   schema: 'datetime',
   opener: 'calendar',
-  opensOnKey: (key) => /^\d$/.test(key)
+  opensOnKey: (key) => /^\d$/.test(key),
+  fieldOptions: DateOptions
 };
 
 /** The keys a list picker (select, multi-select, records) handles itself while open. */
@@ -124,7 +134,8 @@ export const multiSelectType: EuiSheetFieldType<
   editorLayout: 'panel',
   opener: 'arrowDown',
   opensOnKey: (key) => key !== ' ',
-  handlesKey: listKeys
+  handlesKey: listKeys,
+  fieldOptions: SelectOptions
 };
 
 /** Chips; the picker searches `field.search`. Typed or pasted text goes to `@onResolve`. */
@@ -173,26 +184,30 @@ export const attachmentType: EuiSheetFieldType<
 export const currencyType: EuiSheetFieldType<number | null, CurrencyField> = {
   ...currencyFieldType,
   editor: InputEditor,
-  schema: 'currency'
+  schema: 'currency',
+  fieldOptions: CurrencyOptions
 };
 
 export const percentType: EuiSheetFieldType<number | null, PercentField> = {
   ...percentFieldType,
   editor: InputEditor,
-  schema: 'numeric'
+  schema: 'numeric',
+  fieldOptions: PercentOptions
 };
 
 export const durationType: EuiSheetFieldType<number | null, DurationField> = {
   ...durationFieldType,
   editor: InputEditor,
-  schema: 'numeric'
+  schema: 'numeric',
+  fieldOptions: DurationOptions
 };
 
 /** Stars, no editor: a click on a star or a digit key sets it. */
 export const ratingType: EuiSheetFieldType<number | null, RatingField> = {
   ...ratingFieldType,
   cell: RatingCell,
-  schema: 'numeric'
+  schema: 'numeric',
+  fieldOptions: RatingOptions
 };
 
 /** Link-styled text; a click on it opens the link in a new tab. */

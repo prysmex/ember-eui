@@ -22,13 +22,21 @@ cell shows the text in grey while it is pending, then the zone. A name
 that is no zone (`Garden`) is marked "could not be resolved". Without
 `@onResolve` such a paste is rejected.
 
+The type also has a place in the field editor: `label: 'Plant zone'`
+names it in the type select, and `fieldOptions` is its own part of the
+editor (a switch, "Any site": the picker then lists the zones of both
+plants). Open Zone's column menu and pick "Edit field", or add a field
+with the "+" header and choose "Plant zone": `@creatableFieldTypes` lists
+it. The store is `localRecords`, given `types` so it can convert values
+when a field changes type.
+
 </EuiText>
 
 ```gjs component
 import Component from '@glimmer/component';
 import { tracked } from '@glimmer/tracking';
 import { on } from '@ember/modifier';
-import { EuiPanel, EuiSelectable } from '@ember-eui/core/components';
+import { EuiPanel, EuiSelectable, EuiSwitch } from '@ember-eui/core/components';
 import { EuiSheet, localRecords } from '@ember-eui/sheet';
 
 const ZONES = {
@@ -36,17 +44,20 @@ const ZONES = {
   south: ['Boiler room', 'Paint line', 'Assembly', 'Cafeteria', 'Parking'],
 };
 
-/** A fake API: the site's zones matching `query`, after 400 ms. */
-function searchZones(site, query) {
+/** A fake API: the site's zones (every site's with `anySite`) matching `query`, after 400 ms. */
+function searchZones(site, query, anySite = false) {
   return new Promise((resolve, reject) => {
     setTimeout(() => {
       if (query.trim().toLowerCase() === 'fail') {
         reject(new Error('Server error'));
         return;
       }
-      const zones = (ZONES[site] ?? [])
-        .filter((name) => name.toLowerCase().includes(query.trim().toLowerCase()))
-        .map((name) => ({ id: `${site}-${name}`, label: name }));
+      const sites = anySite ? Object.keys(ZONES) : [site];
+      const zones = sites.flatMap((s) =>
+        (ZONES[s] ?? [])
+          .filter((name) => name.toLowerCase().includes(query.trim().toLowerCase()))
+          .map((name) => ({ id: `${s}-${name}`, label: name })),
+      );
       resolve(zones);
     }, 400);
   });
@@ -76,7 +87,7 @@ class ZoneEditor extends Component {
     this.isLoading = true;
     this.error = null;
     try {
-      const zones = await searchZones(this.args.record?.site, query);
+      const zones = await searchZones(this.args.record?.site, query, this.args.field.anySite);
       if (request !== this.request || this.isDestroying) return; // a newer search is running
       this.options = zones.map((zone) => ({
         label: zone.label,
@@ -152,7 +163,23 @@ function resolveZones(names) {
   });
 }
 
+/** The zone type's part of the field editor: `onChange` merges keys into the draft. */
+class ZoneOptions extends Component {
+  get anySite() {
+    return this.args.draft.anySite === true;
+  }
+
+  toggle = () => this.args.onChange({ anySite: !this.anySite });
+
+  <template>
+    <EuiSwitch @compressed={{true}} @label='Any site' @checked={{this.anySite}} @onChange={{this.toggle}} />
+  </template>
+}
+
 const zoneType = {
+  // its name in the field editor's type select, and its options there
+  label: 'Plant zone',
+  fieldOptions: ZoneOptions,
   parse: (text) => (text.trim() === '' ? { value: null } : { unresolved: text.trim() }),
   format: (value) => value?.label ?? '',
   isEmpty: (value) => value == null,
@@ -221,8 +248,10 @@ const RECORDS = [
 
 export default class SheetCustomCells extends Component {
   fieldTypes = { zone: zoneType };
+  creatableTypes = ['text', 'number', 'singleSelect', 'checkbox', 'zone'];
   getId = (record) => record.id;
-  store = localRecords(RECORDS, { getRecordId: this.getId, fields: FIELDS });
+  // `types`: the store converts values with them when a field changes type
+  store = localRecords(RECORDS, { getRecordId: this.getId, fields: FIELDS, types: this.fieldTypes });
 
   // bulk resolve: one call per paste, the distinct names per field
   onResolve = async (requests) => {
@@ -239,6 +268,9 @@ export default class SheetCustomCells extends Component {
       @onChange={{this.store.apply}}
       @fieldTypes={{this.fieldTypes}}
       @onResolve={{this.onResolve}}
+      @onFieldCreate={{this.store.createField}}
+      @onFieldUpdate={{this.store.updateField}}
+      @creatableFieldTypes={{this.creatableTypes}}
       @height={{220}}
       @ariaLabel='Workers'
     />

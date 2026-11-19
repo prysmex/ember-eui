@@ -8,6 +8,7 @@ import type {
   RecordInsert,
   ResolveRequest,
   ResolveResult,
+  SheetFieldDraft,
   SheetMessages,
   ValidateContext
 } from './core/index.ts';
@@ -52,6 +53,58 @@ export interface EuiSheetFieldType<
    * header's alignment. Default: none.
    */
   schema?: string;
+  /** The type's name in the field editor's type select (V03 6.4). Default: `messages.fieldType_<name>`, else the name. */
+  label?: string;
+  /**
+   * The type's own part of the field editor: its options (a select's
+   * options, a currency's code). It gets the draft and patches it.
+   */
+  fieldOptions?: ComponentLike<SheetFieldOptionsSignature>;
+}
+
+/** What a type's `fieldOptions` component gets (V03 6.4). */
+export interface SheetFieldOptionsSignature {
+  Args: {
+    draft: SheetFieldDraft;
+    /** The field being edited; absent on create. A part that is a function there (`options(record)`) is not editable: hide it. */
+    field?: EuiSheetField;
+    /** Merges these keys into the draft. */
+    onChange: (patch: Record<string, unknown>) => void;
+    messages: SheetMessages;
+  };
+}
+
+/** One type the field editor offers. */
+export interface SheetFieldEditorType {
+  name: string;
+  label: string;
+  /** The type's `fieldOptions`, for an app editor that wants to show it. */
+  fieldOptions?: ComponentLike<SheetFieldOptionsSignature>;
+}
+
+/**
+ * What `@fieldEditor` gets (V03 6.4): it replaces the field editor's
+ * content; the sheet keeps the frame, its position, focus return and the
+ * saving state.
+ */
+export interface SheetFieldEditorSignature<T = any> {
+  Args: {
+    mode: 'create' | 'edit';
+    /** The field being edited; absent on create. */
+    field?: EuiSheetField<T>;
+    /** The starting values. */
+    draft: SheetFieldDraft;
+    /** The types it may offer, in order (`@creatableFieldTypes`; on edit also the field's own). */
+    types: SheetFieldEditorType[];
+    /** The handler's promise is pending. */
+    isSaving: boolean;
+    /** The message of the handler's rejected promise. */
+    error?: string;
+    onSave: (draft: SheetFieldDraft) => void;
+    onCancel: () => void;
+    messages: SheetMessages;
+    themeClass?: string;
+  };
 }
 
 export interface SheetCellSignature<
@@ -161,6 +214,10 @@ export interface SheetApi {
   deleteRecords(ids: RecordId[]): void;
   /** Opens the shortcut list (as Ctrl/Cmd+/ on the grid). */
   showShortcuts(): void;
+  /** Opens the field editor on a field (also a hidden one). Needs `@onFieldUpdate`. */
+  editField(fieldId: string): void;
+  /** Opens the field editor to create a field at `index` among the visible fields (default: the end). Needs `@onFieldCreate`. */
+  addField(options?: { index?: number }): void;
 }
 
 /** An app item of the row menu (`@rowActions`). */
@@ -205,6 +262,8 @@ export interface SheetBlockApi<T = any> {
   setSort(sort: SheetSort[]): void;
   /** Opens the shortcut list: for a toolbar button. */
   showShortcuts(): void;
+  /** Opens the field editor to add a field at the end (with `@onFieldCreate`; nothing without it). */
+  addField(): void;
 }
 
 /** The cell's box relative to the sheet's wrapper, in CSS px. */
@@ -245,7 +304,7 @@ export interface EuiSheetSignature<T> {
     validate?: (
       context: ValidateContext<T>
     ) => CellErrors | Promise<CellErrors>;
-    /** Receives the sheet's API (`undo`, `redo`, `focusCell`, `remapIds`, `clearHistory`, `expandRecord`, `insertRecord`, `deleteRecords`, `showShortcuts`) once, after the first render. */
+    /** Receives the sheet's API (`undo`, `redo`, `focusCell`, `remapIds`, `clearHistory`, `expandRecord`, `insertRecord`, `deleteRecords`, `showShortcuts`, `editField`, `addField`) once, after the first render. */
     registerApi?: (api: SheetApi) => void;
     /**
      * Fields that exist but are not shown in the grid: listed in the
@@ -267,6 +326,30 @@ export interface EuiSheetSignature<T> {
     fieldDrag?: boolean;
     /** Lines a header label may wrap to. Default 1. */
     headerLines?: 1 | 2 | 3;
+    /**
+     * Add a field (V03 6.2): the "+" column, the header menu's "Insert
+     * left/right" and "Duplicate field". `position.index` is among the
+     * visible fields; `after` is the visible field before it; `copyOf` is
+     * set by a duplicate. Build the field (`{ id, ...draft }`) and pass the
+     * new `@fields`. A returned promise keeps the editor open, busy; a
+     * rejection shows its message there.
+     */
+    onFieldCreate?: (
+      draft: SheetFieldDraft,
+      position: { index: number; after?: string; copyOf?: string }
+    ) => void | Promise<void>;
+    /** "Edit field" in the header menu: `{ ...previous, ...draft }`. The sheet changes no value on a type change (`convertField`). */
+    onFieldUpdate?: (
+      fieldId: string,
+      draft: SheetFieldDraft,
+      context: { previous: EuiSheetField<T> }
+    ) => void | Promise<void>;
+    /** "Delete field" in the header menu, after a confirmation. Not undoable from the sheet. */
+    onFieldDelete?: (fieldId: string) => void | Promise<void>;
+    /** Replaces the field editor's content (the sheet keeps its frame). */
+    fieldEditor?: ComponentLike<SheetFieldEditorSignature<T>>;
+    /** The types the field editor offers, in order. Default: text, longText, number, currency, percent, checkbox, singleSelect, multiSelect, date, duration, rating, url, email, phone. */
+    creatableFieldTypes?: string[];
     /** Column widths in px by field id; wins over `field.width`. */
     fieldWidths?: Record<string, number>;
     /** Called after a column is resized. Without it the sheet keeps the width itself. */

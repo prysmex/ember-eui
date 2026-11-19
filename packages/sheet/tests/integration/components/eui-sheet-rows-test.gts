@@ -627,7 +627,7 @@ module('Integration | Component | EuiSheet records', function (hooks) {
       'Delete 2 records'
     ]);
     assert
-      .dom('[data-test-subj=euiSheetRowMenu-never]')
+      .dom('[data-test-subj=euiSheetRowMenu-never]', document.body)
       .isDisabled('isDisabled disables the item');
     await pick('archive');
     assert.deepEqual(got, [['r1', 'r2']]);

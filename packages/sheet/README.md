@@ -8,7 +8,9 @@ own store. It edits with the keyboard, selects ranges, copies and pastes
 blocks as TSV (to and from spreadsheets), and shows cell errors. It has
 built-in field types for text, numbers, checkboxes, selects, dates,
 linked records, users, attachments, currency, percent, duration, rating,
-links and long text, and you can add your own cells and editors.
+links and long text, and you can add your own cells and editors. Fields
+can be added, edited, duplicated and deleted from the grid (the "+" column
+and the column menu), through your handlers.
 
 ## Install
 
@@ -314,6 +316,8 @@ row menu emit).
 | `insertRecord({ anchor?, values? })` | Emits the insert of one record, next to `anchor` or at the end.                                                       |
 | `deleteRecords(ids)`                 | Emits the delete of those records.                                                                                    |
 | `showShortcuts()`                    | Opens the shortcut list (as Ctrl/Cmd+/).                                                                              |
+| `addField({ index? })`               | Opens the field editor to add a field (with `@onFieldCreate`).                                                        |
+| `editField(fieldId)`                 | Opens the field editor on a field, also a hidden one (with `@onFieldUpdate`).                                         |
 
 When you replace `@records` with records the sheet did not change (a new
 sort, another page, a reload), the selection collapses to the focused
@@ -334,7 +338,10 @@ come from the EUI theme, so the sheet follows light and dark: put it in an
 `--euiSheet-highlight`) set by a class on the sheet's
 wrapper. To change one, set it on the sheet itself (`<EuiSheet
 style="--euiSheet-selected: #E6F0FF" …>`) or with a more specific
-selector: set on a parent element it loses to the sheet's class. Editors
+selector: set on a parent element it loses to the sheet's class. The row
+menu, the field editor and the panel editors render at the end of
+`<body>` (a card with `overflow: hidden` around the sheet does not cut
+them off) and get the class and those overrides too. Editors
 get that class as
 `@themeClass`: an editor that renders part of itself elsewhere (a
 wormholed list) adds it there, or that part falls back to light colours.
@@ -351,6 +358,39 @@ there adds its lines); Shift+Enter adds one below the cell. Right-click,
 Shift+F10 or the ContextMenu key open the row menu: insert above/below,
 duplicate, expand, copy the rows, your `@rowActions`, delete. Each is one
 change set and one undo step. Delete and Backspace never delete rows.
+
+## Fields
+
+The owner owns `@fields`; adding, editing, duplicating and deleting one
+are intents, and each handler shows its controls (none without it):
+`@onFieldCreate` the "+" column and the column menu's Insert left/right
+and Duplicate field, `@onFieldUpdate` Edit field, `@onFieldDelete` Delete
+field (after a confirmation). The field editor has the name, the type
+(`@creatableFieldTypes`), the type's options, a description and Required;
+`@fieldEditor` replaces its content. A handler may return a promise: the
+editor stays open and busy, and shows the rejection's message. A bare app
+passes `localRecords`' handlers:
+
+```hbs
+<EuiSheet
+  @fields={{this.store.fields}}
+  @records={{this.store.records}}
+  @getRecordId={{this.getId}}
+  @onChange={{this.store.apply}}
+  @onFieldCreate={{this.store.createField}}
+  @onFieldUpdate={{this.store.updateField}}
+  @onFieldDelete={{this.store.deleteField}}
+/>
+```
+
+The draft is plain data (`{ label, type, description?, required?, ...type
+options }`); build the field from it and pass the new `@fields`. The sheet
+changes no value on a type change: `convertField(ctx, records, previous,
+next)` returns the change set that converts them through the paste path,
+with what could not convert in `rejected` (`localRecords.updateField`
+applies it). Field changes are not on the sheet's undo stack; a deleted or
+retyped field's edits are dropped from it. A type names itself in the
+editor with `label` and adds its options form with `fieldOptions`.
 
 ## Expanded record
 

@@ -19,6 +19,7 @@ import { buildWaiter } from '@ember/test-waiters';
 import { modifier } from 'ember-modifier';
 
 import EuiDataGrid from '@ember-eui/core/components/eui-data-grid';
+import EuiIcon from '@ember-eui/core/components/eui-icon';
 import EuiIconTip from '@ember-eui/core/components/eui-icon-tip';
 import EuiProgress from '@ember-eui/core/components/eui-progress';
 import {
@@ -58,11 +59,18 @@ import {
   toTsv,
   undoChangeSet,
   validateCell,
-  valueOf
+  valueOf,
+  withoutField
 } from '../core/index.ts';
 import { builtInSheetFieldTypes } from '../field-types.ts';
 import AutoScroll from '../-private/auto-scroll.ts';
+import FieldEditor, {
+  draftOf,
+  FIELD_EDITOR_SELECTOR,
+  FIELD_EDITOR_WIDTH
+} from '../-private/field-editor.gts';
 import FillHandle from '../-private/fill-handle.gts';
+import { LAYER_SELECTOR } from '../-private/layer.gts';
 import ImeCatcher from '../-private/ime-catcher.gts';
 import EditorFrame, {
   EDITOR_SURFACE_SELECTOR
@@ -106,16 +114,19 @@ import type {
   SheetAttachment,
   SheetContext,
   RecordInsert,
+  SheetFieldDraft,
   SheetMessages
 } from '../core/index.ts';
 import type { Rejection } from '../-private/rejections.ts';
 import type { ScrollBounds } from '../-private/auto-scroll.ts';
 import type { RowMenuItem } from '../-private/row-menu.gts';
+import type { LayerAnchor } from '../-private/layer.gts';
 import type { ShortcutContext } from '../-private/shortcuts.ts';
 import type {
   EuiSheetFieldType,
   EuiSheetSignature,
   SheetApi,
+  SheetFieldEditorType,
   SheetBlockApi,
   SheetEditorRect,
   SheetEditorResult,
@@ -191,6 +202,49 @@ interface HistoryEntry {
   rejections: Rejection[];
 }
 
+/** A box relative to the sheet's wrapper, in the wrapper's CSS px. */
+export interface WrapperBox {
+  top: number;
+  left: number;
+  width: number;
+  height: number;
+}
+
+/**
+ * The open field editor (V03 6.4): what it edits, where it is, and the
+ * handler's promise state.
+ */
+export class FieldEditorState {
+  mode: 'create' | 'edit' | 'delete';
+  /** The field edited or deleted. */
+  fieldId?: string;
+  /** Where a created field goes. */
+  position?: { index: number; after?: string };
+  draft: SheetFieldDraft;
+  /** Its anchor, relative to the wrapper: the header (or the header row's right end). */
+  anchor: WrapperBox;
+  /** The header focused when it closes: by column id, else by grid column index. */
+  returnTo: { columnId: string; index: number };
+  @tracked isSaving = false;
+  @tracked error: string | undefined = undefined;
+
+  constructor(init: {
+    mode: FieldEditorState['mode'];
+    fieldId?: string;
+    position?: FieldEditorState['position'];
+    draft: SheetFieldDraft;
+    anchor: WrapperBox;
+    returnTo: FieldEditorState['returnTo'];
+  }) {
+    this.mode = init.mode;
+    this.fieldId = init.fieldId;
+    this.position = init.position;
+    this.draft = init.draft;
+    this.anchor = init.anchor;
+    this.returnTo = init.returnTo;
+  }
+}
+
 /**
  * The open editor. One object per edit (the editor is keyed by it), so
  * when the owner moves the record (V02-DESIGN.md 3.2) its position and box
@@ -203,7 +257,6 @@ class Editing {
   type: EuiSheetFieldType;
   @tracked rect: SheetEditorRect;
   layout: 'cell' | 'panel' | 'expand';
-  @tracked placement: 'below' | 'above';
   initialKey: string | null;
   draft: string;
   /** The editor's `@onUpload` (attachment fields with `upload`). */
@@ -216,7 +269,6 @@ class Editing {
     type: EuiSheetFieldType;
     rect: SheetEditorRect;
     layout: 'cell' | 'panel' | 'expand';
-    placement: 'below' | 'above';
     initialKey: string | null;
     draft: string;
   }) {
@@ -226,7 +278,6 @@ class Editing {
     this.type = init.type;
     this.rect = init.rect;
     this.layout = init.layout;
-    this.placement = init.placement;
     this.initialKey = init.initialKey;
     this.draft = init.draft;
   }
@@ -299,9 +350,6 @@ function coarsePointer(): boolean {
   );
 }
 
-/** A panel editor opens above the cell when less than this is free below it. */
-const PANEL_SPACE = 280;
-
 /** Room the focused cell's error box needs below the cell before it flips above. */
 const CELL_ERROR_SPACE = 48;
 /** The error box's widest size. */
@@ -320,6 +368,37 @@ interface FocusedCell {
 const ROW_COLUMN_ID = 'euiSheetRow';
 /** Its width without `@rowLabel`. */
 const ROW_COLUMN_WIDTH = 64;
+
+/** Id of the "+" add-field column: a trailing control column (V03 6.3, W8). */
+const ADD_FIELD_COLUMN_ID = 'euiSheet-addField';
+const ADD_FIELD_WIDTH = 40;
+
+/** The types the field editor offers without `@creatableFieldTypes`: the built-ins a draft can fully describe (V03 6.4). */
+const CREATABLE_FIELD_TYPES = [
+  'text',
+  'longText',
+  'number',
+  'currency',
+  'percent',
+  'checkbox',
+  'singleSelect',
+  'multiSelect',
+  'date',
+  'duration',
+  'rating',
+  'url',
+  'email',
+  'phone'
+];
+
+/** The message of a rejected field handler: `error.message`, else the value as text. */
+function errorMessage(error: unknown): string {
+  if (error instanceof Error) return error.message;
+  return typeof error === 'string' ? error : String(error);
+}
+
+/** A field's type name. */
+const typeName = (field: EuiSheetField): string => field.type ?? 'text';
 
 /**
  * The frozen field (V02-DESIGN.md 9): above this many visible fields the
@@ -371,8 +450,8 @@ interface MenuState {
   row: number;
   /** The data column it was opened on; null on a row number. */
   col: number | null;
-  top: number;
-  left: number;
+  /** Its anchor, relative to the wrapper: the pointer (no size) or the cell. */
+  anchor: WrapperBox;
   /** The records it acts on, fixed when it opened. */
   records: unknown[];
 }
@@ -621,6 +700,12 @@ export default class EuiSheet<T extends object> extends Component<
   @tracked menu: MenuState | null = null;
   /** The shortcut list is open (V03 5.5). */
   @tracked shortcutsOpen = false;
+  /** The open field editor (V03 6.4). */
+  @tracked fieldEditorState: FieldEditorState | null = null;
+  /** Every field id of the last render (`@fields` and `@hiddenFields`) and its type: what `watchFields` compares with. */
+  lastFieldTypes: Map<string, string> | null = null;
+  /** A created field without `@onFieldOrderChange` goes into the sheet's own order after this field (V03 6.8). */
+  createdAfter: { after: string | undefined } | null = null;
   /** The range of the last copy or cut, marked dashed until Escape, a change or another copy (V03 batch 1). */
   @tracked copied: Range | null = null;
   /** Cells a paste, fill, undo or redo just changed: a fading tint (V03 batch 1). */
@@ -630,6 +715,8 @@ export default class EuiSheet<T extends object> extends Component<
   @tracked pendingCells: ReadonlyMap<string, PendingEntry> = new Map();
   /** The attachment cell files are dragged over. */
   @tracked dropPos: Pos | null = null;
+  /** A key would have edited this read-only cell: "Read only" in its message box until focus moves (V03 batch 2). */
+  @tracked readOnlyCue: Pos | null = null;
   /** The `@onResolve` calls and uploads in flight, by token. */
   pendingCalls = new Map<object, PendingCall>();
   /**
@@ -733,7 +820,9 @@ export default class EuiSheet<T extends object> extends Component<
     },
     insertRecord: (options = {}) => this.insertFromApi(options),
     deleteRecords: (ids) => this.deleteRecordIds(ids, false),
-    showShortcuts: () => this.showShortcuts()
+    showShortcuts: () => this.showShortcuts(),
+    editField: (fieldId) => this.editField(fieldId),
+    addField: (options = {}) => this.addField(options.index)
   };
 
   /* `@validate` runs */
@@ -1084,7 +1173,8 @@ export default class EuiSheet<T extends object> extends Component<
     const sortable = !!this.args.onSortChange;
     const filter = this.args.onFilterByField;
     const filterLabel = this.messages.filterByField();
-    return this.visibleFields.map((field, index) => {
+    const fields = this.visibleFields;
+    return fields.map((field, index) => {
       const type = this.typeOf(field);
       const canSort = sortable && field.sortable !== false;
       const actions: EuiDataGridColumnActions = {
@@ -1095,17 +1185,19 @@ export default class EuiSheet<T extends object> extends Component<
         showSortAsc: canSort,
         showSortDesc: canSort
       };
+      const additional: NonNullable<EuiDataGridColumnActions['additional']> =
+        [];
       if (filter) {
-        actions.additional = [
-          {
-            label: filterLabel,
-            iconType: 'filter',
-            color: 'text',
-            onClick: () => this.args.onFilterByField?.(field.id),
-            'data-test-subj': `euiSheetFilterByField-${field.id}`
-          }
-        ];
+        additional.push({
+          label: filterLabel,
+          iconType: 'filter',
+          color: 'text',
+          onClick: () => this.args.onFilterByField?.(field.id),
+          'data-test-subj': `euiSheetFilterByField-${field.id}`
+        });
       }
+      additional.push(...this.fieldMenuItems(field, index, fields));
+      if (additional.length) actions.additional = additional;
       const given = this.givenWidth(field) ?? this.keptWidth(field);
       const width = index < frozen ? (given ?? FROZEN_DEFAULT_WIDTH) : given;
       const column: EuiDataGridColumn = {
@@ -1126,6 +1218,63 @@ export default class EuiSheet<T extends object> extends Component<
       }
       return column;
     });
+  }
+
+  /**
+   * The header menu's field items (V03 6.3): Edit, Duplicate, Insert
+   * left, Insert right, Delete last, each only with its handler. Not on a
+   * field with `manageable: false` (Edit, Duplicate, Delete); the first
+   * field cannot be deleted and nothing goes to its left.
+   */
+  fieldMenuItems(
+    field: EuiSheetField<T>,
+    index: number,
+    fields: readonly EuiSheetField<T>[]
+  ): NonNullable<EuiDataGridColumnActions['additional']> {
+    const { onFieldCreate, onFieldUpdate, onFieldDelete } = this.args;
+    const manageable = field.manageable !== false;
+    const messages = this.messages;
+    const items: NonNullable<EuiDataGridColumnActions['additional']> = [];
+    const item = (
+      id: string,
+      label: string,
+      iconType: string,
+      onClick: () => void
+    ) =>
+      items.push({
+        label,
+        iconType,
+        color: 'text',
+        // after the popover has closed and returned focus to its button
+        onClick: () => next(onClick),
+        'data-test-subj': `euiSheet${id}-${field.id}`
+      });
+    if (onFieldUpdate && manageable) {
+      item('EditField', messages.editField(), 'pencil', () =>
+        this.editField(field.id)
+      );
+    }
+    if (onFieldCreate && manageable) {
+      item('DuplicateField', messages.duplicateField(), 'copy', () =>
+        this.duplicateField(field.id)
+      );
+    }
+    if (onFieldCreate) {
+      if (index > 0) {
+        item('InsertFieldLeft', messages.insertFieldLeft(), 'arrowLeft', () =>
+          this.addField(index, field.id, fields[index - 1]!.id)
+        );
+      }
+      item('InsertFieldRight', messages.insertFieldRight(), 'arrowRight', () =>
+        this.addField(index + 1, field.id, field.id)
+      );
+    }
+    if (onFieldDelete && manageable && index > 0) {
+      item('DeleteField', messages.deleteField(), 'trash', () =>
+        this.askDeleteField(field.id)
+      );
+    }
+    return items;
   }
 
   /* The frozen field (V02-DESIGN.md 6.7, 9.2) */
@@ -1209,7 +1358,10 @@ export default class EuiSheet<T extends object> extends Component<
   get virtualizationOptions(): EuiDataGridVirtualizationOptions | undefined {
     if (!this.frozenCount) return undefined;
     return {
-      overscanColumnCount: this.visibleFields.length + this.colOffset
+      overscanColumnCount:
+        this.visibleFields.length +
+        this.colOffset +
+        (this.hasAddFieldColumn ? 1 : 0)
     };
   }
 
@@ -1357,7 +1509,8 @@ export default class EuiSheet<T extends object> extends Component<
       showField: this.showField,
       setRowHeight: this.setRowHeight,
       setSort: this.setSort,
-      showShortcuts: this.showShortcuts
+      showShortcuts: this.showShortcuts,
+      addField: () => this.addField()
     };
   }
 
@@ -1480,6 +1633,27 @@ export default class EuiSheet<T extends object> extends Component<
     }
     return [column];
   }
+
+  /** The "+" add-field column (V03 6.3, W8): only with `@onFieldCreate`. */
+  get hasAddFieldColumn(): boolean {
+    return !!this.args.onFieldCreate;
+  }
+
+  @cached
+  get trailingControlColumns(): EuiDataGridControlColumn[] | undefined {
+    if (!this.hasAddFieldColumn) return undefined;
+    return [
+      {
+        id: ADD_FIELD_COLUMN_ID,
+        width: ADD_FIELD_WIDTH,
+        headerCellProps: { className: 'euiSheet__addFieldHeader' }
+      }
+    ];
+  }
+
+  /** For the control blocks: whether a control cell is the "+" column's. */
+  isAddFieldColumn = (columnId: string | undefined): boolean =>
+    columnId === ADD_FIELD_COLUMN_ID;
 
   /** The add row's class. */
   @cached
@@ -1816,10 +1990,27 @@ export default class EuiSheet<T extends object> extends Component<
 
   setupWrapper = modifier((element: HTMLElement) => {
     this.wrapper = element;
+    document.addEventListener('mousedown', this.onPagePress, true);
+    document.addEventListener('pointerdown', this.onPagePress, true);
     return () => {
+      document.removeEventListener('mousedown', this.onPagePress, true);
+      document.removeEventListener('pointerdown', this.onPagePress, true);
       this.wrapper = null;
     };
   });
+
+  /**
+   * A press anywhere on the page, until the end of its task: a focus that
+   * goes nowhere during it is the press's (a click on the page), not the
+   * grid moving the focused cell (`onFocusOut`).
+   */
+  pagePressed = false;
+
+  onPagePress = (): void => {
+    if (this.pagePressed) return;
+    this.pagePressed = true;
+    next(() => (this.pagePressed = false));
+  };
 
   /**
    * Whenever `@records` is a new array: schedules a `@validate` run and,
@@ -2005,13 +2196,45 @@ export default class EuiSheet<T extends object> extends Component<
     return cell;
   }
 
-  /** The data column header an event belongs to, or null (not the control column's). */
+  /** The data column header an event belongs to, or null (not a control column's). */
   headerCell(target: EventTarget | null): HTMLElement | null {
     if (!(target instanceof Element)) return null;
     const header = target.closest<HTMLElement>('[role=columnheader]');
     if (!header || !this.wrapper?.contains(header)) return null;
-    if (header.dataset['gridcellColumnId'] === ROW_COLUMN_ID) return null;
+    const id = header.dataset['gridcellColumnId'];
+    if (id === ROW_COLUMN_ID || id === ADD_FIELD_COLUMN_ID) return null;
     return header;
+  }
+
+  /** The "+" column's header an event belongs to, or null (V03 6.3). */
+  addFieldHeader(target: EventTarget | null): HTMLElement | null {
+    if (!this.hasAddFieldColumn || !(target instanceof Element)) return null;
+    const header = target.closest<HTMLElement>(
+      `[role=columnheader][data-gridcell-column-id="${ADD_FIELD_COLUMN_ID}"]`
+    );
+    return header && this.wrapper?.contains(header) ? header : null;
+  }
+
+  /** A body (or footer) cell of the "+" column an event belongs to, or null. */
+  addFieldCell(target: EventTarget | null): HTMLElement | null {
+    if (!this.hasAddFieldColumn || !(target instanceof Element)) return null;
+    const cell = target.closest<HTMLElement>(
+      `[role=gridcell][data-gridcell-column-id="${ADD_FIELD_COLUMN_ID}"]`
+    );
+    return cell && this.wrapper?.contains(cell) ? cell : null;
+  }
+
+  /** The rendered header cell of a column, by id. */
+  headerElement(columnId: string): HTMLElement | null {
+    return (
+      this.wrapper?.querySelector<HTMLElement>(
+        `[role=columnheader][data-gridcell-column-id="${CSS.escape(columnId)}"]`
+      ) ?? null
+    );
+  }
+
+  isInFieldEditor(target: EventTarget | null): boolean {
+    return target instanceof Element && !!target.closest(FIELD_EDITOR_SELECTOR);
   }
 
   /** The row of a grid cell (data or control), read from its markup. */
@@ -2048,6 +2271,34 @@ export default class EuiSheet<T extends object> extends Component<
     const origin = wrapper.getBoundingClientRect();
     const scale = wrapper.offsetWidth ? origin.width / wrapper.offsetWidth : 1;
     return { top: (y - origin.top) / scale, left: (x - origin.left) / scale };
+  }
+
+  /** A box relative to the wrapper, in the viewport now (it follows a page scroll). */
+  toViewport(box: WrapperBox): LayerAnchor | null {
+    const wrapper = this.wrapper;
+    if (!wrapper) return null;
+    const origin = wrapper.getBoundingClientRect();
+    const scale = wrapper.offsetWidth ? origin.width / wrapper.offsetWidth : 1;
+    const top = origin.top + box.top * scale;
+    const left = origin.left + box.left * scale;
+    return {
+      top,
+      left,
+      bottom: top + box.height * scale,
+      right: left + box.width * scale
+    };
+  }
+
+  /** The row menu's anchor in the viewport (the layer reads it at every placement). */
+  menuAnchor = (): LayerAnchor | null =>
+    this.menu ? this.toViewport(this.menu.anchor) : null;
+
+  /** Whether `node` is in this sheet: its wrapper or one of its layers (portaled). */
+  ownsNode(node: Node): boolean {
+    if (this.wrapper?.contains(node)) return true;
+    const element = node instanceof Element ? node : node.parentElement;
+    const layer = element?.closest<HTMLElement>(LAYER_SELECTOR);
+    return !!layer && layer.dataset['euiSheetLayer'] === this.sheetId;
   }
 
   /* -------------------------------------------------------------------- */
@@ -2259,22 +2510,22 @@ export default class EuiSheet<T extends object> extends Component<
       this.keepRangeOnFocus = true;
       this.selectRows(row, false);
     }
-    this.openMenu(row, col, { top: rect.top + rect.height, left: rect.left });
+    this.openMenu(row, col, rect);
   }
 
-  openMenu(
-    row: number,
-    col: number | null,
-    at: { top: number; left: number }
-  ): void {
+  openMenu(row: number, col: number | null, anchor: WrapperBox): void {
     if (this.editing) this.commit({ refocus: false });
     const records = this.selectionRecords();
     const record = this.recordAt(row);
     this.menu = {
       row,
       col,
-      top: at.top,
-      left: at.left,
+      anchor: {
+        top: anchor.top,
+        left: anchor.left,
+        width: anchor.width,
+        height: anchor.height
+      },
       records: records.length ? records : record === undefined ? [] : [record]
     };
     document.addEventListener('mousedown', this.onDocumentMouseDown, true);
@@ -2642,6 +2893,17 @@ export default class EuiSheet<T extends object> extends Component<
   onFocusIn(event: FocusEvent): void {
     const keepRange = this.keepRangeOnFocus;
     this.keepRangeOnFocus = false;
+    // a "+" column body cell (a click there, ArrowDown from its header) is
+    // inert: focus goes to the row's last field (V03 6.12)
+    const addCell = this.addFieldCell(event.target);
+    if (addCell && !addCell.classList.contains('euiDataGridFooterCell')) {
+      const row = this.rowIndexOf(addCell);
+      const col = this.visibleFields.length - 1;
+      if (col >= 0 && row >= 0 && row < this.rowCount) {
+        this.moveFocus({ row, col }, false);
+      }
+      return;
+    }
     const rowCell = this.rowNumberCell(event.target);
     if (rowCell) {
       this.focused = null;
@@ -2660,6 +2922,9 @@ export default class EuiSheet<T extends object> extends Component<
     const pos = this.cursor(cell);
     this.rowCursor = null;
     this.gridHadFocus = true;
+    if (this.readOnlyCue && !samePos(this.readOnlyCue, pos)) {
+      this.readOnlyCue = null;
+    }
     this.trackFocusedCell(pos, cell);
     if (this.frozenCount) {
       if (pos.col < this.frozenCount)
@@ -2721,11 +2986,20 @@ export default class EuiSheet<T extends object> extends Component<
     // focus left the grid, or a render removed the focused cell (the
     // grid's virtualization): then it is parked (V03 batch 1)
     const target = event.target;
-    if (to instanceof Node && !this.wrapper?.contains(to)) {
+    if (to instanceof Node && !this.ownsNode(to)) {
       this.gridHadFocus = false;
     } else if (!to && target instanceof Node) {
+      // the grid re-inserting the focused cell's row (a scroll) blurs it
+      // too, and the cell is connected again by then: without a press, with
+      // focus on the body and the window focused, that is not focus leaving
+      // the grid (P7's race: whether a later scroll parked it first)
+      const pressed = this.pagePressed;
       next(() => {
-        if (target.isConnected) this.gridHadFocus = false;
+        const moved =
+          !pressed &&
+          document.activeElement === document.body &&
+          document.hasFocus();
+        if (target.isConnected && !moved) this.gridHadFocus = false;
         else this.parkFocus();
       });
     }
@@ -2756,13 +3030,18 @@ export default class EuiSheet<T extends object> extends Component<
     messages: string[];
     placement: 'below' | 'above';
     style: ReturnType<typeof htmlSafe>;
+    /** Not an error: the read-only cue (V03 batch 2). */
+    notice: boolean;
   } | null {
     const focused = this.focused;
     if (!focused || this.editing || this.menu || this.imeActive) return null;
     const field = this.visibleFields[focused.pos.col];
     if (!field) return null;
     const view = this.cellView(focused.pos.row, focused.pos.col, field.id);
-    if (!view || view.errors.length === 0) return null;
+    if (!view) return null;
+    const notice =
+      view.errors.length === 0 && samePos(this.readOnlyCue, focused.pos);
+    if (view.errors.length === 0 && !notice) return null;
     const { rect, wrapperWidth, viewportBelow } = focused;
     // the box may hang below the sheet; it flips only near the window's bottom
     const placement = viewportBelow < CELL_ERROR_SPACE ? 'above' : 'below';
@@ -2775,8 +3054,9 @@ export default class EuiSheet<T extends object> extends Component<
       Math.min(rect.left, wrapperWidth - CELL_ERROR_MAX_WIDTH)
     );
     return {
-      messages: view.errors,
+      messages: notice ? [this.messages.cellReadOnly()] : view.errors,
       placement,
+      notice,
       style: htmlSafe(
         `left:${left}px;max-width:${CELL_ERROR_MAX_WIDTH}px;${vertical}`
       )
@@ -3628,6 +3908,11 @@ export default class EuiSheet<T extends object> extends Component<
 
   /** Clicks on the row-number column and the column headers; true when handled. */
   onControlClick(event: MouseEvent, target: Element): boolean {
+    // the "+" header (V03 6.3)
+    if (this.addFieldHeader(target)) {
+      this.addField();
+      return true;
+    }
     if (target.closest('[data-eui-sheet-row-check-all]')) {
       this.toggleAllChecked();
       return true;
@@ -3754,8 +4039,8 @@ export default class EuiSheet<T extends object> extends Component<
         this.rangeKind = 'cells';
       }
     }
-    const rect = this.pointInWrapper(x, y);
-    this.openMenu(row, col, rect);
+    const point = this.pointInWrapper(x, y);
+    this.openMenu(row, col, { ...point, width: 0, height: 0 });
     return true;
   }
 
@@ -3782,6 +4067,8 @@ export default class EuiSheet<T extends object> extends Component<
       this.onEditKeyDown(event);
       return;
     }
+    // the field editor's keys are its own (its focus trap has Escape)
+    if (this.isInFieldEditor(target)) return;
     if (this.menu && this.isInMenu(target)) {
       // the panel has ArrowUp/Down and Enter; Escape is the sheet's
       if (event.key === 'Escape' || event.key === 'Tab') {
@@ -3810,6 +4097,16 @@ export default class EuiSheet<T extends object> extends Component<
       this.onRowNumberKeyDown(event, this.rowIndexOf(rowCell));
       return;
     }
+    // the "+" header (V03 6.3): Enter or Space opens the field editor
+    const addHeader = this.addFieldHeader(target);
+    if (addHeader && target === addHeader) {
+      const plain = !event.ctrlKey && !event.metaKey && !event.altKey;
+      if (plain && (event.key === 'Enter' || event.key === ' ')) {
+        stop(event);
+        this.addField();
+      }
+      return;
+    }
     const header = this.headerCell(target);
     if (header && target === header) {
       // a selected column: Delete clears it (other keys are the header's)
@@ -3829,6 +4126,7 @@ export default class EuiSheet<T extends object> extends Component<
     if (this.handleCommandKey(event)) return;
     if (this.handleNavKey(event, pos)) return;
     if (this.handleHomeKey(event, pos.row)) return;
+    if (this.handleLastFieldKey(event, pos.row, pos.col)) return;
     // Escape ends the copy mark first (V03 batch 1)
     if (event.key === 'Escape' && this.copied) {
       stop(event);
@@ -3896,13 +4194,23 @@ export default class EuiSheet<T extends object> extends Component<
       return;
     }
     if (key === 'Enter' || key === 'F2') {
-      if (!type.editor || readOnly) return;
+      // read-only: the cue, and the key goes on as before (not taken)
+      if (readOnly) {
+        this.readOnlyCue = pos;
+        return;
+      }
+      if (!type.editor) return;
       stop(event);
       if (!this.editInRecord(pos)) this.startEdit(pos, cell, null);
       return;
     }
     if (key.length === 1 && plain && !event.isComposing) {
-      if (!type.editor || readOnly) return;
+      if (readOnly) {
+        // not a silent no-op (V03 batch 2); the key is not taken
+        this.readOnlyCue = pos;
+        return;
+      }
+      if (!type.editor) return;
       if (!(type.opensOnKey?.(key) ?? true)) return;
       // preventDefault keeps the character from being typed twice
       stop(event);
@@ -3912,6 +4220,15 @@ export default class EuiSheet<T extends object> extends Component<
     if (key === 'Delete' || key === 'Backspace') {
       if (!this.range) return;
       stop(event);
+      const range = this.range;
+      if (
+        readOnly &&
+        range.top === range.bottom &&
+        range.left === range.right
+      ) {
+        this.readOnlyCue = pos;
+        return;
+      }
       this.clearSelection();
     }
     // arrows, End, PageUp/Down (with or without Shift), Tab, Escape,
@@ -4181,6 +4498,33 @@ export default class EuiSheet<T extends object> extends Component<
    * C13: with row numbers, Home and Ctrl+Home on a data cell land on the
    * first field (the grid would go to the row-number column).
    */
+  /**
+   * With the "+" column (V03 6.3): ArrowRight on the last field stays
+   * there, End and Ctrl/Cmd+End land on the last field (the grid would go
+   * on to the "+" cell). `col` null: a row-number cell.
+   */
+  handleLastFieldKey(
+    event: KeyboardEvent,
+    row: number,
+    col: number | null
+  ): boolean {
+    if (!this.hasAddFieldColumn) return false;
+    if (event.altKey || event.shiftKey) return false;
+    const lastCol = this.visibleFields.length - 1;
+    const command = event.ctrlKey || event.metaKey;
+    if (event.key === 'ArrowRight' && !command && col === lastCol) {
+      stop(event);
+      return true;
+    }
+    if (event.key !== 'End' || lastCol < 0) return false;
+    stop(event);
+    this.moveFocus(
+      { row: command ? this.rowCount - 1 : row, col: lastCol },
+      false
+    );
+    return true;
+  }
+
   handleHomeKey(event: KeyboardEvent, row: number): boolean {
     if (event.key !== 'Home' || !this.colOffset) return false;
     if (event.altKey || event.shiftKey || event.metaKey) return false;
@@ -4205,6 +4549,7 @@ export default class EuiSheet<T extends object> extends Component<
   /** Keys of a row-number cell (V02-DESIGN.md 5.5). */
   onRowNumberKeyDown(event: KeyboardEvent, row: number): void {
     if (this.handleCommandKey(event)) return;
+    if (this.handleLastFieldKey(event, row, null)) return;
     if (this.isAddRow(row)) {
       this.onAddRowKeyDown(event);
       return;
@@ -4752,6 +5097,8 @@ export default class EuiSheet<T extends object> extends Component<
       target instanceof HTMLElement &&
       target.classList.contains('euiDataGrid__virtualized')
     ) {
+      // a grid scroll cancels the field editor (V03 6.4)
+      if (this.fieldEditorState) this.closeFieldEditor(false);
       const scrolledX = target.scrollLeft > 0;
       if (scrolledX !== this.scrolledX) this.scrolledX = scrolledX;
       // after the grid rendered the rows of this scroll (V03 batch 1)
@@ -4839,11 +5186,6 @@ export default class EuiSheet<T extends object> extends Component<
     if (!rect) return;
     const layout = type.editorLayout ?? 'cell';
     const upload = uploadOf(field);
-    const below = rect.wrapperHeight - (rect.top + rect.height);
-    const placement =
-      layout === 'panel' && below < PANEL_SPACE && rect.top > below
-        ? 'above'
-        : 'below';
     const rejection = this.liveRejection(record, recordId, field.id);
     const draft =
       initialKey ??
@@ -4861,7 +5203,6 @@ export default class EuiSheet<T extends object> extends Component<
       type,
       rect,
       layout,
-      placement,
       initialKey,
       draft
     });
@@ -5011,6 +5352,411 @@ export default class EuiSheet<T extends object> extends Component<
   }
 
   /* The shortcut list (V03 5.5) */
+
+  /* -------------------------------------------------------------------- */
+  /* Field management (V03 6)                                              */
+  /* -------------------------------------------------------------------- */
+
+  /** A field of `@fields` or `@hiddenFields` (shown or not) by id. */
+  fieldById(fieldId: string | undefined): EuiSheetField<T> | undefined {
+    if (fieldId === undefined) return undefined;
+    return (
+      this.allFields.find((field) => field.id === fieldId) ??
+      [...this.args.fields, ...(this.args.hiddenFields ?? [])].find(
+        (field) => field.id === fieldId
+      )
+    );
+  }
+
+  /** The field editor is open from the "+" header: it shows as open. */
+  get addingField(): boolean {
+    return this.fieldEditorState?.returnTo.columnId === ADD_FIELD_COLUMN_ID;
+  }
+
+  /** The open field editor, as a list keyed by its state (a new one starts a new form). */
+  get fieldEditorList(): FieldEditorState[] {
+    return this.fieldEditorState ? [this.fieldEditorState] : [];
+  }
+
+  /**
+   * The types the field editor offers: `@creatableFieldTypes` (default
+   * `CREATABLE_FIELD_TYPES`) that exist, and on edit the field's own type
+   * first when it is not one of them (a linked record field keeps its type).
+   */
+  fieldEditorTypes(
+    field: EuiSheetField<T> | undefined,
+    mode: FieldEditorState['mode']
+  ): SheetFieldEditorType[] {
+    const names = [...(this.args.creatableFieldTypes ?? CREATABLE_FIELD_TYPES)];
+    if (field && mode !== 'create' && !names.includes(typeName(field))) {
+      names.unshift(typeName(field));
+    }
+    const messages = this.messages as unknown as Record<
+      string,
+      (() => string) | undefined
+    >;
+    const types: SheetFieldEditorType[] = [];
+    for (const name of names) {
+      const type = this.types[name];
+      if (!type) continue;
+      const entry: SheetFieldEditorType = {
+        name,
+        label: type.label ?? messages[`fieldType_${name}`]?.() ?? name
+      };
+      if (type.fieldOptions) entry.fieldOptions = type.fieldOptions;
+      types.push(entry);
+    }
+    return types;
+  }
+
+  /** The grid column index of a column id (the "+" column after the fields). */
+  gridIndexOf(columnId: string): number {
+    if (columnId === ADD_FIELD_COLUMN_ID) {
+      return this.visibleFields.length + this.colOffset;
+    }
+    const index = this.visibleFieldIds.indexOf(columnId);
+    return index < 0 ? -1 : index + this.colOffset;
+  }
+
+  /**
+   * Where the field editor goes: under the header of `columnId` (else the
+   * "+" header), its left edge kept inside the wrapper; without either, at
+   * the wrapper's top right, under the header row (a hidden field, V03
+   * 6.8). The layer places it in the viewport from there (below, or above
+   * when there is no room below; clamped, then scrolling).
+   */
+  fieldEditorPlace(columnId: string): { anchor: WrapperBox } {
+    const width = this.wrapper?.offsetWidth ?? FIELD_EDITOR_WIDTH;
+    const maxLeft = Math.max(0, width - FIELD_EDITOR_WIDTH);
+    const header =
+      this.headerElement(columnId) ??
+      (this.hasAddFieldColumn ? this.headerElement(ADD_FIELD_COLUMN_ID) : null);
+    const rect = header && this.rectOf(header);
+    if (rect) {
+      return {
+        anchor: {
+          top: rect.top,
+          left: clamp(rect.left, 0, maxLeft),
+          width: rect.width,
+          height: rect.height
+        }
+      };
+    }
+    const any = this.wrapper?.querySelector<HTMLElement>('[role=columnheader]');
+    const anyRect = any && this.rectOf(any);
+    return {
+      anchor: {
+        top: anyRect ? anyRect.top : 0,
+        left: maxLeft,
+        width: 0,
+        height: anyRect ? anyRect.height : 0
+      }
+    };
+  }
+
+  openFieldEditor(
+    init: ConstructorParameters<typeof FieldEditorState>[0]
+  ): void {
+    if (this.editing) this.commit({ refocus: false });
+    if (this.menu) this.closeMenu(false);
+    this.fieldEditorState = new FieldEditorState(init);
+  }
+
+  /**
+   * `api.addField`, the "+" column, "Insert left/right": the editor to
+   * create a field at `index` among the visible fields (default the end;
+   * never before the first field), under `columnId`'s header.
+   */
+  addField(index?: number, columnId?: string, after?: string): void {
+    if (!this.args.onFieldCreate) return;
+    const fields = this.visibleFields;
+    const count = fields.length;
+    const at = clamp(index ?? count, count ? 1 : 0, count);
+    const afterId = after ?? fields[at - 1]?.id;
+    const anchor =
+      columnId ??
+      (this.hasAddFieldColumn ? ADD_FIELD_COLUMN_ID : (afterId ?? ''));
+    const position: { index: number; after?: string } = { index: at };
+    if (afterId !== undefined) position.after = afterId;
+    const types = this.fieldEditorTypes(undefined, 'create');
+    const type = types.some((entry) => entry.name === 'text')
+      ? 'text'
+      : (types[0]?.name ?? 'text');
+    this.openFieldEditor({
+      mode: 'create',
+      position,
+      draft: { label: '', type },
+      ...this.fieldEditorPlace(anchor),
+      returnTo: { columnId: anchor, index: this.gridIndexOf(anchor) }
+    });
+  }
+
+  /** `api.editField` and "Edit field": the editor on a field, also a hidden one. */
+  editField(fieldId: string): void {
+    if (!this.args.onFieldUpdate) return;
+    const field = this.fieldById(fieldId);
+    if (!field || field.manageable === false) return;
+    const columnId = this.visibleFieldIds.includes(fieldId)
+      ? fieldId
+      : ADD_FIELD_COLUMN_ID;
+    this.openFieldEditor({
+      mode: 'edit',
+      fieldId,
+      draft: draftOf(field),
+      ...this.fieldEditorPlace(columnId),
+      returnTo: { columnId, index: this.gridIndexOf(columnId) }
+    });
+  }
+
+  /** "Duplicate field": `@onFieldCreate` at once, with a copy of the field's draft next to it. */
+  duplicateField(fieldId: string): void {
+    const handler = this.args.onFieldCreate;
+    const index = this.visibleFieldIds.indexOf(fieldId);
+    const field = this.visibleFields[index];
+    if (!handler || !field || field.manageable === false) return;
+    const draft: SheetFieldDraft = {
+      ...draftOf(field),
+      label: this.messages.duplicateFieldLabel(field.label ?? field.id)
+    };
+    this.noteCreatedAfter(field.id);
+    void handler(draft, {
+      index: index + 1,
+      after: field.id,
+      copyOf: field.id
+    });
+  }
+
+  /** "Delete field": the confirmation, in the editor's frame (V03 6.6). */
+  askDeleteField(fieldId: string): void {
+    const field = this.fieldById(fieldId);
+    if (!this.args.onFieldDelete || !field || field.manageable === false) {
+      return;
+    }
+    if (this.visibleFieldIds[0] === fieldId) return;
+    this.openFieldEditor({
+      mode: 'delete',
+      fieldId,
+      draft: draftOf(field),
+      ...this.fieldEditorPlace(fieldId),
+      returnTo: { columnId: fieldId, index: this.gridIndexOf(fieldId) }
+    });
+  }
+
+  /** Save in the editor: `@onFieldCreate` or `@onFieldUpdate`. */
+  saveFieldEditor(draft: SheetFieldDraft): void {
+    const state = this.fieldEditorState;
+    if (!state || state.isSaving) return;
+    if (state.mode === 'create') {
+      const handler = this.args.onFieldCreate;
+      if (!handler) return;
+      const position = { ...state.position! };
+      this.noteCreatedAfter(position.after);
+      this.runFieldHandler(state, () => handler(draft, position));
+      return;
+    }
+    const handler = this.args.onFieldUpdate;
+    const previous = this.fieldById(state.fieldId);
+    if (!handler || !previous || state.mode !== 'edit') return;
+    this.runFieldHandler(state, () =>
+      handler(previous.id, draft, { previous })
+    );
+  }
+
+  /** The delete confirmation's button: `@onFieldDelete`. */
+  confirmDeleteField(): void {
+    const state = this.fieldEditorState;
+    const handler = this.args.onFieldDelete;
+    if (!state || state.isSaving || state.mode !== 'delete' || !handler) return;
+    const fieldId = state.fieldId!;
+    this.runFieldHandler(state, () => handler(fieldId));
+  }
+
+  /**
+   * Calls a field handler (V03 6.2): without a promise the editor closes
+   * at once; with one it stays open, busy, and closes when it resolves or
+   * shows the rejection's message.
+   */
+  runFieldHandler(
+    state: FieldEditorState,
+    call: () => void | Promise<void>
+  ): void {
+    state.error = undefined;
+    let result: unknown;
+    try {
+      result = call();
+    } catch (error) {
+      state.error = errorMessage(error);
+      return;
+    }
+    if (!result || typeof (result as Promise<void>).then !== 'function') {
+      this.closeFieldEditor(true);
+      return;
+    }
+    state.isSaving = true;
+    (result as Promise<void>).then(
+      () => {
+        if (isDestroying(this) || isDestroyed(this)) return;
+        state.isSaving = false;
+        if (this.fieldEditorState === state) this.closeFieldEditor(true);
+      },
+      (error: unknown) => {
+        if (isDestroying(this) || isDestroyed(this)) return;
+        state.isSaving = false;
+        state.error = errorMessage(error);
+      }
+    );
+  }
+
+  /**
+   * Closes the field editor; `refocus` focuses the header it belongs to.
+   * Not while its handler's promise is pending: Escape, Cancel, a click
+   * outside or a scroll then do nothing, so a rejection is still shown
+   * (V03 6.2).
+   */
+  closeFieldEditor(refocus: boolean): void {
+    const state = this.fieldEditorState;
+    if (!state || state.isSaving) return;
+    this.fieldEditorState = null;
+    if (!refocus) return;
+    afterRender(this, () => this.focusHeader(state.returnTo));
+  }
+
+  /** Focuses a header by column id, else the data header at that grid index (clamped). */
+  focusHeader(at: { columnId: string; index: number }): void {
+    let header = at.columnId ? this.headerElement(at.columnId) : null;
+    if (!header && at.index >= 0) {
+      const last = this.visibleFields.length - 1 + this.colOffset;
+      const index = Math.min(at.index, last);
+      header =
+        this.wrapper?.querySelector<HTMLElement>(
+          `[role=columnheader][data-gridcell-column-index="${index}"]`
+        ) ?? null;
+    }
+    header?.focus();
+  }
+
+  /** Without `@onFieldOrderChange` but with the sheet's own order, a created field goes after this one (V03 6.8). */
+  noteCreatedAfter(after: string | undefined): void {
+    this.createdAfter =
+      this.localOrder && !this.args.onFieldOrderChange ? { after } : null;
+  }
+
+  /** Whenever `@fields` or `@hiddenFields` is a new array: after the render, `fieldsRendered`. */
+  watchFields = modifier(
+    (_element: HTMLElement, [fields, hidden]: [unknown, unknown]) => {
+      void fields;
+      void hidden;
+      afterRender(this, () => this.fieldsRendered());
+    }
+  );
+
+  /**
+   * After `@fields` or `@hiddenFields` changed (V03 6.6): a field that is
+   * gone from both, or whose type changed, is forgotten (its undo
+   * entries, rejected texts, pending cells, an editor on it); a created
+   * field is placed in the sheet's own order; the selection is clamped.
+   * A hide moves a field between the two lists and is not a loss.
+   */
+  fieldsRendered(): void {
+    const all = [...this.args.fields, ...(this.args.hiddenFields ?? [])];
+    const now = new Map(all.map((field) => [field.id, typeName(field)]));
+    const before = this.lastFieldTypes;
+    this.lastFieldTypes = now;
+    if (!before) return;
+    const gone: string[] = [];
+    for (const [id, type] of before) {
+      if (now.get(id) !== type) gone.push(id);
+    }
+    const created = this.createdAfter;
+    if (created) {
+      const added = [...now.keys()].filter((id) => !before.has(id));
+      if (added.length) {
+        this.createdAfter = null;
+        this.placeCreated(added, created.after);
+      }
+    }
+    if (gone.length) this.forgetFields(gone);
+    this.clampSelection();
+  }
+
+  /** Puts created fields into the sheet's own order after `after`. */
+  placeCreated(ids: string[], after: string | undefined): void {
+    const order = this.localOrder;
+    if (!order || this.args.onFieldOrderChange) return;
+    const rest = order.filter((id) => !ids.includes(id));
+    const at = after === undefined ? 0 : rest.indexOf(after) + 1;
+    if (after !== undefined && at === 0) rest.push(...ids);
+    else rest.splice(at, 0, ...ids);
+    this.localOrder = rest;
+  }
+
+  /** Drops what the sheet keeps per field for fields the owner deleted or retyped (V03 6.6). */
+  forgetFields(fieldIds: string[]): void {
+    const ids = new Set(fieldIds);
+    const prune = (entries: HistoryEntry[]): HistoryEntry[] => {
+      const kept: HistoryEntry[] = [];
+      for (const entry of entries) {
+        let changeSet: ChangeSet | null = entry.changeSet;
+        for (const id of fieldIds) {
+          if (changeSet) changeSet = withoutField(changeSet, id);
+        }
+        const rejections = entry.rejections.filter(
+          (rejection) => !ids.has(rejection.fieldId)
+        );
+        if (!changeSet) continue;
+        if (
+          changeSet === entry.changeSet &&
+          rejections.length === entry.rejections.length
+        ) {
+          kept.push(entry);
+          continue;
+        }
+        const next = { changeSet, rejections };
+        this.replaceEntry(entry, next);
+        kept.push(next);
+      }
+      return kept;
+    };
+    this.undoStack = prune(this.undoStack);
+    this.redoStack = prune(this.redoStack);
+    if ([...this.rejections.values()].some((r) => ids.has(r.fieldId))) {
+      this.rejections = new Map(
+        [...this.rejections].filter(([, r]) => !ids.has(r.fieldId))
+      );
+    }
+    const pendingKeys = [...this.pendingCells]
+      .filter(([, entry]) => entry.cell && ids.has(entry.cell.fieldId))
+      .map(([key]) => key);
+    const uploadKeys = [...this.pendingCells.keys()].filter((key) =>
+      ids.has(key.slice(key.indexOf('\u0000') + 1))
+    );
+    const keys = [...new Set([...pendingKeys, ...uploadKeys])];
+    if (keys.length) this.dropPending(keys);
+    if (this.editing && ids.has(this.editing.field.id)) this.editing = null;
+    const state = this.fieldEditorState;
+    // our own save in flight closes the editor itself
+    if (state?.fieldId && ids.has(state.fieldId) && !state.isSaving) {
+      this.closeFieldEditor(false);
+    }
+  }
+
+  /** Keeps the selection inside the visible fields after `@fields` changed. */
+  clampSelection(): void {
+    const last = this.visibleFields.length - 1;
+    const fix = (pos: Pos | null): Pos | null =>
+      pos && pos.col > last ? { row: pos.row, col: Math.max(last, 0) } : pos;
+    if (last < 0) {
+      if (this.anchor || this.head) {
+        this.anchor = null;
+        this.head = null;
+      }
+      return;
+    }
+    const anchor = fix(this.anchor);
+    const head = fix(this.head);
+    if (anchor !== this.anchor) this.anchor = anchor;
+    if (head !== this.head) this.head = head;
+  }
 
   /** `api.showShortcuts()`, the block's `showShortcuts()` and Ctrl/Cmd+/. */
   showShortcuts = (): void => {
@@ -5567,6 +6313,11 @@ export default class EuiSheet<T extends object> extends Component<
     const target = this.dropCellAt(event.target);
     if (!target) {
       if (this.dropPos) this.dropPos = null;
+      // over a cell that cannot take files: the "not allowed" cursor (no drop follows)
+      if (this.dataCell(event.target) && event.dataTransfer) {
+        event.preventDefault();
+        event.dataTransfer.dropEffect = 'none';
+      }
       return;
     }
     event.preventDefault();
@@ -5667,12 +6418,14 @@ export default class EuiSheet<T extends object> extends Component<
         {{if this.fillTarget 'euiSheet--dragging euiSheet--filling'}}
         {{if this.scrolledX 'euiSheet--scrolledX'}}
         {{this.headerLinesClass}}
-        {{if this.rangeOutline 'euiSheet--ranged'}}"
+        {{if this.rangeOutline 'euiSheet--ranged'}}
+        {{if this.addingField 'euiSheet--addingField'}}"
       data-test-subj="euiSheet"
       data-eui-sheet-id={{this.sheetId}}
       ...attributes
       {{this.setupWrapper}}
       {{this.watchRecords @records}}
+      {{this.watchFields @fields @hiddenFields}}
       {{this.registerSheetApi}}
       {{on "keydown" this.onKeyDown capture=true}}
       {{on "copy" this.onCopy capture=true}}
@@ -5719,6 +6472,7 @@ export default class EuiSheet<T extends object> extends Component<
           @columns={{this.columns}}
           @columnVisibility={{this.columnVisibility}}
           @leadingControlColumns={{this.leadingControlColumns}}
+          @trailingControlColumns={{this.trailingControlColumns}}
           @gridStyle={{this.gridStyle}}
           @rowCount={{this.rowCount}}
           @renderCellValue={{SheetCell}}
@@ -5732,21 +6486,37 @@ export default class EuiSheet<T extends object> extends Component<
           @onColumnResize={{this.onColumnResize}}
           @virtualizationOptions={{this.virtualizationOptions}}
         >
-          <:controlHeaderCell><RowNumberHeader
-              @sheet={{this}}
-            /></:controlHeaderCell>
+          <:controlHeaderCell as |header|>
+            {{#if (this.isAddFieldColumn header.columnId)}}
+              {{! the "+" column (V03 6.3): a span, the header cell is the grid's focusable header }}
+              <span
+                class="euiSheet__addField"
+                title={{(this.messages.addField)}}
+                data-test-subj="euiSheetAddField"
+              ><EuiIcon @type="plus" aria-hidden="true" /><span
+                  class="euiSheet__srOnly"
+                >{{this.messages.addField}}</span></span>
+            {{else}}
+              <RowNumberHeader @sheet={{this}} />
+            {{/if}}
+          </:controlHeaderCell>
           <:controlCell as |cell|>
-            <RowNumberCell
-              @sheet={{this}}
-              @rowIndex={{cell.rowIndex}}
-              @setCellProps={{cell.setCellProps}}
-            />
+            {{! the "+" column's body cells are empty and inert }}
+            {{#unless (this.isAddFieldColumn cell.columnId)}}
+              <RowNumberCell
+                @sheet={{this}}
+                @rowIndex={{cell.rowIndex}}
+                @setCellProps={{cell.setCellProps}}
+              />
+            {{/unless}}
           </:controlCell>
           <:controlFooterCell as |cell|>
-            <SheetControlFooterCell
-              @sheet={{this}}
-              @setCellProps={{cell.setCellProps}}
-            />
+            {{#unless (this.isAddFieldColumn cell.columnId)}}
+              <SheetControlFooterCell
+                @sheet={{this}}
+                @setCellProps={{cell.setCellProps}}
+              />
+            {{/unless}}
           </:controlFooterCell>
         </EuiDataGrid>
       </div>
@@ -5826,12 +6596,15 @@ export default class EuiSheet<T extends object> extends Component<
       {{/if}}
       {{#if this.menu}}
         <RowMenu
-          @top={{this.menu.top}}
-          @left={{this.menu.left}}
+          @sheet={{this}}
+          @anchor={{this.menuAnchor}}
           @items={{this.menuItems}}
           @onSelect={{this.onMenuSelect}}
         />
       {{/if}}
+      {{#each this.fieldEditorList key="@identity" as |state|}}
+        <FieldEditor @sheet={{this}} @state={{state}} />
+      {{/each}}
       {{#if this.expandedRecordValue}}
         {{#if (isModal this.expandedShell)}}
           <RecordModal @sheet={{this}} @record={{this.expandedRecordValue}} />
@@ -5841,10 +6614,10 @@ export default class EuiSheet<T extends object> extends Component<
       {{/if}}
       {{#each this.editingList key="@identity" as |editing|}}
         <EditorFrame
+          @sheet={{this}}
           @rect={{editing.rect}}
           @grow={{this.growOf editing}}
           @layout={{editing.layout}}
-          @placement={{editing.placement}}
           @onFocusOut={{this.onEditorFocusOut}}
         >
           {{#if editing.type.editor}}
@@ -5870,13 +6643,22 @@ export default class EuiSheet<T extends object> extends Component<
       <div class="euiSheet__cellErrorRegion" role="status">
         {{#if this.cellError}}
           <div
-            class="euiSheet__cellError euiSheet__cellError--{{this.cellError.placement}}"
+            class="euiSheet__cellError euiSheet__cellError--{{this.cellError.placement}}
+              {{if this.cellError.notice 'euiSheet__cellError--notice'}}"
             data-test-subj="euiSheetCellError"
             style={{this.cellError.style}}
           >
-            {{#each this.cellError.messages as |message|}}
-              <div>{{message}}</div>
-            {{/each}}
+            {{#if this.cellError.notice}}
+              <div class="euiSheet__cellNotice"><EuiIcon
+                  @type="lock"
+                  @size="s"
+                  aria-hidden="true"
+                />{{this.messages.cellReadOnly}}</div>
+            {{else}}
+              {{#each this.cellError.messages as |message|}}
+                <div>{{message}}</div>
+              {{/each}}
+            {{/if}}
           </div>
         {{/if}}
       </div>

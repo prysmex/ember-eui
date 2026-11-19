@@ -105,7 +105,9 @@ module('Integration | Component | EuiSheet clicks', function (hooks) {
     await renderSheet();
     await click(opener(0, 2));
     assert.ok(editorFrame(), 'the select editor is open');
-    assert.dom('[role=option]').exists({ count: 2 }, 'with its options');
+    assert
+      .dom('[role=option]', document.body)
+      .exists({ count: 2 }, 'with its options');
 
     await click(cell(1, 0));
     assert.strictEqual(editorFrame(), null);

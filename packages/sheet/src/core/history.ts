@@ -268,3 +268,43 @@ export function mergeChangeSets(
 function cellOf(patch: CellPatch): string {
   return JSON.stringify([String(patch.recordId), patch.fieldId]);
 }
+
+/**
+ * A history entry without one field (V03 6.6): its patches, rejections and
+ * new options dropped, and its inserts' values without the field (undo
+ * checks every value an insert set, so a stale one would keep the insert
+ * from being undone). Deletes are kept. `null` when nothing is left; the
+ * same object when the entry never touched the field. For a field the
+ * owner deleted or retyped: the sheet cannot undo field operations, so its
+ * history must not write the field's old values back.
+ */
+export function withoutField(
+  entry: ChangeSet,
+  fieldId: string
+): ChangeSet | null {
+  const touches =
+    entry.patches.some((patch) => patch.fieldId === fieldId) ||
+    entry.inserts.some((insert) => fieldId in insert.values) ||
+    entry.rejected.some((rejection) => rejection.fieldId === fieldId) ||
+    entry.newOptions.some((option) => option.fieldId === fieldId);
+  if (!touches) return entry;
+  const patches = entry.patches.filter((patch) => patch.fieldId !== fieldId);
+  const inserts = entry.inserts.map((insert) => {
+    if (!(fieldId in insert.values)) return insert;
+    const values = { ...insert.values };
+    delete values[fieldId];
+    return { ...insert, values };
+  });
+  if (!patches.length && !inserts.length && !entry.deletes?.length) {
+    return null;
+  }
+  return {
+    ...entry,
+    patches,
+    inserts,
+    rejected: entry.rejected.filter(
+      (rejection) => rejection.fieldId !== fieldId
+    ),
+    newOptions: entry.newOptions.filter((option) => option.fieldId !== fieldId)
+  };
+}

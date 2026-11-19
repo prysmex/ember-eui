@@ -38,6 +38,9 @@ export type {
   SheetEditorRect,
   SheetEditorResult,
   SheetEditorSignature,
+  SheetFieldEditorSignature,
+  SheetFieldEditorType,
+  SheetFieldOptionsSignature,
   SheetRowAction,
   SheetRowHeight,
   SheetSort

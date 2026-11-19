@@ -1,10 +1,11 @@
 /**
- * Positions the open editor over its cell ('cell'), beside it ('panel') or
- * from its box, growing ('expand'),
- * inside the sheet's wrapper, or in flow ('inline': the expanded record's
- * form), and turns focus leaving it into a commit (PACKAGE-DESIGN.md 8.1).
- * The grid and the form share this focus-out logic. Not a popover: no
- * `euiPopover__panel` class.
+ * Positions the open editor over its cell ('cell') or from its box,
+ * growing ('expand'), inside the sheet's wrapper; beside it ('panel'), in
+ * the sheet's layer (portaled, `layer.gts`: below the cell, above it when
+ * there is no room below in the viewport); or in flow ('inline': the
+ * expanded record's form). Turns focus leaving it into a commit
+ * (PACKAGE-DESIGN.md 8.1). The grid and the form share this focus-out
+ * logic. Not a popover: no `euiPopover__panel` class.
  */
 import Component from '@glimmer/component';
 import { action } from '@ember/object';
@@ -13,7 +14,11 @@ import { cancel, next } from '@ember/runloop';
 import { htmlSafe } from '@ember/template';
 import { modifier } from 'ember-modifier';
 
+import SheetLayer, { placeLayer } from './layer.gts';
+
+import type EuiSheet from '../components/eui-sheet.gts';
 import type { SheetEditorRect } from '../types.ts';
+import type { LayerAnchor } from './layer.gts';
 
 /**
  * The editor, and any element an editor renders elsewhere (a wormholed
@@ -32,10 +37,11 @@ const FOCUSABLE_SELECTOR =
 
 interface EditorFrameSignature {
   Args: {
+    /** The grid's sheet: a 'panel' renders in its layer. Not given by 'inline'. */
+    sheet?: EuiSheet<any>;
     /** Not used by 'inline'. */
     rect?: SheetEditorRect;
     layout: 'cell' | 'panel' | 'expand' | 'inline';
-    placement?: 'below' | 'above';
     /**
      * px the 'cell' and 'expand' frames grow past the cell on each side
      * (V03 batch 1: 2, less where the grid body's visible area ends).
@@ -51,9 +57,28 @@ export default class EditorFrame extends Component<EditorFrameSignature> {
     return `euiSheet__editor--${this.args.layout}`;
   }
 
+  /** The grid's sheet (only read when `inLayer`). */
+  get sheet(): EuiSheet<any> {
+    return this.args.sheet!;
+  }
+
+  /** A 'panel' of the grid: portaled, placed by the layer. */
+  get inLayer(): boolean {
+    return this.args.layout === 'panel' && !!this.args.sheet;
+  }
+
+  /** The cell's box in the viewport now (the layer reads it at every placement). */
+  anchor = (): LayerAnchor | null => {
+    const rect = this.args.rect;
+    return rect && this.args.sheet ? this.args.sheet.toViewport(rect) : null;
+  };
+
+  get minWidth(): number {
+    return Math.max(this.args.rect?.width ?? 0, 240);
+  }
+
   get style() {
     if (this.args.layout === 'inline' || !this.args.rect) return undefined;
-    const { wrapperHeight } = this.args.rect;
     let { top, left, width, height } = this.args.rect;
     const layout = this.args.layout;
     // lifted past the cell; the padding keeps the text where it was (3 px
@@ -78,12 +103,10 @@ export default class EditorFrame extends Component<EditorFrameSignature> {
         `top:${top}px;left:${left}px;min-width:${Math.max(width, 240)}px;min-height:${height}px;${padding}`
       );
     }
-    const minWidth = Math.max(width, 240);
-    const vertical =
-      this.args.placement === 'above'
-        ? `bottom:${wrapperHeight - top}px;`
-        : `top:${top + height}px;`;
-    return htmlSafe(`left:${left}px;min-width:${minWidth}px;${vertical}`);
+    // 'panel' without a sheet: under the cell, in the wrapper
+    return htmlSafe(
+      `top:${top + height}px;left:${left}px;min-width:${this.minWidth}px;`
+    );
   }
 
   frame: HTMLElement | null = null;
@@ -159,14 +182,33 @@ export default class EditorFrame extends Component<EditorFrameSignature> {
   });
 
   <template>
-    <div
-      class="euiSheet__editor {{this.layoutClass}}"
-      data-test-subj="euiSheetEditor"
-      style={{this.style}}
-      {{on "focusout" this.onFocusOut}}
-      {{this.watchSurfaces}}
-    >
-      {{yield}}
-    </div>
+    {{#if this.inLayer}}
+      <SheetLayer @sheet={{this.sheet}}>
+        <div
+          class="euiSheet__editor {{this.layoutClass}}"
+          data-test-subj="euiSheetEditor"
+          {{placeLayer
+            anchor=this.anchor
+            wrapper=this.sheet.wrapper
+            minWidth=this.minWidth
+            watch=@rect
+          }}
+          {{on "focusout" this.onFocusOut}}
+          {{this.watchSurfaces}}
+        >
+          {{yield}}
+        </div>
+      </SheetLayer>
+    {{else}}
+      <div
+        class="euiSheet__editor {{this.layoutClass}}"
+        data-test-subj="euiSheetEditor"
+        style={{this.style}}
+        {{on "focusout" this.onFocusOut}}
+        {{this.watchSurfaces}}
+      >
+        {{yield}}
+      </div>
+    {{/if}}
   </template>
 }

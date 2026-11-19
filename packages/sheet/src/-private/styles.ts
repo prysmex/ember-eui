@@ -24,9 +24,15 @@ const CSS = `
 .euiSheet .euiDataGridRowCell:focus .euiSheet__opener,
 .euiSheet .euiSheet__cell--selected .euiSheet__opener { visibility: visible; }
 .euiSheet__cell--invalid { color: var(--euiSheet-textDanger, #BD271E); box-shadow: inset 0 0 0 1px var(--euiSheet-danger, #BD271E); }
-/* focused and invalid: the error line just inside the 3 px ring */
-.euiSheet .euiDataGridRow .euiDataGridRowCell.euiSheet__cell--invalid:focus { box-shadow: inset 0 0 0 4px var(--euiSheet-danger, #BD271E); }
+/* focused and invalid: a 2 px error band just inside the 3 px ring (V03 batch 2: 1 px did not read next to the ring) */
+.euiSheet .euiDataGridRow .euiDataGridRowCell.euiSheet__cell--invalid:focus { box-shadow: inset 0 0 0 5px var(--euiSheet-danger, #BD271E); }
 .euiSheet__cellError { position: absolute; z-index: 4; box-sizing: border-box; padding: 4px 8px; border-radius: 4px; background: var(--euiSheet-dangerFilled, #BD271E); color: var(--euiSheet-textInverse, #FFF); font-size: 12px; line-height: 16px; pointer-events: none; box-shadow: 0 2px 6px var(--euiSheet-shadow, rgba(0, 0, 0, 0.2)); }
+/* the read-only cue (V03 batch 2): the message box, neutral, with a lock */
+.euiSheet__cellError.euiSheet__cellError--notice { background: var(--euiSheet-text, #343741); color: var(--euiSheet-plain, #FFF); }
+.euiSheet__cellNotice { display: inline-flex; align-items: center; gap: 4px; }
+/* keyboard focus on a header (V03 batch 2): the data cells' 3 px ring, over the grid's ":focus-visible { outline: none }" and its ::after */
+.euiSheet .euiDataGridHeader .euiDataGridHeaderCell:focus, .euiSheet .euiDataGridHeader .euiDataGridHeaderCell:focus-visible { outline: 3px solid var(--euiSheet-primary, #0B64DD); outline-offset: -3px; }
+.euiSheet .euiDataGridHeader .euiDataGridHeaderCell:focus::after { border-color: transparent; }
 .euiSheet__editor { position: absolute; box-sizing: border-box; }
 .euiSheet__editor--cell { z-index: 2; }
 /* the open cell editor (V03 batch 1): lifted 2 px past the cell (clamped at the body's edges by EditorFrame), a 3 px ring, the theme's elevation; the padding keeps the caret where the cell's text was */
@@ -34,6 +40,9 @@ const CSS = `
 .euiSheet__editor--cell .euiSheet__input { padding: 0 var(--euiSheetEditorPadX, 5px); }
 .euiSheet__editor--expand .euiSheet__textarea { padding: var(--euiSheetEditorPadY, 4px) var(--euiSheetEditorPadX, 5px); }
 .euiSheet__editor--panel { z-index: 3; }
+/* the floating layers (V03 batch 2, after the real-input check): portaled to <body>, placed in the viewport by layer.gts (z-index too: above the wrapper's stacking context) */
+.euiSheetLayer { color: var(--euiSheet-text, #343741); }
+.euiSheetLayer .euiSheet__editor--panel, .euiSheetLayer .euiSheet__menu, .euiSheetLayer .euiSheet__fieldEditor { position: fixed; top: 0; left: 0; z-index: 2000; }
 .euiSheet__input { display: block; box-sizing: border-box; width: 100%; height: 100%; margin: 0; padding: 0 6px; border: 2px solid var(--euiSheet-primary, #0B64DD); background: var(--euiSheet-plain, #FFF); color: var(--euiSheet-text, #343741); font: inherit; }
 .euiSheet__checkbox { display: inline-block; box-sizing: border-box; width: 14px; height: 14px; vertical-align: middle; border: 1.5px solid var(--euiSheet-textSubdued, #69707D); border-radius: 3px; background: var(--euiSheet-plain, #FFF); position: relative; cursor: pointer; }
 .euiSheet__checkbox--checked { background: var(--euiSheet-primary, #0B64DD); border-color: var(--euiSheet-primary, #0B64DD); }
@@ -58,6 +67,7 @@ const CSS = `
 .euiSheet__addRecord, .euiSheet__rowAdd { display: inline-flex; align-items: center; gap: 4px; white-space: nowrap; }
 .euiSheet__menu { position: absolute; z-index: 5; min-width: 200px; }
 /* the row menu (V03 batch 1): groups, and a shadow and a hairline that read in dark too */
+.euiSheet__menu > .euiPanel { max-height: var(--euiSheetLayerMaxHeight, none); overflow-y: auto; }
 .euiSheet__menu > .euiPanel { box-shadow: 0 4px 12px var(--euiSheet-elevation, rgba(0, 0, 0, 0.25)); border: 1px solid var(--euiSheet-border, #D3DAE6); }
 .euiSheet__menuSeparator { height: 0; margin: 4px 0; border: 0; border-top: 1px solid var(--euiSheet-border, #D3DAE6); }
 /* the copy mark (dashed, until Escape or a change) and the changed cells' fading tint */
@@ -98,6 +108,8 @@ const CSS = `
 .euiSheetSearch__footer { display: flex; flex-direction: column; gap: 8px; }
 .euiSheet__grid { position: relative; }
 .euiSheet__loading { z-index: 4; }
+/* the loading bar (V03 batch 2): 3 px, not the grid's 2 */
+.euiSheet__grid > .euiSheet__loading { height: 3px; }
 .euiSheet__headerTip { display: inline-flex; margin-left: 4px; vertical-align: middle; }
 /* the header menu's trigger (V03 batch 1): the text colour, a 16 px icon, a hover background; always shown on the active cell's and the selected columns' headers (headerMarkRules) and on touch screens. The grid draws the icon (ellipsis): it cannot be chosen without a core change */
 .euiSheet .euiDataGridHeaderCell .euiDataGridHeaderCell__button { color: var(--euiSheet-text, #343741); border-radius: 4px; }
@@ -126,6 +138,35 @@ const CSS = `
 .euiSheet .euiDataGridRow.euiSheet__addRow .euiDataGridRowCell::after { content: none; }
 .euiSheet .euiDataGridRow.euiSheet__addRow .euiDataGridRowCell:focus { outline: 3px solid var(--euiSheet-primary, #0B64DD); outline-offset: -3px; box-shadow: none; }
 .euiSheet .euiSheet__rowCell--add [data-datagrid-cellcontent] { justify-content: center; height: 100%; }
+/* field management (V03 batch 2): the "+" column's header (a hover tint, the 3 px ring under the keyboard), its inert body cells, the field editor's panel, the header menu's Delete in the danger colour after a line */
+.euiSheet__srOnly { position: absolute; width: 1px; height: 1px; margin: -1px; padding: 0; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; }
+.euiSheet .euiDataGridHeaderCell.euiSheet__addFieldHeader { cursor: pointer; padding: 0; }
+.euiSheet .euiDataGridHeaderCell.euiSheet__addFieldHeader > div { width: 100%; height: 100%; }
+.euiSheet__addField { display: flex; align-items: center; justify-content: center; width: 100%; height: 100%; min-height: 24px; color: var(--euiSheet-textSubdued, #69707D); }
+.euiSheet .euiDataGridHeaderCell.euiSheet__addFieldHeader:hover { background-color: var(--euiSheet-checked, rgba(11, 100, 221, 0.06)); }
+.euiSheet .euiDataGridHeaderCell.euiSheet__addFieldHeader:hover .euiSheet__addField, .euiSheet .euiDataGridHeaderCell.euiSheet__addFieldHeader:focus .euiSheet__addField, .euiSheet--addingField .euiSheet__addField { color: var(--euiSheet-primary, #0B64DD); }
+.euiSheet .euiDataGridHeader .euiDataGridHeaderCell.euiSheet__addFieldHeader:focus, .euiSheet .euiDataGridHeader .euiDataGridHeaderCell.euiSheet__addFieldHeader:focus-visible { outline: 3px solid var(--euiSheet-primary, #0B64DD); outline-offset: -3px; }
+.euiSheet .euiDataGridHeader .euiDataGridHeaderCell.euiSheet__addFieldHeader:focus::after, .euiSheet .euiDataGridHeader .euiDataGridHeaderCell.euiSheet__addFieldHeader::after { content: none; }
+.euiSheet--addingField .euiDataGridHeaderCell.euiSheet__addFieldHeader { background-color: var(--euiSheet-selected, rgba(11, 100, 221, 0.12)); box-shadow: inset 0 -3px 0 var(--euiSheet-primary, #0B64DD); }
+.euiSheet .euiDataGridRow .euiDataGridRowCell[data-gridcell-column-id="euiSheet-addField"] { cursor: default; }
+.euiSheet__fieldEditor { position: absolute; z-index: 5; box-sizing: border-box; width: 320px; max-width: calc(100vw - 16px); }
+.euiSheet__fieldEditor > div > .euiPanel { max-height: var(--euiSheetLayerMaxHeight, none); overflow-y: auto; }
+.euiSheet__fieldEditor > div > .euiPanel { box-shadow: 0 4px 12px var(--euiSheet-elevation, rgba(0, 0, 0, 0.25)); border: 1px solid var(--euiSheet-border, #D3DAE6); }
+.euiSheetFieldEditor__form { display: flex; flex-direction: column; gap: 8px; }
+.euiSheetFieldEditor__form .euiFormRow + .euiFormRow { margin-top: 0; }
+.euiSheetFieldEditor__title { margin: 0 0 4px; font-size: 14px; line-height: 20px; font-weight: 600; color: var(--euiSheet-text, #343741); }
+.euiSheetFieldEditor__confirm { margin: 0; font-size: 14px; line-height: 20px; color: var(--euiSheet-text, #343741); }
+.euiSheetFieldEditor__options { margin: 0; padding: 0; border: 0; min-width: 0; display: flex; flex-direction: column; gap: 6px; }
+.euiSheetFieldEditor__options > .euiButtonEmpty { align-self: flex-start; }
+.euiSheetFieldEditor__legend { padding: 0; margin-bottom: 4px; font-size: 12px; line-height: 16px; font-weight: 600; color: var(--euiSheet-text, #343741); }
+.euiSheetFieldEditor__option { display: grid; grid-template-columns: 14px minmax(0, 1fr) 96px 24px; align-items: center; gap: 6px; }
+.euiSheetFieldEditor__swatch.euiBadge { width: 14px; height: 14px; min-width: 0; padding: 0; margin: 0; border-radius: 50%; }
+.euiSheetFieldEditor__optionRow { display: flex; gap: 8px; align-items: flex-end; }
+.euiSheetFieldEditor__optionRow > .euiFormRow { flex: 1; margin: 0; }
+.euiSheetFieldEditor__actions { display: flex; justify-content: flex-end; gap: 8px; margin-top: 4px; }
+/* the header menu is portaled (no sheet theme class): EUI's own --eui-color-* variables, with neutral fallbacks; the line goes before the first field item */
+li:has([data-test-subj^="euiSheetEditField-"]), li:has([data-test-subj^="euiSheetDuplicateField-"]):not(li:has([data-test-subj^="euiSheetEditField-"]) ~ li), li:has([data-test-subj^="euiSheetInsertFieldLeft-"]):not(li:has([data-test-subj^="euiSheetEditField-"]) ~ li, li:has([data-test-subj^="euiSheetDuplicateField-"]) ~ li), li:has([data-test-subj^="euiSheetInsertFieldRight-"]):not(li:has([data-test-subj^="euiSheetEditField-"]) ~ li, li:has([data-test-subj^="euiSheetDuplicateField-"]) ~ li, li:has([data-test-subj^="euiSheetInsertFieldLeft-"]) ~ li), li:has([data-test-subj^="euiSheetDeleteField-"]) { border-top: 1px solid var(--eui-color-border-base-subdued, var(--euiSheet-border, #D3DAE6)); margin-top: 4px; padding-top: 4px; }
+[data-test-subj^="euiSheetDeleteField-"], [data-test-subj^="euiSheetDeleteField-"] * { color: var(--eui-color-text-danger, var(--euiSheet-textDanger, #BD271E)) !important; }
 .euiSheet .euiDataGridHeaderCell.euiSheet__frozenHeader { position: sticky; z-index: 3; background-color: inherit; }
 .euiSheet .euiDataGridHeader > [data-test-subj=euiDataGridHeaderDroppable],
 .euiSheet .euiDataGridHeaderCellDraggable:has(.euiSheet__frozenHeader),
@@ -141,12 +182,15 @@ const CSS = `
 .euiSheet__thumb { flex-shrink: 0; width: 24px; height: 24px; object-fit: cover; border: 1px solid var(--euiSheet-border, #D3DAE6); border-radius: 3px; vertical-align: middle; }
 .euiSheet__file { display: inline-flex; align-items: center; gap: 2px; min-width: 0; max-width: 120px; }
 .euiSheet__rating { display: inline-flex; gap: 1px; line-height: 1; }
-.euiSheet__star { color: var(--euiSheet-border, #D3DAE6); font-size: 16px; cursor: pointer; }
+/* an empty star (V03 batch 2): the subdued text at half strength; the border colour was 1.2:1 on white */
+.euiSheet__star { color: var(--euiSheet-textSubdued, #69707D); opacity: 0.45; font-size: 16px; cursor: pointer; }
+.euiSheet__star.euiSheet__star--on { opacity: 1; }
 .euiSheet__star--on { color: var(--euiSheet-star, #F5A700); }
 .euiSheet__link { color: var(--euiSheet-link, #0B64DD); text-decoration: underline; cursor: pointer; }
 .euiSheet__longText { white-space: pre-line; }
 .euiSheet .euiDataGridRowCell.euiSheet__cell--pending { color: var(--euiSheet-textSubdued, #69707D); font-style: italic; }
-.euiSheet .euiDataGridRowCell.euiSheet__cell--dropTarget { box-shadow: inset 0 0 0 2px var(--euiSheet-primary, #0B64DD); }
+/* files dragged over an attachment cell (V03 batch 2): the active ring's 3 px and the range tint */
+.euiSheet .euiDataGridRow .euiDataGridRowCell.euiSheet__cell--dropTarget { outline: 3px solid var(--euiSheet-primary, #0B64DD); outline-offset: -3px; background-color: var(--euiSheet-selected, rgba(11, 100, 221, 0.12)); background-image: none; }
 .euiSheet__editor--expand { z-index: 3; }
 .euiSheet__textarea { display: block; box-sizing: border-box; width: 100%; min-height: inherit; max-height: 240px; margin: 0; padding: 6px; border: 2px solid var(--euiSheet-primary, #0B64DD); background: var(--euiSheet-plain, #FFF); color: var(--euiSheet-text, #343741); font: inherit; line-height: 1.4; resize: none; overflow-y: auto; }
 .euiSheet__editor--inline .euiSheet__textarea { min-height: 88px; border-radius: 4px; }

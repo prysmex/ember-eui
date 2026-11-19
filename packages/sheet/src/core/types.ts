@@ -34,6 +34,12 @@ export interface EuiSheetField<T = any> {
   sortable?: boolean;
   /** Whether the header menu offers "Hide". Default true; the first field is never hidden. */
   hideable?: boolean;
+  /**
+   * Whether the header menu offers Edit, Duplicate and Delete (with
+   * `@onFieldUpdate`, `@onFieldCreate`, `@onFieldDelete`). Default true;
+   * `false` for system fields (V03 6.2).
+   */
+  manageable?: boolean;
   /** Options of the field's type (below) and of app types. */
   [option: string]: unknown;
 }
@@ -193,6 +199,21 @@ export interface DateField<T = any> extends EuiSheetField<T> {
   /** ISO dates, inclusive. */
   min?: string;
   max?: string;
+}
+
+/**
+ * What the field editor produces (V03 6.4): plain values only. `id` is
+ * absent: on create the owner assigns it, on update it is the field's.
+ * The owner builds the field (`{ ...previous, ...draft }` on update,
+ * `{ id, ...draft }` on create).
+ */
+export interface SheetFieldDraft {
+  label: string;
+  type: string;
+  description?: string;
+  required?: boolean;
+  /** Type options: `options` of a select, `currency`, `precision`, `max`, `dateOrder`, `durationFormat`, … */
+  [option: string]: unknown;
 }
 
 export interface TypeContext<T = any> {

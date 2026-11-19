@@ -6,7 +6,8 @@ import {
   invertChangeSet,
   redoChangeSet,
   undoChangeSet,
-  withoutConflicts
+  withoutConflicts,
+  withoutField
 } from '#src/core/index.ts';
 import { localRecords } from '#src/local-records.ts';
 
@@ -343,5 +344,44 @@ module('Unit | Sheet | history', function () {
       null,
       'a delete of a record that is not shown'
     );
+  });
+  test('H11 withoutField drops the field from patches, inserts, rejections and new options (V03 6.6)', function (assert) {
+    assert.strictEqual(
+      withoutField(PASTE, 'z'),
+      PASTE,
+      'untouched: the same entry'
+    );
+    const result = withoutField(PASTE, 'a')!;
+    assert.deepEqual(result.patches, [PASTE.patches[1]]);
+    assert.deepEqual(result.inserts, [
+      { tempId: 'new-1', index: 2, values: { b: 'm' } }
+    ]);
+    assert.deepEqual(result.newOptions, []);
+    assert.deepEqual(result.rejected, PASTE.rejected);
+    assert.deepEqual(
+      withoutField(PASTE, 'c')!.rejected,
+      [],
+      'a rejection of the field'
+    );
+    assert.deepEqual(
+      undoChangeSet(result, after(), getId)!.deletes,
+      ['new-1'],
+      'the insert is still undone (its other values match)'
+    );
+  });
+
+  test('H12 withoutField: an entry left empty is null; deletes keep it', function (assert) {
+    const edit: ChangeSet = {
+      source: 'edit',
+      patches: [{ recordId: 'r0', fieldId: 'a', from: 'a0', to: 'x' }],
+      inserts: [],
+      rejected: [],
+      newOptions: []
+    };
+    assert.strictEqual(withoutField(edit, 'a'), null);
+    const removal = deleteRecords([{ id: 'r0', a: 'a0' }], ['r0'], getId);
+    if (!removal) throw new Error('no delete');
+    const withPatch = { ...removal, patches: edit.patches };
+    assert.deepEqual(withoutField(withPatch, 'a')!.deletes, ['r0']);
   });
 });

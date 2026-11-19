@@ -40,6 +40,13 @@ interface Row {
 }
 
 const getId = (row: { id: string }) => row.id;
+const noop = () => {};
+
+/** The test container's scale (screen px per CSS px). */
+function scaleOf(): number {
+  const root = document.querySelector<HTMLElement>('#ember-testing')!;
+  return root.getBoundingClientRect().width / root.offsetWidth;
+}
 
 /** Waits `count` animation frames. */
 async function frames(count: number): Promise<void> {
@@ -903,8 +910,9 @@ module('Integration | Component | EuiSheet editing polish', function (hooks) {
     assert.strictEqual(style.outlineWidth, '3px');
     assert.strictEqual(style.outlineOffset, '-3px');
     assert.true(
-      style.boxShadow.includes('inset') && style.boxShadow.includes('4px'),
-      `the error line inside the ring (${style.boxShadow})`
+      // V03 batch 2: a 2 px band inside the 3 px ring (5 px inset)
+      style.boxShadow.includes('inset') && style.boxShadow.includes('5px'),
+      `the error band inside the ring (${style.boxShadow})`
     );
     assert.true(/^rgb\(/.test(style.backgroundColor), 'frozen: opaque');
     assert.strictEqual(
@@ -1158,5 +1166,106 @@ module('Integration | Component | EuiSheet editing polish', function (hooks) {
       assert.strictEqual(list(), null, 'not the list');
       await press('Escape');
     }
+  });
+  /* Visibility pass, part 2 (V03 batch 2) */
+
+  test('VP4 a key that would edit a read-only cell shows "Read only" in its message box', async function (assert) {
+    const store = localRecords(
+      [
+        { id: 'r0', name: 'a', city: 'x' },
+        { id: 'r1', name: 'b', city: 'y' }
+      ] as Row[],
+      { getRecordId: getId }
+    );
+    const fields: EuiSheetField<Row>[] = [
+      { id: 'name' },
+      { id: 'city', readOnly: true }
+    ];
+    await render(
+      <template>
+        <EuiSheet
+          @fields={{fields}}
+          @records={{store.records}}
+          @getRecordId={{getId}}
+          @onChange={{store.apply}}
+        />
+      </template>
+    );
+    const box = () =>
+      document.querySelector<HTMLElement>('[data-test-subj=euiSheetCellError]');
+    await focusCell(0, 1);
+    assert.strictEqual(box(), null, 'nothing on focus');
+    assert.false(await pressed('x'), 'the key is not taken (as before)');
+    assert.dom(box()!).hasText('Read only');
+    assert.dom(box()!).hasClass('euiSheet__cellError--notice', 'not an error');
+    assert.dom('.euiIcon', box()!).exists('a lock');
+    assert.strictEqual(
+      document.querySelector('[data-test-subj=euiSheetEditor]'),
+      null
+    );
+    await focusCell(1, 1);
+    assert.strictEqual(box(), null, 'gone when focus moves');
+    await press('Enter');
+    assert.dom(box()!).hasText('Read only', 'Enter');
+    await focusCell(1, 0);
+    await press('Delete');
+    await focusCell(0, 1);
+    await press('Delete');
+    assert.dom(box()!).hasText('Read only', 'Delete on one read-only cell');
+    assert.strictEqual(
+      store.log.length,
+      1,
+      'only the editable cell was cleared'
+    );
+  });
+
+  test('VP5 keyboard focus on a header or a row number: the 3 px active ring', async function (assert) {
+    await render(
+      <template>
+        <EuiSheet
+          @fields={{(wideFields 3)}}
+          @records={{(wideRows 3 3)}}
+          @getRecordId={{getId}}
+          @onChange={{noop}}
+        />
+      </template>
+    );
+    const header = el('[role=columnheader][data-gridcell-column-index="2"]');
+    await focus(header);
+    const style = getComputedStyle(header);
+    assert.strictEqual(
+      `${style.outlineStyle} ${style.outlineWidth}`,
+      'solid 3px',
+      'the header'
+    );
+    const rowNumber = el(
+      '[role=gridcell][data-gridcell-visible-row-index="1"][data-gridcell-column-index="0"]'
+    );
+    await focus(rowNumber);
+    const rowStyle = getComputedStyle(rowNumber);
+    assert.strictEqual(
+      `${rowStyle.outlineStyle} ${rowStyle.outlineWidth}`,
+      'solid 3px',
+      'the row number'
+    );
+  });
+
+  test('VP6 the @isLoading bar is 3 px', async function (assert) {
+    await render(
+      <template>
+        <EuiSheet
+          @fields={{(wideFields 2)}}
+          @records={{(wideRows 2 2)}}
+          @getRecordId={{getId}}
+          @onChange={{noop}}
+          @isLoading={{true}}
+        />
+      </template>
+    );
+    assert.strictEqual(
+      el('[data-test-subj=euiSheetLoading]').getBoundingClientRect().height /
+        scaleOf(),
+      3
+    );
   });
 });

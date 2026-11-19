@@ -207,6 +207,114 @@ export interface SheetMessages {
   shortcutKeyRightClick: () => string;
   /** 'No records': the sheet with an empty `@records` (V03 batch 1). */
   noRecords: () => string;
+  /** 'Read only': the focused cell's message box when a key would edit a read-only cell (V03 batch 2). */
+  cellReadOnly: () => string;
+  /** 'Add field': the "+" column and the field editor's title on create (V03 6.3) */
+  addField: () => string;
+  /** 'Edit field': the header menu item and the field editor's title */
+  editField: () => string;
+  /** 'Insert left': the header menu: a new field to the left */
+  insertFieldLeft: () => string;
+  /** 'Insert right' */
+  insertFieldRight: () => string;
+  /** 'Duplicate field' */
+  duplicateField: () => string;
+  /** 'Name copy': the label of a duplicated field */
+  duplicateFieldLabel: (label: string) => string;
+  /** 'Delete field': the header menu item and the confirm button */
+  deleteField: () => string;
+  /** 'Delete "{label}" and its values in every record? This cannot be undone.' */
+  deleteFieldConfirm: (label: string) => string;
+  /** 'Name': the field editor's name input */
+  fieldName: () => string;
+  /** 'Type' */
+  fieldType: () => string;
+  /** 'Description' */
+  fieldDescription: () => string;
+  /** 'Required' */
+  fieldRequired: () => string;
+  /** 'Options': a select field's options in the field editor */
+  fieldOptions: () => string;
+  /** 'Add option' */
+  addOption: () => string;
+  /** 'Remove option' */
+  removeOption: () => string;
+  /** 'Option {n}': 'Option 2': an option's name input (V03 batch 2) */
+  optionLabel: (n: number) => string;
+  /** 'Color': an option's colour (V03 batch 2) */
+  optionColor: () => string;
+  /** 'No color' */
+  colorNone: () => string;
+  /** 'Gray': EuiBadge's named colours in the options form (V03 batch 2) */
+  color_default: () => string;
+  /** 'Outline' */
+  color_hollow: () => string;
+  /** 'Blue' */
+  color_primary: () => string;
+  /** 'Pink' */
+  color_accent: () => string;
+  /** 'Green' */
+  color_success: () => string;
+  /** 'Yellow' */
+  color_warning: () => string;
+  /** 'Red' */
+  color_danger: () => string;
+  /** 'Currency code': a currency field's ISO code (V03 batch 2) */
+  fieldCurrency: () => string;
+  /** 'Decimals': currency and percent (V03 batch 2) */
+  fieldPrecision: () => string;
+  /** 'Stars': a rating's maximum (V03 batch 2) */
+  fieldRatingMax: () => string;
+  /** 'Date format': a date's day/month order (V03 batch 2) */
+  fieldDateOrder: () => string;
+  /** 'Day/Month/Year' */
+  dateOrderDmy: () => string;
+  /** 'Month/Day/Year' */
+  dateOrderMdy: () => string;
+  /** 'Format': a duration's format (V03 batch 2) */
+  fieldDurationFormat: () => string;
+  /** 'Save' */
+  save: () => string;
+  /** 'Cancel' */
+  cancel: () => string;
+  /** 'Give the field a name' */
+  fieldNameRequired: () => string;
+  /** 'Changing the type may change or clear values the new type cannot read.' */
+  fieldTypeChangeWarning: () => string;
+  /** 'Single line text': a type's name in the field editor (V03 6.4) */
+  fieldType_text: () => string;
+  /** 'Long text' */
+  fieldType_longText: () => string;
+  /** 'Number' */
+  fieldType_number: () => string;
+  /** 'Currency' */
+  fieldType_currency: () => string;
+  /** 'Percent' */
+  fieldType_percent: () => string;
+  /** 'Checkbox' */
+  fieldType_checkbox: () => string;
+  /** 'Single select' */
+  fieldType_singleSelect: () => string;
+  /** 'Multiple select' */
+  fieldType_multiSelect: () => string;
+  /** 'Date' */
+  fieldType_date: () => string;
+  /** 'Duration' */
+  fieldType_duration: () => string;
+  /** 'Rating' */
+  fieldType_rating: () => string;
+  /** 'URL' */
+  fieldType_url: () => string;
+  /** 'Email' */
+  fieldType_email: () => string;
+  /** 'Phone number' */
+  fieldType_phone: () => string;
+  /** 'Link to another record' */
+  fieldType_linkedRecord: () => string;
+  /** 'User' */
+  fieldType_user: () => string;
+  /** 'Attachment' */
+  fieldType_attachment: () => string;
 }
 
 export interface SheetMessageToken {
@@ -720,6 +828,278 @@ export const sheetMessageTokens: Readonly<
   noRecords: {
     token: 'euiSheet.noRecords',
     defaultMessage: 'No records',
+    params: []
+  },
+  cellReadOnly: {
+    token: 'euiSheet.cellReadOnly',
+    defaultMessage: 'Read only',
+    params: []
+  },
+  addField: {
+    token: 'euiSheet.addField',
+    defaultMessage: 'Add field',
+    params: []
+  },
+  editField: {
+    token: 'euiSheet.editField',
+    defaultMessage: 'Edit field',
+    params: []
+  },
+  insertFieldLeft: {
+    token: 'euiSheet.insertFieldLeft',
+    defaultMessage: 'Insert left',
+    params: []
+  },
+  insertFieldRight: {
+    token: 'euiSheet.insertFieldRight',
+    defaultMessage: 'Insert right',
+    params: []
+  },
+  duplicateField: {
+    token: 'euiSheet.duplicateField',
+    defaultMessage: 'Duplicate field',
+    params: []
+  },
+  duplicateFieldLabel: {
+    token: 'euiSheet.duplicateFieldLabel',
+    defaultMessage: '{label} copy',
+    params: ['label']
+  },
+  deleteField: {
+    token: 'euiSheet.deleteField',
+    defaultMessage: 'Delete field',
+    params: []
+  },
+  deleteFieldConfirm: {
+    token: 'euiSheet.deleteFieldConfirm',
+    defaultMessage:
+      'Delete "{label}" and its values in every record? This cannot be undone.',
+    params: ['label']
+  },
+  fieldName: {
+    token: 'euiSheet.fieldName',
+    defaultMessage: 'Name',
+    params: []
+  },
+  fieldType: {
+    token: 'euiSheet.fieldType',
+    defaultMessage: 'Type',
+    params: []
+  },
+  fieldDescription: {
+    token: 'euiSheet.fieldDescription',
+    defaultMessage: 'Description',
+    params: []
+  },
+  fieldRequired: {
+    token: 'euiSheet.fieldRequired',
+    defaultMessage: 'Required',
+    params: []
+  },
+  fieldOptions: {
+    token: 'euiSheet.fieldOptions',
+    defaultMessage: 'Options',
+    params: []
+  },
+  addOption: {
+    token: 'euiSheet.addOption',
+    defaultMessage: 'Add option',
+    params: []
+  },
+  removeOption: {
+    token: 'euiSheet.removeOption',
+    defaultMessage: 'Remove option',
+    params: []
+  },
+  optionLabel: {
+    token: 'euiSheet.optionLabel',
+    defaultMessage: 'Option {n}',
+    params: ['n']
+  },
+  optionColor: {
+    token: 'euiSheet.optionColor',
+    defaultMessage: 'Color',
+    params: []
+  },
+  colorNone: {
+    token: 'euiSheet.colorNone',
+    defaultMessage: 'No color',
+    params: []
+  },
+  color_default: {
+    token: 'euiSheet.color_default',
+    defaultMessage: 'Gray',
+    params: []
+  },
+  color_hollow: {
+    token: 'euiSheet.color_hollow',
+    defaultMessage: 'Outline',
+    params: []
+  },
+  color_primary: {
+    token: 'euiSheet.color_primary',
+    defaultMessage: 'Blue',
+    params: []
+  },
+  color_accent: {
+    token: 'euiSheet.color_accent',
+    defaultMessage: 'Pink',
+    params: []
+  },
+  color_success: {
+    token: 'euiSheet.color_success',
+    defaultMessage: 'Green',
+    params: []
+  },
+  color_warning: {
+    token: 'euiSheet.color_warning',
+    defaultMessage: 'Yellow',
+    params: []
+  },
+  color_danger: {
+    token: 'euiSheet.color_danger',
+    defaultMessage: 'Red',
+    params: []
+  },
+  fieldCurrency: {
+    token: 'euiSheet.fieldCurrency',
+    defaultMessage: 'Currency code',
+    params: []
+  },
+  fieldPrecision: {
+    token: 'euiSheet.fieldPrecision',
+    defaultMessage: 'Decimals',
+    params: []
+  },
+  fieldRatingMax: {
+    token: 'euiSheet.fieldRatingMax',
+    defaultMessage: 'Stars',
+    params: []
+  },
+  fieldDateOrder: {
+    token: 'euiSheet.fieldDateOrder',
+    defaultMessage: 'Date format',
+    params: []
+  },
+  dateOrderDmy: {
+    token: 'euiSheet.dateOrderDmy',
+    defaultMessage: 'Day/Month/Year',
+    params: []
+  },
+  dateOrderMdy: {
+    token: 'euiSheet.dateOrderMdy',
+    defaultMessage: 'Month/Day/Year',
+    params: []
+  },
+  fieldDurationFormat: {
+    token: 'euiSheet.fieldDurationFormat',
+    defaultMessage: 'Format',
+    params: []
+  },
+  save: {
+    token: 'euiSheet.save',
+    defaultMessage: 'Save',
+    params: []
+  },
+  cancel: {
+    token: 'euiSheet.cancel',
+    defaultMessage: 'Cancel',
+    params: []
+  },
+  fieldNameRequired: {
+    token: 'euiSheet.fieldNameRequired',
+    defaultMessage: 'Give the field a name',
+    params: []
+  },
+  fieldTypeChangeWarning: {
+    token: 'euiSheet.fieldTypeChangeWarning',
+    defaultMessage:
+      'Changing the type may change or clear values the new type cannot read.',
+    params: []
+  },
+  fieldType_text: {
+    token: 'euiSheet.fieldType_text',
+    defaultMessage: 'Single line text',
+    params: []
+  },
+  fieldType_longText: {
+    token: 'euiSheet.fieldType_longText',
+    defaultMessage: 'Long text',
+    params: []
+  },
+  fieldType_number: {
+    token: 'euiSheet.fieldType_number',
+    defaultMessage: 'Number',
+    params: []
+  },
+  fieldType_currency: {
+    token: 'euiSheet.fieldType_currency',
+    defaultMessage: 'Currency',
+    params: []
+  },
+  fieldType_percent: {
+    token: 'euiSheet.fieldType_percent',
+    defaultMessage: 'Percent',
+    params: []
+  },
+  fieldType_checkbox: {
+    token: 'euiSheet.fieldType_checkbox',
+    defaultMessage: 'Checkbox',
+    params: []
+  },
+  fieldType_singleSelect: {
+    token: 'euiSheet.fieldType_singleSelect',
+    defaultMessage: 'Single select',
+    params: []
+  },
+  fieldType_multiSelect: {
+    token: 'euiSheet.fieldType_multiSelect',
+    defaultMessage: 'Multiple select',
+    params: []
+  },
+  fieldType_date: {
+    token: 'euiSheet.fieldType_date',
+    defaultMessage: 'Date',
+    params: []
+  },
+  fieldType_duration: {
+    token: 'euiSheet.fieldType_duration',
+    defaultMessage: 'Duration',
+    params: []
+  },
+  fieldType_rating: {
+    token: 'euiSheet.fieldType_rating',
+    defaultMessage: 'Rating',
+    params: []
+  },
+  fieldType_url: {
+    token: 'euiSheet.fieldType_url',
+    defaultMessage: 'URL',
+    params: []
+  },
+  fieldType_email: {
+    token: 'euiSheet.fieldType_email',
+    defaultMessage: 'Email',
+    params: []
+  },
+  fieldType_phone: {
+    token: 'euiSheet.fieldType_phone',
+    defaultMessage: 'Phone number',
+    params: []
+  },
+  fieldType_linkedRecord: {
+    token: 'euiSheet.fieldType_linkedRecord',
+    defaultMessage: 'Link to another record',
+    params: []
+  },
+  fieldType_user: {
+    token: 'euiSheet.fieldType_user',
+    defaultMessage: 'User',
+    params: []
+  },
+  fieldType_attachment: {
+    token: 'euiSheet.fieldType_attachment',
+    defaultMessage: 'Attachment',
     params: []
   }
 };

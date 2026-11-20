@@ -391,6 +391,18 @@ export interface FieldType<
   /** The link a value opens (url, email, phone). The sheet opens only http:, https:, mailto: and tel:. */
   link?(value: V | null | undefined, field: F): string | undefined;
   /**
+   * The width in px of a cell's content that is not plain text (chips,
+   * stars, a checkbox), for "Fit to content" (v0.4 01); the sheet adds the
+   * cell's padding. `measure` gives a text's width in the cell's font.
+   * Default: `measure(format(value))`.
+   */
+  contentWidth?(
+    value: V | null | undefined,
+    field: F,
+    measure: (text: string) => number,
+    context: TypeContext
+  ): number;
+  /**
    * The fill handle's series (`fillRange`): continues `samples` (the
    * source cells, in sheet order) by `count` values, the first one next
    * to the samples (`direction` 1: after the last sample, down or right;

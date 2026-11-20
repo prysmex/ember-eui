@@ -1,4 +1,5 @@
 import { joinList, splitList } from '../list.ts';
+import { chipsWidth, PERSON_EXTRA } from './content-width.ts';
 import { combineRecords, sameIds } from './linked-record.ts';
 
 import type { FieldType, SheetUser, UserField } from '../types.ts';
@@ -72,5 +73,12 @@ export const userFieldType: FieldType<Value, UserField> = {
         users(b)
           .map((user) => user.label)
           .join(', ')
-      )
+      ),
+  /** An avatar and a name per user (three, then "+N"). */
+  contentWidth: (value, _field, measure) =>
+    chipsWidth(
+      users(value).map((user) => user.label),
+      measure,
+      PERSON_EXTRA
+    )
 };

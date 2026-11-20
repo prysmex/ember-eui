@@ -48,6 +48,23 @@ export default class SheetHeaderMenu<T extends object> {
   }
 
   /**
+   * "Fit to content" (v0.4 01): the column takes its content's width, as
+   * a resize would. `columns` adds it only to a menu that has other items.
+   */
+  fitMenuItem(
+    field: EuiSheetField<T>
+  ): NonNullable<EuiDataGridColumnActions['additional']>[number] {
+    return {
+      label: this.sheet.messages.fitToContent(),
+      iconType: 'editorDistributeHorizontal',
+      color: 'text',
+      // after the popover has closed: the header has its final width
+      onClick: () => next(() => this.sheet.gridColumns.fitField(field.id)),
+      'data-test-subj': `euiSheetFitField-${field.id}`
+    };
+  }
+
+  /**
    * The header menu's field items (V03 6.3): Edit, Duplicate, Insert
    * left, Insert right, Delete last, each only with its handler. Not on a
    * field with `manageable: false` (Edit, Duplicate, Delete); the first

@@ -1,4 +1,5 @@
 import { fieldOptions } from '../fields.ts';
+import { chipsWidth } from './content-width.ts';
 
 import type {
   FieldType,
@@ -62,5 +63,11 @@ export const singleSelectFieldType: FieldType<Value | null, SingleSelectField> =
       const ia = index(a);
       const ib = index(b);
       return ia === ib ? 0 : ia < ib ? -1 : 1;
+    },
+    /** One chip. */
+    contentWidth(value, field, measure, context) {
+      if (value == null || value === '') return 0;
+      const label = optionOf(field, context, value)?.label ?? String(value);
+      return chipsWidth([label], measure);
     }
   };

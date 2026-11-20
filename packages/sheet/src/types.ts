@@ -258,6 +258,15 @@ export interface SheetApi {
     ids: RecordId[],
     target: { recordId: RecordId; position: 'before' | 'after' }
   ): void;
+  /**
+   * Fits a visible field's width to its header and its widest loaded cell
+   * (v0.4 01, the header menu's "Fit to content"), clamped to 80-480 px.
+   * The width goes out as a resize's does: `@onFieldWidthChange`, else the
+   * sheet keeps it.
+   */
+  fitField(fieldId: string): void;
+  /** Fits every visible field (`@onFieldWidthChange` once per field). */
+  fitFields(): void;
 }
 
 /** An app item of the row menu (`@rowActions`). */
@@ -399,7 +408,7 @@ export interface EuiSheetSignature<T> {
     validate?: (
       context: ValidateContext<T>
     ) => CellErrors | Promise<CellErrors>;
-    /** Receives the sheet's API (`undo`, `redo`, `focusCell`, `scrollToCell`, `getSelection`, `remapIds`, `clearHistory`, `expandRecord`, `insertRecord`, `deleteRecords`, `showShortcuts`, `editField`, `addField`, `moveRecords`) once, after the first render. */
+    /** Receives the sheet's API (`undo`, `redo`, `focusCell`, `scrollToCell`, `getSelection`, `remapIds`, `clearHistory`, `expandRecord`, `insertRecord`, `deleteRecords`, `showShortcuts`, `editField`, `addField`, `moveRecords`, `fitField`, `fitFields`) once, after the first render. */
     registerApi?: (api: SheetApi) => void;
     /**
      * Fields that exist but are not shown in the grid: listed in the
@@ -447,7 +456,12 @@ export interface EuiSheetSignature<T> {
     creatableFieldTypes?: string[];
     /** Column widths in px by field id; wins over `field.width`. */
     fieldWidths?: Record<string, number>;
-    /** Called after a column is resized. Without it the sheet keeps the width itself. */
+    /**
+     * Called after a column is resized, or fitted to its content (the
+     * header menu's "Fit to content", a double-click on the resize edge,
+     * `api.fitField`). Without it the sheet keeps the width itself; that
+     * kept width wins over `@fieldWidths` and `field.width`.
+     */
     onFieldWidthChange?: (fieldId: string, width: number) => void;
     /** Row height. Default `'short'` (one line). */
     rowHeight?: SheetRowHeight;

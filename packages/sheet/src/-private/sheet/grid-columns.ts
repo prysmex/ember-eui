@@ -1,12 +1,14 @@
 /** The grid's columns, widths, sort and control columns (V03C-DESIGN.md 3.2). */
 import { cached, tracked } from '@glimmer/tracking';
 
+import { fieldWidth, resizerColumnId, textMeasure } from '../fit-width.ts';
 import { headerDisplay } from './header-display.gts';
 import { ADD_FIELD_COLUMN_ID, ADD_FIELD_WIDTH, ROW_COLUMN_ID } from './util.ts';
 
 import type EuiSheet from '../../components/eui-sheet.gts';
 import type { EuiSheetField } from '../../core/index.ts';
-import type { SheetSort } from '../../types.ts';
+import type { EuiSheetFieldType, SheetSort } from '../../types.ts';
+import type { FitChrome, Measure } from '../fit-width.ts';
 import type {
   EuiDataGridColumn,
   EuiDataGridColumnActions,
@@ -22,6 +24,11 @@ const ROW_COLUMN_WIDTH = 64;
 const GRIP_WIDTH = 12;
 /** A frozen field's width without `@fieldWidths` or `field.width`. */
 const FROZEN_DEFAULT_WIDTH = 200;
+/** The opener button's room at a cell's end: 20 px, 6 px from the edge, and a gap (v0.4 01). */
+const OPENER_ROOM = 28;
+/** A header's menu button (24 px) and drag icon (12 px), shown on hover. */
+const HEADER_BUTTON_ROOM = 24;
+const DRAG_ICON_ROOM = 12;
 
 export default class SheetGridColumns<T extends object> {
   sheet: EuiSheet<T>;
@@ -46,6 +53,12 @@ export default class SheetGridColumns<T extends object> {
    * none. Plain, so a resize does not rebuild the columns.
    */
   keptWidths = new Map<string, number>();
+  /**
+   * Bumped by a fit without `@onFieldWidthChange` (v0.4 01): `columns`
+   * reads it, so the grid gets the fitted width as `initialWidth` (it has
+   * no other way to take a width). Only a fit changes it.
+   */
+  @tracked fitEpoch = 0;
 
   /** `@headerLines` (V03 5.4): header labels wrap to 2 or 3 lines; the grid measures the taller header row. */
   get headerLinesClass(): string {
@@ -69,13 +82,17 @@ export default class SheetGridColumns<T extends object> {
         : undefined;
     return (
       kept ??
-      this.givenWidth(field) ??
       this.keptWidth(field) ??
+      this.givenWidth(field) ??
       FROZEN_DEFAULT_WIDTH
     );
   }
 
-  /** A bare sheet's own width of a resized field (X6); none with `@onFieldWidthChange`. */
+  /**
+   * A bare sheet's own width of a resized or fitted field (X6, v0.4 01):
+   * it wins over `@fieldWidths` and `field.width`, so a resize survives new
+   * columns; none with `@onFieldWidthChange`.
+   */
   keptWidth(field: EuiSheetField<T>): number | undefined {
     if (this.sheet.args.onFieldWidthChange) return undefined;
     return this.keptWidths.get(field.id);
@@ -88,6 +105,9 @@ export default class SheetGridColumns<T extends object> {
     columnId: string;
     width: number;
   }): void => {
+    // a press on the resize edge that moved nothing (each click of a
+    // double-click, v0.4 01): no width changed
+    if (this.isShownWidth(columnId, width)) return;
     const resized = this.resizedWidths;
     const widths =
       resized && resized.columns === this.columns ? resized.widths : {};
@@ -105,6 +125,116 @@ export default class SheetGridColumns<T extends object> {
     this.sheet.fields.expectUpdate('fieldWidths');
     handler(columnId, width);
   };
+
+  /** Whether the grid shows the column at this width now (its header's width, before the resize renders). */
+  isShownWidth(columnId: string, width: number): boolean {
+    const header = this.sheet.dom.headerElement(columnId);
+    const shown = header ? parseFloat(header.style.width) : NaN;
+    return Math.abs(shown - width) < 0.5;
+  }
+
+  /* Fit to content (v0.4 01) */
+
+  /** Fits one visible field to its content; nothing for a field that is not shown. */
+  fitField(fieldId: string): void {
+    const field = this.sheet.fields.visibleFields.find((f) => f.id === fieldId);
+    if (!field) return;
+    this.applyWidths([[field.id, this.fitWidths([field])[0]!]]);
+  }
+
+  /** Fits every visible field. */
+  fitFields(): void {
+    const fields = this.sheet.fields.visibleFields;
+    const widths = this.fitWidths(fields);
+    this.applyWidths(fields.map((field, i) => [field.id, widths[i]!]));
+  }
+
+  /** A double-click on a column's resize edge fits that column. */
+  onResizerDoubleClick = (event: MouseEvent): void => {
+    const columnId = resizerColumnId(event.target);
+    if (!columnId || !this.sheet.fields.visibleFieldIds.includes(columnId))
+      return;
+    event.preventDefault();
+    event.stopPropagation();
+    this.fitField(columnId);
+  };
+
+  /**
+   * The fitted widths of `fields`, measured now (fonts that were still
+   * loading at the first render are loaded by now): the cell font and
+   * padding from a rendered cell, the header's from a rendered header.
+   */
+  fitWidths(fields: readonly EuiSheetField<T>[]): number[] {
+    const ctx = this.sheet.context;
+    const anyCell = this.sampleCell(null);
+    const anyHeader = this.sampleHeader(null);
+    return fields.map((field) => {
+      const cell = this.sampleCell(field.id) ?? anyCell;
+      const header = this.sampleHeader(field.id) ?? anyHeader;
+      const cellParts = partsOf(cell, '[data-datagrid-cellcontent]');
+      const headerParts = partsOf(header, '.euiDataGridHeaderCell__content');
+      const type = this.sheet.fields.typeOf(field);
+      const chrome: FitChrome = {
+        header: headerParts.chrome,
+        cell: cellParts.chrome,
+        opener: this.hasOpener(field, type) ? OPENER_ROOM : 0
+      };
+      return fieldWidth(
+        ctx,
+        field,
+        { cell: cellParts.measure, header: headerParts.measure },
+        chrome
+      );
+    });
+  }
+
+  /** A rendered data cell of a field (not a control column), for its font and padding. */
+  sampleCell(fieldId: string | null): HTMLElement | null {
+    const ids = fieldId ? [fieldId] : this.sheet.fields.visibleFieldIds;
+    for (const id of ids) {
+      const cell = this.sheet.wrapper?.querySelector<HTMLElement>(
+        `[role=gridcell][data-gridcell-column-id="${CSS.escape(id)}"]`
+      );
+      if (cell) return cell;
+    }
+    return null;
+  }
+
+  /** A rendered header of a field. */
+  sampleHeader(fieldId: string | null): HTMLElement | null {
+    const ids = fieldId ? [fieldId] : this.sheet.fields.visibleFieldIds;
+    for (const id of ids) {
+      const header = this.sheet.dom.headerElement(id);
+      if (header) return header;
+    }
+    return null;
+  }
+
+  /** Whether the field's cells show the type's opener button (select, date). */
+  hasOpener(field: EuiSheetField<T>, type: EuiSheetFieldType): boolean {
+    if (!type.editor || this.sheet.args.readOnly || field.readOnly === true)
+      return false;
+    const opener = type.opener;
+    return !!(typeof opener === 'function' ? opener(field) : opener);
+  }
+
+  /**
+   * Gives the grid fitted widths, as a resize would: `@onFieldWidthChange`
+   * once per field, or the sheet's own kept widths and new columns.
+   */
+  applyWidths(widths: ReadonlyArray<readonly [string, number]>): void {
+    const handler = this.sheet.args.onFieldWidthChange;
+    if (handler) {
+      this.sheet.fields.expectUpdate('fieldWidths');
+      for (const [fieldId, width] of widths) handler(fieldId, width);
+    } else {
+      for (const [fieldId, width] of widths)
+        this.keptWidths.set(fieldId, width);
+      this.fitEpoch++;
+    }
+    // the fill handle measures again
+    this.sheet.scroll.layoutTick++;
+  }
 
   /* Sort (6.3): drawn and emitted, never applied */
 
@@ -159,8 +289,9 @@ export default class SheetGridColumns<T extends object> {
    */
   @cached
   get columns(): EuiDataGridColumn[] {
-    // read: a bump gives the grid a new array (V03 5.3)
+    // read: a bump gives the grid a new array (V03 5.3); a fit too (v0.4 01)
     void this.sheet.fields.orderEpoch;
+    void this.fitEpoch;
     const frozen = this.sheet.frozen.frozenCount;
     const sortable = !!this.sheet.args.onSortChange;
     const filter = this.sheet.args.onFilterByField;
@@ -190,11 +321,23 @@ export default class SheetGridColumns<T extends object> {
         });
       }
       additional.push(...this.sheet.headerMenu.groupMenuItems(field));
-      additional.push(
-        ...this.sheet.headerMenu.fieldMenuItems(field, index, fields)
+      const fieldItems = this.sheet.headerMenu.fieldMenuItems(
+        field,
+        index,
+        fields
       );
+      // "Fit to content" joins a menu that is there anyway (v0.4 01): a
+      // field with no other item keeps having no menu
+      if (
+        additional.length ||
+        fieldItems.length ||
+        Object.values(actions).some((shown) => shown === true)
+      ) {
+        additional.push(this.sheet.headerMenu.fitMenuItem(field));
+      }
+      additional.push(...fieldItems);
       if (additional.length) actions.additional = additional;
-      const given = this.givenWidth(field) ?? this.keptWidth(field);
+      const given = this.keptWidth(field) ?? this.givenWidth(field);
       const width = index < frozen ? (given ?? FROZEN_DEFAULT_WIDTH) : given;
       const column: EuiDataGridColumn = {
         id: field.id,
@@ -279,4 +422,39 @@ export default class SheetGridColumns<T extends object> {
     const index = this.sheet.fields.visibleFieldIds.indexOf(columnId);
     return index < 0 ? -1 : index + this.sheet.colOffset;
   }
+}
+
+/**
+ * A rendered cell's or header's font (as a measure) and the room around
+ * its content element's text (`chrome`): the element's own padding and
+ * border, the content's padding, and 1 px for sub-pixel text. In layout
+ * px (the test container and zoomed pages scale rects, not offsets).
+ */
+function partsOf(
+  element: HTMLElement | null,
+  contentSelector: string
+): { measure: Measure; chrome: number } {
+  const content = element?.querySelector<HTMLElement>(contentSelector) ?? null;
+  const style = getComputedStyle(content ?? element ?? document.body);
+  const font = `${style.fontStyle} ${style.fontWeight} ${style.fontSize} ${style.fontFamily}`;
+  if (!element || !content) return { measure: textMeasure(font), chrome: 16 };
+  const px = (value: string) => parseFloat(value) || 0;
+  const inner =
+    px(style.paddingLeft) +
+    px(style.paddingRight) +
+    px(style.borderLeftWidth) +
+    px(style.borderRightWidth);
+  let chrome = element.offsetWidth - content.offsetWidth + inner + 1;
+  // a header's drag icon and menu button collapse until it is hovered or
+  // focused (their negative margins): their room when they show
+  const collapsed = (selector: string, room: number) => {
+    const part = element.querySelector<HTMLElement>(selector);
+    return part ? Math.max(0, room - part.offsetWidth) : 0;
+  };
+  chrome += collapsed('.euiDataGridHeaderCell__draggableIcon', DRAG_ICON_ROOM);
+  chrome += collapsed(
+    '[class*=euiDataGridHeaderCell__popover]',
+    HEADER_BUTTON_ROOM
+  );
+  return { measure: textMeasure(font), chrome: Math.max(0, chrome) };
 }

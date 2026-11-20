@@ -1,3 +1,5 @@
+import { itemsWidth } from './content-width.ts';
+
 import type { AttachmentField, FieldType, SheetAttachment } from '../types.ts';
 
 type Value = SheetAttachment[];
@@ -50,5 +52,15 @@ export const attachmentFieldType: FieldType<Value, AttachmentField> = {
     const y = list(b);
     return x.length === y.length && x.every((file, i) => file.id === y[i]!.id);
   },
-  compare: (a, b) => list(a).length - list(b).length
+  compare: (a, b) => list(a).length - list(b).length,
+  /** A 24 px thumbnail per image, else an icon and the name (at most 120 px); three, then "+N". */
+  contentWidth: (value, _field, measure) =>
+    itemsWidth(
+      list(value).map((file) =>
+        file.thumbnailUrl || file.type?.startsWith('image/')
+          ? 24
+          : Math.min(120, 18 + measure(file.name))
+      ),
+      measure
+    )
 };

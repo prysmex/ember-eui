@@ -29,7 +29,9 @@ export default class SheetApiModule<T extends object> {
     showShortcuts: () => this.sheet.keys.showShortcuts(),
     editField: (fieldId) => this.sheet.fieldEditor.editField(fieldId),
     addField: (options = {}) => this.sheet.fieldEditor.addField(options.index),
-    moveRecords: (ids, target) => this.sheet.rowDrag.moveFromApi(ids, target)
+    moveRecords: (ids, target) => this.sheet.rowDrag.moveFromApi(ids, target),
+    fitField: (fieldId) => this.sheet.gridColumns.fitField(fieldId),
+    fitFields: () => this.sheet.gridColumns.fitFields()
   };
 
   /* Blocks (3.6) */

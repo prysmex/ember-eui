@@ -318,6 +318,7 @@ export default class EuiSheet<T extends object> extends Component<
       {{on "focusout" this.focus.onFocusOut}}
       {{on "mouseover" this.drag.onMouseOver}}
       {{on "click" this.clicks.onClick}}
+      {{on "dblclick" this.gridColumns.onResizerDoubleClick capture=true}}
       {{on "dblclick" this.clicks.onDoubleClick}}
       {{on "contextmenu" this.rowMenu.onContextMenu}}
       {{on "dragstart" this.edit.onDragStart capture=true}}

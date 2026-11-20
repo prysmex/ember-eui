@@ -1,5 +1,6 @@
 import { fieldOptions } from '../fields.ts';
 import { joinList, splitList } from '../list.ts';
+import { chipsWidth } from './content-width.ts';
 
 import type {
   FieldType,
@@ -95,5 +96,11 @@ export const multiSelectFieldType: FieldType<Value[], MultiSelectField> = {
       if (d) return d < 0 ? -1 : 1;
     }
     return x.length - y.length;
-  }
+  },
+  /** A chip per option (three, then "+N"). */
+  contentWidth: (value, field, measure, context) =>
+    chipsWidth(
+      list(value).map((v) => labelOf(field, context, v)),
+      measure
+    )
 };

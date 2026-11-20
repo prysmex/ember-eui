@@ -1,4 +1,5 @@
 import { joinList, splitList } from '../list.ts';
+import { chipsWidth } from './content-width.ts';
 
 import type {
   FieldType,
@@ -84,5 +85,11 @@ export const linkedRecordFieldType: FieldType<Value, LinkedRecordField> = {
         list(b)
           .map((item) => item.label)
           .join(', ')
-      )
+      ),
+  /** A chip per linked record (three, then "+N"). */
+  contentWidth: (value, _field, measure) =>
+    chipsWidth(
+      list(value).map((item) => item.label),
+      measure
+    )
 };

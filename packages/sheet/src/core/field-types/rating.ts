@@ -40,5 +40,7 @@ export const ratingFieldType: FieldType<number | null, RatingField> = {
   series: (samples, count, field, direction) =>
     numericSeries(samples, count, direction)?.map((n) =>
       Math.min(maxOf(field), Math.max(1, Math.round(n)))
-    )
+    ),
+  /** Every star, set or not (16 px glyphs). */
+  contentWidth: (_value, field) => maxOf(field) * 18
 };

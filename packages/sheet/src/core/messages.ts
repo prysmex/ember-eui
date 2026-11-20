@@ -63,6 +63,10 @@ export interface SheetMessages {
   close: () => string;
   /** 'Filter by this field': the column menu's item with `@onFilterByField`. */
   filterByField: () => string;
+  /** 'Fit to content': the column menu's item that fits the column's width to its content (v0.4 01). */
+  fitToContent: () => string;
+  /** 'Fit all fields': for an app's button that calls `api.fitFields()` (v0.4 01). */
+  fitAllFields: () => string;
   /** 'Re-apply': the EmberSearchUi connector's button that runs the search again after edits. */
   reapply: () => string;
   /** 'Text is not a file': text pasted on an attachment cell. */
@@ -527,6 +531,16 @@ export const sheetMessageTokens: Readonly<
   filterByField: {
     token: 'euiSheet.filterByField',
     defaultMessage: 'Filter by this field',
+    params: []
+  },
+  fitToContent: {
+    token: 'euiSheet.fitToContent',
+    defaultMessage: 'Fit to content',
+    params: []
+  },
+  fitAllFields: {
+    token: 'euiSheet.fitAllFields',
+    defaultMessage: 'Fit all fields',
     params: []
   },
   reapply: {

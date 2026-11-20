@@ -14,5 +14,7 @@ export const checkboxFieldType: FieldType<boolean, CheckboxField> = {
   format: (value) => (value === true ? 'true' : 'false'),
   isEmpty: (value) => value !== true,
   navKey: (key, value) => (key === ' ' ? { value: value !== true } : undefined),
-  compare: (a, b) => Number(a === true) - Number(b === true)
+  compare: (a, b) => Number(a === true) - Number(b === true),
+  /** The box (14 px) and its room. */
+  contentWidth: () => 24
 };

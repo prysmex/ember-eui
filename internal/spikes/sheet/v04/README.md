@@ -52,6 +52,7 @@ On top of that, for this version:
 | 07 | `07-csv-import.md` | `parseCsv`, `importMatrix`, `api.appendRows` (the research's `importRows`, split in two) | `src/core/csv.ts`, API | 110 | 140 |
 | 08 | `08-cell-color.md` | `@cellColor` | cells | 60 | 90 |
 | 09 | `09-visible-range.md` | `@onVisibleRangeChange` (load more) | grid options | 70 | 100 |
+| 10 | `10-import-screen.md` | `<EuiSheetImport>`: map columns, guess types, preview, transforms, create fields (added 2026-11-20) | new component, `src/core/import.ts` | 850 | 600 |
 
 The total is about 670 source lines. Line counts are estimates, scaled
 against the V03 batch table.
@@ -69,6 +70,7 @@ The letters are the ones in `../FEATURE-RESEARCH.md`.
 | 2 | A | 01, 02, 03, 04, 05 (presentation and menus) |
 | 3 | B | 06, 07 (CSV in and out) |
 | 4 | C | 08 cell colour |
+| 5 | E | 10 the import screen (after B: it builds on 07, and 10 lists three small additions to B) |
 
 The user chose this order: load more first. After D, the batches are
 independent of each other, so the order of A, B and C can change if
@@ -115,7 +117,6 @@ These are the "maybe" rows of `../FEATURE-RESEARCH.md`. Each needs a
 measurement or a user decision first:
 
 - auto row height (measure the scroll cost first, like FZ9);
-- guessing field types on import;
 - custom fill series;
 - cell tooltips;
 - a `time` type;
@@ -134,3 +135,13 @@ measurement or a user decision first:
 3. `api.appendRows` (07) does not split large imports. Chunking is the
    app's job, and the docs say how.
 4. v0.4 starts only after batches 3b, 3c, 4 and 5 are finished.
+
+## Decided (the user, 2026-11-20)
+
+5. An import screen (10) in the package, reusable for any target described
+   by fields (not only a sheet). v1 creates fields from unmatched columns
+   and has named transforms defined by the app; user-typed expressions
+   are not in v1. It is batch E, after B, and B is built with the three
+   additions 10 lists.
+6. Guessing field types on import is in, as a suggestion for a new
+   field's type (10, "Guessing a type").

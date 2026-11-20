@@ -12,7 +12,7 @@ import { on } from '@ember/modifier';
 import { assert, warn } from '@ember/debug';
 import { isDestroyed, isDestroying } from '@ember/destroyable';
 import { guidFor } from '@ember/object/internals';
-import { cancel, debounce, later, next, run, schedule } from '@ember/runloop';
+import { cancel, debounce, later, next, run } from '@ember/runloop';
 import { service } from '@ember/service';
 import { htmlSafe } from '@ember/template';
 import { buildWaiter } from '@ember/test-waiters';
@@ -20,7 +20,6 @@ import { modifier } from 'ember-modifier';
 
 import EuiDataGrid from '@ember-eui/core/components/eui-data-grid';
 import EuiIcon from '@ember-eui/core/components/eui-icon';
-import EuiIconTip from '@ember-eui/core/components/eui-icon-tip';
 import EuiProgress from '@ember-eui/core/components/eui-progress';
 import {
   euiClass,
@@ -108,6 +107,24 @@ import SheetFooterCell, {
 } from '../-private/footer-cell.gts';
 import { ensureStyles, headerMarkRules } from '../-private/styles.ts';
 import { sheetThemeVars } from '../-private/theme.ts';
+import { headerDisplay } from '../-private/sheet/header-display.gts';
+import {
+  ADD_FIELD_COLUMN_ID,
+  ADD_FIELD_WIDTH,
+  afterRender,
+  clamp,
+  EMPTY_CHANGE_SET,
+  isPromise,
+  nextTempId,
+  resolveWaiter,
+  ROW_COLUMN_ID,
+  sameIds,
+  sameLayout,
+  samePos,
+  sameRange,
+  stop,
+  uploadOf
+} from '../-private/sheet/util.ts';
 
 import type {
   CellErrors,
@@ -119,7 +136,6 @@ import type {
   RecordId,
   ResolvePlan,
   ResolveResult,
-  SheetAttachment,
   SheetContext,
   RecordInsert,
   SheetFieldDraft,
@@ -158,67 +174,26 @@ import type {
 } from '@ember-eui/core/utils/data-grid/types';
 import type Owner from '@ember/owner';
 import type { ComponentLike } from '@glint/template';
+import type {
+  CellView,
+  ExpandedFrom,
+  FocusedCell,
+  FrozenLayout,
+  HistoryEntry,
+  MenuState,
+  PendingCall,
+  PendingEntry,
+  PendingFocus,
+  PendingOwn,
+  RangeKind,
+  Touched,
+  UploadField,
+  Validation,
+  WrapperBox
+} from '../-private/sheet/types.ts';
 
 export type { EuiSheetSignature };
-
-/** One cell as the renderer shows it (PACKAGE-DESIGN.md 7.3). */
-export interface CellView {
-  record: unknown;
-  field: EuiSheetField;
-  type: EuiSheetFieldType;
-  value: unknown;
-  /** The rejected text, else type.format(value). */
-  text: string;
-  rejected: boolean;
-  errors: string[];
-  selected: boolean;
-  readOnly: boolean;
-  /** Waiting for `@onResolve` or an upload: no errors shown until it settles. */
-  pending: boolean;
-  /** `type.link(value)` when its scheme is one the sheet opens. */
-  link: string | undefined;
-  /** Files dragged over the cell will be dropped on it. */
-  dropTarget: boolean;
-}
-
-/**
- * A cell waiting for `@onResolve` (text: what was typed or pasted, shown
- * meanwhile) or for an upload (text: null, the value stays shown).
- */
-interface PendingEntry {
-  text: string | null;
-  /** The call it waits for. */
-  token: object;
-  /** The cell to resolve; none for an upload. */
-  cell?: PendingCell;
-}
-
-/** One `@onResolve` call or upload in flight. */
-interface PendingCall {
-  kind: 'resolve' | 'upload';
-  controller: AbortController;
-  waiter: unknown;
-  /** The history entry of the paste or edit that asked for it: the resolve is merged into it. */
-  entry: HistoryEntry | null;
-}
-
-/**
- * One undo entry: the change set a user action emitted, and the rejections
- * it stored (with the value each cell had then), which undo clears and
- * redo puts back.
- */
-interface HistoryEntry {
-  changeSet: ChangeSet;
-  rejections: Rejection[];
-}
-
-/** A box relative to the sheet's wrapper, in the wrapper's CSS px. */
-export interface WrapperBox {
-  top: number;
-  left: number;
-  width: number;
-  height: number;
-}
+export type { CellView };
 
 /**
  * The open field editor (V03 6.4): what it edits, where it is, and the
@@ -293,27 +268,6 @@ class Editing {
   }
 }
 
-/** A cell to focus once its record is rendered (V02-DESIGN.md 3.3). */
-interface PendingFocus {
-  /** The record's id, as a string. */
-  id: string;
-  fieldId: string;
-}
-
-/** What this sheet emitted that the owner has not applied yet, as far as `@records` shows. */
-interface PendingOwn {
-  deletes: Set<string>;
-  inserts: number;
-}
-
-interface Validation {
-  errors: CellErrors;
-  /** The record objects the run started with, by id. */
-  records: Map<string, unknown>;
-}
-
-type Touched = Array<{ id: RecordId; fieldId: string }>;
-
 const ARROWS = new Set(['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight']);
 
 /** Keys that extend the range with Shift (V02-DESIGN.md 8.4). */
@@ -364,24 +318,8 @@ function coarsePointer(): boolean {
 const CELL_ERROR_SPACE = 48;
 /** The error box's widest size. */
 const CELL_ERROR_MAX_WIDTH = 320;
-
-/** A focused data cell and its box, relative to the wrapper. */
-interface FocusedCell {
-  pos: Pos;
-  rect: SheetEditorRect;
-  wrapperWidth: number;
-  /** Viewport px between the cell's bottom and the window's bottom. */
-  viewportBelow: number;
-}
-
-/** Id of the row-number control column. */
-const ROW_COLUMN_ID = 'euiSheetRow';
 /** Its width without `@rowLabel`. */
 const ROW_COLUMN_WIDTH = 64;
-
-/** Id of the "+" add-field column: a trailing control column (V03 6.3, W8). */
-const ADD_FIELD_COLUMN_ID = 'euiSheet-addField';
-const ADD_FIELD_WIDTH = 40;
 /** The grid's width for a column without `initialWidth`, at least (`DEFAULT_COLUMN_WIDTH`, `body-base.ts`). */
 const GRID_DEFAULT_COLUMN_WIDTH = 100;
 
@@ -428,52 +366,6 @@ const ROW_HEIGHTS: Record<SheetRowHeight, EuiDataGridRowHeightsOptions> = {
   tall: { defaultHeight: { lineCount: 4 } },
   extraTall: { defaultHeight: { lineCount: 6 } }
 };
-
-/** Where the frozen columns are: each one's `left`, by grid column index, and their right edge. */
-interface FrozenLayout {
-  lefts: Map<number, number>;
-  /** The grid column index of the last frozen column. */
-  last: number;
-  /** The frozen columns' right edge, from the grid's left edge, in CSS px. */
-  right: number;
-}
-
-/** The header of a field with a description: its label and an info tip (6.3). */
-function headerDisplay(label: string, description: string): ComponentLike {
-  return <template>
-    <span class="euiSheet__headerTitle">{{label}}</span>
-    <span
-      class="euiSheet__headerTip"
-      data-test-subj="euiSheetFieldDescription"
-    ><EuiIconTip
-        @content={{description}}
-        @type="iInCircle"
-        @size="s"
-        @color="subdued"
-      /></span>
-  </template>;
-}
-
-/** What a range covers (V02-DESIGN.md 5.4). */
-type RangeKind = 'cells' | 'rows' | 'columns';
-
-/** The open row menu: the row it was opened on and where, in the wrapper. */
-interface MenuState {
-  row: number;
-  /** The data column it was opened on; null on a row number. */
-  col: number | null;
-  /** Its anchor, relative to the wrapper: the pointer (no size) or the cell. */
-  anchor: WrapperBox;
-  /** The records it acts on, fixed when it opened. */
-  records: unknown[];
-}
-
-/** Where the expanded record was opened from, to focus it again on close. */
-interface ExpandedFrom {
-  recordId: RecordId;
-  /** null: the row-number cell. */
-  fieldId: string | null;
-}
 
 /** Menu items whose action moves focus itself. */
 const MENU_ITEMS_THAT_MOVE_FOCUS = new Set([
@@ -547,103 +439,15 @@ const HISTORY_LIMIT = 100;
 /** Debounce of `@validate` runs, in ms. */
 const VALIDATE_DEBOUNCE = 50;
 
-/** One counter per page: `localRecords` uses the tempId as the record id, so it is never reused. */
-let tempIdCounter = 0;
-const nextTempId = (): string => `new-${++tempIdCounter}`;
-
 const validateWaiter = buildWaiter('@ember-eui/sheet:validate');
-const resolveWaiter = buildWaiter('@ember-eui/sheet:resolve');
-
-type UploadField = EuiSheetField & {
-  upload?: (
-    files: File[],
-    context: { record: unknown; field: EuiSheetField; signal: AbortSignal }
-  ) => Promise<SheetAttachment[]>;
-  maxFiles?: number;
-};
-
-/** The field's `upload`, when it has one (attachment fields). */
-function uploadOf(field: EuiSheetField): UploadField['upload'] {
-  const upload = (field as UploadField).upload;
-  return typeof upload === 'function' ? upload : undefined;
-}
 
 /** A drag that carries files. */
 function hasFiles(event: DragEvent): boolean {
   return Array.from(event.dataTransfer?.types ?? []).includes('Files');
 }
 
-const EMPTY_CHANGE_SET: ChangeSet = {
-  source: 'undo',
-  patches: [],
-  inserts: [],
-  rejected: [],
-  newOptions: []
-};
-
 function isModal(shell: string): boolean {
   return shell === 'modal';
-}
-
-function sameRange(a: Range, b: Range): boolean {
-  return (
-    a.top === b.top &&
-    a.left === b.left &&
-    a.bottom === b.bottom &&
-    a.right === b.right
-  );
-}
-
-function samePos(a: Pos | null, b: Pos | null): boolean {
-  return !!a && !!b && a.row === b.row && a.col === b.col;
-}
-
-function clamp(value: number, min: number, max: number): number {
-  return Math.max(min, Math.min(max, value));
-}
-
-/** "Stop": the event is the sheet's. */
-function stop(event: Event): void {
-  event.preventDefault();
-  event.stopPropagation();
-}
-
-function isPromise<V>(value: unknown): value is Promise<V> {
-  return !!value && typeof (value as { then?: unknown }).then === 'function';
-}
-
-/** Runs `fn` after the current render (modifiers run inside it: no tracked writes there). */
-function afterRender(owner: object, fn: () => void): void {
-  schedule('afterRender', () => {
-    if (isDestroying(owner) || isDestroyed(owner)) return;
-    fn();
-  });
-}
-
-function sameIds(a: readonly string[], b: readonly string[]): boolean {
-  if (a.length !== b.length) return false;
-  for (let i = 0; i < a.length; i++) if (a[i] !== b[i]) return false;
-  return true;
-}
-
-/** Whether two renders' rows are laid out the same: the same groups, at the same header and add rows. */
-function sameLayout(
-  a: RowModel,
-  aGroups: readonly SheetGroup[],
-  b: RowModel,
-  bGroups: readonly SheetGroup[]
-): boolean {
-  if (a.length !== b.length || aGroups.length !== bGroups.length) return false;
-  for (let i = 0; i < aGroups.length; i++) {
-    if (
-      aGroups[i]!.key !== bGroups[i]!.key ||
-      a.headerRowOf(i) !== b.headerRowOf(i) ||
-      a.addRowOf(i) !== b.addRowOf(i)
-    ) {
-      return false;
-    }
-  }
-  return true;
 }
 
 /**

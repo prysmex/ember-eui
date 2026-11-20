@@ -10,6 +10,7 @@ import type {
   ResolveResult,
   SheetFieldDraft,
   SheetGroup,
+  SheetGroupBy,
   SheetMessages,
   ValidateContext
 } from './core/index.ts';
@@ -385,6 +386,12 @@ export interface EuiSheetSignature<T> {
      * empty: no groups.
      */
     groups?: SheetGroup[];
+    /** The owner's group-by (V03 8.1): drawn in the header menu and given to the blocks. */
+    groupBy?: SheetGroupBy[];
+    /** Shows "Group by this field" / "Remove grouping" in the header menu. */
+    onGroupByChange?: (groupBy: SheetGroupBy[]) => void;
+    /** Shows the header's toggle; the owner drops or restores the group's records. */
+    onGroupToggle?: (key: string, collapsed: boolean) => void;
     /** Inserting records (the add row, Shift+Enter, the menu). Default `!@readOnly`. */
     canInsert?: boolean;
     /** Deleting records (the menu). Default `!@readOnly`. */

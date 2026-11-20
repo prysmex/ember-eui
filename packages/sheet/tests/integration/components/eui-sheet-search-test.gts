@@ -24,7 +24,7 @@ import {
   type
 } from '../../helpers/sheet.ts';
 
-import type { ChangeSet, EuiSheetField } from '#src/core/index.ts';
+import type { ChangeSet, EuiSheetField, SheetGroup } from '#src/core/index.ts';
 import type { SheetSearchBlockApi } from '#src/search-ui/index.ts';
 
 interface Doc {
@@ -473,5 +473,82 @@ module('Integration | Component | EuiSheetSearch', function (hooks) {
     );
     assert.strictEqual(text(0, 1), 'Paris (FR)', 'shown over the results');
     assert.strictEqual(store.docs[0]!.city, 'Paris (FR)');
+  });
+
+  const headers = (): SheetGroup[] => [
+    { key: 'g1', depth: 0, value: 1, label: 'First', count: 2, loaded: 2 },
+    { key: 'g2', depth: 0, value: 2, label: 'Second', count: 9, loaded: 3 }
+  ];
+  // every cell of a header row repeats its label (9.1): the first one of each row
+  const groupLabels = () =>
+    Array.from(
+      document.querySelectorAll<HTMLElement>('.euiSheet__groupRow')
+    ).map((row) =>
+      row
+        .querySelector('[data-test-subj=euiSheetGroupLabel]')
+        ?.textContent?.trim()
+    );
+  const groupBy = [{ field: 'city', direction: 'asc' as const }];
+  const noop = () => undefined;
+
+  test('GC1 the connector forwards @groups as they are (an array)', async function (assert) {
+    const { store, driver } = setup(5);
+    drivers.push(driver);
+    const groups = headers();
+    await render(
+      <template>
+        <div style="width:700px">
+          <EuiSheetSearch
+            @driver={{driver}}
+            @getRecordId={{getId}}
+            @onChange={{store.write}}
+            @fields={{FIELDS}}
+            @groups={{groups}}
+            @groupBy={{groupBy}}
+            @onGroupByChange={{noop}}
+            @onGroupToggle={{noop}}
+            @height={{400}}
+          />
+        </div>
+      </template>
+    );
+    assert.deepEqual(groupLabels(), ['First2', 'Second9']);
+    assert.strictEqual(
+      text(5, 0),
+      'Caro',
+      'the records sit under the headers (an add row ends group 1)'
+    );
+  });
+
+  test('GC1 a function of the snapshot gives the headers; the connector keeps them for the results', async function (assert) {
+    const { store, driver } = setup(5);
+    drivers.push(driver);
+    const asked: number[] = [];
+    const fromSnapshot = (snapshot: {
+      result: { results: readonly Doc[] };
+    }) => {
+      asked.push(snapshot.result.results.length);
+      return headers();
+    };
+    await render(
+      <template>
+        <div style="width:700px">
+          <EuiSheetSearch
+            @driver={{driver}}
+            @getRecordId={{getId}}
+            @onChange={{store.write}}
+            @fields={{FIELDS}}
+            @groups={{fromSnapshot}}
+            @height={{400}}
+          />
+        </div>
+      </template>
+    );
+    assert.deepEqual(groupLabels(), ['First2', 'Second9']);
+    assert.deepEqual(asked, [5], 'asked once, for the one result');
+    await editName(1, 'Zed');
+    assert.strictEqual(store.docs[0]?.name, 'Zed', 'the edit was made');
+    assert.deepEqual(asked, [5], 'not again for an edit');
+    assert.deepEqual(groupLabels(), ['First2', 'Second9']);
   });
 });

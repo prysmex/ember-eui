@@ -356,6 +356,19 @@ export interface RecordInsert {
   anchor?: { recordId: RecordId; position: 'before' | 'after' };
   /** Set when an undo re-creates a deleted record: its id and the object it was. */
   restore?: { recordId: RecordId; record: unknown };
+  /** With `@groups`: the key of the group whose add row, menu item or paste made it. `values` already carry that group's values (V03 4.3). */
+  groupKey?: string;
+}
+
+/** A record that changes place (V03 4.3): a row drag, its undo or redo. */
+export interface RecordMove {
+  recordId: RecordId;
+  /** Where it goes: next to this record. Absent: into `groupKey` with no loaded record to anchor to. */
+  anchor?: { recordId: RecordId; position: 'before' | 'after' };
+  /** With `@groups`: the key of the group it lands in. */
+  groupKey?: string;
+  /** Where it was, for undo: the record before it (absent: it was first) and its group. */
+  from: { after?: RecordId; groupKey?: string };
 }
 
 /** What a delete removed, so it can be undone. */
@@ -398,7 +411,8 @@ export interface ChangeSet {
     | 'insert'
     | 'delete'
     | 'cut'
-    | 'resolve';
+    | 'resolve'
+    | 'move';
   patches: CellPatch[];
   inserts: RecordInsert[];
   /**
@@ -409,6 +423,8 @@ export interface ChangeSet {
   deletes?: RecordId[];
   /** Present whenever `deletes` comes from a user delete or its redo: same order as `deletes`. */
   removed?: RecordRemoval[];
+  /** Records that change place (V03 4.3). `applyChangeSet` does not apply them yet; `applyChangeSetToGroups` reads them. */
+  moves?: RecordMove[];
   rejected: CellRejection[];
   newOptions: NewOption[];
 }

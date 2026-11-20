@@ -2,13 +2,14 @@
  * A tracked record array that applies change sets: for tests, demos and
  * apps without a store of their own (PACKAGE-DESIGN.md 5.6).
  */
-import { tracked } from '@glimmer/tracking';
+import { cached, tracked } from '@glimmer/tracking';
 
 import {
   applyChangeSet,
   applyNewOptions,
   convertField,
-  defaultMessages
+  defaultMessages,
+  groupRecords
 } from './core/index.ts';
 import { builtInSheetFieldTypes } from './field-types.ts';
 
@@ -19,7 +20,10 @@ import type {
   RecordId,
   RecordInsert,
   SheetFieldDraft,
-  SheetMessages
+  SheetGroup,
+  SheetGroupBy,
+  SheetMessages,
+  SheetSummaryKind
 } from './core/index.ts';
 
 export interface LocalRecordsOptions<
@@ -37,6 +41,10 @@ export interface LocalRecordsOptions<
   types?: FieldTypeRegistry;
   /** The messages of the conversion's rejections. Default: English. */
   messages?: SheetMessages;
+  /** The sheet's group-by to start with. Default: none. */
+  groupBy?: SheetGroupBy[];
+  /** Per field id, the summary every group header shows (`summarize`). Default: none. */
+  summaries?: Record<string, SheetSummaryKind>;
 }
 
 /** A field id from a label: lower case, accents and symbols dropped, words joined by `-`. */
@@ -56,6 +64,12 @@ export class LocalRecords<
 > {
   @tracked records: T[];
   @tracked fields: F[];
+  /** The group-by (V03 8.7): `@groupBy={{store.groupBy}}`. Needs `fields`. */
+  @tracked groupBy: SheetGroupBy[];
+  /** Keys of the collapsed groups. */
+  @tracked collapsedGroups: ReadonlySet<string> = new Set<string>();
+  /** Per field id, the summary every group header shows. */
+  @tracked summaries: Record<string, SheetSummaryKind>;
   readonly log: ChangeSet[] = [];
   private options: LocalRecordsOptions<T, F>;
 
@@ -63,7 +77,49 @@ export class LocalRecords<
     this.records = initial;
     this.fields = options.fields ?? [];
     this.options = options;
+    this.groupBy = options.groupBy ?? [];
+    this.summaries = options.summaries ?? {};
   }
+
+  /**
+   * `@records` and `@groups` for the sheet: `groupRecords` over the
+   * records (V03 8.7), or the records and no groups without a group-by.
+   * It groups by value, so an edit of the group field or an insert
+   * without a neighbour (an empty group) lands in its group on the next
+   * read.
+   */
+  @cached get view(): { records: T[]; groups: SheetGroup[] } {
+    if (!this.groupBy.length) return { records: this.records, groups: [] };
+    return groupRecords(
+      {
+        types: { ...builtInSheetFieldTypes, ...this.options.types },
+        messages: this.options.messages ?? defaultMessages
+      },
+      this.records,
+      {
+        groupBy: this.groupBy,
+        fields: this.fields,
+        collapsed: this.collapsedGroups,
+        summaries: this.summaries
+      }
+    );
+  }
+
+  /** Bound: `@onGroupByChange={{store.setGroupBy}}`. */
+  setGroupBy = (groupBy: SheetGroupBy[]): void => {
+    this.groupBy = groupBy.map(({ field, direction }) => ({
+      field,
+      direction
+    }));
+  };
+
+  /** Bound: `@onGroupToggle={{store.toggleGroup}}`. */
+  toggleGroup = (key: string, collapsed: boolean): void => {
+    const next = new Set(this.collapsedGroups);
+    if (collapsed) next.add(key);
+    else next.delete(key);
+    this.collapsedGroups = next;
+  };
 
   /** Bound: `@onChange={{store.apply}}`. */
   apply = (changeSet: ChangeSet): void => {

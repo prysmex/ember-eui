@@ -13,7 +13,7 @@ import {
   searchRecords
 } from '#src/search-ui/index.ts';
 
-import type { ChangeSet } from '#src/core/index.ts';
+import type { ChangeSet, SheetGroup } from '#src/core/index.ts';
 import type {
   SearchRecordsOptions,
   SheetSearchDriver,
@@ -567,5 +567,100 @@ module('Unit | Sheet | search-ui | SearchRecords', function (hooks) {
     assert.deepEqual(search.records, DOCS);
     search.disconnect();
     assert.strictEqual(driver.listeners.size, 0);
+  });
+
+  test('GC2 an insert in a group between searches raises that group’s count in the stable copy', function (assert) {
+    const driver = new FakeDriver();
+    let calls = 0;
+    const header = (key: string, count: number): SheetGroup => ({
+      key,
+      depth: 0,
+      value: key,
+      count,
+      loaded: 1
+    });
+    const { search } = connect(driver, {
+      groups: () => {
+        calls++;
+        return [header('g1', 5), header('g2', 3)];
+      }
+    });
+    assert.deepEqual(search.groups, [], 'idle: nothing yet');
+    driver.succeed(DOCS);
+    assert.strictEqual(calls, 1);
+    assert.deepEqual(
+      search.groups.map((g) => [g.key, g.count, g.loaded]),
+      [
+        ['g1', 5, 1],
+        ['g2', 3, 1]
+      ]
+    );
+    const before = search.groups;
+
+    search.apply(
+      changeSet({
+        source: 'insert',
+        inserts: [
+          {
+            tempId: 'n1',
+            index: 2,
+            values: { name: 'Caro' },
+            groupKey: 'g2',
+            anchor: { recordId: 'b', position: 'after' }
+          }
+        ]
+      })
+    );
+    assert.deepEqual(
+      search.groups.map((g) => [g.key, g.count, g.loaded]),
+      [
+        ['g1', 5, 1],
+        ['g2', 4, 2]
+      ],
+      'count and loaded follow the insert'
+    );
+    assert.strictEqual(
+      search.groups[0],
+      before[0],
+      'the other header is the same object'
+    );
+    assert.deepEqual(
+      search.records.map((r) => r.id),
+      ['a', 'b', 'n1']
+    );
+
+    search.apply(changeSet({ source: 'delete', deletes: ['a'] }));
+    assert.deepEqual(
+      search.groups.map((g) => [g.count, g.loaded]),
+      [
+        [4, 0],
+        [4, 2]
+      ],
+      'a delete subtracts'
+    );
+    assert.strictEqual(calls, 1, 'the app is not asked again between searches');
+
+    // the next search replaces the copy
+    driver.succeed(DOCS);
+    assert.strictEqual(calls, 2);
+    assert.deepEqual(
+      search.groups.map((g) => [g.count, g.loaded]),
+      [
+        [5, 1],
+        [3, 1]
+      ]
+    );
+    // a state-only change re-emits the same result: nothing is recomputed
+    driver.state({ query: { term: 'x' } });
+    assert.strictEqual(calls, 2);
+  });
+
+  test('GC2 without options.groups: no groups, and change sets still apply', function (assert) {
+    const driver = new FakeDriver();
+    const { search } = connect(driver);
+    driver.succeed(DOCS);
+    search.apply(edit('a', 'Zoe', 'Ana'));
+    assert.deepEqual(search.groups, []);
+    assert.strictEqual(search.records[0]?.name, 'Zoe');
   });
 });

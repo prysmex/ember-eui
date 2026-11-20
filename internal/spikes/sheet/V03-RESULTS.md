@@ -1245,3 +1245,129 @@ final code. GH alone: 6/6. `eslint` and `prettier --check` are clean on the chan
 `pnpm lint:types` (src) has no error. The tests' `ember-tsc`
 (`tsconfig.eslint.json`) has the baseline's 19 errors, the same ones.
 `docs:api:check` passes.
+
+## Batch 3b, stage 2: grouping outside the component
+
+Built 2026-11-19 on `437612f1`, in the repository (tested in a Linux
+copy). Scope: 8.7 and 8.8, outside the component. `eui-sheet.gts` and
+`src/-private/*` are not touched. Not committed.
+
+### What was built
+
+- **`src/core/groups.ts` (new, exported from `src/core/index.ts`).**
+  - `groupRecords(ctx, records, { groupBy, fields, collapsed?, summaries?, rowNumberOffset? })`
+    as 8.7 says. Groups by the type's `copyText` (else `format`), orders
+    by `compare` (else text), reverses for `'desc'`. Keys are
+    `field:text` joined by `/`. A parent has no `loaded`; a collapsed
+    leaf has `loaded: 0`; a collapsed parent hides its children.
+    `rowNumberStart` is set on every group and counts the records of
+    collapsed groups. `summary` is `summarize` over all the group's
+    records, collapsed or not. `label` is left unset (the sheet's
+    default). A level whose field is not in `fields` is left out; with
+    none left the result is the records and no groups.
+  - `applyChangeSetToGroups(groups, records, changeSet, getRecordId)`
+    as 8.7 says. Insert by `groupKey`, else by anchor (an anchor may be
+    an earlier insert's `tempId`). Delete by the group the record is
+    under. Move: leaves `from.groupKey` (else its group) and enters
+    `groupKey` (else its anchor's group). Ancestors' `count` follow. A
+    collapsed group gets `count` only. Untouched groups keep their
+    identity; with no effective change the same array comes back.
+  - `pageGroups(records, groups, groupKeyOf, { offset? })`: see
+    deviations.
+- **Types (`src/core/types.ts`).** `RecordInsert.groupKey`, `RecordMove`,
+  `ChangeSet.moves` and source `'move'`, as 4.3 says. `applyChangeSet`
+  does not apply `moves` yet (batch 4).
+- **`src/types.ts`.** `groupBy`, `onGroupByChange` and `onGroupToggle`
+  on `EuiSheetSignature['Args']` (4.4). Types only: the component does
+  not read them until stage 3.
+- **`src/local-records.ts`.** `@tracked groupBy`, `@tracked
+  collapsedGroups` (a `Set`, replaced on each toggle), `@tracked
+  summaries`, bound `setGroupBy` and `toggleGroup`, and `@cached get
+  view()`. Options `groupBy` and `summaries` set the starting values.
+  `view` needs `fields` (the field list is how it finds each level's
+  type); without them a group-by gives no groups. Without a group-by,
+  `view` is `{ records: store.records, groups: [] }` and nothing else
+  changes: `apply` is untouched.
+- **Connector.**
+  - `SearchRecordsOptions.groups?: (snapshot) => readonly SheetGroup[]`
+    and `SearchRecords.groups`. The function is called for each new
+    successful result (and at construction if one is there). Each change
+    set goes through `applyChangeSetToGroups` on the stable copy, with
+    the records as they were before it. A new result replaces the copy.
+    Without the option `groups` is `[]` and nothing else changes.
+  - `EuiSheetSearch` forwards `@groupBy`, `@onGroupByChange` and
+    `@onGroupToggle`, and `@groups`. `@groups` is either an array
+    (passed as it is) or a function of the snapshot (the stable copy,
+    above).
+  - `ember-search-ui` is not touched.
+
+### Tests
+
+- `tests/unit/groups-test.ts` (new): GP1 to GP9 (GP8 in two tests: 10
+  tests), plus `localRecords` LG1 to LG3. 13 tests.
+- `tests/unit/search-records-test.ts`: GC2 (two tests: the copy follows
+  an insert and a delete and is replaced by the next search; no option,
+  no groups).
+- `tests/integration/components/eui-sheet-search-test.gts`: GC1 (two
+  tests: array forwarded; function called once per result, not for an
+  edit).
+- No existing assertion changed. GR22 and the rest of GR are stage 3.
+
+Full suite on the final code: **458 tests, 457 passed**. The one failure
+was FZ9 (10,000-row scroll timing), which timed out at 60 s while the
+sandbox load average was 13 to 19 (other sessions). FZ9 alone then passed.
+The 441 tests of stage 1 plus 17 new (GP 10, LG 3, GC2 2, GC1 2).
+GC1, GC2, GP and LG pass alone and in the full run.
+`eslint` and `prettier --check` are clean on the changed files.
+`pnpm lint:types` (src) has no error. The tests' `ember-tsc` has the
+baseline's 19 errors, in the same files. `docs:api:check` passes.
+
+### Deviations from 8.7 and 8.8
+
+1. **`pageGroups` has a fourth parameter, `{ offset }`.** 8.8 gives three.
+   `continued` cannot be known from one page of records, so the caller
+   passes the position of the page's first record in the data the backend
+   pages (the records of the expanded groups, in order). `groups` is the
+   backend's list for the whole result. Leaves with no record on the page
+   are left out, their ancestors are kept, and a collapsed group is kept
+   at the start of the page, inside it, or at the end of the last page.
+   `loaded` is counted with `groupKeyOf` (the key of the leaf a record
+   is directly under); `continued` is from `offset` and the `count`s.
+2. **The connector's groups come from an option, not from the sheet
+   args.** 8.8 does not say where `SearchRecords` gets the headers it
+   keeps. A snapshot function is the only way that is in step with the
+   results (an array from the app may be built before or after the
+   connector sees the result). The array form of `@groups` still works,
+   without the stable copy.
+3. **`groupRecords` does not set `label`.** The default is the sheet's
+   (`type.format(value)` or `groupEmpty`). The messages `groupEmpty` and
+   the others of 4.6 are not added yet: they are stage 3's.
+4. **Empty values sort by the type's `compare`.** For text the empty
+   group is first in `'asc'`; for a select it is last (its `compare`
+   puts a value that is not an option at the end). 8.7 says only
+   "ordered by `compare`".
+5. **Test file location.** `tests/unit/groups-test.ts`, not
+   `tests/unit/core/groups-test.ts`: the unit tests are flat.
+6. **GC1 checks `@groups` only.** The other three forwarded arguments do
+   nothing in the component until stage 3, so nothing can be seen. GR3
+   and GR18 will cover them.
+7. **Types added early.** `moves` and `RecordMove` (4.3) are in
+   `types.ts` because GP8 needs them. They are types only.
+
+### What stage 3 needs from these helpers
+
+- `groupRecords` gives `rowNumberStart` on every header: the row model
+  can use it as is (it counts collapsed groups' records). Headers have
+  no `label`: the component must default it (`copyText`/`format` of the
+  group's field, `groupEmpty` for `null`).
+- `localRecords.view` is `{ records, groups }`: GR22 can bind
+  `store.view.records`, `store.view.groups`, `store.groupBy`,
+  `store.setGroupBy` and `store.toggleGroup` directly. An insert from a
+  group's add row must carry the group's values and `groupKey`; with no
+  anchor (an empty group) it lands in its group on the next `view`.
+- `applyChangeSetToGroups` reads `insert.groupKey`, `insert.anchor`,
+  `deletes` and `moves[].from.groupKey` / `groupKey` / `anchor`. The
+  component should set `groupKey` on inserts (8.4) so the stable copy
+  counts them in the right group.
+- `EuiSheetSearch` already passes `@groupBy`, `@onGroupByChange` and
+  `@onGroupToggle` to `EuiSheet`; the component only has to read them.

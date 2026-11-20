@@ -20,7 +20,11 @@ import { createMessages } from '../core/index.ts';
 import { fieldsFromSchema } from './fields-from-schema.ts';
 import { searchRecords } from './search-records.ts';
 
-import type { EuiSheetField, SheetMessages } from '../core/index.ts';
+import type {
+  EuiSheetField,
+  SheetGroup,
+  SheetMessages
+} from '../core/index.ts';
 import type { EuiSheetSignature, SheetBlockApi } from '../types.ts';
 import type {
   SearchRecords,
@@ -37,6 +41,9 @@ export type SheetSearchBlockApi<Doc extends object> = SheetBlockApi<Doc> & {
 /** The `EuiSheet` arguments the component passes on as they are. */
 type ForwardedArgs<Doc> = Pick<
   EuiSheetSignature<Doc>['Args'],
+  | 'groupBy'
+  | 'onGroupByChange'
+  | 'onGroupToggle'
   | 'hiddenFields'
   | 'onHiddenFieldsChange'
   | 'onFieldOrderChange'
@@ -88,6 +95,13 @@ export interface EuiSheetSearchSignature<Doc extends object> {
     createRecord?: SearchRecordsOptions<Doc>['createRecord'];
     /** Re-query after every change set instead of showing "Re-apply". Default false. */
     refreshOnChange?: boolean;
+    /**
+     * The group headers (V03 8.8). An array is passed to the sheet as it
+     * is. A function gets each new successful snapshot and returns the
+     * headers; the connector then keeps them in step with the user's
+     * edits until "Re-apply", as it does the rows (`SearchRecords.groups`).
+     */
+    groups?: SheetGroup[] | NonNullable<SearchRecordsOptions<Doc>['groups']>;
     /** Default: `fieldsFromSchema(driver.schema)`. */
     fields?: EuiSheetField<Doc>[];
     /** Shows `EuiTablePagination` in the footer under offset paging. Default true. */
@@ -130,6 +144,10 @@ export default class EuiSheetSearch<Doc extends object> extends Component<
         : ({ id: tempId, ...values } as unknown as Doc),
     get refreshOnChange() {
       return component.args.refreshOnChange ?? false;
+    },
+    get groups() {
+      const { groups } = component.args;
+      return typeof groups === 'function' ? groups : undefined;
     }
   }))(this);
 
@@ -157,6 +175,12 @@ export default class EuiSheetSearch<Doc extends object> extends Component<
       this.args.fields ??
       (fieldsFromSchema(this.args.driver.schema) as EuiSheetField<Doc>[])
     );
+  }
+
+  /** `@groups` as an array, or the connector's copy of what the function returned. */
+  get groups(): SheetGroup[] | undefined {
+    const { groups } = this.args;
+    return typeof groups === 'function' ? this.search.groups : groups;
   }
 
   get reapplyLabel(): string {
@@ -217,6 +241,10 @@ export default class EuiSheetSearch<Doc extends object> extends Component<
       @rowHeight={{@rowHeight}}
       @onRowHeightChange={{@onRowHeightChange}}
       @frozenFields={{@frozenFields}}
+      @groups={{this.groups}}
+      @groupBy={{@groupBy}}
+      @onGroupByChange={{@onGroupByChange}}
+      @onGroupToggle={{@onGroupToggle}}
       @fieldDrag={{@fieldDrag}}
       @headerLines={{@headerLines}}
       @onFieldCreate={{@onFieldCreate}}

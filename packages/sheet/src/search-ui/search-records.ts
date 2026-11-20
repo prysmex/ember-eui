@@ -10,9 +10,9 @@ import { tracked } from '@glimmer/tracking';
 import { registerDestructor } from '@ember/destroyable';
 import { buildWaiter } from '@ember/test-waiters';
 
-import { applyChangeSet } from '../core/index.ts';
+import { applyChangeSet, applyChangeSetToGroups } from '../core/index.ts';
 
-import type { ChangeSet, RecordId } from '../core/index.ts';
+import type { ChangeSet, RecordId, SheetGroup } from '../core/index.ts';
 import type { SheetSort } from '../types.ts';
 
 const waiter = buildWaiter('@ember-eui/sheet:search-records');
@@ -85,6 +85,14 @@ export interface SearchRecordsOptions<Doc> {
   createRecord?: (values: Record<string, unknown>, tempId: string) => Doc;
   /** Re-query after every change set instead of waiting for "Re-apply". Default false. */
   refreshOnChange?: boolean;
+  /**
+   * The group headers of a snapshot (V03 8.8): the app's backend's group
+   * counts (`result.aggregations`) and the page's results for `loaded`
+   * (`pageGroups` helps). Called for each new successful result. The
+   * connector keeps the last answer, adjusts it with each change set
+   * (`applyChangeSetToGroups`) and gives it as `groups`. Absent: no groups.
+   */
+  groups?: (snapshot: SheetSearchSnapshot<Doc>) => readonly SheetGroup[];
 }
 
 type Result<Doc> = SheetSearchSnapshot<Doc>['result'];
@@ -110,6 +118,7 @@ export class SearchRecords<Doc extends object> {
 
   @tracked private snapshot: SheetSearchSnapshot<Doc>;
   @tracked private current: Doc[];
+  @tracked private currentGroups: SheetGroup[] = [];
   @tracked private pending: readonly ChangeSet[] = [];
   /** The state the last successful result was searched with (its page). */
   @tracked private resultState: State | undefined;
@@ -138,6 +147,7 @@ export class SearchRecords<Doc extends object> {
     if (snapshot.result.status === 'success') {
       this.lastResult = snapshot.result;
       this.resultState = snapshot.state;
+      this.currentGroups = this.groupsOf(snapshot);
     }
     this.unsubscribe = driver.subscribe(this.receive);
     this.updateWaiter();
@@ -146,6 +156,14 @@ export class SearchRecords<Doc extends object> {
   /** The last results with the user's change sets since then applied on top. */
   get records(): Doc[] {
     return this.current;
+  }
+
+  /**
+   * The headers of the last results (`options.groups`), with the change
+   * sets since then applied to their counts. Empty without `options.groups`.
+   */
+  get groups(): SheetGroup[] {
+    return this.currentGroups;
   }
 
   /** The driver's sort (a copy that keeps its identity while the sort does not change). */
@@ -211,6 +229,14 @@ export class SearchRecords<Doc extends object> {
   apply = (changeSet: ChangeSet): void => {
     this.pending = [...this.pending, changeSet];
     const { getRecordId, createRecord } = this.options;
+    if (this.currentGroups.length) {
+      this.currentGroups = applyChangeSetToGroups(
+        this.currentGroups,
+        this.current,
+        changeSet,
+        getRecordId
+      );
+    }
     this.current = applyChangeSet(
       this.current,
       changeSet,
@@ -271,6 +297,7 @@ export class SearchRecords<Doc extends object> {
       this.lastResult = result;
       this.resultState = snapshot.state;
       this.current = [...result.results];
+      this.currentGroups = this.groupsOf(snapshot);
       this.pending = [];
       if (this.saving.size) this.searchedWhileSaving = true;
     }
@@ -280,6 +307,11 @@ export class SearchRecords<Doc extends object> {
       queueMicrotask(() => this.updateWaiter());
     }
   };
+
+  private groupsOf(snapshot: SheetSearchSnapshot<Doc>): SheetGroup[] {
+    const groups = this.options.groups;
+    return groups ? [...groups(snapshot)] : [];
+  }
 
   private track(promise: Promise<unknown>): void {
     this.saving.add(promise);

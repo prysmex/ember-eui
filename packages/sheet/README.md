@@ -115,6 +115,7 @@ Arguments of `EuiSheet`:
 | `@highlight`, `@isLoading`                                        | A searched term, marked in cells; a progress bar over the grid.                                                                                                                                                        |
 | `@currentMatch`                                                   | `{ recordId, fieldId }` or `null`: your current search match, scrolled into view and ringed; focus stays in your search box.                                                                                           |
 | `@onSelectionChange`                                              | `(selection or null) => void`: the selected records and fields, after render, when they change.                                                                                                                        |
+| `@onVisibleRangeChange`                                           | `({ first, last, count }) => void`: the records on screen (positions in `@records`), after render, when they change. For loading more as the user scrolls.                                                             |
 | `@summary`                                                        | `{ [fieldId]: text }` (`''`: the row-number column): the summary bar.                                                                                                                                                  |
 | `@frozenFields`                                                   | Leading fields kept in view on horizontal scroll, with the row numbers. Default `0` (off); `1` freezes the first field.                                                                                                |
 | `@rowNumbers`, `@rowLabel`, `@rowNumberOffset`                    | The row-number column (default on); `(record, position) => text` to show something else than the position; the first record's position on a page.                                                                      |
@@ -160,6 +161,21 @@ rows separate), and `summarizeCells(ctx, selection, kind)` gives `count`,
 its format; several: a plain number). `@onSelectionChange` runs after
 render, at most once per run loop, when the records, fields or kind
 changed: keep it cheap.
+
+Paging is yours, and so is loading more as the user scrolls:
+`@onVisibleRangeChange` gets `{ first, last, count }`, the first and
+last records on screen as positions in `@records` (group headers and add
+rows skipped) and `@records.length`. It runs after render, at most once
+per run loop, when one of them changed (a scroll, a resize, `@records`
+growing). Load the next page when `last` nears `count`, guarded by your
+own loading flag, pass `@isLoading`, and append to `@records`: the scroll,
+the selection and focus stay.
+
+```js
+onVisibleRangeChange = ({ last, count }) => {
+  if (this.hasMore && !this.isLoading && last >= count - 20) this.loadMore();
+};
+```
 
 Search is yours too, but the sheet shows your current match:
 `@currentMatch={{this.match}}` scrolls it into view (clear of the frozen

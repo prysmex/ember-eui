@@ -204,6 +204,7 @@ your own store, remove those records.
 | `@highlight` | A term you searched for: matching text is marked in cells (any case, every match). |
 | `@currentMatch` | `{ recordId, fieldId }` or `null`: your current search match. When it changes the sheet scrolls it into view and rings it, without moving focus or the selection (Search matches, below). |
 | `@onSelectionChange` | `(selection or null) => void`: the selected cells' records and fields, after render, when they change (Summary bar, below). |
+| `@onVisibleRangeChange` | `({ first, last, count }) => void`: the records on screen, as positions in `@records`, after render, when they change (Loading more as you scroll, below). |
 | `@isLoading` | A thin progress bar over the grid; the grid stays usable. |
 | `@summary` | `{ [fieldId]: text }` (and `''` for the row-number column): shows the summary bar (below). |
 | `@frozenFields` | Leading fields kept in view on horizontal scroll, with the row numbers. Default `0` (off); `1` freezes the first field. |
@@ -239,6 +240,7 @@ state and tells you what the user asked for:
 | Steps to the next match in your box | (nothing) | pass `@currentMatch` (expand its group or change the page first) |
 | Selects cells | `@onSelectionChange(selection)` | show a summary of the selection (`summarizeCells`) |
 | Changes page in your pager | (nothing) | pass that page as `@records`, and `@rowNumberOffset` |
+| Scrolls near the end | `@onVisibleRangeChange({ first, last, count })` | load the next page, append it to `@records` |
 | Waits | | pass `@isLoading` |
 | Drags a row (with `@canMove`) | `@onChange` with `moves` | put the records in the new order, pass them |
 | Presses a button cell | `@onButtonPress({ recordId, fieldId, record }, { signal })` | run your action; a promise shows it pending, a rejection as the cell's error |
@@ -300,6 +302,42 @@ Sorting a local array needs a few lines in your component (the "View
 intents" example does it with each type's `compare`). For filtering,
 search and paging over local data, an EmberSearchUi driver with its
 in-memory backend does the work, shown through the connector below.
+
+## Loading more as you scroll
+
+A large table does not need a pager: load a page, and load the next one
+when the user scrolls near the end. The sheet does not page; it tells you
+which records are on screen, and you decide when to load more:
+
+```js
+onVisibleRangeChange = ({ first, last, count }) => {
+  if (this.hasMore && !this.isLoading && last >= count - 20) this.loadMore();
+};
+
+async loadMore() {
+  this.isLoading = true; // pass it as @isLoading: a progress bar over the grid
+  const page = await this.fetchPage(this.records.length);
+  this.records = [...this.records, ...page];
+  this.isLoading = false;
+}
+```
+
+`@onVisibleRangeChange` gets `first` and `last`, the first and last
+records on screen, and `count`, `@records.length`. They are positions in
+`@records`, not grid rows: group headers and add rows are skipped, so
+with groups (also collapsed ones) "near the end" is still `last` against
+`count`. It is called after render, at most once per run loop, when one
+of the three changed: on a scroll, a resize of the grid, and when
+`@records` grows. A window with only group headers on screen calls
+nothing. It is not called during the render, so the handler can set
+state or append records at once.
+
+Guard the load with your own flag: the sheet calls again while a page is
+loading (the user keeps scrolling), and once more with the new `count`
+when it arrives. Appending at the end keeps the scroll position, the
+selection and the focused cell. An add row at the end of a half-loaded
+list is odd: `@canInsert={{false}}` until everything is loaded, as the
+"Load more as you scroll" example does.
 
 ## EmberSearchUi
 

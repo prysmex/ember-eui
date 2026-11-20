@@ -266,6 +266,14 @@ export interface SheetBlockApi<T = any> {
   showShortcuts(): void;
   /** Opens the field editor to add a field at the end (with `@onFieldCreate`; nothing without it). */
   addField(): void;
+  /** `@groupBy`, or `[]`. */
+  groupBy: SheetGroupBy[];
+  /** `@groups`, or `[]`. */
+  groups: SheetGroup[];
+  /** Calls `@onGroupByChange`; nothing without it (a toolbar's group-by control, a second level). */
+  setGroupBy(groupBy: SheetGroupBy[]): void;
+  /** Calls `@onGroupToggle(key, !collapsed)` for that group of `@groups`; nothing without the handler. */
+  toggleGroup(key: string): void;
 }
 
 /** The cell's box relative to the sheet's wrapper, in CSS px. */

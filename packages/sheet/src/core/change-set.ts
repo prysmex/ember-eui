@@ -356,7 +356,16 @@ export function deleteRecords<T>(
 export function duplicateRecords<T>(
   ctx: SheetContext<T>,
   recordIndexes: readonly number[],
-  options: { nextTempId?: () => string } = {}
+  options: {
+    nextTempId?: () => string;
+    /**
+     * The group a copy of the record at this index goes into (V03 8.4):
+     * its values win over the copied ones, and `groupKey` is set.
+     */
+    group?: (
+      index: number
+    ) => { values: Record<string, unknown>; groupKey: string } | undefined;
+  } = {}
 ): ChangeSet | null {
   const indexes = [...new Set(recordIndexes)]
     .filter((index) => ctx.records[index] !== undefined)
@@ -369,13 +378,19 @@ export function duplicateRecords<T>(
       const value = valueOf(record, field.id);
       if (value !== undefined) values[field.id] = value;
     }
-    return {
+    const insert: RecordInsert = {
       tempId: options.nextTempId?.() ?? `new-${i}`,
       // each earlier copy is one more row before this one
       index: index + 1 + i,
       values,
       anchor: { recordId: ctx.getRecordId(record), position: 'after' }
     };
+    const group = options.group?.(index);
+    if (group) {
+      Object.assign(values, group.values);
+      insert.groupKey = group.groupKey;
+    }
+    return insert;
   });
   return inserts.length ? changeSet('insert', { inserts }) : null;
 }

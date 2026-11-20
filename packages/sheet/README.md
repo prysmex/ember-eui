@@ -10,7 +10,9 @@ built-in field types for text, numbers, checkboxes, selects, dates,
 linked records, users, attachments, currency, percent, duration, rating,
 links and long text, and you can add your own cells and editors. Fields
 can be added, edited, duplicated and deleted from the grid (the "+" column
-and the column menu), through your handlers.
+and the column menu), through your handlers. Records can be drawn in
+groups, with collapsible headers, counts and per-group summaries, from the
+groups you pass.
 
 ## Install
 
@@ -150,6 +152,39 @@ of 72, and about four times the time per vertical scroll step. Freeze on
 sheets with few fields, or hide the fields not needed on screen. Above 50
 visible fields the sheet does not freeze. The docs' "Frozen field" section
 has the numbers.
+
+### Group by
+
+The sheet draws groups and never groups: pass the headers in `@groups`
+(depth-first, each with `key`, `depth`, `value`, `count`, `loaded`,
+`collapsed`, `summary`) and the expanded groups' records in `@records`, in
+display order. `localRecords` does it for local data:
+
+```gjs
+const store = localRecords(records, { getRecordId, fields, groupBy: [{ field: 'status', direction: 'asc' }] });
+
+<EuiSheet
+  @fields={{store.fields}}
+  @records={{store.view.records}}
+  @groups={{store.view.groups}}
+  @groupBy={{store.groupBy}}
+  @onGroupByChange={{store.setGroupBy}}
+  @onGroupToggle={{store.toggleGroup}}
+  @getRecordId={{getRecordId}}
+  @onChange={{store.apply}}
+/>
+```
+
+`@onGroupByChange` adds "Group by this field" and "Remove grouping" to the
+column menu (not on a field with `groupable: false`); `@onGroupToggle`
+gives each header its chevron (and Enter or Space on it). Each expanded
+group has its own add row, and a record added there, or next to a record
+of the group (Shift+Enter, insert, duplicate), gets the group's values and
+`groupKey`. Counts are yours: the sheet reads nothing from the records.
+`groupRecords`, `applyChangeSetToGroups` and `pageGroups` help an owner
+build `@groups`; `EuiSheetSearch` forwards the four arguments. Grouping
+keeps column virtualization, so it costs about what an ungrouped sheet
+costs. The docs' "Group by" section has the contract.
 
 ## EmberSearchUi
 
@@ -744,6 +779,6 @@ devices or real IMEs yet.
 
 ## Limits
 
-No range selection by touch, grouping or fullscreen yet. Sorting, filtering, search and paging
+No range selection by touch, dragging a record into another group or fullscreen yet. Sorting, filtering, search and paging
 are the owner's (see above, and the EmberSearchUi connector). Uploads show
 no progress (the cell is pending).

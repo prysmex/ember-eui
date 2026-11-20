@@ -68,7 +68,9 @@ export function invertChangeSet(
  * (last write wins elsewhere, so this is how undo and redo avoid it):
  *
  * - a patch is kept when its record exists and the cell still holds its
- *   `from` (`equals`, default `Object.is`);
+ *   `from` (`equals`, default `Object.is`); with `keepUnseen`, a patch of
+ *   a record that is not in `records` is kept too, unchecked (V03 8.5: a
+ *   record in a collapsed group, which the owner still has);
  * - a deletion is kept when the record exists and, given `inserted` (the
  *   inserts being undone), still holds every value its insert set;
  * - an insert is kept when no record has its `tempId` (or its restored
@@ -83,7 +85,11 @@ export function withoutConflicts<T>(
   changeSet: ChangeSet,
   records: readonly T[],
   getRecordId: (record: T) => RecordId,
-  options: { inserted?: readonly RecordInsert[]; equals?: ValueEquals } = {}
+  options: {
+    inserted?: readonly RecordInsert[];
+    equals?: ValueEquals;
+    keepUnseen?: boolean;
+  } = {}
 ): ChangeSet | null {
   const equals = options.equals ?? sameValue;
   const byId = new Map<string, T>();
@@ -91,9 +97,11 @@ export function withoutConflicts<T>(
 
   const patches: CellPatch[] = changeSet.patches.filter((patch) => {
     const id = String(patch.recordId);
-    return (
-      byId.has(id) &&
-      equals(patch.fieldId, valueOf(byId.get(id), patch.fieldId), patch.from)
+    if (!byId.has(id)) return !!options.keepUnseen;
+    return equals(
+      patch.fieldId,
+      valueOf(byId.get(id), patch.fieldId),
+      patch.from
     );
   });
 
@@ -171,6 +179,12 @@ export interface HistoryOptions {
   fieldIds?: readonly string[];
   /** How a cell's value is compared with the value the change left there. Default `Object.is`. */
   equals?: ValueEquals;
+  /**
+   * Patches of records that are not in `records` are kept, without the
+   * "changed since" check (V03 8.5: grouped, such a record is in a
+   * collapsed group and the owner still has it). Default false: dropped.
+   */
+  keepUnseen?: boolean;
 }
 
 /**
@@ -187,7 +201,11 @@ export function undoChangeSet<T>(
     invertChangeSet(entry, options.fieldIds),
     records,
     getRecordId,
-    { inserted: entry.inserts, equals: options.equals }
+    {
+      inserted: entry.inserts,
+      equals: options.equals,
+      keepUnseen: options.keepUnseen
+    }
   );
 }
 
@@ -212,7 +230,8 @@ export function redoChangeSet<T>(
   if (entry.deletes) redo.deletes = entry.deletes;
   if (entry.removed) redo.removed = entry.removed;
   return withoutConflicts(redo, records, getRecordId, {
-    equals: options.equals
+    equals: options.equals,
+    keepUnseen: options.keepUnseen
   });
 }
 

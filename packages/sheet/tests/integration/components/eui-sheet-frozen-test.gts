@@ -28,7 +28,12 @@ import {
   type
 } from '../../helpers/sheet.ts';
 
-import type { ChangeSet, EuiSheetField } from '#src/core/index.ts';
+import type {
+  ChangeSet,
+  EuiSheetField,
+  SheetGroup,
+  SheetGroupBy
+} from '#src/core/index.ts';
 
 type Row = Record<string, string | number>;
 
@@ -56,6 +61,13 @@ class State {
   changes: ChangeSet[] = [];
   onChange = (changeSet: ChangeSet) => this.changes.push(changeSet);
 }
+
+/** FZ13: the groups passed to the sheet, or none. */
+class GroupView {
+  @tracked groups: SheetGroup[] | undefined = undefined;
+}
+
+type Measured = { ms: number; cells: number; headers: number };
 
 function outer(): HTMLElement {
   return el('.euiDataGrid__virtualized');
@@ -485,6 +497,99 @@ module('Integration | Component | EuiSheet frozen field', function (hooks) {
         '.euiDataGridRow [role=gridcell][data-gridcell-column-index="1"]'
       );
       return Number(first?.dataset['gridcellVisibleRowIndex']);
+    }
+  });
+
+  test('FZ13 vertical scroll over 10,000 records in 200 groups with 30 fields: grouped against ungrouped, frozen off and on (time logged)', async function (assert) {
+    // four variants, interleaved over rounds, the fastest round of each:
+    // a loaded machine slows a round, not a variant
+    assert.timeout(300_000);
+    const state = new State();
+    state.fields = fieldsOf(30, 150);
+    state.records = rowsOf(10_000, 30);
+    const groups: SheetGroup[] = Array.from({ length: 200 }, (_, g) => ({
+      key: `g${g}`,
+      depth: 0,
+      value: `G${g}`,
+      count: 50,
+      loaded: 50
+    }));
+    const groupBy: SheetGroupBy[] = [{ field: 'f1', direction: 'asc' }];
+    const view = new GroupView();
+    await render(
+      <template>
+        <div style="width:600px">
+          <EuiSheet
+            @fields={{state.fields}}
+            @records={{state.records}}
+            @groups={{view.groups}}
+            @groupBy={{groupBy}}
+            @getRecordId={{getId}}
+            @onChange={{state.onChange}}
+            @frozenFields={{state.frozenFields}}
+            @height={{400}}
+          />
+        </div>
+      </template>
+    );
+    type Variant = { grouped: boolean; frozen: number };
+    const variants: Variant[] = [
+      { grouped: false, frozen: 0 },
+      { grouped: true, frozen: 0 },
+      { grouped: false, frozen: 1 },
+      { grouped: true, frozen: 1 }
+    ];
+    const best = variants.map(() => ({ ms: Infinity, cells: 0, headers: 0 }));
+    for (let round = 0; round < 2; round++) {
+      for (const [i, variant] of variants.entries()) {
+        view.groups = variant.grouped ? groups : undefined;
+        state.frozenFields = variant.frozen;
+        await settled();
+        await scrollGrid(0, 0);
+        await frame();
+        const result = await measure();
+        if (result.ms < best[i]!.ms) best[i] = result;
+      }
+    }
+    const [plainOff, groupedOff, plainOn, groupedOn] = best as [
+      Measured,
+      Measured,
+      Measured,
+      Measured
+    ];
+    const line = (name: string, m: Measured) =>
+      `${name} ${m.ms.toFixed(1)} ms, ${m.cells} cells, ${m.headers} header rows`;
+    report(
+      assert,
+      `FZ13 per scroll step: ${line('frozen off, ungrouped', plainOff)}; ${line('grouped', groupedOff)}; ${line('frozen on, ungrouped', plainOn)}; ${line('grouped', groupedOn)}`
+    );
+    // logged, not asserted (V03 8.10), like FZ9: a timing ratio fails on a
+    // loaded machine (1.8-2x seen with another browser busy, 0.75-1.26x
+    // quiet)
+    assert.ok(groupedOff.headers > 0, 'header rows were rendered');
+    assert.ok(groupedOn.headers > 0, 'and with frozen fields');
+    assert.ok(
+      [plainOff, groupedOff, plainOn, groupedOn].every(
+        (m) => Number.isFinite(m.ms) && m.ms > 0
+      ),
+      'every variant was measured'
+    );
+
+    async function measure(): Promise<Measured> {
+      const steps = 20;
+      let headers = 0;
+      const start = performance.now();
+      for (let i = 1; i <= steps; i++) {
+        await scrollGrid(0, i * 600);
+        await frame();
+        headers += document.querySelectorAll('.euiSheet__groupRow').length;
+      }
+      return {
+        ms: (performance.now() - start) / steps,
+        cells: document.querySelectorAll('.euiDataGridRow [role=gridcell]')
+          .length,
+        headers
+      };
     }
   });
 

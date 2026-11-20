@@ -40,6 +40,12 @@ export interface EuiSheetField<T = any> {
    * `false` for system fields (V03 6.2).
    */
   manageable?: boolean;
+  /**
+   * The header menu offers "Group by this field" (and, on the grouped
+   * field, "Remove grouping") with `@onGroupByChange`. Default true;
+   * `false` drops both (V03 4.4, 8.3).
+   */
+  groupable?: boolean;
   /** Options of the field's type (below) and of app types. */
   [option: string]: unknown;
 }

@@ -782,6 +782,31 @@ module('Unit | Sheet | change sets', function () {
     assert.strictEqual(duplicateRecords(ctx(records, fields), [9]), null);
   });
 
+  test('S6b duplicateRecords with group: the group values win and each copy gets its groupKey (V03 8.4)', function (assert) {
+    const fields: EuiSheetField<Row>[] = [{ id: 'a' }, { id: 'status' }];
+    const records: Row[] = [
+      { id: 'r0', a: 'a0', status: 'Open' },
+      { id: 'r1', a: 'a1', status: 'stale' }
+    ];
+    const set = duplicateRecords(ctx(records, fields), [0, 1], {
+      group: (index) =>
+        index === 0
+          ? { values: { status: 'Open' }, groupKey: 'status:Open' }
+          : { values: { status: 'Done' }, groupKey: 'status:Done' }
+    })!;
+    assert.deepEqual(
+      set.inserts.map((insert) => [insert.values, insert.groupKey]),
+      [
+        [{ a: 'a0', status: 'Open' }, 'status:Open'],
+        [{ a: 'a1', status: 'Done' }, 'status:Done']
+      ]
+    );
+    const none = duplicateRecords(ctx(records, fields), [0], {
+      group: () => undefined
+    })!;
+    assert.false('groupKey' in none.inserts[0]!, 'no group: no groupKey');
+  });
+
   test('S7 pasteMatrix anchors its inserts after the last record', function (assert) {
     const result = pasteMatrix(ctx([]), { row: 0, col: 0 }, [['x'], ['y']]);
     assert.deepEqual(

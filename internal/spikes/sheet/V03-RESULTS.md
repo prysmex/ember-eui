@@ -1735,3 +1735,252 @@ same files. `docs:api:check` passes. `packages/core/src` is unchanged.
 - `packages/sheet/tests/unit/paste-insert-test.ts` (new)
 
 `packages/core/src` is unchanged. No dependency was added.
+
+## Batch 3b, stage 3.2b: the rest of group by
+
+Built 2026-11-20 on `b52d66ef`, in the repository (tested in a Linux
+copy). Scope: the "For 3.2b" list of stage 3.2a, GR13 to GR16, GR18,
+GR22, FZ13, the header menu, the blocks and the docs. Not committed.
+
+**Batch 3b is complete.** Group by works as V03-DESIGN.md 8 says, with
+the deviations listed in each stage. The open items are at the end.
+
+### What group by does now (batch 3b in short)
+
+- The owner passes `@groups` (headers, depth-first) and the expanded
+  groups' records in `@records`. The sheet groups nothing and counts
+  nothing.
+- Header rows: label, count, "(continued)", per-group summaries, a
+  sticky label, a chevron with `@onGroupToggle`, focus that follows the
+  header's key.
+- One add row per expanded leaf group. Every insert into a group (its add
+  row, Shift+Enter, insert above and below, duplicate, paste) carries the
+  group's values and `groupKey`.
+- Row numbers across groups, with `rowNumberStart`.
+- Keys, ranges, clipboard and fill work in record space. A header keeps
+  no range, takes no edit, has no row menu, and page and Home/End keys
+  never land on it.
+- The column menu has "Group by this field" and "Remove grouping".
+- `groupRecords`, `applyChangeSetToGroups`, `pageGroups`,
+  `localRecords.view`, and the EmberSearchUi connector's forwarding.
+
+### What was built in this stage
+
+- **Inserts with group values.** `insertNear` (Shift+Enter, the menu's
+  insert above and below) takes the record's group from
+  `rowModel.groupAt(row)` (new helper `groupInsertOf`). The group's
+  values win over `@newRecordValues`, and the insert gets `groupKey`.
+  `duplicate` does the same per record: `duplicateRecords` (sheet core)
+  has a new option `group(index)`. A selection over two groups makes
+  copies with two keys. Without groups nothing changes.
+- **History (GR16).** `HistoryOptions.keepUnseen` (sheet core):
+  `withoutConflicts` keeps a patch of a record that is not in `records`,
+  without the "changed since" check. The sheet sets it only while some
+  group in `@groups` is collapsed, for undo and redo alike. Nothing is
+  selected after such an undo (the cell is not drawn). Without a
+  collapsed group, an entry of another page is skipped and kept, as
+  before (H10 unchanged).
+- **Header menu (8.3, GR18).** `groupMenuItems`: "Group by this field"
+  (`[{ field, direction: 'asc' }]`, icon `aggregate`) and, on a field of
+  `@groupBy`, "Remove grouping" (`[]`, icon `cross`) instead. Only with
+  `@onGroupByChange` and not with `groupable: false`. New field option
+  `EuiSheetField.groupable` (4.4). The handler is called in `next()`,
+  after the popover has closed, like the field items. 8.3 names no
+  "Collapse all" or "Expand all", so none was added.
+- **Block API (4.5).** `SheetBlockApi` gains `groupBy`, `groups`,
+  `setGroupBy(groupBy)` and `toggleGroup(key)`. Each setter calls its
+  handler and does nothing without it; an unknown key does nothing.
+  `SheetApi` gets no group members (4.5 names none).
+- **Row-number cell keys.** Grouped only (`handleGroupedRowNumberKey`):
+  PageUp and PageDown move by the rows in view and Ctrl+Home goes to the
+  first record, all staying in the row-number column and never on a
+  header. With Shift a page key lands on a record and extends whole rows.
+  Ctrl+End is the data cells' (`handleGroupedEndKey`). Without groups the
+  grid keeps these keys, as before.
+- **A press on a header's row number drops the range.** At HEAD a
+  click or a Shift+click on a header's row-number cell kept the old range
+  (`keepRangeOnFocus`), so a paste on the focused header wrote into that
+  range. Now a header keeps no range from any press. A press on a
+  header's data cell already dropped it. Decision per 8.6 ("a click on
+  the row focuses it"): a Shift+click on a header focuses the header and
+  drops the range; it does not extend. Documented in `sheet.md`.
+- **Already working, now pinned** (no code): GR13 (Shift+click across a
+  header checks the records between; select-all checks the loaded
+  records), GR15 (next from a group's last record opens the next
+  group's first), no row menu on a header (right-click, Shift+F10, the
+  ContextMenu key), and delete focusing the neighbour record.
+
+### Tests
+
+- `tests/integration/components/eui-sheet-groups-intents-test.gts`
+  (new), 16 tests: GR14a (Shift+Enter, insert below and above), GR14b
+  (duplicate, one and two groups), GR14c (no `groupKey` without groups),
+  GR13, GR14d (delete focuses the neighbour, also over a header), GR14e
+  (no menu on a header, each with a control on a record row), GR15,
+  GR16, GR18 (two: the items; none without the handler), GR24 (two: the
+  blocks, and without groups or handlers), GR11 (two: row-number keys
+  grouped; not taken without groups), GR6 (Shift+click on a header),
+  GR22 (`localRecords` end to end, group and ungroup through the column
+  menu).
+- Run against HEAD's component first: 6 passed (GR13, GR14c, GR14e,
+  GR15, GR18 without the handler, GR11 without groups) and 10 failed. Of
+  the 10, 9 failed on the component (GR6 on "no range", the bug above)
+  and one, GR14d, on a mistake in the test (it opened the menu on the
+  Status column, so focus went to the neighbour's Status cell); fixed
+  since, and GR14d needs no component change.
+- `tests/integration/components/eui-sheet-frozen-test.gts`: FZ13 (new).
+- `tests/unit/history-test.ts`: H13 (new). `tests/unit/change-set-test.ts`:
+  S6b (new).
+- No existing test or assertion was changed.
+
+Full suite on the final code: **522/522**, in one run (under 2
+minutes): 503 at HEAD plus 16 + 1 + 2 new. The new integration tests
+also pass alone (16/16), and FZ13 alone (with and without `report`).
+`packages/core/src` is unchanged.
+
+### FZ13
+
+10,000 records in 200 groups of 50, 30 fields of 150 px, 600 px wide,
+height 400, add rows on. 20 vertical scroll steps of 600 px per
+variant. The four variants run interleaved over two rounds; the fastest
+round of each is kept. Logged with `tests/index.html?filter=FZ13&report`.
+
+Three runs, ms per step (cells rendered: 72 frozen off, 372 frozen on,
+the same grouped and ungrouped; header rows were in view on 5 of the 20
+steps):
+
+| Run (load average) | Off, ungrouped | Off, grouped | On, ungrouped | On, grouped |
+| --- | --- | --- | --- | --- |
+| 1 (1.3) | 45.9 | 43.5 | 193.6 | 204.8 |
+| 2 (about 2) | 48.4 | 60.9 | 255.1 | 217.2 |
+| 3 (2.8 to 5.1) | 103.3 | 77.8 | 239.5 | 296.7 |
+
+Grouped against ungrouped: 0.95 and 1.06 in run 1, 1.26 and 0.85 in run
+2, 0.75 and 1.24 in run 3. Under load the noise is about 25 % either
+way, so the 1.5 times assertion has some margin but could fail on a
+machine busy enough to slow one variant's both rounds. Run 1's numbers
+are in `sheet.md`.
+
+Grouping does not change the cells rendered (the label is the row's
+first rendered cell, sticky by CSS; columns stay virtualized), and the
+time per step is within a few percent either way. Freezing is what costs
+(FZ9's four times).
+
+What is asserted: header rows were rendered (frozen off and on) and
+every variant was measured. The times are logged, not asserted (8.10),
+like FZ9. The agent first asserted grouped within 1.5 times ungrouped;
+the main session's full run then failed it twice while another session's
+browser was busy (frozen off: grouped 90.2 against 50.0 ms, then 122.3
+against 61.9 ms) and passed it once, so the ratio assertion was removed.
+Whether grouping costs anything on a quiet machine with frozen fields
+off is not settled by these runs (quiet: 0.75 to 1.26; loaded: up to
+2).
+
+### Docs
+
+- `docs/sheet.md`: a "Group by" section (the `localRecords` wiring, the
+  contract of 8.1 with the cases table, the placement rule and that the
+  counts are the owner's, what each feature does on a header and across
+  groups, the helpers, the EmberSearchUi wiring, FZ13's numbers); four
+  arguments in the table and `groupable` under `@fields`; two rows in
+  the owner's table; the blocks' new members; a header paragraph under
+  Keyboard; "Grouping rows" removed from "Not yet" (two narrower items
+  added: a group-by in EmberSearchUi's own state, and dragging a record
+  into another group).
+- `README.md`: the feature list, a "Group by" part with a ten-line
+  example, "Limits".
+- `docs/sheet-demo/d19-groups.md` already has what 8.11 asks (a select
+  field, a second level, a per-group sum, Collapse all and Expand all).
+  Not changed.
+- Docs site, in the Linux copy, after rebuilding the sheet's `dist`:
+  `node --test lib/*.test.mjs` passes, `generate-llms-txt.mjs` runs
+  (the sheet's entry is there), `vite build --mode development` builds
+  (docfy renders the new section), and the site's testem run is 14/14
+  (`Acceptance | docs` with the side-nav count, and code splitting).
+  `scripts/sync-injected.mjs` was not run (it fails in the copy, as in
+  PACKAGE-RESULTS section 12). The site's `dist` was deleted. Two
+  sentences of `sheet.md`'s "Cost" part (the extra FZ13 runs) were added
+  after this run; the site was not rebuilt for them.
+- `node scripts/generate-api-docs.mjs --check` passes: the sheet has no
+  API pages, so nothing was regenerated.
+
+### Lint and types
+
+`eslint` and `prettier --check` are clean on the changed `.ts` and
+`.gts` files and on `README.md`. `docs/sheet.md` fails `prettier
+--check`, as it does at HEAD (not enforced). `pnpm lint:types` (src) has
+no error. The tests' `ember-tsc` (`tsconfig.eslint.json`) has the
+baseline's 19 errors, in the same files: the new test first used
+`Array.prototype.at`, which the tests' lib lacks, and now uses a `last()`
+helper.
+
+### Deviations
+
+1. **FZ13 logs only**, as 8.10 says (a 1.5 times assertion was tried and
+   removed, above).
+2. **"Remove grouping" replaces "Group by this field" on a grouped
+   field.** 8.3 lists "Group by this field" and, on the grouped field,
+   "Remove grouping"; showing both on that field would offer a no-op.
+   On the second level's field of a two-level grouping, "Remove
+   grouping" also removes every level (`[]`), as 8.3 says.
+3. **`keepUnseen` is on while any group is collapsed**, not only for
+   records of a collapsed group: the sheet cannot tell a record of a
+   collapsed group from a record of another page. So, grouped with a
+   collapsed group and paged, an undo of a change on another page is
+   emitted too (without the check) instead of being skipped and kept.
+4. **The row-number Ctrl+Home goes to the first record's row-number
+   cell**, not to its first field as on a data cell (C13): the grid's own
+   Ctrl+Home from a row number stays in that column too.
+5. **No "Grouping" part in `d14-search-ui.md`** (8.11 asks for one). See
+   open items.
+
+### Visibility changes
+
+- A header's row number pressed after a range: the old range outline no
+  longer stays drawn next to the focused header (it looked like where a
+  paste would go, and it was). Now only the header's ring shows.
+- Nothing else in this stage draws anything new; the menu items use the
+  column menu's own look. Not looked at in a screenshot.
+
+### Open items
+
+- **`d14-search-ui.md` has no "Grouping" part** (8.11): it needs a
+  backend wrapper that returns group counts in `aggregations` and
+  `pageGroups` over the page. Not written.
+- **`SheetApi.insertRecord` with an anchor in a group** does not add the
+  group's values or `groupKey` (it takes the owner's `values` or
+  `@newRecordValues`). 8.4 does not name it.
+- **Undo of a change hidden in a collapsed group** skips the "changed
+  since" check (deviation 3), so it can overwrite a change made
+  elsewhere to that record.
+- **Focus after such an undo**, when focus is on the last group's add
+  row: `selectChanged`'s "nothing patched" branch moves focus to the last
+  record (as it does for any undo with no drawn cell). GR16 has focus on
+  a header, so it does not see it. Not fixed.
+- **FZ13 is a timing test.** Like FZ9 and P7, re-run it alone before
+  suspecting the code if it fails.
+- From earlier stages, still open: the paste head on a group's add row
+  assumes the owner draws the inserts at the group's end; `edgeFromGap`
+  copies the records on each Ctrl+Up/Down from a header (O(records));
+  the flash is cut into runs but can include unchanged records;
+  `recordRunOf` relies on a leaf's records being contiguous.
+- Not checked: a real pointer and keyboard (hover, the chevron in dark,
+  the menu items), Firefox, Safari, a screen reader on the header rows.
+- The EmberSearchUi follow-up (a group-by in `SearchState`, D16) is a
+  separate change in `ember-search-ui`.
+
+### Files
+
+- `packages/sheet/src/components/eui-sheet.gts`
+- `packages/sheet/src/core/change-set.ts`: `duplicateRecords` option `group`
+- `packages/sheet/src/core/history.ts`: `keepUnseen`
+- `packages/sheet/src/core/types.ts`: `EuiSheetField.groupable`
+- `packages/sheet/src/types.ts`: `SheetBlockApi` group members
+- `packages/sheet/tests/integration/components/eui-sheet-groups-intents-test.gts` (new)
+- `packages/sheet/tests/integration/components/eui-sheet-frozen-test.gts`: FZ13
+- `packages/sheet/tests/unit/history-test.ts`: H13
+- `packages/sheet/tests/unit/change-set-test.ts`: S6b
+- `packages/sheet/docs/sheet.md`, `packages/sheet/README.md`
+
+`packages/core/src` is unchanged. No dependency was added; the lockfile
+is unchanged. `site/` is unchanged in the repository.

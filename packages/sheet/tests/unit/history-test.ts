@@ -345,6 +345,43 @@ module('Unit | Sheet | history', function () {
       'a delete of a record that is not shown'
     );
   });
+  test('H13 keepUnseen: patches of records not in the records are kept, unchecked (V03 8.5, GR16)', function (assert) {
+    // grouped: r1 is in a collapsed group, so it is not among the records
+    const shown: Row[] = [{ id: 'r0', a: 'x', b: 'b0' }];
+    const edit: ChangeSet = { ...PASTE, source: 'edit', inserts: [] };
+    const undo = undoChangeSet(edit, shown, getId, { keepUnseen: true })!;
+    assert.deepEqual(
+      undo.patches.map((patch) => [patch.recordId, patch.to]),
+      [
+        ['r0', 'a0'],
+        ['r1', 'b1']
+      ],
+      'r1 is kept without its check'
+    );
+    const changed: Row[] = [{ id: 'r0', a: 'other', b: 'b0' }];
+    assert.deepEqual(
+      undoChangeSet(edit, changed, getId, { keepUnseen: true })!.patches.map(
+        (patch) => patch.recordId
+      ),
+      ['r1'],
+      'a shown record changed since is still dropped'
+    );
+    const redo = redoChangeSet(edit, [], getId, { keepUnseen: true })!;
+    assert.deepEqual(
+      redo.patches.map((patch) => [patch.recordId, patch.to]),
+      [
+        ['r0', 'x'],
+        ['r1', 'y']
+      ],
+      'redo too'
+    );
+    assert.deepEqual(
+      undoChangeSet(edit, shown, getId)!.patches.map((patch) => patch.recordId),
+      ['r0'],
+      'without it: dropped, as before'
+    );
+  });
+
   test('H11 withoutField drops the field from patches, inserts, rejections and new options (V03 6.6)', function (assert) {
     assert.strictEqual(
       withoutField(PASTE, 'z'),

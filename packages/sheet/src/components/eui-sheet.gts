@@ -64,7 +64,12 @@ import {
   valueOf,
   withoutField
 } from '../core/index.ts';
-import type { PasteInsert, RowModel, SheetRow } from '../core/index.ts';
+import type {
+  HistoryOptions,
+  PasteInsert,
+  RowModel,
+  SheetRow
+} from '../core/index.ts';
 import { builtInSheetFieldTypes } from '../field-types.ts';
 import AutoScroll from '../-private/auto-scroll.ts';
 import FieldEditor, {
@@ -119,6 +124,7 @@ import type {
   RecordInsert,
   SheetFieldDraft,
   SheetGroup,
+  SheetGroupBy,
   SheetMessages
 } from '../core/index.ts';
 import type { Rejection } from '../-private/rejections.ts';
@@ -1227,6 +1233,7 @@ export default class EuiSheet<T extends object> extends Component<
           'data-test-subj': `euiSheetFilterByField-${field.id}`
         });
       }
+      additional.push(...this.groupMenuItems(field));
       additional.push(...this.fieldMenuItems(field, index, fields));
       if (additional.length) actions.additional = additional;
       const given = this.givenWidth(field) ?? this.keptWidth(field);
@@ -1249,6 +1256,41 @@ export default class EuiSheet<T extends object> extends Component<
       }
       return column;
     });
+  }
+
+  /**
+   * The header menu's group item (V03 8.3), only with `@onGroupByChange`
+   * and not on a field with `groupable: false`: "Remove grouping" (`[]`)
+   * on a field of `@groupBy`, else "Group by this field" (one level,
+   * ascending).
+   */
+  groupMenuItems(
+    field: EuiSheetField<T>
+  ): NonNullable<EuiDataGridColumnActions['additional']> {
+    const handler = this.args.onGroupByChange;
+    if (!handler || field.groupable === false) return [];
+    const grouped = (this.args.groupBy ?? []).some(
+      (level) => level.field === field.id
+    );
+    const messages = this.messages;
+    return [
+      grouped
+        ? {
+            label: messages.removeGrouping(),
+            iconType: 'cross',
+            color: 'text',
+            onClick: () => next(() => handler([])),
+            'data-test-subj': `euiSheetRemoveGrouping-${field.id}`
+          }
+        : {
+            label: messages.groupByField(),
+            iconType: 'aggregate',
+            color: 'text',
+            onClick: () =>
+              next(() => handler([{ field: field.id, direction: 'asc' }])),
+            'data-test-subj': `euiSheetGroupByField-${field.id}`
+          }
+    ];
   }
 
   /**
@@ -1610,9 +1652,24 @@ export default class EuiSheet<T extends object> extends Component<
       setRowHeight: this.setRowHeight,
       setSort: this.setSort,
       showShortcuts: this.showShortcuts,
-      addField: () => this.addField()
+      addField: () => this.addField(),
+      groupBy: this.args.groupBy ?? [],
+      groups: this.args.groups ?? [],
+      setGroupBy: this.setGroupBy,
+      toggleGroup: this.toggleGroupByKey
     };
   }
+
+  /** The block's `setGroupBy`: calls `@onGroupByChange`; nothing without it (V03 4.5). */
+  setGroupBy = (groupBy: SheetGroupBy[]): void => {
+    this.args.onGroupByChange?.(groupBy);
+  };
+
+  /** The block's `toggleGroup(key)`: `@onGroupToggle(key, !collapsed)` for that group of `@groups`; nothing without the handler or the group. */
+  toggleGroupByKey = (key: string): void => {
+    const index = this.groups.findIndex((group) => group.key === key);
+    if (index >= 0) this.toggleGroup(index);
+  };
 
   get hasSummary(): boolean {
     return this.args.summary !== undefined;
@@ -2197,6 +2254,21 @@ export default class EuiSheet<T extends object> extends Component<
       if (depth <= 0) break;
     }
     return values;
+  }
+
+  /**
+   * The group a record inserted next to grid row `row` goes into (V03
+   * 8.4): its values (`groupValuesOf`) and `groupKey`; undefined without
+   * groups.
+   */
+  groupInsertOf(
+    row: number
+  ): { values: Record<string, unknown>; groupKey: string } | undefined {
+    if (!this.isGrouped) return undefined;
+    const group = this.rowModel.groupAt(row);
+    const key = this.groups[group]?.key;
+    if (key === undefined) return undefined;
+    return { values: this.groupValuesOf(group), groupKey: key };
   }
 
   get rowCount(): number {
@@ -3069,15 +3141,20 @@ export default class EuiSheet<T extends object> extends Component<
     const record = records[row];
     if (record === undefined) return;
     const recordId = this.args.getRecordId(record);
-    const values =
-      position === 'after'
+    // grouped: into the record's group, whose values win (V03 8.4)
+    const group = this.groupInsertOf(gridRow);
+    const values = {
+      ...(position === 'after'
         ? this.newValues(record, records[row + 1])
-        : this.newValues(records[row - 1], record);
+        : this.newValues(records[row - 1], record)),
+      ...group?.values
+    };
     this.insertOne(
       position === 'after' ? row + 1 : row,
       { recordId, position },
       values,
-      fieldId ?? this.firstEditableField(values)
+      fieldId ?? this.firstEditableField(values),
+      group?.groupKey
     );
   }
 
@@ -3214,10 +3291,14 @@ export default class EuiSheet<T extends object> extends Component<
         this.rowOf(this.args.getRecordId(record), all.indexOf(record))
       )
       .filter((index) => index >= 0);
+    // grouped: each copy goes into its record's group (V03 8.4)
+    const group = this.isGrouped
+      ? (index: number) => this.groupInsertOf(this.gridRowOf(index))
+      : undefined;
     const changeSet = duplicateRecords(
       { ...this.context, fields: this.allFields, readOnly: false },
       indexes,
-      { nextTempId }
+      group ? { nextTempId, group } : { nextTempId }
     );
     if (!changeSet) return;
     const focusField = fieldId ?? this.visibleFields[0]?.id;
@@ -3931,6 +4012,11 @@ export default class EuiSheet<T extends object> extends Component<
       // the range is the press's: focusin must not clear it
       this.keepRangeOnFocus = true;
       const row = this.rowIndexOf(rowCell);
+      // a group header keeps no range (V03 8.6), also after a press on
+      // its row number with a range elsewhere: a paste there writes nothing
+      if (this.isGrouped && this.rowKind(row) === 'group') {
+        this.keepRangeOnFocus = false;
+      }
       if (!this.isRecordRow(row) || event.button !== 0) return;
       // the checkbox and the expand icon are buttons, not a selection
       if (
@@ -5518,10 +5604,42 @@ export default class EuiSheet<T extends object> extends Component<
     if (event.key === ' ' && plain) stop(event);
   }
 
+  /**
+   * Grouped, on a row-number cell: the page keys and Ctrl+Home/End land
+   * as on a data cell, never on a header (V03 8.5, 3.2a). PageUp and
+   * PageDown move by the rows in view and Ctrl+Home goes to the first
+   * record, both staying in the row-number column; with Shift a page key
+   * lands on a record and extends whole rows. Ctrl+End is the data
+   * cells' (`handleGroupedEndKey`). True when handled.
+   */
+  handleGroupedRowNumberKey(event: KeyboardEvent, row: number): boolean {
+    if (!this.isGrouped || event.altKey || event.metaKey) return false;
+    const { key } = event;
+    if ((key === 'PageDown' || key === 'PageUp') && !event.ctrlKey) {
+      stop(event);
+      const step = key === 'PageDown' ? 1 : -1;
+      const target = this.landingRow(
+        row + step * this.pageRows(),
+        step,
+        event.shiftKey
+      );
+      if (target >= 0 && target !== row) this.focusRowNumberCell(target);
+      return true;
+    }
+    if (key === 'Home' && event.ctrlKey && !event.shiftKey) {
+      stop(event);
+      const first = this.firstLandingRow();
+      if (first >= 0) this.focusRowNumberCell(first);
+      return true;
+    }
+    return this.handleGroupedEndKey(event);
+  }
+
   /** Keys of a row-number cell (V02-DESIGN.md 5.5). */
   onRowNumberKeyDown(event: KeyboardEvent, row: number): void {
     if (this.handleCommandKey(event)) return;
     if (this.handleLastFieldKey(event, row, null)) return;
+    if (this.handleGroupedRowNumberKey(event, row)) return;
     if (this.isAddRow(row)) {
       this.onAddRowKeyDown(event, row);
       return;
@@ -5591,14 +5709,17 @@ export default class EuiSheet<T extends object> extends Component<
   /* Undo and redo                                                         */
   /* -------------------------------------------------------------------- */
 
-  /** What undo and redo need besides the records: every field id, visible and hidden (a restored record's values). */
-  get historyOptions(): {
-    fieldIds: string[];
-    equals: (fieldId: string, a: unknown, b: unknown) => boolean;
-  } {
+  /**
+   * What undo and redo need besides the records: every field id, visible
+   * and hidden (a restored record's values); and, grouped with a collapsed
+   * group, `keepUnseen`: a record not in `@records` may be in that group,
+   * so its patches are emitted (V03 8.5, GR16).
+   */
+  get historyOptions(): HistoryOptions {
     return {
       fieldIds: this.allFields.map((field) => field.id),
-      equals: (fieldId, a, b) => this.valueEquals(fieldId, a, b)
+      equals: (fieldId, a, b) => this.valueEquals(fieldId, a, b),
+      keepUnseen: this.groups.some((group) => group.collapsed)
     };
   }
 

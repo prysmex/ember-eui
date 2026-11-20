@@ -371,6 +371,8 @@ export interface SheetMessages {
   scanBarcode: () => string;
   /** 'The camera is not available or was not allowed': the scan panel */
   cameraDenied: () => string;
+  /** 'Uploading… 40%': the title of an attachment cell whose upload reports progress (V03 11.4) */
+  uploading: (percent: number) => string;
   /** 'Drag to change the selection': a touch selection handle (V03 11.3) */
   selectionHandle: () => string;
   /** 'Copy': the touch menu's item that copies the selected cells (V03 11.3) */
@@ -1303,6 +1305,11 @@ export const sheetMessageTokens: Readonly<
     token: 'euiSheet.cameraDenied',
     defaultMessage: 'The camera is not available or was not allowed',
     params: []
+  },
+  uploading: {
+    token: 'euiSheet.uploading',
+    defaultMessage: 'Uploading… {percent}%',
+    params: ['percent']
   },
   selectionHandle: {
     token: 'euiSheet.selectionHandle',

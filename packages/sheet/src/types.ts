@@ -182,6 +182,8 @@ export interface SheetEditorSignature<
      * when the upload fails. The sheet passes it when the field has `upload`.
      */
     onUpload?: (files: File[]) => Promise<void>;
+    /** The cell's upload progress, 0 to 1, while an upload reports one (V03 11.4); undefined otherwise. */
+    progress?: number;
     /** Closes the editor. `{ value }` is saved as is, `{ text }` goes through type.parse, nothing saves the reported draft. `move` is [rows, cols]; default [0, 0]. */
     onCommit: (
       result?: SheetEditorResult<V>,

@@ -12,6 +12,7 @@ import { guidFor } from '@ember/object/internals';
 
 import EuiButton from '@ember-eui/core/components/eui-button';
 import EuiButtonIcon from '@ember-eui/core/components/eui-button-icon';
+import EuiProgress from '@ember-eui/core/components/eui-progress';
 
 import EditorFrame from './editor-frame.gts';
 
@@ -98,6 +99,22 @@ export default class RecordFormField extends Component<RecordFormFieldSignature>
     if (typeof field['upload'] !== 'function') return undefined;
     return (files: File[]) =>
       sheet.uploads.uploadFiles(sheet.args.getRecordId(record), field, files);
+  }
+
+  /** An upload's progress in percent (V03 11.4), under the box while its editor is closed. */
+  get percent(): number | undefined {
+    const progress = this.view.progress;
+    return progress === undefined ? undefined : Math.round(progress * 100);
+  }
+
+  get showProgress(): boolean {
+    return this.percent !== undefined && !this.editing;
+  }
+
+  get progressLabel(): string {
+    return this.percent === undefined
+      ? ''
+      : this.args.sheet.messages.uploading(this.percent);
   }
 
   get openLinkLabel(): string {
@@ -216,6 +233,18 @@ export default class RecordFormField extends Component<RecordFormFieldSignature>
           />
         {{/if}}
       {{/if}}
+      {{#if this.showProgress}}
+        <EuiProgress
+          @value={{this.percent}}
+          @max={{100}}
+          @size="xs"
+          @color="primary"
+          class="euiSheetRecord__uploadProgress"
+          aria-label={{this.progressLabel}}
+          title={{this.progressLabel}}
+          data-test-subj="euiSheetRecordUploadProgress"
+        />
+      {{/if}}
       {{#if this.editing}}
         <EditorFrame @layout="inline" @onFocusOut={{@onFocusOut}}>
           {{#if this.view.type.editor}}
@@ -229,6 +258,7 @@ export default class RecordFormField extends Component<RecordFormFieldSignature>
               @onDraftValue={{@onDraftValue}}
               @onSave={{this.onSave}}
               @onUpload={{this.onUpload}}
+              @progress={{this.view.progress}}
               @onCommit={{@onCommit}}
               @onCancel={{@onCancel}}
               @messages={{@sheet.messages}}

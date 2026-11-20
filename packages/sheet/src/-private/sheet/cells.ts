@@ -122,6 +122,8 @@ export default class SheetCells<T extends object> {
       selected,
       readOnly: isReadOnly(ctx, field, record),
       pending: !!pending || pressing,
+      // an upload's progress (V03 11.4)
+      progress: pending?.progress?.fraction,
       link: this.linkOf(type, field, value),
       dropTarget: false,
       pressable,

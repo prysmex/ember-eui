@@ -136,13 +136,20 @@ export interface SheetAttachment {
 
 export interface AttachmentField<T = any> extends EuiSheetField<T> {
   type: 'attachment';
-  /** Stores the files and returns them as attachments. Without it the field has no file picker and no drop. */
+  /**
+   * Stores the files and returns them as attachments. Without it the field
+   * has no file picker and no drop. `onProgress(fraction)` (V03 11.4)
+   * takes 0 to 1 for the whole call: the cell draws a bar and the editor a
+   * progress; an uploader that never calls it shows the cell pending only.
+   * Calls after the promise settled or the signal was aborted are ignored.
+   */
   upload?: (
     files: File[],
     context: {
       record: T | undefined;
       field: AttachmentField<T>;
       signal: AbortSignal;
+      onProgress: (fraction: number) => void;
     }
   ) => Promise<SheetAttachment[]>;
   /** The file input's `accept`. */

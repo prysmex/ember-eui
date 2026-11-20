@@ -38,6 +38,8 @@ export interface CellView {
   disabled?: boolean;
   /** The cell is `@currentMatch` (V03 11.1): drawn with a ring. */
   match?: boolean;
+  /** A pending upload's progress, 0 to 1, once its uploader reported one (V03 11.4). */
+  progress?: number;
 }
 
 /**
@@ -46,6 +48,8 @@ export interface CellView {
  */
 export interface PendingEntry {
   text: string | null;
+  /** An upload's progress (V03 11.4): tracked on its own, so a call re-renders only its cell. */
+  progress?: { readonly fraction: number | undefined };
   /** The call it waits for. */
   token: object;
   /** The cell to resolve; none for an upload. */
@@ -144,7 +148,12 @@ export interface ExpandedFrom {
 export type UploadField = EuiSheetField & {
   upload?: (
     files: File[],
-    context: { record: unknown; field: EuiSheetField; signal: AbortSignal }
+    context: {
+      record: unknown;
+      field: EuiSheetField;
+      signal: AbortSignal;
+      onProgress: (fraction: number) => void;
+    }
   ) => Promise<SheetAttachment[]>;
   maxFiles?: number;
 };

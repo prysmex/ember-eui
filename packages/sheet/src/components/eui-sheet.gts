@@ -530,6 +530,10 @@ export default class EuiSheet<T extends object> extends Component<
               @onDraftValue={{this.edit.onDraftValue}}
               @onSave={{this.edit.onEditorSave}}
               @onUpload={{editing.onUpload}}
+              @progress={{this.uploads.progressOf
+                editing.recordId
+                editing.field.id
+              }}
               @onCommit={{this.edit.onEditorCommit}}
               @onCancel={{this.edit.cancel}}
               @messages={{this.messages}}

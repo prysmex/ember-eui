@@ -9,6 +9,11 @@ import type EuiSheet from '../../components/eui-sheet.gts';
 import type { EuiSheetField, Pos, RecordId } from '../../core/index.ts';
 import type { UploadField } from './types.ts';
 
+/** An upload's progress (V03 11.4), 0 to 1; undefined until the uploader reports one. */
+class UploadProgress {
+  @tracked fraction: number | undefined = undefined;
+}
+
 /** A drag that carries files. */
 function hasFiles(event: DragEvent): boolean {
   return Array.from(event.dataTransfer?.types ?? []).includes('Files');
@@ -75,8 +80,9 @@ export default class SheetUploads<T extends object> {
     const token = {};
     const controller = new AbortController();
     const key = cellKey(recordId, field.id);
+    const progress = new UploadProgress();
     const next = new Map(this.sheet.resolve.pendingCells);
-    next.set(key, { text: null, token });
+    next.set(key, { text: null, token, progress });
     this.sheet.resolve.pendingCells = next;
     this.sheet.resolve.pendingCalls.set(token, {
       kind: 'upload',
@@ -94,7 +100,26 @@ export default class SheetUploads<T extends object> {
       this.sheet.resolve.endCall(token, false);
       return live && !this.sheet.isDestroying && !this.sheet.isDestroyed;
     };
-    return upload(chosen, { record, field, signal: controller.signal }).then(
+    // V03 11.4: 0 to 1 for the whole call, clamped; whole percents only (the
+    // bar and the title), and nothing after the call settled or was aborted
+    const onProgress = (fraction: number): void => {
+      if (
+        !this.sheet.resolve.pendingCalls.has(token) ||
+        controller.signal.aborted ||
+        typeof fraction !== 'number' ||
+        Number.isNaN(fraction)
+      ) {
+        return;
+      }
+      const value = Math.round(Math.min(1, Math.max(0, fraction)) * 100) / 100;
+      if (value !== progress.fraction) progress.fraction = value;
+    };
+    return upload(chosen, {
+      record,
+      field,
+      signal: controller.signal,
+      onProgress
+    }).then(
       (added) => {
         if (!settle()) return;
         // the value now: another upload may have finished meanwhile
@@ -134,6 +159,11 @@ export default class SheetUploads<T extends object> {
       }
     );
   }
+
+  /** A cell's upload progress, 0 to 1, or undefined (the editor's `@progress`). */
+  progressOf = (recordId: RecordId, fieldId: string): number | undefined =>
+    this.sheet.resolve.pendingCells.get(cellKey(recordId, fieldId))?.progress
+      ?.fraction;
 
   /* Dragging files over an attachment cell */
 

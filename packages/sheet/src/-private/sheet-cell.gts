@@ -91,6 +91,17 @@ export default class SheetCell extends Component<{
     if (view?.pending) {
       classes.push('euiSheet__cell--pending');
       props['aria-busy'] = 'true';
+      // an upload's progress (V03 11.4): a bar along the bottom edge, drawn
+      // by the cell's ::before, and the percent as its title
+      if (view.progress !== undefined) {
+        const percent = Math.round(view.progress * 100);
+        classes.push('euiSheet__cellProgress');
+        props['style'] = {
+          ...(props['style'] as Record<string, unknown> | undefined),
+          '--euiSheetProgress': `${percent}%`
+        };
+        props['title'] = this.sheet.messages.uploading(percent);
+      }
     }
     if (view?.dropTarget) classes.push('euiSheet__cell--dropTarget');
     // V03 11.1: the owner's current search match

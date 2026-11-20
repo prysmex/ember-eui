@@ -207,6 +207,7 @@ li:has([data-test-subj^="euiSheetEditField-"]), li:has([data-test-subj^="euiShee
 .euiSheet__attachments { outline: none; }
 .euiSheet__attachment { display: flex; align-items: center; gap: 8px; padding: 2px 0 6px; }
 .euiSheet__attachmentName { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--euiSheet-link, #0B64DD); }
+.euiSheet__uploadProgress, .euiSheetRecord__uploadProgress { margin: 4px 0; }
 .euiSheet__attachmentError { margin-top: 4px; font-size: 12px; line-height: 16px; color: var(--euiSheet-textDanger, #BD271E); }
 .euiSheetRecord__box--withLink { display: inline-block; width: calc(100% - 36px); vertical-align: top; }
 .euiSheetRecord__openLink { margin-left: 4px; vertical-align: top; }
@@ -289,6 +290,8 @@ li:has([data-test-subj^="euiSheetEditField-"]), li:has([data-test-subj^="euiShee
 .euiSheet__dropLine.euiSheet__dropLine--box.euiSheet__dropLine--blocked { background: transparent; border-color: var(--euiSheet-danger, #BD271E); }
 /* the current search match (V03 11.1): a 2 px ring inside the cell, over @highlight's marks and the cell's own shadows (not its focus ring's outline) */
 .euiSheet .euiDataGrid .euiDataGridRow .euiDataGridRowCell.euiSheet__cell--match::after { content: ''; position: absolute; inset: 0; z-index: 1; border: 0; box-shadow: inset 0 0 0 2px var(--euiSheet-match, #FACB3D); pointer-events: none; }
+/* an upload's progress (V03 11.4): a 2 px bar along the pending cell's bottom edge */
+.euiSheet .euiDataGrid .euiDataGridRow .euiDataGridRowCell.euiSheet__cellProgress::before { content: ''; position: absolute; left: 0; bottom: 0; z-index: 1; width: var(--euiSheetProgress, 0%); height: 2px; background: var(--euiSheet-primary, #0B64DD); pointer-events: none; }
 /* the touch selection handles (V03 11.3): a 20 px circle in a 44 px hit area, above the fill handle; they let the pointer through while one is dragged (elementFromPoint finds the cell) */
 .euiSheet__selectionHandle { position: absolute; z-index: 5; width: 44px; height: 44px; touch-action: none; -webkit-touch-callout: none; user-select: none; -webkit-user-select: none; }
 .euiSheet__selectionHandle::before { content: ''; position: absolute; top: 12px; left: 12px; box-sizing: border-box; width: 20px; height: 20px; border: 2px solid var(--euiSheet-plain, #FFF); border-radius: 50%; background: var(--euiSheet-primary, #0B64DD); box-shadow: 0 1px 3px var(--euiSheet-shadow, rgba(0, 0, 0, 0.2)); }

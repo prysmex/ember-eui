@@ -79,6 +79,7 @@ import SheetClipboard from '../-private/sheet/clipboard.ts';
 import SheetApiModule from '../-private/sheet/api.ts';
 import SheetRowDrag from '../-private/sheet/row-drag.ts';
 import SheetRowColors from '../-private/sheet/row-colors.ts';
+import SheetButtons from '../-private/sheet/buttons.ts';
 
 import type { SheetContext, SheetMessages } from '../core/index.ts';
 import type { EuiSheetFieldType, EuiSheetSignature } from '../types.ts';
@@ -135,6 +136,7 @@ export default class EuiSheet<T extends object> extends Component<
   readonly api = new SheetApiModule<T>(this);
   readonly rowDrag = new SheetRowDrag<T>(this);
   readonly rowColors = new SheetRowColors<T>(this);
+  readonly buttons = new SheetButtons<T>(this);
 
   /** The grid's API (not the sheet's: that is `sheetApi`). */
   gridApi: EuiDataGridRefProps | null = null;
@@ -163,6 +165,7 @@ export default class EuiSheet<T extends object> extends Component<
     this.filling.stopFillDrag();
     this.drag.autoScroll.stop();
     this.rowDrag.end();
+    this.buttons.abortAll();
     this.touch.cancelLongPress();
     document.removeEventListener(
       'mousedown',

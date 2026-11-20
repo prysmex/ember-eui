@@ -6,6 +6,7 @@
  */
 import {
   attachmentFieldType,
+  buttonFieldType,
   checkboxFieldType,
   currencyFieldType,
   dateFieldType,
@@ -28,6 +29,7 @@ import {
 } from './core/index.ts';
 import AttachmentCell from './-private/cells/attachment-cell.gts';
 import AvatarCell from './-private/cells/avatar-cell.gts';
+import ButtonCell from './-private/cells/button-cell.gts';
 import CheckboxCell from './-private/cells/checkbox-cell.gts';
 import ChipsCell from './-private/cells/chips-cell.gts';
 import LinkCell from './-private/cells/link-cell.gts';
@@ -46,6 +48,7 @@ import TextareaEditor, {
 } from './-private/editors/textarea-editor.gts';
 import SelectOptions from './-private/field-options/select-options.gts';
 import {
+  ButtonOptions,
   CurrencyOptions,
   DateOptions,
   DateTimeOptions,
@@ -56,6 +59,7 @@ import {
 
 import type {
   AttachmentField,
+  ButtonField,
   CheckboxField,
   CurrencyField,
   DateField,
@@ -135,6 +139,18 @@ export const dateTimeType: EuiSheetFieldType<string | null, DateTimeField> = {
   opener: 'calendar',
   opensOnKey: (key) => /^\d$/.test(key),
   fieldOptions: DateTimeOptions
+};
+
+/**
+ * A button (V03 10.3.1): no value; a click on it, or Enter or Space on the
+ * selected cell, calls `@onButtonPress` (or opens `field.url`).
+ */
+export const buttonType: EuiSheetFieldType<null, ButtonField> = {
+  ...buttonFieldType,
+  cell: ButtonCell,
+  onCellClick: () => ({ press: true }),
+  opensOnKey: () => false,
+  fieldOptions: ButtonOptions
 };
 
 /** The keys a list picker (select, multi-select, records) handles itself while open. */
@@ -263,8 +279,8 @@ export const longTextType: EuiSheetFieldType<string, LongTextField> = {
  * Every built-in type by name: `text`, `number`, `checkbox`,
  * `singleSelect`, `date`, `multiSelect`, `linkedRecord`, `user`,
  * `attachment`, `currency`, `percent`, `duration`, `rating`, `url`,
- * `email`, `phone`, `longText`, `dateTime`. `@fieldTypes` is merged
- * over it.
+ * `email`, `phone`, `longText`, `dateTime`, `button`. `@fieldTypes`
+ * is merged over it.
  */
 export const builtInSheetFieldTypes: Record<
   string,
@@ -287,7 +303,8 @@ export const builtInSheetFieldTypes: Record<
   email: emailType,
   phone: phoneType,
   longText: longTextType,
-  dateTime: dateTimeType
+  dateTime: dateTimeType,
+  button: buttonType
 };
 
 export { InputEditor as SheetInputEditor };

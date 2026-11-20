@@ -81,6 +81,13 @@ export default class SheetCells<T extends object> {
     const pending = this.sheet.resolve.pendingCells.get(
       cellKey(recordId, field.id)
     );
+    // a button cell (V03 10.3.1): its press's pending state and error
+    const pressable = this.sheet.buttons.pressable(type, field, record);
+    const pressing =
+      pressable && this.sheet.buttons.isPending(recordId, field.id);
+    const pressError = pressable
+      ? this.sheet.buttons.errorOf(recordId, field.id)
+      : undefined;
     const text =
       pending && pending.text !== null
         ? pending.text
@@ -97,7 +104,8 @@ export default class SheetCells<T extends object> {
       : mergeErrors(
           validateCell(ctx, field, record),
           this.validatedErrors(record, recordId, field.id),
-          this.sheet.args.cellErrors?.[String(recordId)]?.[field.id]
+          this.sheet.args.cellErrors?.[String(recordId)]?.[field.id],
+          pressError
         );
     return {
       record,
@@ -110,9 +118,11 @@ export default class SheetCells<T extends object> {
       errors: pending ? [] : errors,
       selected,
       readOnly: isReadOnly(ctx, field, record),
-      pending: !!pending,
+      pending: !!pending || pressing,
       link: this.linkOf(type, field, value),
-      dropTarget: false
+      dropTarget: false,
+      pressable,
+      disabled: pressable && this.sheet.buttons.isDisabled(field, record)
     };
   }
 

@@ -228,6 +228,24 @@ export interface DateTimeField<T = any> extends EuiSheetField<T> {
 }
 
 /**
+ * A button (V03 10.3.1, D17): a cell that runs an action of the app on its
+ * record (`@onButtonPress`), or opens `url`. It stores no value.
+ */
+export interface ButtonField<T = any> extends EuiSheetField<T> {
+  type: 'button';
+  /** The button's text. Default: the field's label. */
+  buttonLabel?: string | ((record: T) => string);
+  /** An EUI icon type drawn before the text. */
+  icon?: string;
+  /** 'primary' (default), 'success', 'warning', 'danger' or 'text'. */
+  color?: 'primary' | 'success' | 'warning' | 'danger' | 'text';
+  /** No press for this record (drawn disabled). */
+  disabled?: (record: T) => boolean;
+  /** A link instead of an action: without `@onButtonPress` the press opens it in a new tab. */
+  url?: (record: T) => string | undefined;
+}
+
+/**
  * What the field editor produces (V03 6.4): plain values only. `id` is
  * absent: on create the owner assigns it, on update it is the field's.
  * The owner builds the field (`{ ...previous, ...draft }` on update,
@@ -314,6 +332,12 @@ export interface FieldType<
   toNumber?(value: V | null | undefined, field: F): number | null;
   /** Default: `value == null || value === ''`. */
   isEmpty?(value: unknown): boolean;
+  /**
+   * The type stores no value (a button, V03 10.3.1): every cell is
+   * read-only (`isReadOnly` with a context that has `types`), so a paste,
+   * fill, clear or cut skips the column, and the column has no sort items.
+   */
+  readOnly?: boolean;
   /** A key pressed on the cell in nav mode that changes the value without an editor. */
   navKey?(
     key: string,

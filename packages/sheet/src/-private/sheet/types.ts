@@ -32,6 +32,10 @@ export interface CellView {
   link: string | undefined;
   /** Files dragged over the cell will be dropped on it. */
   dropTarget: boolean;
+  /** A button cell (V03 10.3.1): its type's `onCellClick` answers `{ press: true }`. */
+  pressable?: boolean;
+  /** A button cell with no press for its record. */
+  disabled?: boolean;
 }
 
 /**

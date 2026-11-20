@@ -10,6 +10,7 @@ import { fn } from '@ember/helper';
 import { on } from '@ember/modifier';
 import { guidFor } from '@ember/object/internals';
 
+import EuiButton from '@ember-eui/core/components/eui-button';
 import EuiButtonIcon from '@ember-eui/core/components/eui-button-icon';
 
 import EditorFrame from './editor-frame.gts';
@@ -107,6 +108,22 @@ export default class RecordFormField extends Component<RecordFormFieldSignature>
     this.args.sheet.cells.openLink(this.view.link);
   };
 
+  /* A button field (V03 10.3.1): a real button here, the form is not a cell */
+
+  get buttonColor(): string {
+    const color = this.args.field['color'];
+    return typeof color === 'string' ? color : 'primary';
+  }
+
+  get buttonIcon(): string | undefined {
+    const icon = this.args.field['icon'];
+    return typeof icon === 'string' ? icon : undefined;
+  }
+
+  pressButton = (): void => {
+    this.args.sheet.buttons.press(this.args.record as never, this.args.field);
+  };
+
   <template>
     <div
       class="euiSheetRecord__field"
@@ -122,7 +139,18 @@ export default class RecordFormField extends Component<RecordFormFieldSignature>
           data-test-subj="euiSheetRecordDescription"
         >{{@field.description}}</div>
       {{/if}}
-      {{#if this.showBox}}
+      {{#if this.view.pressable}}
+        <EuiButton
+          @size="s"
+          @color={{this.buttonColor}}
+          @iconType={{this.buttonIcon}}
+          @isDisabled={{this.view.disabled}}
+          @isLoading={{this.view.pending}}
+          aria-labelledby={{this.labelId}}
+          data-test-subj="euiSheetRecordButton"
+          {{on "click" this.pressButton}}
+        >{{this.view.text}}</EuiButton>
+      {{else if this.showBox}}
         {{#if this.editable}}
           <div
             class="euiSheetRecord__box

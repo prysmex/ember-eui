@@ -210,6 +210,16 @@ export default class SheetKeys<T extends object> {
       if (type.editor && !readOnly) this.sheet.ime.startIme(pos, cell);
       return;
     }
+    // Enter or Space on a button cell presses it (V03 10.3.1), no editor
+    if (
+      plain &&
+      !event.shiftKey &&
+      (key === 'Enter' || key === ' ') &&
+      this.sheet.buttons.pressAt(pos)
+    ) {
+      stop(event);
+      return;
+    }
     // navKey first: a checkbox's Space (PACKAGE-DESIGN.md 7.4)
     if (plain && !readOnly && type.navKey) {
       const result = type.navKey(key, valueOf(record, field.id), field);

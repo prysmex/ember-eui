@@ -168,7 +168,8 @@ export default class SheetGridColumns<T extends object> {
     const fields = this.sheet.fields.visibleFields;
     return fields.map((field, index) => {
       const type = this.sheet.fields.typeOf(field);
-      const canSort = sortable && field.sortable !== false;
+      // a type without values (a button) has no sort (V03 10.3.1)
+      const canSort = sortable && field.sortable !== false && !type.readOnly;
       const actions: EuiDataGridColumnActions = {
         showHide: index > 0 && field.hideable !== false,
         // the first field stays first (6.3)

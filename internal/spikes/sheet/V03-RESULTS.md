@@ -2241,3 +2241,71 @@ the frozen row-number cell is sticky, has the bar, and
   unchanged and pass.
 - No test uses `'local'`.
 - Suite: 554 tests, 554 pass (547 + 7).
+
+### 4d: `button` (10.3.1)
+
+#### What was built
+
+- `src/core/field-types/button.ts` (new), `ButtonField` in
+  `src/core/types.ts`, registered as `button`; `buttonType` (Ember layer)
+  adds the cell, `onCellClick: () => ({ press: true })` and the field
+  editor's `ButtonOptions` (text, icon, colour; the text is hidden when
+  `buttonLabel` is a function). `buttonText(field, record)` is exported.
+- **No value.** New optional `FieldType.readOnly`: a type that stores no
+  value. `isReadOnly(ctx, field, record)` now also answers true for such
+  a type when `ctx` has `types` (every caller passes the full context),
+  so paste, fill, clear, cut and Delete skip the column exactly as they
+  skip read-only cells, and its header has no sort items. `parse` gives
+  `{ error: buttonNoValue() }` for any text (the empty value for a
+  clear); `format` and `copyText` give the button's text (a copied range
+  lines up); `isEmpty` is always true; no `compare`, no `schema`.
+- **Drawn as** `src/-private/cells/button-cell.gts`: a span,
+  `role="button"`, `data-eui-sheet-button`, EuiButtonEmpty-like CSS in
+  `styles.ts` (colours from `--euiSheet-link`, a new
+  `--euiSheet-textSuccess`, `--euiSheet-star`, `--euiSheet-textDanger`,
+  `--euiSheet-text`), the field's icon, or a spinner while pending;
+  `aria-disabled` and `aria-busy`.
+- **Module `buttons.ts` (`buttons`).** `pressable(type, field, record)`
+  (the type's `onCellClick` answers `{ press: true }`), `isDisabled`
+  (`field.disabled(record)`, or neither `@onButtonPress` nor a `url`
+  the sheet opens: then one `warn` per sheet, id
+  `ember-eui.sheet.button-no-action`), `press(record, field)`: nothing
+  when disabled or pending; clears the cell's error; calls
+  `@onButtonPress({ recordId, fieldId, record }, { signal })` (it wins
+  over `url`), else opens `url` through `cells.openLink` (http, https,
+  mailto, tel only). A returned promise makes the cell pending; its
+  rejection's message is the cell's error until the next press; a
+  resolve leaves none. `willDestroy` aborts every pending signal. A
+  press is not a change set.
+- **Wiring.** `cells.cellViewFor` adds `pressable` and `disabled` to the
+  view, the press's error to `errors` and its pending state to
+  `pending` (so the cell gets `aria-busy`, the error ring, its title
+  and the error box). `SheetCellSignature` gains optional `pending` and
+  `disabled`; `sheet-cell.gts` passes them. `clicks.ts`: on a pressable
+  cell a click on `[data-eui-sheet-button]` presses (selected or not),
+  any other click only selects. `keys.ts`: Enter or Space on the
+  selected cell presses (no editor, no expand). `onCellClick`'s return
+  type is widened to `{ value } | { press: true } | undefined` (its two
+  callers check `'value' in result`).
+- **Expanded record**: a real `EuiButton` (`euiSheetRecordButton`) with
+  the field's colour and icon, `isLoading` while pending, disabled when
+  the cell is; its error is listed under it like any field's.
+- `@onButtonPress` and `SheetButtonPress` (exported).
+
+#### Tests
+
+`tests/integration/components/eui-sheet-button-test.gts` (new): BT1
+(a click on the button, not selected and selected, one call each with
+the record; a click on the padding selects only; Enter and Space press
+it with no editor and no expanded record; no change set), BT2 (pending:
+`aria-busy` and the spinner, a second press ignored, another row not
+blocked; a rejection is the cell's error, its title and the focused
+error box; the next press clears it; destroy aborts the signal), BT3
+(`disabled(record)`: no call and `aria-disabled`; the handler wins over
+`url`; `url` without the handler opens it with `noopener` (stubbed
+`window.open`); a `javascript:` url is no url; neither: disabled and one
+warning), BT4 (copy gives the button texts; paste, fill, Delete and cut
+over the column write nothing in it and reject nothing; one button
+cell: a paste emits nothing and a typed key shows "Read only"), BT5
+(the expanded record's button presses and shows the rejection).
+Suite: 559 tests, 559 pass (554 + 5).

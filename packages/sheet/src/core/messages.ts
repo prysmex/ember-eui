@@ -355,6 +355,16 @@ export interface SheetMessages {
   clock12: () => string;
   /** 'Show seconds' */
   fieldSeconds: () => string;
+  /** 'A button has no value': text pasted or typed on a button field (V03 10.3.1) */
+  buttonNoValue: () => string;
+  /** 'Button' */
+  fieldType_button: () => string;
+  /** 'Button text': the button options of the field editor (empty: the field's name) */
+  fieldButtonLabel: () => string;
+  /** 'Icon (an EUI icon name)' */
+  fieldButtonIcon: () => string;
+  /** 'Colour' */
+  fieldButtonColor: () => string;
 }
 
 export interface SheetMessageToken {
@@ -1240,6 +1250,31 @@ export const sheetMessageTokens: Readonly<
   fieldSeconds: {
     token: 'euiSheet.fieldSeconds',
     defaultMessage: 'Show seconds',
+    params: []
+  },
+  buttonNoValue: {
+    token: 'euiSheet.buttonNoValue',
+    defaultMessage: 'A button has no value',
+    params: []
+  },
+  fieldType_button: {
+    token: 'euiSheet.fieldType_button',
+    defaultMessage: 'Button',
+    params: []
+  },
+  fieldButtonLabel: {
+    token: 'euiSheet.fieldButtonLabel',
+    defaultMessage: 'Button text',
+    params: []
+  },
+  fieldButtonIcon: {
+    token: 'euiSheet.fieldButtonIcon',
+    defaultMessage: 'Icon (an EUI icon name)',
+    params: []
+  },
+  fieldButtonColor: {
+    token: 'euiSheet.fieldButtonColor',
+    defaultMessage: 'Colour',
     params: []
   }
 };

@@ -42,13 +42,17 @@ export interface EuiSheetFieldType<
   opener?: string;
   /**
    * A click anywhere in the cell saves the value it returns (the checkbox
-   * toggles), instead of selecting then editing. `undefined`: nothing.
+   * toggles), instead of selecting then editing. `{ press: true }`: the
+   * cell is a button (V03 10.3.1): a click on its
+   * `[data-eui-sheet-button]` element, or Enter or Space on the selected
+   * cell, calls `@onButtonPress`; a click elsewhere in the cell selects
+   * it. `undefined`: nothing.
    */
   onCellClick?: (
     value: V | null | undefined,
     field: F,
     record: unknown
-  ) => { value: V | null } | undefined;
+  ) => { value: V | null } | { press: true } | undefined;
   /**
    * The grid schema of the column (`'numeric'`, `'datetime'`, `'boolean'`,
    * `'currency'`): the header menu's sort labels ("Sort Low-High") and the
@@ -128,7 +132,18 @@ export interface SheetCellSignature<
     highlight?: string;
     /** `type.link(value)` when its scheme is one the sheet opens: draw the text as a link (`[data-eui-sheet-link]`). */
     link?: string;
+    /** The cell waits for something (a bulk resolve, an upload, a button's promise). */
+    pending?: boolean;
+    /** A button cell (`onCellClick` → `{ press: true }`) with no press for this record. */
+    disabled?: boolean;
   };
+}
+
+/** What `@onButtonPress` gets: the pressed button's record and field (V03 10.3.1). */
+export interface SheetButtonPress<T = any> {
+  recordId: RecordId;
+  fieldId: string;
+  record: T;
 }
 
 export type SheetEditorResult<V> = { value: V } | { text: string };
@@ -443,6 +458,19 @@ export interface EuiSheetSignature<T> {
      * `colorByOption(field)` colours by a select field's option.
      */
     rowColor?: (record: T) => SheetRowColor | undefined;
+    /**
+     * A button field's press (V03 10.3.1, D17), one handler for every
+     * button field: route by `fieldId`. A returned promise makes the cell
+     * pending (a second press is ignored until it settles); a rejection's
+     * message is the cell's error until the next press. `signal` is
+     * aborted when the sheet is destroyed. Not a change set, not undoable.
+     * Without it a field's `url` opens; with neither the button is
+     * disabled.
+     */
+    onButtonPress?: (
+      press: SheetButtonPress<T>,
+      options: { signal: AbortSignal }
+    ) => void | Promise<unknown>;
     /** Values of a new record, from its neighbours. Default `{}`. */
     newRecordValues?: (context: {
       above: T | undefined;

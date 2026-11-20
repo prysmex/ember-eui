@@ -187,6 +187,8 @@ export default class SheetCell extends Component<{
           @onCommit={{this.onCommit}}
           @highlight={{this.highlight}}
           @link={{this.view.link}}
+          @pending={{this.view.pending}}
+          @disabled={{this.view.disabled}}
         />
       {{else if this.highlight}}
         <EuiHighlight

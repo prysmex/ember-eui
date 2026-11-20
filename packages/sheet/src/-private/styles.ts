@@ -253,6 +253,17 @@ li:has([data-test-subj^="euiSheetEditField-"]), li:has([data-test-subj^="euiShee
 .euiSheet__rowColor--warning { --euiSheetRowColor: var(--euiSheet-rowWarning, #FACB3D); }
 .euiSheet__rowColor--danger { --euiSheetRowColor: var(--euiSheet-rowDanger, #BD271E); }
 .euiSheet__rowColor--neutral { --euiSheetRowColor: var(--euiSheet-rowNeutral, #69707D); }
+/* button cells (V03 10.3.1): an EuiButtonEmpty-like span; the sheet presses it */
+.euiSheet__button { display: inline-flex; align-items: center; gap: 4px; max-width: 100%; box-sizing: border-box; padding: 0 6px; border-radius: 4px; color: var(--euiSheet-link, #0B64DD); font-weight: 500; line-height: 22px; cursor: pointer; white-space: nowrap; }
+.euiSheet__button:hover { background-color: var(--euiSheet-selected, rgba(11, 100, 221, 0.12)); text-decoration: underline; }
+.euiSheet__buttonText { overflow: hidden; text-overflow: ellipsis; }
+.euiSheet__button--success { color: var(--euiSheet-textSuccess, #00805B); }
+.euiSheet__button--warning { color: var(--euiSheet-star, #8A6A0A); }
+.euiSheet__button--danger { color: var(--euiSheet-textDanger, #BD271E); }
+.euiSheet__button--text { color: var(--euiSheet-text, #343741); }
+.euiSheet__button.euiSheet__button--disabled { color: var(--euiSheet-textSubdued, #69707D); cursor: default; opacity: 0.6; }
+.euiSheet__button.euiSheet__button--disabled:hover { background-color: transparent; text-decoration: none; }
+.euiSheet__button[aria-busy] { cursor: progress; }
 /* row drag (V03 10.1): the grip, the moved rows, the insertion line */
 .euiSheet__rowGrip { display: inline-flex; flex: none; margin-right: 2px; color: var(--euiSheet-textSubdued, #69707D); cursor: grab; visibility: hidden; }
 .euiSheet .euiDataGridRow:hover .euiSheet__rowGrip, .euiSheet__rowCell:focus .euiSheet__rowGrip, .euiSheet--rowDragging .euiSheet__rowCell--moving .euiSheet__rowGrip { visibility: visible; }

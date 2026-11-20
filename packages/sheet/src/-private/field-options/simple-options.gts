@@ -2,7 +2,8 @@
  * The small option forms of the built-in types in the field editor (V03
  * 6.4): a currency's code and decimals, a percent's decimals, a rating's
  * stars, a date's day/month order, a duration's format, a date and
- * time's zone, clock and seconds (V03 10.3).
+ * time's zone, clock and seconds (V03 10.3), a button's text, icon and
+ * colour (10.3.1).
  */
 import Component from '@glimmer/component';
 import { on } from '@ember/modifier';
@@ -337,6 +338,95 @@ export class DateTimeOptions extends DateOptions {
         @onChange={{this.onSeconds}}
         data-test-subj="euiSheetFieldSeconds"
       />
+    </div>
+  </template>
+}
+
+const BUTTON_COLORS = ['primary', 'success', 'warning', 'danger', 'text'];
+
+/** A button (V03 10.3.1): its text (empty: the field's name), icon and colour. */
+export class ButtonOptions extends OptionsBase {
+  colors = BUTTON_COLORS.map((value) => ({ value, text: value }));
+
+  get text(): string {
+    const label = this.option('buttonLabel');
+    return typeof label === 'string' ? label : '';
+  }
+
+  get icon(): string {
+    return (this.option('icon') as string | undefined) ?? '';
+  }
+
+  get color(): string {
+    return (this.option('color') as string | undefined) ?? 'primary';
+  }
+
+  /** A text from the record (`buttonLabel(record)`) is not editable here. */
+  get labelIsFunction(): boolean {
+    return typeof this.args.field?.['buttonLabel'] === 'function';
+  }
+
+  onText = (event: Event): void => {
+    const text = (event.target as HTMLInputElement).value;
+    this.args.onChange({ buttonLabel: text.trim() === '' ? undefined : text });
+  };
+
+  onIcon = (event: Event): void => {
+    const icon = (event.target as HTMLInputElement).value.trim();
+    this.args.onChange({ icon: icon === '' ? undefined : icon });
+  };
+
+  onColor = (event: Event): void => {
+    this.args.onChange({ color: (event.target as HTMLSelectElement).value });
+  };
+
+  <template>
+    <div
+      class="euiSheetFieldEditor__optionRow"
+      data-test-subj="euiSheetFieldOptions"
+    >
+      {{#unless this.labelIsFunction}}
+        <EuiFormRow
+          @label={{(this.messages.fieldButtonLabel)}}
+          @id="{{this.id}}-text"
+          @display="rowCompressed"
+        >
+          <EuiFieldText
+            @compressed={{true}}
+            @value={{this.text}}
+            id="{{this.id}}-text"
+            data-test-subj="euiSheetFieldButtonLabel"
+            {{on "change" this.onText}}
+          />
+        </EuiFormRow>
+      {{/unless}}
+      <EuiFormRow
+        @label={{(this.messages.fieldButtonIcon)}}
+        @id="{{this.id}}-icon"
+        @display="rowCompressed"
+      >
+        <EuiFieldText
+          @compressed={{true}}
+          @value={{this.icon}}
+          id="{{this.id}}-icon"
+          data-test-subj="euiSheetFieldButtonIcon"
+          {{on "change" this.onIcon}}
+        />
+      </EuiFormRow>
+      <EuiFormRow
+        @label={{(this.messages.fieldButtonColor)}}
+        @id="{{this.id}}-color"
+        @display="rowCompressed"
+      >
+        <EuiSelect
+          @compressed={{true}}
+          @options={{this.colors}}
+          @value={{this.color}}
+          id="{{this.id}}-color"
+          data-test-subj="euiSheetFieldButtonColor"
+          {{on "change" this.onColor}}
+        />
+      </EuiFormRow>
     </div>
   </template>
 }

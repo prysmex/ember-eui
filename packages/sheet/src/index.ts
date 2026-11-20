@@ -11,6 +11,7 @@ export type { LocalRecordsOptions } from './local-records.ts';
 export {
   attachmentType,
   builtInSheetFieldTypes,
+  buttonType,
   colorByOption,
   checkboxType,
   currencyType,
@@ -36,6 +37,7 @@ export type {
   EuiSheetSignature,
   SheetApi,
   SheetBlockApi,
+  SheetButtonPress,
   SheetCellSignature,
   SheetEditorRect,
   SheetEditorResult,

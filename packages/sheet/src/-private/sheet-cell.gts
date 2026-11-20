@@ -93,6 +93,8 @@ export default class SheetCell extends Component<{
       props['aria-busy'] = 'true';
     }
     if (view?.dropTarget) classes.push('euiSheet__cell--dropTarget');
+    // V03 11.1: the owner's current search match
+    if (view?.match) classes.push('euiSheet__cell--match');
     if (this.sheet.filling.isFillPreview(this.args.rowIndex, this.col)) {
       classes.push('euiSheet__cell--fillPreview');
     }

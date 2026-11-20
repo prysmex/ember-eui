@@ -66,6 +66,8 @@ export const sheetThemeVars = ({
     '--euiSheet-rowSuccess': colors.success,
     '--euiSheet-rowWarning': colors.warning,
     '--euiSheet-rowDanger': colors.danger,
-    '--euiSheet-rowNeutral': colors.textSubdued
+    '--euiSheet-rowNeutral': colors.textSubdued,
+    // V03 11.1: the current search match's ring
+    '--euiSheet-match': colors.warning
   };
 };

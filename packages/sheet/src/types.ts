@@ -213,6 +213,12 @@ export interface SheetApi {
   /** Focuses a cell by record and field. No-op when the record is not in `@records` or the field is not shown. */
   focusCell(cell: { recordId: RecordId; fieldId: string }): void;
   /**
+   * Scrolls a cell into view (below the header, clear of the frozen
+   * fields) without focusing it or changing the selection (V03 11.1).
+   * No-op when the record is not in `@records` or the field is not shown.
+   */
+  scrollToCell(cell: { recordId: RecordId; fieldId: string }): void;
+  /**
    * Tells the sheet the ids the owner gave to inserted (or restored)
    * records: `{ [tempId or old id]: newId }`. The undo history, the
    * rejected texts and a pending focus are rewritten, so undo still finds
@@ -356,7 +362,7 @@ export interface EuiSheetSignature<T> {
     validate?: (
       context: ValidateContext<T>
     ) => CellErrors | Promise<CellErrors>;
-    /** Receives the sheet's API (`undo`, `redo`, `focusCell`, `remapIds`, `clearHistory`, `expandRecord`, `insertRecord`, `deleteRecords`, `showShortcuts`, `editField`, `addField`, `moveRecords`) once, after the first render. */
+    /** Receives the sheet's API (`undo`, `redo`, `focusCell`, `scrollToCell`, `remapIds`, `clearHistory`, `expandRecord`, `insertRecord`, `deleteRecords`, `showShortcuts`, `editField`, `addField`, `moveRecords`) once, after the first render. */
     registerApi?: (api: SheetApi) => void;
     /**
      * Fields that exist but are not shown in the grid: listed in the
@@ -418,6 +424,16 @@ export interface EuiSheetSignature<T> {
     onFilterByField?: (fieldId: string) => void;
     /** A term the owner searched for: matching text is highlighted in cells. */
     highlight?: string;
+    /**
+     * The owner's current search match (V03 11.1): when it changes to a
+     * cell of `@records` in a visible field, the sheet scrolls it into view
+     * and rings it (`--euiSheet-match`). Focus and the selection do not
+     * move, so a search box keeps focus. A record that is not in `@records`
+     * (another page, a collapsed group) or a hidden field draws nothing:
+     * show it first. `findMatches` lists the matches of an owner that holds
+     * every record.
+     */
+    currentMatch?: { recordId: RecordId; fieldId: string } | null;
     /** Shows a thin progress bar over the grid; the grid stays usable. */
     isLoading?: boolean;
     /** Text per field id for the summary bar (`''`: the row-number column). Passing it, even `{}`, shows the bar. */

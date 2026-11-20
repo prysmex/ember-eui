@@ -36,6 +36,8 @@ export interface CellView {
   pressable?: boolean;
   /** A button cell with no press for its record. */
   disabled?: boolean;
+  /** The cell is `@currentMatch` (V03 11.1): drawn with a ring. */
+  match?: boolean;
 }
 
 /**

@@ -293,6 +293,7 @@ export default class EuiSheet<T extends object> extends Component<
       {{this.follow.watchRecords @records @groups}}
       {{this.fieldEditor.watchFields @fields @hiddenFields}}
       {{this.registerSheetApi}}
+      {{this.scroll.followMatch}}
       {{on "keydown" this.keys.onKeyDown capture=true}}
       {{on "copy" this.clipboard.onCopy capture=true}}
       {{on "cut" this.clipboard.onCut capture=true}}

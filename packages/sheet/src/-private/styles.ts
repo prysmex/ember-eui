@@ -287,6 +287,8 @@ li:has([data-test-subj^="euiSheetEditField-"]), li:has([data-test-subj^="euiShee
 .euiSheet__dropLine.euiSheet__dropLine--box { margin-top: 0; background: transparent; border: 2px solid var(--euiSheet-primary, #0B64DD); }
 .euiSheet__dropLine.euiSheet__dropLine--blocked { background: var(--euiSheet-danger, #BD271E); }
 .euiSheet__dropLine.euiSheet__dropLine--box.euiSheet__dropLine--blocked { background: transparent; border-color: var(--euiSheet-danger, #BD271E); }
+/* the current search match (V03 11.1): a 2 px ring inside the cell, over @highlight's marks and the cell's own shadows (not its focus ring's outline) */
+.euiSheet .euiDataGrid .euiDataGridRow .euiDataGridRowCell.euiSheet__cell--match::after { content: ''; position: absolute; inset: 0; z-index: 1; border: 0; box-shadow: inset 0 0 0 2px var(--euiSheet-match, #FACB3D); pointer-events: none; }
 @media (pointer: coarse) { .euiSheet__fillHandle { display: none; } }
 @media (hover: none) {
   .euiSheet__rowGrip { visibility: visible; }

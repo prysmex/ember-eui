@@ -16,6 +16,7 @@ export default class SheetApiModule<T extends object> {
     undo: () => this.sheet.history.undo(),
     redo: () => this.sheet.history.redo(),
     focusCell: (cell) => this.sheet.selection.focusRecordCell(cell),
+    scrollToCell: (cell) => this.sheet.scroll.scrollToCell(cell),
     remapIds: (ids) => this.sheet.history.remapIds(ids),
     clearHistory: () => this.sheet.history.clearHistory(),
     expandRecord: (recordId) => {

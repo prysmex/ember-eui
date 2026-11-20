@@ -68,6 +68,9 @@ export default class SheetCells<T extends object> {
     );
     const drop = this.sheet.uploads.dropPos;
     if (drop && drop.row === row && drop.col === col) view.dropTarget = true;
+    // `@currentMatch` (V03 11.1)
+    const match = this.sheet.scroll.matchPos;
+    if (match && match.row === row && match.col === col) view.match = true;
     return view;
   }
 

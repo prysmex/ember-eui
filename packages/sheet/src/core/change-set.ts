@@ -5,6 +5,8 @@
 import { isReadOnly, resolveType, sameFieldValue, valueOf } from './fields.ts';
 import { buildPaste } from './paste-plan.ts';
 
+import type { PasteInsert } from './paste-plan.ts';
+
 import type {
   CellPatch,
   ChangeSet,
@@ -190,13 +192,14 @@ export function clearRange<T>(
  * right against the record merged with the values accepted so far in that
  * row. A text the type cannot read gives a rejection instead of a patch.
  * Rows past the end give one insert each when they have at least one
- * accepted or rejected cell.
+ * accepted or rejected cell; `insert` says where they go and what values
+ * and `groupKey` they get (a group's, V03-DESIGN.md 8.5).
  */
 export function pasteMatrix<T>(
   ctx: SheetContext<T>,
   anchor: Pos,
   matrix: readonly (readonly string[])[],
-  options: { nextTempId?: () => string } = {}
+  options: { nextTempId?: () => string; insert?: PasteInsert } = {}
 ): ChangeSet | null {
   return buildPaste(ctx, anchor, matrix, options).changeSet;
 }

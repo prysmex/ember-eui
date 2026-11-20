@@ -1558,3 +1558,180 @@ there).
 - PageUp, PageDown, Ctrl+End and the move after commit can still land on
   a header (stage 1's list).
 - The demo page is not built in the docs site in this stage.
+
+## Batch 3b, stage 3.2a: moving, copying and filling across groups
+
+Built 2026-11-20 on `9d9c199a`, in the repository (tested in a Linux
+copy). Scope: the keys, mouse, clipboard and fill parts of 8.5 and 8.6.
+Menus, inserts near a record, checked rows, the expanded record, history,
+the header-menu intents, the API, docs and FZ13 are stage 3.2b's. Not
+committed.
+
+### What was built
+
+- **Keys.**
+  - PageUp and PageDown, with or without Shift, never stop on a header.
+    The target row moves on in the key's direction, else back. Without
+    Shift it may be an add row (as in v0.2); with Shift it is a record.
+  - Ctrl+Home lands on the first record, also without row numbers (the
+    grid's own Ctrl+Home went to row 0, a header). Ctrl+End lands on the
+    last row that is not a header, also without the "+" column (new
+    `handleGroupedEndKey`). Shift+Ctrl+Home/End already went to the
+    records' corners.
+  - The move after a commit (Enter, Tab, Shift+Tab) steps over a header
+    or an add row to the next record in its direction. With no record
+    there it stays.
+  - Ctrl+A selects all records. Grouped with no records, it selects
+    nothing (no range on a header).
+  - Ctrl+Up and Ctrl+Down from a header or a group's add row treat that
+    row as an empty cell between two records (`edgeFromGap`), as v0.2's
+    add row was below the last record. Up: `edgeTarget` over the records
+    above it, from past their end. Down: over the records below it, from
+    before their start. Ctrl+Left and Ctrl+Right there do not move, as on
+    v0.2's add row. `coreRowOf` itself is unchanged: `appendToGroup` uses
+    it for an empty group's index (GR9).
+  - Typing, F2 and Delete on a header already did nothing (stage 1).
+    GR17 pins it.
+  - **A key that stays on a header no longer leaves a range there.**
+    `moveFocus` to a header row now clears `anchor` and `head`, as
+    `onFocusIn` does. Before, a key whose target was the focused header
+    cell itself (Ctrl+Up on the first header, Shift+Home in the first
+    column, and now Ctrl+Left/Right) set a range on the header without a
+    `focusin`, and a paste then wrote over the group's first record
+    (through `coreRowOf`). The first two cases were there at HEAD. `onPaste`
+    also returns, not taken, for a range that starts on a header.
+- **The drawn range.** `placeRangeOutline` draws one box per run of
+  records: the records of one leaf group, between its header and its add
+  row or the next header (`recordRunOf`). Header and add rows get no box.
+  The range, the copy mark, the fill target and the flash all use it. The
+  first box is the template's element; more runs get copies of it in the
+  same clip box, and copies no longer needed are removed. Only rendered
+  runs get a box, so Ctrl+A over many groups costs what is in view.
+  Without groups there is one run, so one box, exactly as before.
+- **`rangeOutline`** is null for one record's cell (it compared grid rows
+  before; a header inside the range does not make it two cells).
+- **`isFillPreview`** is false on header and add rows while grouped (a
+  group's add row between two groups got the preview).
+- **`fillTo`** measures the drag in records while grouped. A header or an
+  add row under the pointer stands for the record on the source's side
+  of it.
+- **The lost head** in `followRecords`, while grouped, is clamped onto a
+  record (the nearest above first), else an add row, else no range.
+- **Paste.**
+  - The selection's height for tiling is its records' count
+    (`recordRange`), not its grid rows. One line pasted into two records
+    across a header fills both.
+  - The head after a paste is the grid row of the last record written,
+    plus the lines inserted after it (`pasteHeadRow`). Without groups
+    this is `anchor + lines - 1`, as before.
+  - Stage 3.1's guard is gone. On a group's add row every line is an
+    insert into that group: index after its last loaded record, anchor
+    after that record (none for an empty group), the group's values and
+    `groupKey` (`pasteInsert`).
+  - From a record, lines past the last record are inserts in the last
+    record's group (its values and those of its ancestors, `groupKey`,
+    anchored after the last record as before).
+- **Core: `buildPaste`'s `insert` option** (8.5), on `pasteMatrix` and
+  `planPaste` too, type `PasteInsert` exported from the core: `index`
+  (default `records.length`), `anchor` (default after the last record;
+  `null` for none), `values` and `groupKey`. The second and later
+  inserts are anchored after the previous one, as before. A pasted text
+  for a field in `values` is not read (no rejection, no new option, no
+  pending resolve), and the line still makes its insert. Without the
+  option the output is the same as before.
+
+### Tests
+
+- `tests/integration/components/eui-sheet-groups-nav-test.gts` (new): 25
+  tests. GR5; GR6 (3: Shift+arrows and copy, Shift+click and drag, a
+  click after); GR7 (3: across groups, tiling, past the last record);
+  GR8 (2: a group's add row, an empty group's); GR10 (2: the handle,
+  Ctrl+D and Ctrl+R); GR11 (8: Ctrl+A and Delete with Ctrl+Down, edge
+  jumps from an add row and a header, page keys, Ctrl+Home/End with and
+  without row numbers, Shift+Ctrl+Home/End, the move after a commit,
+  the same without add rows); GR17 (2: typing, and keys that stay on a
+  header); and one test per 3a site under groups: `isRowMarked` with the
+  column marks, `rangeOutline` with `placeRangeOutline`, `flashCells`,
+  `followRecords`. The copy mark is checked in GR6, the fill target in
+  GR10, the flash again in GR7.
+- `tests/unit/paste-insert-test.ts` (new): PI1-PI5, the `insert` option.
+- The first 23 new integration tests were also run against HEAD's
+  component: 15 fail there, 8 pass (GR5, Ctrl+A, Shift+Ctrl+Home/End,
+  GR17's typing, Shift+click and drag, the row and column marks, Ctrl+D
+  and Ctrl+R, the click after: these worked already and are pinned now).
+  The test of keys that stay on a header fails without the `moveFocus`
+  fix (the paste is taken).
+- No existing test or assertion was changed.
+
+Full suite on the final code: **503/503**, in one run (under 2 minutes
+this time). That is the HEAD suite, 473 tests (the 472 counted in stage
+3.1 plus AR9, which is in HEAD's `eui-sheet-rows-test.gts` but not in
+that count), plus 25 + 5 new.
+The new tests also pass alone. `eslint` and `prettier --check` are clean
+on the changed files. `pnpm lint:types` (src) has no error. The tests'
+`ember-tsc` (`tsconfig.eslint.json`) has the baseline's 19 errors, in the
+same files. `docs:api:check` passes. `packages/core/src` is unchanged.
+
+### Deviations
+
+1. **Page keys never land on a header.** 8.5 says they "may land on a
+   header"; the task says they must not. The task was followed.
+2. **The head never rests on a header**, also while extending. 8.5 says
+   it may; stage 1 already stepped Shift+arrows over headers.
+3. **Group values win over a pasted value** of the group's field in an
+   insert (as 8.4 says for the add row), so the insert's values and its
+   `groupKey` agree. A pasted "Open" in a Doing add row becomes Doing
+   (GR8).
+4. **Paste inserts get no `@newRecordValues`**, as in v0.2. Only the
+   group's values are added.
+5. **The outline is one box per run, not one box.** 8.5 says only that
+   the drawn selection is the records. One box would cover a header that
+   is not selected, so it is split.
+6. **Ctrl+Left and Ctrl+Right on a header** no longer move: they took
+   the column from the group's first record before (`coreRowOf`).
+
+### Visibility changes
+
+- The range outline, the dashed copy mark, the dashed fill target and the
+  flash are split at each header and add row. Before, one 3 px box ran
+  over the header row, which read as "the header is selected".
+- The fill preview tint is no longer drawn on a group's add row.
+- Checked with computed boxes in headless Chromium only (light theme).
+  The outline's colours are the same tokens as before, so dark is
+  unchanged; not looked at in a screenshot.
+
+### For 3.2b
+
+- `insertNear` (Shift+Enter, insert above or below) and `duplicate`
+  still insert without the group's values or `groupKey`.
+- PageUp, PageDown, Ctrl+Home and Ctrl+End on a **row-number** cell are
+  still the grid's own and can focus a header's row-number cell. That is
+  only focus (a header keeps no range), but it is not the data cells'
+  rule.
+- A Shift+click on a header row focuses the header and drops the range
+  (8.6: a click on the row focuses it). A Shift+click on a record across
+  a header extends, as tested.
+- The paste head on a group's add row is `anchor + lines - 1`: right once
+  the owner draws the inserts in that group after its last record
+  (`localRecords.view` does). An owner that draws them elsewhere gets a
+  range on other rows until the next re-query.
+- `edgeFromGap` copies the records above or below the row (`slice`) on
+  each Ctrl+Up/Down from a header or an add row: O(records) per key.
+- The flash is still the bounding box of the patched records (as v0.2);
+  grouped, it is cut into runs, so a run inside it may hold an unchanged
+  record.
+- `recordRunOf` relies on a leaf group's records being contiguous after
+  its header (the row model's rule). A collapsed group with `loaded` > 0
+  (3a deviation 5) is a run too.
+
+### Files
+
+- `packages/sheet/src/components/eui-sheet.gts`
+- `packages/sheet/src/core/paste-plan.ts`: `PasteInsert`, `insert`
+- `packages/sheet/src/core/change-set.ts`, `src/core/resolve.ts`: the
+  option on `pasteMatrix` and `planPaste`
+- `packages/sheet/src/core/index.ts`: exports `PasteInsert`
+- `packages/sheet/tests/integration/components/eui-sheet-groups-nav-test.gts` (new)
+- `packages/sheet/tests/unit/paste-insert-test.ts` (new)
+
+`packages/core/src` is unchanged. No dependency was added.

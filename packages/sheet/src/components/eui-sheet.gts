@@ -64,7 +64,7 @@ import {
   valueOf,
   withoutField
 } from '../core/index.ts';
-import type { RowModel, SheetRow } from '../core/index.ts';
+import type { PasteInsert, RowModel, SheetRow } from '../core/index.ts';
 import { builtInSheetFieldTypes } from '../field-types.ts';
 import AutoScroll from '../-private/auto-scroll.ts';
 import FieldEditor, {
@@ -2263,6 +2263,95 @@ export default class EuiSheet<T extends object> extends Component<
     return down >= 0 ? down : fallback;
   }
 
+  /**
+   * Grouped: the row nearest `row` (clamped to the grid) a key may land
+   * on, looking in `step`'s direction first, then the other way: not a
+   * header (a record or an add row), or with `recordsOnly` a record. -1
+   * when there is none (V03 8.6, stage 3.2a).
+   */
+  landingRow(row: number, step: 1 | -1, recordsOnly: boolean): number {
+    const model = this.rowModel;
+    if (!model.length) return -1;
+    const from = clamp(row, 0, model.length - 1);
+    if (recordsOnly) {
+      const ahead = model.nearestRecordRow(from, step);
+      return ahead >= 0
+        ? ahead
+        : model.nearestRecordRow(from, step === 1 ? -1 : 1);
+    }
+    const lands = (g: number) => model.at(g)?.kind !== 'group';
+    if (lands(from)) return from;
+    for (let g = from + step; g >= 0 && g < model.length; g += step) {
+      if (lands(g)) return g;
+    }
+    for (let g = from - step; g >= 0 && g < model.length; g -= step) {
+      if (lands(g)) return g;
+    }
+    return -1;
+  }
+
+  /** Where Ctrl+Home lands: the first record, else (grouped, none) the first add row; -1 for none. */
+  firstLandingRow(): number {
+    const first = this.rowModel.firstRecordRow;
+    if (first >= 0 || !this.isGrouped) return Math.max(first, 0);
+    return this.landingRow(0, 1, false);
+  }
+
+  /** Where Ctrl+End lands: the grid's last row, which grouped is the last row that is not a header. */
+  lastLandingRow(): number {
+    const last = this.rowCount - 1;
+    return this.isGrouped ? this.landingRow(last, -1, false) : last;
+  }
+
+  /**
+   * The run of record rows a record row is in, in grid rows: its group's
+   * records (between its header and its add row or the next header), or
+   * every record without groups. The range outline draws one box per run
+   * (V03 8.5: the drawn selection is the records).
+   */
+  recordRunOf(row: number): { top: number; bottom: number } {
+    const model = this.rowModel;
+    if (!this.isGrouped) {
+      return { top: model.firstRecordRow, bottom: model.lastRecordRow };
+    }
+    const group = model.groupAt(row);
+    const add = model.addRowOf(group);
+    const next = model.headerRowOf(group + 1);
+    return {
+      top: model.headerRowOf(group) + 1,
+      bottom: (add >= 0 ? add : next >= 0 ? next : model.length) - 1
+    };
+  }
+
+  /**
+   * Ctrl/Cmd+arrow on a header or an add row while grouped (V03 8.5): the
+   * row is an empty cell between the records above and below it, as the
+   * add row at the end was in v0.2 (`edgeTarget` from past the records).
+   * Left and right do not move there, as on v0.2's add row.
+   */
+  edgeFromGap(from: Pos, direction: 'up' | 'down' | 'left' | 'right'): Pos {
+    if (direction !== 'up' && direction !== 'down') return from;
+    const ctx = this.context;
+    // the records above the row
+    const above = this.coreRowOf(from.row);
+    if (direction === 'up') {
+      const edge = edgeTarget(
+        { ...ctx, records: ctx.records.slice(0, above) },
+        { row: above, col: from.col },
+        'up'
+      );
+      return edge.row === above ? from : this.gridPos(edge);
+    }
+    const edge = edgeTarget(
+      { ...ctx, records: ctx.records.slice(above) },
+      { row: -1, col: from.col },
+      'down'
+    );
+    return edge.row < 0
+      ? from
+      : { row: this.gridRowOf(edge.row + above), col: edge.col };
+  }
+
   /** The class that defines the `--euiSheet-*` colours from the EUI theme. */
   @cached
   get themeClass(): string {
@@ -2711,19 +2800,27 @@ export default class EuiSheet<T extends object> extends Component<
       const model = this.rowModel;
       const lastRow =
         model.lastRecordRow >= 0 ? model.lastRecordRow : model.length - 1;
-      if (model.length === 0) {
+      let row =
+        foundRow >= 0
+          ? foundRow
+          : found === undefined
+            ? clamp(head.row, 0, lastRow)
+            : this.gridRowOf(found);
+      // grouped, the clamp of a lost head: a record (the nearest above
+      // first), else an add row, never a header (V03 8.6)
+      if (
+        model.length &&
+        this.isGrouped &&
+        found === undefined &&
+        foundRow < 0
+      ) {
+        row = this.clampToRecordRow(row, this.landingRow(row, 1, false));
+      }
+      if (model.length === 0 || row < 0) {
         this.anchor = null;
         this.head = null;
       } else {
-        const pos = {
-          row:
-            foundRow >= 0
-              ? foundRow
-              : found === undefined
-                ? clamp(head.row, 0, lastRow)
-                : this.gridRowOf(found),
-          col: head.col
-        };
+        const pos = { row, col: head.col };
         this.anchor = pos;
         this.head = pos;
         this.rangeKind = 'cells';
@@ -4124,8 +4221,10 @@ export default class EuiSheet<T extends object> extends Component<
     if (!range || this.editing) return null;
     const records = this.recordRange(range);
     if (!records) return null;
-    const bottom = this.gridRowOf(records.bottom);
-    if (bottom === range.top && range.left === range.right) return null;
+    // one record's cell (a header inside does not make it more)
+    if (records.top === records.bottom && range.left === range.right) {
+      return null;
+    }
     return range;
   }
 
@@ -4148,14 +4247,22 @@ export default class EuiSheet<T extends object> extends Component<
     const records = this.recordRange(range);
     if (!records) return hide();
     const bottom = this.gridRowOf(records.bottom);
-    let left = Infinity;
-    let top = Infinity;
-    let right = -Infinity;
-    let lower = -Infinity;
-    let minRow = Infinity;
-    let maxRow = -Infinity;
-    let minCol = Infinity;
-    let maxCol = -Infinity;
+    // grouped, one box per run of records (V03 8.5: the drawn selection is
+    // the records; a header or an add row between two runs is not boxed)
+    const grouped = this.isGrouped;
+    const boxes = new Map<
+      number,
+      {
+        left: number;
+        top: number;
+        right: number;
+        lower: number;
+        minRow: number;
+        maxRow: number;
+        minCol: number;
+        maxCol: number;
+      }
+    >();
     const cells = wrapper.querySelectorAll<HTMLElement>(
       '[role=gridcell][data-gridcell-visible-row-index]:not(.euiDataGridFooterCell)'
     );
@@ -4164,17 +4271,33 @@ export default class EuiSheet<T extends object> extends Component<
       const col = Number(cell.dataset['gridcellColumnIndex']) - this.colOffset;
       if (row < range.top || row > bottom) continue;
       if (col < range.left || col > range.right) continue;
+      if (grouped && !this.isRecordRow(row)) continue;
+      const run = grouped ? this.rowModel.groupAt(row) : 0;
       const box = cell.getBoundingClientRect();
-      left = Math.min(left, box.left);
-      top = Math.min(top, box.top);
-      right = Math.max(right, box.right);
-      lower = Math.max(lower, box.bottom);
-      minRow = Math.min(minRow, row);
-      maxRow = Math.max(maxRow, row);
-      minCol = Math.min(minCol, col);
-      maxCol = Math.max(maxCol, col);
+      const found = boxes.get(run);
+      if (!found) {
+        boxes.set(run, {
+          left: box.left,
+          top: box.top,
+          right: box.right,
+          lower: box.bottom,
+          minRow: row,
+          maxRow: row,
+          minCol: col,
+          maxCol: col
+        });
+        continue;
+      }
+      found.left = Math.min(found.left, box.left);
+      found.top = Math.min(found.top, box.top);
+      found.right = Math.max(found.right, box.right);
+      found.lower = Math.max(found.lower, box.bottom);
+      found.minRow = Math.min(found.minRow, row);
+      found.maxRow = Math.max(found.maxRow, row);
+      found.minCol = Math.min(found.minCol, col);
+      found.maxCol = Math.max(found.maxCol, col);
     }
-    if (minRow === Infinity) return hide();
+    if (!boxes.size) return hide();
     const clip = {
       left:
         bounds.frozenRight !== undefined && range.left >= this.frozenCount
@@ -4185,18 +4308,33 @@ export default class EuiSheet<T extends object> extends Component<
       bottom: bounds.bottom
     };
     const past = 8;
-    if (minRow > range.top) top = clip.top - past;
-    if (maxRow < bottom) lower = clip.bottom + past;
-    if (minCol > range.left) left = clip.left - past;
-    if (maxCol < range.right) right = clip.right + past;
-    if (
-      right <= clip.left ||
-      left >= clip.right ||
-      lower <= clip.top ||
-      top >= clip.bottom
-    ) {
-      return hide();
+    const drawn: { left: number; top: number; right: number; lower: number }[] =
+      [];
+    for (const found of boxes.values()) {
+      let { left, top, right, lower } = found;
+      // the run's first and last rows inside the range
+      let first = range.top;
+      let last = bottom;
+      if (grouped) {
+        const run = this.recordRunOf(found.minRow);
+        first = Math.max(first, run.top);
+        last = Math.min(last, run.bottom);
+      }
+      if (found.minRow > first) top = clip.top - past;
+      if (found.maxRow < last) lower = clip.bottom + past;
+      if (found.minCol > range.left) left = clip.left - past;
+      if (found.maxCol < range.right) right = clip.right + past;
+      if (
+        right <= clip.left ||
+        left >= clip.right ||
+        lower <= clip.top ||
+        top >= clip.bottom
+      ) {
+        continue;
+      }
+      drawn.push({ left, top, right, lower });
     }
+    if (!drawn.length) return hide();
     const origin = wrapper.getBoundingClientRect();
     const scale = wrapper.offsetWidth ? origin.width / wrapper.offsetWidth : 1;
     element.style.display = '';
@@ -4204,10 +4342,21 @@ export default class EuiSheet<T extends object> extends Component<
     element.style.top = `${(clip.top - origin.top) / scale}px`;
     element.style.width = `${Math.max(0, clip.right - clip.left) / scale}px`;
     element.style.height = `${Math.max(0, clip.bottom - clip.top) / scale}px`;
-    outline.style.left = `${(left - clip.left) / scale}px`;
-    outline.style.top = `${(top - clip.top) / scale}px`;
-    outline.style.width = `${(right - left) / scale}px`;
-    outline.style.height = `${(lower - top) / scale}px`;
+    // the first box is the template's; more runs get copies of it
+    while (element.children.length > drawn.length) {
+      element.lastElementChild!.remove();
+    }
+    drawn.forEach((box, i) => {
+      let target = element.children[i] as HTMLElement | undefined;
+      if (!target) {
+        target = outline.cloneNode(false) as HTMLElement;
+        element.appendChild(target);
+      }
+      target.style.left = `${(box.left - clip.left) / scale}px`;
+      target.style.top = `${(box.top - clip.top) / scale}px`;
+      target.style.width = `${(box.right - box.left) / scale}px`;
+      target.style.height = `${(box.lower - box.top) / scale}px`;
+    });
   }
 
   /** A press on the handle starts a fill drag; focus stays on the cell. */
@@ -4243,10 +4392,30 @@ export default class EuiSheet<T extends object> extends Component<
     const cell = this.dataCell(element);
     if (!source || !cell) return;
     const pos = this.cursor(cell);
-    // a fill never reaches the add row
-    const row = this.clampToRecordRow(pos.row, pos.row);
-    const down = row - source.bottom;
-    const up = source.top - row;
+    let row: number;
+    let down: number;
+    let up: number;
+    if (this.isGrouped) {
+      // measured in records (V03 8.5): a header or an add row counts for
+      // nothing, and stands for the record on the source's side of it
+      const records = this.recordRange(source);
+      if (!records) return;
+      row = this.isRecordRow(pos.row)
+        ? pos.row
+        : this.rowModel.nearestRecordRow(
+            pos.row,
+            pos.row > this.gridRowOf(records.bottom) ? -1 : 1
+          );
+      if (row < 0) return;
+      const r = this.recordRowAt(row);
+      down = r - records.bottom;
+      up = records.top - r;
+    } else {
+      // a fill never reaches the add row
+      row = this.clampToRecordRow(pos.row, pos.row);
+      down = row - source.bottom;
+      up = source.top - row;
+    }
     const right = pos.col - source.right;
     const left = source.left - pos.col;
     const dy = Math.max(down, up, 0);
@@ -4349,6 +4518,8 @@ export default class EuiSheet<T extends object> extends Component<
     const target = this.fillTarget;
     const source = this.fillSource;
     if (!target || !source) return false;
+    // grouped: a header or an add row inside the target is not filled
+    if (this.isGrouped && !this.isRecordRow(row)) return false;
     const inside = (range: Range) =>
       row >= range.top &&
       row <= range.bottom &&
@@ -4868,6 +5039,7 @@ export default class EuiSheet<T extends object> extends Component<
     if (this.handleNavKey(event, pos)) return;
     if (this.handleHomeKey(event, pos.row)) return;
     if (this.handleLastFieldKey(event, pos.row, pos.col)) return;
+    if (this.handleGroupedEndKey(event)) return;
     // Escape ends the copy mark first (V03 batch 1)
     if (event.key === 'Escape' && this.copied) {
       stop(event);
@@ -5011,6 +5183,8 @@ export default class EuiSheet<T extends object> extends Component<
       // every cell; focus stays where it is
       stop(event);
       const model = this.rowModel;
+      // grouped: all the records (V03 8.5); with none, nothing to select
+      if (this.isGrouped && model.firstRecordRow < 0) return true;
       this.anchor = { row: Math.max(model.firstRecordRow, 0), col: 0 };
       this.head = {
         row: model.lastRecordRow,
@@ -5047,13 +5221,18 @@ export default class EuiSheet<T extends object> extends Component<
     let target: Pos;
     if (command && key in ARROW_DIRECTIONS) {
       const direction = ARROW_DIRECTIONS[key as keyof typeof ARROW_DIRECTIONS];
-      // in record rows; the add row is the row after the records above it
-      const core = { row: this.coreRowOf(from.row), col: from.col };
-      const edge = edgeTarget(this.context, core, direction);
-      target =
-        edge.row === core.row
-          ? { row: from.row, col: edge.col }
-          : this.gridPos(edge);
+      if (this.isGrouped && !this.isRecordRow(from.row)) {
+        // a header or a group's add row: an empty cell between two records
+        target = this.edgeFromGap(from, direction);
+      } else {
+        // in record rows; the add row is the row after the records above it
+        const core = { row: this.coreRowOf(from.row), col: from.col };
+        const edge = edgeTarget(this.context, core, direction);
+        target =
+          edge.row === core.row
+            ? { row: from.row, col: edge.col }
+            : this.gridPos(edge);
+      }
     } else if (extend && key in ARROW_DIRECTIONS) {
       const [dRow, dCol] = ARROW_STEPS[key as keyof typeof ARROW_STEPS];
       const row = clamp(
@@ -5076,10 +5255,12 @@ export default class EuiSheet<T extends object> extends Component<
     } else if ((key === 'PageDown' || key === 'PageUp') && !command) {
       const page = this.pageRows();
       const last = event.shiftKey ? model.lastRecordRow : model.length - 1;
-      target = {
-        row: clamp(from.row + (key === 'PageDown' ? page : -page), 0, last),
-        col: from.col
-      };
+      let row = clamp(from.row + (key === 'PageDown' ? page : -page), 0, last);
+      // grouped: never on a header; with Shift on a record (V03 8.6)
+      if (this.isGrouped) {
+        row = this.landingRow(row, key === 'PageDown' ? 1 : -1, event.shiftKey);
+      }
+      target = { row, col: from.col };
     } else {
       return false;
     }
@@ -5223,6 +5404,16 @@ export default class EuiSheet<T extends object> extends Component<
    * the range is set here, so the focus that comes later keeps it.
    */
   moveFocus(target: Pos, extend: boolean): void {
+    // a group header keeps no range (V03 9.1), also when focus stays on it
+    // (an edge key that does not move): nothing to clear, fill or paste over
+    if (this.isGrouped && this.rowKind(target.row) === 'group') {
+      this.anchor = null;
+      this.head = null;
+      this.rangeKind = 'cells';
+      this.domCursor = null;
+      this.focusGridCell(target);
+      return;
+    }
     if (extend && this.anchor && this.isRecordRow(target.row)) {
       this.head = target;
     } else {
@@ -5278,19 +5469,38 @@ export default class EuiSheet<T extends object> extends Component<
     }
     if (event.key !== 'End' || lastCol < 0) return false;
     stop(event);
-    this.moveFocus(
-      { row: command ? this.rowCount - 1 : row, col: lastCol },
-      false
-    );
+    const last = command ? this.lastLandingRow() : row;
+    if (last < 0 && this.isGrouped) return true;
+    this.moveFocus({ row: last, col: lastCol }, false);
+    return true;
+  }
+
+  /**
+   * Grouped, without the "+" column: Ctrl+End lands on the last row that
+   * is not a header (the grid would go to a collapsed last group's header).
+   */
+  handleGroupedEndKey(event: KeyboardEvent): boolean {
+    if (!this.isGrouped || this.hasAddFieldColumn) return false;
+    if (event.key !== 'End' || !event.ctrlKey) return false;
+    if (event.altKey || event.shiftKey || event.metaKey) return false;
+    const lastCol = this.visibleFields.length - 1;
+    if (lastCol < 0) return false;
+    stop(event);
+    const last = this.lastLandingRow();
+    if (last >= 0) this.moveFocus({ row: last, col: lastCol }, false);
     return true;
   }
 
   handleHomeKey(event: KeyboardEvent, row: number): boolean {
-    if (event.key !== 'Home' || !this.colOffset) return false;
+    if (event.key !== 'Home') return false;
     if (event.altKey || event.shiftKey || event.metaKey) return false;
+    // grouped, Ctrl+Home is the sheet's also without row numbers: the
+    // grid would go to row 0, a header
+    if (!this.colOffset && !(this.isGrouped && event.ctrlKey)) return false;
     stop(event);
     // Ctrl+Home: the first record (the add row when there is none)
-    const first = Math.max(this.rowModel.firstRecordRow, 0);
+    const first = this.firstLandingRow();
+    if (event.ctrlKey && first < 0) return true;
     this.focusGridCell({ row: event.ctrlKey ? first : row, col: 0 });
     // Home also scrolls to the left edge (the frozen field is in view anyway)
     if (this.frozenCount) this.scrollLeftBeforeFocus = 0;
@@ -5818,17 +6028,27 @@ export default class EuiSheet<T extends object> extends Component<
     if (!Array.from(data.types).includes('text/plain')) return;
     const range = this.range;
     if (!range) return;
+    // a header is never pasted over (V03 8.5); its row has no range anyway
+    if (this.isGrouped && this.rowKind(range.top) === 'group') return;
     stop(event);
     const anchor = { row: range.top, col: range.left };
-    // a group's add row: its inserts need the group's values (stage 3.2);
-    // `coreRowOf` would write over the next group's first records
-    if (this.addRowGroupAt(anchor.row) >= 0) return;
-    // the core's anchor: its record row, or `records.length` on the add row
-    const at = { row: this.coreRowOf(anchor.row), col: anchor.col };
+    const records = this.args.records;
+    // a group's add row: every line is an insert into that group (V03 8.5)
+    const addGroup = this.addRowGroupAt(anchor.row);
+    // the core's anchor: its record row, or `records.length` on an add row
+    const at = {
+      row: addGroup >= 0 ? records.length : this.coreRowOf(anchor.row),
+      col: anchor.col
+    };
+    // grouped, the lines past the records: into the add row's group, or
+    // into the last record's group, with its values and `groupKey`
+    const insert = this.isGrouped ? this.pasteInsert(addGroup) : undefined;
     // a block that fits the selection a whole number of times fills it
+    // (its records: a header or an add row inside is no line)
+    const selection = this.recordRange(range);
     let matrix = tileMatrix(
       parseTsv(data.getData('text/plain')),
-      range.bottom - range.top + 1,
+      selection ? selection.bottom - selection.top + 1 : 1,
       range.right - range.left + 1
     );
     // without inserting, lines past the last record are dropped (5.8)
@@ -5849,18 +6069,71 @@ export default class EuiSheet<T extends object> extends Component<
       right
     };
     const touched = this.touchedInRecords(pasted, false);
+    const options = insert ? { nextTempId, insert } : { nextTempId };
     if (this.args.onResolve) {
       // V9: the synchronous part at once, the resolved part later
-      const plan = planPaste(this.context, at, matrix, { nextTempId });
+      const plan = planPaste(this.context, at, matrix, options);
       const entry = this.emit(plan.changeSet, touched);
       this.startResolve(plan, entry);
     } else {
-      this.emit(pasteMatrix(this.context, at, matrix, { nextTempId }), touched);
+      this.emit(pasteMatrix(this.context, at, matrix, options), touched);
     }
     // no setFocusedCell: inserted rows exist only after the next render
     this.anchor = anchor;
-    this.head = { row: anchor.row + matrix.length - 1, col: right };
+    this.head = {
+      row: this.pasteHeadRow(anchor.row, at.row, matrix.length, addGroup),
+      col: right
+    };
     this.rangeKind = 'cells';
+  }
+
+  /**
+   * Grouped (V03 8.5, D14): where a paste's lines past the records go. On
+   * a group's add row, into that group after its last loaded record (no
+   * anchor for an empty group); from a record, into the last record's
+   * group, after it. Each with the group's values and `groupKey`.
+   */
+  pasteInsert(addGroup: number): PasteInsert | undefined {
+    const model = this.rowModel;
+    const group = addGroup >= 0 ? addGroup : model.groupAt(model.lastRecordRow);
+    const key = this.groups[group]?.key;
+    if (key === undefined) return undefined;
+    const insert: PasteInsert = {
+      values: this.groupValuesOf(group),
+      groupKey: key
+    };
+    if (addGroup >= 0) {
+      const row = model.addRowOf(addGroup);
+      // the group's last loaded record is the row above its add row
+      const last = this.recordRowAt(row - 1);
+      const above = last >= 0 ? this.args.records[last] : undefined;
+      insert.index = last >= 0 ? last + 1 : this.coreRowOf(row);
+      insert.anchor =
+        above === undefined
+          ? null
+          : { recordId: this.args.getRecordId(above), position: 'after' };
+    }
+    return insert;
+  }
+
+  /**
+   * The grid row of a paste's last line (the range's head): a record's
+   * row, or past the last record's row for the inserted lines (they follow
+   * it, in its group, once rendered). On a group's add row the inserts
+   * take the add row's place and the rows after it.
+   */
+  pasteHeadRow(
+    anchorRow: number,
+    at: number,
+    lines: number,
+    addGroup: number
+  ): number {
+    if (addGroup >= 0) return anchorRow + lines - 1;
+    const last = at + lines - 1;
+    const count = this.args.records.length;
+    if (last < count) return this.gridRowOf(last);
+    const lastRow = count ? this.gridRowOf(count - 1) : -1;
+    return lastRow + last - (count - 1);
   }
 
   /**
@@ -6064,12 +6337,19 @@ export default class EuiSheet<T extends object> extends Component<
     if (refocus) {
       // synchronous is safe: the target row already exists
       const model = this.rowModel;
+      const from = this.gridRowOf(pos.row);
+      let row = clamp(
+        from + move[0],
+        model.firstRecordRow,
+        model.lastRecordRow
+      );
+      // grouped: over a header or an add row to the next record (V03 8.6)
+      if (this.isGrouped && !this.isRecordRow(row)) {
+        const next = model.nearestRecordRow(row, move[0] < 0 ? -1 : 1);
+        row = next >= 0 ? next : from;
+      }
       this.focusGridCell({
-        row: clamp(
-          this.gridRowOf(pos.row) + move[0],
-          model.firstRecordRow,
-          model.lastRecordRow
-        ),
+        row,
         col: clamp(pos.col + move[1], 0, this.visibleFields.length - 1)
       });
     }

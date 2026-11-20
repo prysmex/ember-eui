@@ -8,6 +8,8 @@ import { commitText } from './change-set.ts';
 import { isReadOnly, resolveType, sameFieldValue, valueOf } from './fields.ts';
 import { buildPaste, partsOf } from './paste-plan.ts';
 
+import type { PasteInsert } from './paste-plan.ts';
+
 import type {
   CellPatch,
   CellRejection,
@@ -66,7 +68,7 @@ export function planPaste<T>(
   ctx: SheetContext<T>,
   anchor: Pos,
   matrix: readonly (readonly string[])[],
-  options: { nextTempId?: () => string } = {}
+  options: { nextTempId?: () => string; insert?: PasteInsert } = {}
 ): ResolvePlan<T> {
   const { changeSet, pending, pendingRecords } = buildPaste(
     ctx,

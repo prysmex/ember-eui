@@ -222,7 +222,10 @@ export default class SheetGridColumns<T extends object> {
     if (!label) return ROW_COLUMN_WIDTH;
     let longest = 0;
     this.sheet.args.records.forEach((record, i) => {
-      longest = Math.max(longest, label(record, this.sheet.numberOf(i)).length);
+      longest = Math.max(
+        longest,
+        label(record, this.sheet.rows.numberOf(i)).length
+      );
     });
     return Math.max(ROW_COLUMN_WIDTH, 24 + 8 * longest);
   }

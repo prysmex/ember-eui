@@ -30,24 +30,24 @@ export class RowNumberCell extends Component<RowNumberCellSignature> {
   }
 
   get isAddRow(): boolean {
-    return this.sheet.isAddRow(this.args.rowIndex);
+    return this.sheet.rows.isAddRow(this.args.rowIndex);
   }
 
   /** The group when this is a group header row's cell (V03 9.1). */
   get group(): SheetGroup | undefined {
-    return this.sheet.groupHeaderAt(this.args.rowIndex);
+    return this.sheet.groupHeaders.groupHeaderAt(this.args.rowIndex);
   }
 
   get hasRecord(): boolean {
-    return this.sheet.recordAt(this.args.rowIndex) !== undefined;
+    return this.sheet.rows.recordAt(this.args.rowIndex) !== undefined;
   }
 
   get label(): string {
-    return this.sheet.rowLabelOf(this.args.rowIndex);
+    return this.sheet.rows.rowLabelOf(this.args.rowIndex);
   }
 
   get checked(): boolean {
-    return this.sheet.isChecked(this.args.rowIndex);
+    return this.sheet.checked.isChecked(this.args.rowIndex);
   }
 
   get selected(): boolean {
@@ -71,7 +71,7 @@ export class RowNumberCell extends Component<RowNumberCellSignature> {
     const group = this.group;
     if (group) {
       this.args.setCellProps({
-        ...this.sheet.groupCellProps(group),
+        ...this.sheet.groupHeaders.groupCellProps(group),
         className: classes.join(' ')
       });
       return '';
@@ -88,7 +88,7 @@ export class RowNumberCell extends Component<RowNumberCellSignature> {
       props['aria-label'] = messages.addRecord();
     } else if (this.hasRecord) {
       props['aria-label'] = messages.rowNumber(
-        this.sheet.positionOf(this.args.rowIndex)
+        this.sheet.rows.positionOf(this.args.rowIndex)
       );
       if (this.checked) classes.push('euiSheet__rowCell--checked');
       // V03 batch 1: a cell range's rows
@@ -155,7 +155,7 @@ interface RowNumberHeaderSignature {
 /** The control column's header: checks every record of `@records`, or none when all are. */
 export class RowNumberHeader extends Component<RowNumberHeaderSignature> {
   get state(): 'all' | 'some' | 'none' {
-    return this.args.sheet.checkedState;
+    return this.args.sheet.checked.checkedState;
   }
 
   get label(): string {

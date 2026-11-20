@@ -64,7 +64,7 @@ export default class RecordForm extends Component<RecordFormSignature> {
     const fieldId = args.sheet.takePendingFormEdit(args.record);
     const field = fieldId && this.fields.find((f) => f.id === fieldId);
     if (field && this.canEdit(field) && this.typeOf(field).editor) {
-      const view = args.sheet.cellViewFor(args.record, field);
+      const view = args.sheet.cells.cellViewFor(args.record, field);
       this._editing = new FormEditing(args.record, field.id, null, view.text);
     }
   }
@@ -100,7 +100,7 @@ export default class RecordForm extends Component<RecordFormSignature> {
   open = (field: EuiSheetField, initialKey: string | null): void => {
     if (!this.canEdit(field) || !this.typeOf(field).editor) return;
     if (this.editing) this.commit();
-    const view = this.sheet.cellViewFor(this.args.record, field);
+    const view = this.sheet.cells.cellViewFor(this.args.record, field);
     this.editing = new FormEditing(
       this.args.record,
       field.id,

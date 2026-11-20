@@ -214,3 +214,72 @@ For stage 2:
 - The baseline files (`3c0-declarations`, `3c0-base-types-tests.log`) are
   in the Linux copy's scratch folder. If it is cleaned, rebuild them from
   `43d3279c`.
+
+## 3c stage 2
+
+What moved, to `src/-private/sheet/`, as the module map assigns it:
+
+| File | Class, property | Members | Lines |
+| --- | --- | --- | --- |
+| `rows.ts` | `SheetRows`, `rows` | 29 | 319 |
+| `group-headers.ts` | `SheetGroupHeaders`, `groupHeaders` | 17 | 249 |
+| `checked.ts` | `SheetChecked`, `checked` | 10 | 123 |
+| `cells.ts` | `SheetCells`, `cells` | 9 | 155 |
+
+No constant or function moved with them: they use only `util.ts`, `types.ts`
+and `core`.
+
+The component goes from 6,649 to 5,960 lines. Its template changes 2
+paths (`rows.rowCount`, `rows.isGrouped`). Two stage 1 modules are
+re-pointed: `grid-columns.ts` (`rows.numberOf`) and `grid-options.ts`
+(`rows.hasAddRow`, `rows.isGrouped`, `rows.rowModel`, `rows.groups`).
+Five `-private` files change their paths only: `sheet-cell.gts`,
+`row-number-cell.gts`, `group-label.gts`, `record-form.gts`,
+`record-form-field.gts`. Each `-private` change was read by hand; every
+`sheet.groups` is now `sheet.rows.groups`.
+
+How: `3c-checks/move.mjs --stage 2`, the imports by hand, the unused
+imports ESLint listed in the component removed, then Prettier. `move.mjs`
+printed no LOOK line: these four modules have no owner site.
+
+A trap found while adding the imports: a name the module forgot to import
+can resolve to a DOM global and still compile. `stop(event)` in
+`onGroupKeyDown` resolved to `window.stop()`; only its argument count
+made it a type error. `Range` is the same (the DOM's `Range`). So each new
+module was also checked with a scratch script that lists every name it
+uses which is a top-level name of the old component but is neither
+declared nor imported in the module. It lists none. (It does list `stop`
+when that import is removed.) Not committed; stage 3 on should do the
+same.
+
+The `cellView` count (design 5, stage 2's extra check): a temporary
+counter in `cellView` and a scratch test, both only in the Linux copy and
+removed afterwards. The test renders the large-data demo's case (10,000
+records, the same 30 fields, `@height={{420}}`, 1,000 px wide), then
+scrolls the grid. It is not the docs demo itself, which needs the docs
+app. Calls:
+
+| | Before (stage 1) | After (stage 2) |
+| --- | --- | --- |
+| First render | 130 | 130 |
+| Scroll down to 100 px | 30 | 30 |
+| Scroll down to 200 px | 20 | 20 |
+| Scroll down to 300 px | 30 | 30 |
+| Scroll right to 300 px | 39 | 39 |
+
+The same numbers in two runs each.
+
+Results:
+
+- Verbatim: 674 members, top-level declarations, templates and `-private`
+  declarations compared, all equal apart from stage 1's four owners. Every
+  member is in the file the module map names, and declared once.
+- Gates: OK. `tests/`, `src/core/`, `src/types.ts`, `src/index.ts`,
+  `src/search-ui/` and `packages/core/` are untouched.
+- `pnpm lint:types`: no error. The tests' `ember-tsc`: the baseline's 19
+  errors, the same lines.
+- ESLint and Prettier on the changed files: clean.
+- `node scripts/generate-api-docs.mjs --check`: passes.
+- The suite: 527 tests, 527 pass (run by the main session after the agent was stopped by a restart; the static checks were re-run then too, all OK).
+
+Deviations from the design: none. No section banner moved in this stage.

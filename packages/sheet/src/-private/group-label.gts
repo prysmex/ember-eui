@@ -28,7 +28,7 @@ interface GroupLabelSignature {
 export default class GroupLabel extends Component<GroupLabelSignature> {
   /** `label`, else the field type's `format(value)`, or "(Empty)". */
   get title(): string {
-    return this.args.sheet.groupTitleOf(this.args.group);
+    return this.args.sheet.groupHeaders.groupTitleOf(this.args.group);
   }
 
   get count(): string {
@@ -43,7 +43,7 @@ export default class GroupLabel extends Component<GroupLabelSignature> {
 
   /** The chevron: only with `@onGroupToggle` (D2). */
   get canToggle(): boolean {
-    return this.args.sheet.canToggleGroups;
+    return this.args.sheet.groupHeaders.canToggleGroups;
   }
 
   get chevron(): string {

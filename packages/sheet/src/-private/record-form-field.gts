@@ -43,7 +43,7 @@ export default class RecordFormField extends Component<RecordFormFieldSignature>
   labelId = `${guidFor(this)}-label`;
 
   get view(): CellView {
-    return this.args.sheet.cellViewFor(this.args.record, this.args.field);
+    return this.args.sheet.cells.cellViewFor(this.args.record, this.args.field);
   }
 
   get label(): string {
@@ -96,7 +96,7 @@ export default class RecordFormField extends Component<RecordFormFieldSignature>
   }
 
   openLink = (): void => {
-    this.args.sheet.openLink(this.view.link);
+    this.args.sheet.cells.openLink(this.view.link);
   };
 
   <template>

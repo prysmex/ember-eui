@@ -9,7 +9,6 @@ import Component from '@glimmer/component';
 import { cached, tracked } from '@glimmer/tracking';
 import { action } from '@ember/object';
 import { on } from '@ember/modifier';
-import { warn } from '@ember/debug';
 import { isDestroyed, isDestroying } from '@ember/destroyable';
 import { guidFor } from '@ember/object/internals';
 import { cancel, debounce, later, next, run } from '@ember/runloop';
@@ -28,7 +27,6 @@ import {
 } from '@ember-eui/core/theming';
 
 import {
-  buildRowModel,
   cellKey,
   clearRange,
   commitText,
@@ -41,10 +39,8 @@ import {
   fillRange,
   fillRight,
   insertRecords,
-  isEmptyValue,
   isReadOnly,
   mergeChangeSets,
-  mergeErrors,
   parseTsv,
   pasteMatrix,
   planCommit,
@@ -52,21 +48,14 @@ import {
   rangeMatrix,
   redoChangeSet,
   resolveCells,
-  safeLink,
   tileMatrix,
   toRange,
   toTsv,
   undoChangeSet,
-  validateCell,
   valueOf,
   withoutField
 } from '../core/index.ts';
-import type {
-  HistoryOptions,
-  PasteInsert,
-  RowModel,
-  SheetRow
-} from '../core/index.ts';
+import type { HistoryOptions, PasteInsert, RowModel } from '../core/index.ts';
 import { builtInSheetFieldTypes } from '../field-types.ts';
 import AutoScroll from '../-private/auto-scroll.ts';
 import FieldEditor, {
@@ -109,7 +98,6 @@ import {
   isPromise,
   nextTempId,
   resolveWaiter,
-  ROW_COLUMN_ID,
   sameIds,
   sameLayout,
   samePos,
@@ -123,6 +111,10 @@ import SheetHeaderMenu from '../-private/sheet/header-menu.ts';
 import SheetFrozen from '../-private/sheet/frozen.ts';
 import SheetGridOptions from '../-private/sheet/grid-options.ts';
 import SheetDom from '../-private/sheet/dom.ts';
+import SheetRows from '../-private/sheet/rows.ts';
+import SheetGroupHeaders from '../-private/sheet/group-headers.ts';
+import SheetChecked from '../-private/sheet/checked.ts';
+import SheetCells from '../-private/sheet/cells.ts';
 
 import type {
   CellErrors,
@@ -138,7 +130,6 @@ import type {
   RecordInsert,
   SheetFieldDraft,
   SheetGroup,
-  SheetGroupBy,
   SheetMessages
 } from '../core/index.ts';
 import type { Rejection } from '../-private/rejections.ts';
@@ -450,6 +441,10 @@ export default class EuiSheet<T extends object> extends Component<
   readonly frozen = new SheetFrozen<T>(this);
   readonly gridOptions = new SheetGridOptions<T>(this);
   readonly dom = new SheetDom<T>(this);
+  readonly rows = new SheetRows<T>(this);
+  readonly groupHeaders = new SheetGroupHeaders<T>(this);
+  readonly checked = new SheetChecked<T>(this);
+  readonly cells = new SheetCells<T>(this);
 
   /** Selection corners; `head` is where DOM focus is. */
   @tracked anchor: Pos | null = null;
@@ -457,8 +452,6 @@ export default class EuiSheet<T extends object> extends Component<
   @tracked editing: Editing | null = null;
   /** The data cell that has DOM focus, for its error box; null when focus is elsewhere. */
   @tracked focused: FocusedCell | null = null;
-  /** Texts a type could not read, by cellKey (PACKAGE-DESIGN.md 6, 7.5). */
-  @tracked rejections: ReadonlyMap<string, Rejection> = new Map();
   /** The grid is scrolled horizontally (the frozen edge's shadow). */
   @tracked scrolledX = false;
   /** The last applied `@validate` result. */
@@ -467,8 +460,6 @@ export default class EuiSheet<T extends object> extends Component<
   @tracked dragging = false;
   /** What the range covers: cells, whole rows (row numbers) or whole columns (headers). */
   @tracked rangeKind: RangeKind = 'cells';
-  /** Checked rows without `@onCheckedChange`: record ids as strings. */
-  @tracked localChecked: ReadonlySet<string> = new Set();
   /** The expanded record without `@onExpandedRecordChange`. */
   @tracked localExpandedId: RecordId | null = null;
   /** The open row menu. */
@@ -533,9 +524,6 @@ export default class EuiSheet<T extends object> extends Component<
   @tracked imeActive = false;
   /** `@editIn` opened the expanded record to edit this field (8.5). */
   pendingFormEdit: { recordId: RecordId; fieldId: string } | null = null;
-
-  /** The row whose checkbox was toggled last (Shift+click checks the rows between). */
-  lastToggledRow: number | null = null;
   /** Where the expanded record was opened from. */
   expandedFrom: ExpandedFrom | null = null;
   /** Last row-number cell seen by `focusin`. */
@@ -733,7 +721,7 @@ export default class EuiSheet<T extends object> extends Component<
       hiddenFields: this.fields.hiddenFields,
       sort: this.args.sort ?? [],
       rowHeight: this.gridOptions.rowHeight,
-      checkedRecords: this.checkedRecords,
+      checkedRecords: this.checked.checkedRecords,
       hideField: this.fields.hideField,
       showField: this.fields.showField,
       setRowHeight: this.gridOptions.setRowHeight,
@@ -742,21 +730,10 @@ export default class EuiSheet<T extends object> extends Component<
       addField: () => this.addField(),
       groupBy: this.args.groupBy ?? [],
       groups: this.args.groups ?? [],
-      setGroupBy: this.setGroupBy,
-      toggleGroup: this.toggleGroupByKey
+      setGroupBy: this.groupHeaders.setGroupBy,
+      toggleGroup: this.groupHeaders.toggleGroupByKey
     };
   }
-
-  /** The block's `setGroupBy`: calls `@onGroupByChange`; nothing without it (V03 4.5). */
-  setGroupBy = (groupBy: SheetGroupBy[]): void => {
-    this.args.onGroupByChange?.(groupBy);
-  };
-
-  /** The block's `toggleGroup(key)`: `@onGroupToggle(key, !collapsed)` for that group of `@groups`; nothing without the handler or the group. */
-  toggleGroupByKey = (key: string): void => {
-    const index = this.groups.findIndex((group) => group.key === key);
-    if (index >= 0) this.toggleGroup(index);
-  };
 
   get hasSummary(): boolean {
     return this.args.summary !== undefined;
@@ -803,94 +780,6 @@ export default class EuiSheet<T extends object> extends Component<
     return this.showRowNumbers ? 1 : 0;
   }
 
-  /** Whether the grid has an "add" row after the records. */
-  get hasAddRow(): boolean {
-    return this.canInsert;
-  }
-
-  /** The sheet's add row, or (grouped) any group's add row (V03 8.4). */
-  isAddRow(row: number): boolean {
-    if (row < 0) return false;
-    if (this.isGrouped) return this.rowModel.at(row)?.kind === 'add';
-    return row === this.rowModel.addRowOf(-1);
-  }
-
-  /** The group whose add row this is (its index in `@groups`); -1 for any other row. */
-  addRowGroupAt(row: number): number {
-    if (!this.isGrouped) return -1;
-    const at = this.rowModel.at(row);
-    return at?.kind === 'add' ? at.group : -1;
-  }
-
-  get rowNumberOffset(): number {
-    return this.args.rowNumberOffset ?? 0;
-  }
-
-  /**
-   * The number a record row shows: `@rowNumberOffset + recordRow + 1`; with
-   * groups that set `rowNumberStart`, the numbers of `rowNumbers` (V03 8.4).
-   */
-  numberOf(recordRow: number): number {
-    const numbers = this.rowNumbers;
-    if (numbers && recordRow >= 0 && recordRow < numbers.length) {
-      return numbers[recordRow]!;
-    }
-    return this.rowNumberOffset + recordRow + 1;
-  }
-
-  /**
-   * Each record's number while some group has `rowNumberStart` (V03 8.4),
-   * else null: one more than the previous record's, from
-   * `@rowNumberOffset + 1`; a group's first record takes its
-   * `rowNumberStart`, or the nearest ancestor's when it has none.
-   */
-  @cached
-  get rowNumbers(): Int32Array | null {
-    const groups = this.groups;
-    if (!groups.some((group) => group.rowNumberStart !== undefined)) {
-      return null;
-    }
-    const model = this.rowModel;
-    const count = this.args.records.length;
-    const numbers = new Int32Array(count);
-    let previous = this.rowNumberOffset;
-    // the groups up to the last numbered record's: their starts are used
-    let done = -1;
-    for (let r = 0; r < count; r++) {
-      const group = model.groupAt(model.gridRowOf(r));
-      let start: number | undefined;
-      if (group > done) {
-        // the group itself, then its ancestors among the groups since then
-        let depth = Infinity;
-        for (let i = group; i > done && start === undefined; i--) {
-          const candidate = groups[i]!;
-          if (candidate.depth >= depth) continue;
-          depth = candidate.depth;
-          start = candidate.rowNumberStart;
-        }
-        done = group;
-      }
-      previous = start ?? previous + 1;
-      numbers[r] = previous;
-    }
-    return numbers;
-  }
-
-  /** The position a grid row shows: its record's number. */
-  positionOf(row: number): number {
-    return this.numberOf(this.recordRowAt(row));
-  }
-
-  /** What a row-number cell shows: `@rowLabel`, else the position. */
-  rowLabelOf(row: number): string {
-    const record = this.recordAt(row);
-    if (record === undefined) return '';
-    const position = this.positionOf(row);
-    return this.args.rowLabel
-      ? this.args.rowLabel(record, position)
-      : String(position);
-  }
-
   /** A row of a `'rows'` range (its row number is drawn selected). */
   /** A cell range covers the row: its row number gets the light mark (V03 batch 1). */
   isRowMarked(row: number): boolean {
@@ -900,7 +789,7 @@ export default class EuiSheet<T extends object> extends Component<
       !!range &&
       row >= range.top &&
       row <= range.bottom &&
-      this.isRecordRow(row)
+      this.rows.isRecordRow(row)
     );
   }
 
@@ -933,475 +822,13 @@ export default class EuiSheet<T extends object> extends Component<
     );
   }
 
-  /* Checked rows: controlled with `@onCheckedChange`, else local */
-
-  @cached
-  get checkedIds(): ReadonlySet<string> {
-    if (!this.args.onCheckedChange) return this.localChecked;
-    return new Set((this.args.checkedRecordIds ?? []).map(String));
-  }
-
-  isChecked(row: number): boolean {
-    const record = this.recordAt(row);
-    return (
-      record !== undefined &&
-      this.checkedIds.has(String(this.args.getRecordId(record)))
-    );
-  }
-
-  /** The checked records of `@records`, in their order. */
-  get checkedRecords(): T[] {
-    const checked = this.checkedIds;
-    if (!checked.size) return [];
-    return this.args.records.filter((record) =>
-      checked.has(String(this.args.getRecordId(record)))
-    );
-  }
-
-  /** The header checkbox: every record of `@records` checked, some, or none. */
-  get checkedState(): 'all' | 'some' | 'none' {
-    const count = this.checkedRecords.length;
-    if (!count) return 'none';
-    return count === this.args.records.length ? 'all' : 'some';
-  }
-
-  /** Sets the checked ids (strings), through `@onCheckedChange` or locally. */
-  setChecked(ids: ReadonlySet<string>): void {
-    const handler = this.args.onCheckedChange;
-    if (!handler) {
-      this.localChecked = ids;
-      return;
-    }
-    // the owner's ids keep their type: from `@records`, else as passed
-    const known = new Map<string, RecordId>();
-    for (const id of this.args.checkedRecordIds ?? [])
-      known.set(String(id), id);
-    for (const record of this.args.records) {
-      const id = this.args.getRecordId(record);
-      known.set(String(id), id);
-    }
-    handler([...ids].map((id) => known.get(id) ?? id));
-  }
-
-  /** Toggles a row's checkbox; with `shift`, the rows from the last toggled one get the same state. */
-  toggleChecked(row: number, shift: boolean): void {
-    const record = this.recordAt(row);
-    if (record === undefined) return;
-    const getId = this.args.getRecordId;
-    const value = !this.checkedIds.has(String(getId(record)));
-    const from =
-      shift && this.lastToggledRow !== null ? this.lastToggledRow : row;
-    // the records between the two rows (grid rows); never empty, `row` is one
-    const span = this.recordRange({
-      top: Math.min(from, row),
-      bottom: Math.max(from, row),
-      left: 0,
-      right: 0
-    })!;
-    const next = new Set(this.checkedIds);
-    for (let r = span.top; r <= span.bottom; r++) {
-      const id = String(getId(this.args.records[r]!));
-      if (value) next.add(id);
-      else next.delete(id);
-    }
-    this.lastToggledRow = row;
-    this.setChecked(next);
-  }
-
-  /** The header checkbox: checks every record, or none when all are checked. */
-  toggleAllChecked(): void {
-    const ids = this.args.records.map((record) =>
-      String(this.args.getRecordId(record))
-    );
-    const next = new Set(this.checkedIds);
-    if (this.checkedState === 'all') ids.forEach((id) => next.delete(id));
-    else ids.forEach((id) => next.add(id));
-    this.setChecked(next);
-  }
-
   /** The records of the selection: the checked ones when any, else the range's rows. */
   selectionRecords(): T[] {
-    const checked = this.checkedRecords;
+    const checked = this.checked.checkedRecords;
     if (checked.length) return checked;
-    const range = this.range && this.recordRange(this.range);
+    const range = this.range && this.rows.recordRange(this.range);
     if (!range) return [];
     return this.args.records.slice(range.top, range.bottom + 1);
-  }
-
-  /* Rows (V03-DESIGN.md 4.2, 7.3): grid rows are positions, focus and the
-     DOM; record rows index `@records` and are what the core gets */
-
-  /** `@groups`, or none. */
-  get groups(): readonly SheetGroup[] {
-    return this.args.groups ?? [];
-  }
-
-  get isGrouped(): boolean {
-    return this.groups.length > 0;
-  }
-
-  /** Which grid row is a record, an add row or a group header. */
-  @cached
-  get rowModel(): RowModel {
-    const count = this.args.records.length;
-    const groups = this.args.groups;
-    if (groups?.length) {
-      // the records past Σ loaded are drawn in the last group (V03 8.2)
-      const loaded = groups.reduce(
-        (sum, group) => sum + Math.max(0, Math.floor(group.loaded ?? 0)),
-        0
-      );
-      warn(
-        `EuiSheet: the groups' \`loaded\` add up to ${loaded}, but @records has ${count} records: the last ${count - loaded} are drawn in the last group.`,
-        loaded >= count,
-        { id: 'ember-eui.sheet.groups-loaded-mismatch' }
-      );
-    }
-    return buildRowModel({
-      recordCount: count,
-      addRow: this.hasAddRow,
-      groups
-    });
-  }
-
-  /** The group a grid row is the header of; undefined for any other row. */
-  groupHeaderAt(row: number): SheetGroup | undefined {
-    if (!this.isGrouped) return undefined;
-    const at = this.rowModel.at(row);
-    return at?.kind === 'group' ? this.groups[at.group] : undefined;
-  }
-
-  /* Group headers (V03 8.3, 8.4) */
-
-  /** The headers have a toggle: only with `@onGroupToggle` (D2). */
-  get canToggleGroups(): boolean {
-    return !!this.args.onGroupToggle;
-  }
-
-  /** The field of a group's level, `@groupBy[depth].field`, among every field (a hidden one too). */
-  groupFieldOf(group: SheetGroup): EuiSheetField<T> | undefined {
-    const by = this.args.groupBy?.[group.depth];
-    return by
-      ? this.fields.allFields.find((field) => field.id === by.field)
-      : undefined;
-  }
-
-  /** A header's text: its `label`, else the field type's `format(value)`, or "(Empty)". */
-  groupTitleOf(group: SheetGroup): string {
-    if (group.label !== undefined) return group.label;
-    const value = group.value;
-    const field = this.groupFieldOf(group);
-    if (field) {
-      const type = this.fields.typeOf(field);
-      if (isEmptyValue(type, value)) return this.messages.groupEmpty();
-      return String(
-        type.format(value, field, {
-          record: undefined,
-          messages: this.messages
-        })
-      );
-    }
-    // no `@groupBy` for this level: the value as it is
-    if (value === null || value === undefined || value === '') {
-      return this.messages.groupEmpty();
-    }
-    return typeof value === 'string' ||
-      typeof value === 'number' ||
-      typeof value === 'boolean'
-      ? String(value)
-      : '';
-  }
-
-  /**
-   * The props of every cell of a header row (V03 8.6): what a screen reader
-   * announces on whichever cell has focus ("Status: Open, 3") and,
-   * with a toggle, `aria-expanded`.
-   */
-  groupCellProps(group: SheetGroup): Record<string, unknown> {
-    const messages = this.messages;
-    const field = this.groupFieldOf(group);
-    const title = this.groupTitleOf(group);
-    const parts = [
-      field ? messages.groupLabel(field.label ?? field.id, title) : title,
-      messages.groupCount(group.count)
-    ];
-    if (group.continued) parts.push(messages.groupContinued());
-    const props: Record<string, unknown> = { 'aria-label': parts.join(', ') };
-    if (this.canToggleGroups) {
-      props['aria-expanded'] = group.collapsed ? 'false' : 'true';
-    }
-    return props;
-  }
-
-  /** Asks the owner to collapse or expand a group (`@onGroupToggle(key, collapsed)`). */
-  toggleGroup(index: number): void {
-    const group = this.groups[index];
-    const handler = this.args.onGroupToggle;
-    if (!group || !handler) return;
-    handler(group.key, !group.collapsed);
-  }
-
-  /**
-   * The header cell that had focus last, by group key and grid column: a
-   * header has no `anchor` or `head`, so this is how focus stays on it when
-   * the owner's new `@groups` move it (V03 8.3, 4.2).
-   */
-  focusedGroup: { key: string; colIndex: number } | null = null;
-
-  /** A header cell lost focus to nowhere in this run loop (a render removed its row). */
-  groupFocusDropped = false;
-
-  /** Notes (or forgets) the header a focused cell belongs to. */
-  noteGroupFocus(cell: HTMLElement | null): void {
-    if (!this.isGrouped || !cell) {
-      this.focusedGroup = null;
-      return;
-    }
-    const group = this.groupHeaderAt(this.dom.rowIndexOf(cell));
-    this.focusedGroup = group
-      ? {
-          key: group.key,
-          colIndex: Number(cell.dataset['gridcellColumnIndex'])
-        }
-      : null;
-  }
-
-  /** After a render with new `@groups` or `@records`: focus follows the header it was on. */
-  followGroupFocus(): void {
-    const focused = this.focusedGroup;
-    if (!focused) return;
-    const index = this.groups.findIndex((group) => group.key === focused.key);
-    if (index < 0) {
-      this.focusedGroup = null;
-      return;
-    }
-    const row = this.rowModel.headerRowOf(index);
-    const active = document.activeElement;
-    const cell = this.dom.rowNumberCell(active) ?? this.dom.dataCell(active);
-    if (cell) {
-      if (this.dom.rowIndexOf(cell) === row) return;
-    } else if (
-      !this.groupFocusDropped ||
-      (active && active !== document.body)
-    ) {
-      // focus went elsewhere (a click on the page), not away with the row
-      return;
-    }
-    this.frozen.noteScrollLeft();
-    this.gridApi?.setFocusedCell({ rowIndex: row, colIndex: focused.colIndex });
-  }
-
-  /** Enter or Space on a header cell: the toggle; nothing without `@onGroupToggle` (V03 8.6). */
-  onGroupKeyDown(event: KeyboardEvent, target: EventTarget | null): boolean {
-    const cell = this.dom.rowNumberCell(target) ?? this.dom.dataCell(target);
-    if (!cell || target !== cell) return false;
-    const at = this.rowModel.at(this.dom.rowIndexOf(cell));
-    if (at?.kind !== 'group') return false;
-    const plain =
-      !event.ctrlKey && !event.metaKey && !event.altKey && !event.shiftKey;
-    if (!plain || (event.key !== 'Enter' && event.key !== ' ')) return false;
-    stop(event);
-    this.toggleGroup(at.group);
-    return true;
-  }
-
-  /** A click on a header's chevron or title: the toggle; true when handled. */
-  onGroupToggleClick(target: Element): boolean {
-    const toggle = target.closest('[data-eui-sheet-group-toggle]');
-    if (!toggle || !this.wrapper?.contains(toggle)) return false;
-    const cell = this.dom.rowNumberCell(toggle) ?? this.dom.dataCell(toggle);
-    const at = cell ? this.rowModel.at(this.dom.rowIndexOf(cell)) : undefined;
-    if (at?.kind !== 'group') return false;
-    this.toggleGroup(at.group);
-    return true;
-  }
-
-  /**
-   * The values a record inserted into a group gets (V03 8.4): for the group
-   * and each ancestor, `{ [@groupBy[depth].field]: group.value }`.
-   */
-  groupValuesOf(index: number): Record<string, unknown> {
-    const groups = this.groups;
-    const groupBy = this.args.groupBy ?? [];
-    const values: Record<string, unknown> = {};
-    let depth = Infinity;
-    for (let i = index; i >= 0; i--) {
-      const group = groups[i]!;
-      if (group.depth >= depth) continue;
-      depth = group.depth;
-      const by = groupBy[group.depth];
-      if (by && !(by.field in values)) values[by.field] = group.value;
-      if (depth <= 0) break;
-    }
-    return values;
-  }
-
-  /**
-   * The group a record inserted next to grid row `row` goes into (V03
-   * 8.4): its values (`groupValuesOf`) and `groupKey`; undefined without
-   * groups.
-   */
-  groupInsertOf(
-    row: number
-  ): { values: Record<string, unknown>; groupKey: string } | undefined {
-    if (!this.isGrouped) return undefined;
-    const group = this.rowModel.groupAt(row);
-    const key = this.groups[group]?.key;
-    if (key === undefined) return undefined;
-    return { values: this.groupValuesOf(group), groupKey: key };
-  }
-
-  get rowCount(): number {
-    return this.rowModel.length;
-  }
-
-  /** The record of a grid row; `undefined` for the add row. */
-  recordAt(row: number): T | undefined {
-    const r = this.rowModel.recordRowAt(row);
-    return r < 0 ? undefined : this.args.records[r];
-  }
-
-  /** The record row of a grid row; -1 for a row that is not a record. */
-  recordRowAt(row: number): number {
-    return this.rowModel.recordRowAt(row);
-  }
-
-  /** The grid row of a record row; -1 outside `@records`. */
-  gridRowOf(recordRow: number): number {
-    return this.rowModel.gridRowOf(recordRow);
-  }
-
-  /** The records inside a grid range, as a record range; null when it holds none. */
-  recordRange(range: Range): Range | null {
-    return this.rowModel.recordRange(range);
-  }
-
-  /** A grid position as a record position; `row` -1 when it is not on a record. */
-  recordPos(pos: Pos): Pos {
-    return { row: this.recordRowAt(pos.row), col: pos.col };
-  }
-
-  /**
-   * A grid row as the core sees it: its record row; for an add row (or a
-   * header), the record row after the records above it, as v0.2 passed
-   * `records.length` for the add row.
-   */
-  coreRowOf(row: number): number {
-    const r = this.recordRowAt(row);
-    if (r >= 0) return r;
-    const above = this.rowModel.nearestRecordRow(row, -1);
-    return above < 0 ? 0 : this.recordRowAt(above) + 1;
-  }
-
-  /** A record position (from the core) as a grid position. */
-  gridPos(pos: Pos): Pos {
-    return { row: this.gridRowOf(pos.row), col: pos.col };
-  }
-
-  rowKind(row: number): SheetRow['kind'] | undefined {
-    return this.rowModel.at(row)?.kind;
-  }
-
-  isRecordRow(row: number): boolean {
-    return this.recordRowAt(row) >= 0;
-  }
-
-  /** The record row nearest a grid row, looking up first (the v0.2 clamp to the last record); `fallback` without records. */
-  clampToRecordRow(row: number, fallback: number): number {
-    const model = this.rowModel;
-    const up = model.nearestRecordRow(row, -1);
-    if (up >= 0) return up;
-    const down = model.nearestRecordRow(row, 1);
-    return down >= 0 ? down : fallback;
-  }
-
-  /**
-   * Grouped: the row nearest `row` (clamped to the grid) a key may land
-   * on, looking in `step`'s direction first, then the other way: not a
-   * header (a record or an add row), or with `recordsOnly` a record. -1
-   * when there is none (V03 8.6, stage 3.2a).
-   */
-  landingRow(row: number, step: 1 | -1, recordsOnly: boolean): number {
-    const model = this.rowModel;
-    if (!model.length) return -1;
-    const from = clamp(row, 0, model.length - 1);
-    if (recordsOnly) {
-      const ahead = model.nearestRecordRow(from, step);
-      return ahead >= 0
-        ? ahead
-        : model.nearestRecordRow(from, step === 1 ? -1 : 1);
-    }
-    const lands = (g: number) => model.at(g)?.kind !== 'group';
-    if (lands(from)) return from;
-    for (let g = from + step; g >= 0 && g < model.length; g += step) {
-      if (lands(g)) return g;
-    }
-    for (let g = from - step; g >= 0 && g < model.length; g -= step) {
-      if (lands(g)) return g;
-    }
-    return -1;
-  }
-
-  /** Where Ctrl+Home lands: the first record, else (grouped, none) the first add row; -1 for none. */
-  firstLandingRow(): number {
-    const first = this.rowModel.firstRecordRow;
-    if (first >= 0 || !this.isGrouped) return Math.max(first, 0);
-    return this.landingRow(0, 1, false);
-  }
-
-  /** Where Ctrl+End lands: the grid's last row, which grouped is the last row that is not a header. */
-  lastLandingRow(): number {
-    const last = this.rowCount - 1;
-    return this.isGrouped ? this.landingRow(last, -1, false) : last;
-  }
-
-  /**
-   * The run of record rows a record row is in, in grid rows: its group's
-   * records (between its header and its add row or the next header), or
-   * every record without groups. The range outline draws one box per run
-   * (V03 8.5: the drawn selection is the records).
-   */
-  recordRunOf(row: number): { top: number; bottom: number } {
-    const model = this.rowModel;
-    if (!this.isGrouped) {
-      return { top: model.firstRecordRow, bottom: model.lastRecordRow };
-    }
-    const group = model.groupAt(row);
-    const add = model.addRowOf(group);
-    const next = model.headerRowOf(group + 1);
-    return {
-      top: model.headerRowOf(group) + 1,
-      bottom: (add >= 0 ? add : next >= 0 ? next : model.length) - 1
-    };
-  }
-
-  /**
-   * Ctrl/Cmd+arrow on a header or an add row while grouped (V03 8.5): the
-   * row is an empty cell between the records above and below it, as the
-   * add row at the end was in v0.2 (`edgeTarget` from past the records).
-   * Left and right do not move there, as on v0.2's add row.
-   */
-  edgeFromGap(from: Pos, direction: 'up' | 'down' | 'left' | 'right'): Pos {
-    if (direction !== 'up' && direction !== 'down') return from;
-    const ctx = this.context;
-    // the records above the row
-    const above = this.coreRowOf(from.row);
-    if (direction === 'up') {
-      const edge = edgeTarget(
-        { ...ctx, records: ctx.records.slice(0, above) },
-        { row: above, col: from.col },
-        'up'
-      );
-      return edge.row === above ? from : this.gridPos(edge);
-    }
-    const edge = edgeTarget(
-      { ...ctx, records: ctx.records.slice(above) },
-      { row: -1, col: from.col },
-      'down'
-    );
-    return edge.row < 0
-      ? from
-      : { row: this.gridRowOf(edge.row + above), col: edge.col };
   }
 
   /** The class that defines the `--euiSheet-*` colours from the EUI theme. */
@@ -1409,36 +836,6 @@ export default class EuiSheet<T extends object> extends Component<
   get themeClass(): string {
     const context = getEuiThemeContext(this);
     return euiClass(context, useEuiBorealisStyles(context, sheetThemeVars));
-  }
-
-  /** The rejection of a cell, unless the owner changed the value since. */
-  liveRejection(
-    record: T,
-    recordId: RecordId,
-    fieldId: string
-  ): Rejection | undefined {
-    const rejection = this.rejections.get(cellKey(recordId, fieldId));
-    if (!rejection) return undefined;
-    return this.fields.valueEquals(
-      fieldId,
-      rejection.seenValue,
-      valueOf(record, fieldId)
-    )
-      ? rejection
-      : undefined;
-  }
-
-  /** `@validate`'s errors of a cell, unless its record changed since the run started. */
-  validatedErrors(
-    record: T,
-    recordId: RecordId,
-    fieldId: string
-  ): string | string[] | undefined {
-    const validation = this.validation;
-    if (!validation) return undefined;
-    const id = String(recordId);
-    if (validation.records.get(id) !== record) return undefined;
-    return validation.errors[id]?.[fieldId];
   }
 
   /* -------------------------------------------------------------------- */
@@ -1454,84 +851,6 @@ export default class EuiSheet<T extends object> extends Component<
       col >= range.left &&
       col <= range.right
     );
-  }
-
-  cellView(row: number, col: number, fieldId: string): CellView | null {
-    const record = this.recordAt(row);
-    const field = this.fields.visibleFields.find((f) => f.id === fieldId);
-    if (record === undefined || !field) return null;
-    const view = this.cellViewFor(record, field, this.isSelected(row, col));
-    const drop = this.dropPos;
-    if (drop && drop.row === row && drop.col === col) view.dropTarget = true;
-    return view;
-  }
-
-  /** A record's field as a cell shows it: the grid's cells and the expanded record's boxes. */
-  cellViewFor(record: T, field: EuiSheetField<T>, selected = false): CellView {
-    const ctx = this.context;
-    const type = this.fields.typeOf(field);
-    const value = valueOf(record, field.id);
-    const recordId = ctx.getRecordId(record);
-    const rejection = this.liveRejection(record, recordId, field.id);
-    const pending = this.pendingCells.get(cellKey(recordId, field.id));
-    const text =
-      pending && pending.text !== null
-        ? pending.text
-        : rejection
-          ? rejection.text
-          : type.format(value, field, { record, messages: ctx.messages });
-    // a rejected cell shows only its rejection and the owner's errors: the
-    // other layers describe the old value (PACKAGE-DESIGN.md 6, 9.4)
-    const errors = rejection
-      ? mergeErrors(
-          rejection.message,
-          this.args.cellErrors?.[String(recordId)]?.[field.id]
-        )
-      : mergeErrors(
-          validateCell(ctx, field, record),
-          this.validatedErrors(record, recordId, field.id),
-          this.args.cellErrors?.[String(recordId)]?.[field.id]
-        );
-    return {
-      record,
-      field,
-      type,
-      value,
-      text,
-      // a pending text is shown as text, like a rejected one
-      rejected: !!rejection || (!!pending && pending.text !== null),
-      errors: pending ? [] : errors,
-      selected,
-      readOnly: isReadOnly(ctx, field, record),
-      pending: !!pending,
-      link: this.linkOf(type, field, value),
-      dropTarget: false
-    };
-  }
-
-  /** `type.link(value)`, when it is a link the sheet opens. */
-  linkOf(
-    type: EuiSheetFieldType,
-    field: EuiSheetField,
-    value: unknown
-  ): string | undefined {
-    return type.link ? safeLink(type.link(value as never, field)) : undefined;
-  }
-
-  /** Opens a link in a new tab; only http:, https:, mailto: and tel: (checked again here). */
-  openLink(href: string | undefined): boolean {
-    const safe = safeLink(href);
-    if (!safe) return false;
-    window.open(safe, '_blank', 'noopener');
-    return true;
-  }
-
-  /** A cell component's `@onCommit(value)`, at a grid row. */
-  commitCellValue(row: number, col: number, value: unknown): void {
-    const pos = { row, col };
-    const touched = this.touchedAt(pos);
-    // off a record: row -1, which the core answers with null, as before
-    this.emit(commitValue(this.context, this.recordPos(pos), value), touched);
   }
 
   /* -------------------------------------------------------------------- */
@@ -1604,15 +923,20 @@ export default class EuiSheet<T extends object> extends Component<
     const pending = this.pendingOwn;
     this.lastRecords = records;
     this.lastIds = ids;
-    this.lastRowModel = this.rowModel;
-    this.lastGroups = this.groups;
+    this.lastRowModel = this.rows.rowModel;
+    this.lastGroups = this.rows.groups;
     this.lastGroupsArg = this.args.groups;
     this.pendingOwn = { deletes: new Set(), inserts: 0 };
     // grouped, the rows moved: what holds grid rows across renders ends (V03 7.4)
     const regrouped =
       !!previousModel &&
-      (previousGroups.length > 0 || this.isGrouped) &&
-      !sameLayout(previousModel, previousGroups, this.rowModel, this.groups);
+      (previousGroups.length > 0 || this.rows.isGrouped) &&
+      !sameLayout(
+        previousModel,
+        previousGroups,
+        this.rows.rowModel,
+        this.rows.groups
+      );
     const imeFocus = regrouped && this.endTransients();
     // a pending cell whose record left `@records` (an owner's re-query) is
     // dropped; one on a row not inserted yet (an async owner) is kept
@@ -1629,7 +953,7 @@ export default class EuiSheet<T extends object> extends Component<
       this.followRecords(
         previousIds,
         ids,
-        previousModel ?? this.rowModel,
+        previousModel ?? this.rows.rowModel,
         previousGroups
       );
     } else if (regrouped && previousModel) {
@@ -1654,7 +978,8 @@ export default class EuiSheet<T extends object> extends Component<
       this.closeMenu(false);
     }
     this.applyPendingFocus();
-    if (this.isGrouped || previousGroups.length) this.followGroupFocus();
+    if (this.rows.isGrouped || previousGroups.length)
+      this.groupHeaders.followGroupFocus();
   }
 
   /**
@@ -1667,12 +992,17 @@ export default class EuiSheet<T extends object> extends Component<
   groupsRendered(): void {
     const previousModel = this.lastRowModel;
     const previousGroups = this.lastGroups;
-    this.lastRowModel = this.rowModel;
-    this.lastGroups = this.groups;
+    this.lastRowModel = this.rows.rowModel;
+    this.lastGroups = this.rows.groups;
     this.lastGroupsArg = this.args.groups;
     if (
       !previousModel ||
-      sameLayout(previousModel, previousGroups, this.rowModel, this.groups)
+      sameLayout(
+        previousModel,
+        previousGroups,
+        this.rows.rowModel,
+        this.rows.groups
+      )
     ) {
       return;
     }
@@ -1686,7 +1016,7 @@ export default class EuiSheet<T extends object> extends Component<
     if (imeFocus && this.head && !this.editing)
       this.dom.focusGridCell(this.head);
     this.applyPendingFocus();
-    this.followGroupFocus();
+    this.groupHeaders.followGroupFocus();
   }
 
   /**
@@ -1728,15 +1058,15 @@ export default class EuiSheet<T extends object> extends Component<
     if (at.kind === 'record') {
       const id = previousIds[at.record];
       const found = id === undefined ? undefined : indexOf.get(id);
-      return found === undefined ? -1 : this.gridRowOf(found);
+      return found === undefined ? -1 : this.rows.gridRowOf(found);
     }
-    if (at.group < 0) return this.rowModel.addRowOf(-1);
+    if (at.group < 0) return this.rows.rowModel.addRowOf(-1);
     const key = previousGroups[at.group]?.key;
-    const index = this.groups.findIndex((group) => group.key === key);
+    const index = this.rows.groups.findIndex((group) => group.key === key);
     if (index < 0) return -1;
     return at.kind === 'add'
-      ? this.rowModel.addRowOf(index)
-      : this.rowModel.headerRowOf(index);
+      ? this.rows.rowModel.addRowOf(index)
+      : this.rows.rowModel.headerRowOf(index);
   }
 
   /**
@@ -1761,7 +1091,7 @@ export default class EuiSheet<T extends object> extends Component<
       );
       return found < 0 ? null : found;
     };
-    this.lastToggledRow = refind(this.lastToggledRow);
+    this.checked.lastToggledRow = refind(this.checked.lastToggledRow);
     this.rowCursor = refind(this.rowCursor);
   }
 
@@ -1779,7 +1109,7 @@ export default class EuiSheet<T extends object> extends Component<
     previousGroups: readonly SheetGroup[] = []
   ): void {
     const indexOf = new Map(ids.map((id, i) => [id, i]));
-    const grouped = previousGroups.length > 0 || this.isGrouped;
+    const grouped = previousGroups.length > 0 || this.rows.isGrouped;
     if (grouped)
       this.followRows(previousIds, ids, previousModel, previousGroups);
     const active = document.activeElement;
@@ -1797,7 +1127,7 @@ export default class EuiSheet<T extends object> extends Component<
         hadEditorFocus = this.dom.isInEditor(active);
         this.editing = null;
       } else {
-        editing.pos = { row: this.gridRowOf(row), col: editing.pos.col };
+        editing.pos = { row: this.rows.gridRowOf(row), col: editing.pos.col };
         const cell = this.dom.cellElement(editing.pos);
         const rect = cell && this.dom.rectOf(cell);
         if (rect) {
@@ -1827,10 +1157,10 @@ export default class EuiSheet<T extends object> extends Component<
           previousModel,
           previousGroups
         );
-        if (foundRow >= 0) found = this.recordRowAt(foundRow);
+        if (foundRow >= 0) found = this.rows.recordRowAt(foundRow);
       }
       // the last record, or the add row when there is none
-      const model = this.rowModel;
+      const model = this.rows.rowModel;
       const lastRow =
         model.lastRecordRow >= 0 ? model.lastRecordRow : model.length - 1;
       let row =
@@ -1838,16 +1168,19 @@ export default class EuiSheet<T extends object> extends Component<
           ? foundRow
           : found === undefined
             ? clamp(head.row, 0, lastRow)
-            : this.gridRowOf(found);
+            : this.rows.gridRowOf(found);
       // grouped, the clamp of a lost head: a record (the nearest above
       // first), else an add row, never a header (V03 8.6)
       if (
         model.length &&
-        this.isGrouped &&
+        this.rows.isGrouped &&
         found === undefined &&
         foundRow < 0
       ) {
-        row = this.clampToRecordRow(row, this.landingRow(row, 1, false));
+        row = this.rows.clampToRecordRow(
+          row,
+          this.rows.landingRow(row, 1, false)
+        );
       }
       if (model.length === 0 || row < 0) {
         this.anchor = null;
@@ -1873,7 +1206,7 @@ export default class EuiSheet<T extends object> extends Component<
     const pending = this.pendingFocus;
     if (!pending) return;
     // `lastIds` and `lastRowModel` are of the same render
-    const model = this.lastRowModel ?? this.rowModel;
+    const model = this.lastRowModel ?? this.rows.rowModel;
     const row = model.gridRowOf(this.lastIds.indexOf(pending.id));
     if (row < 0) return;
     this.pendingFocus = null;
@@ -1889,24 +1222,6 @@ export default class EuiSheet<T extends object> extends Component<
     this.rangeKind = 'cells';
     this.domCursor = pos;
     this.dom.focusGridCell(pos);
-  }
-
-  /**
-   * The record row of a record now, trying `hint` (a record row) first; -1
-   * when it is gone. Callers that focus or select convert with `gridRowOf`.
-   */
-  rowOf(recordId: RecordId, hint: number): number {
-    const records = this.args.records;
-    const getId = this.args.getRecordId;
-    const id = String(recordId);
-    const atHint = records[hint];
-    if (atHint !== undefined && String(getId(atHint)) === id) return hint;
-    return records.findIndex((record) => String(getId(record)) === id);
-  }
-
-  /** A `rowOf` hint from a grid row: its record row, else 0. */
-  hintOf(gridRow: number | undefined): number {
-    return Math.max(this.recordRowAt(gridRow ?? 0), 0);
   }
 
   /** The row menu's anchor in the viewport (the layer reads it at every placement). */
@@ -1963,12 +1278,12 @@ export default class EuiSheet<T extends object> extends Component<
   ): void {
     const records = this.args.records;
     // the neighbours are records: ± 1 in `@records`
-    const row = this.recordRowAt(gridRow);
+    const row = this.rows.recordRowAt(gridRow);
     const record = records[row];
     if (record === undefined) return;
     const recordId = this.args.getRecordId(record);
     // grouped: into the record's group, whose values win (V03 8.4)
-    const group = this.groupInsertOf(gridRow);
+    const group = this.groupHeaders.groupInsertOf(gridRow);
     const values = {
       ...(position === 'after'
         ? this.newValues(record, records[row + 1])
@@ -1991,7 +1306,7 @@ export default class EuiSheet<T extends object> extends Component<
    */
   appendRecord(row: number): void {
     if (!this.canInsert) return;
-    const group = this.addRowGroupAt(row);
+    const group = this.rows.addRowGroupAt(row);
     if (group >= 0) {
       this.appendToGroup(row, group);
       return;
@@ -2016,16 +1331,16 @@ export default class EuiSheet<T extends object> extends Component<
    */
   appendToGroup(row: number, group: number): void {
     const records = this.args.records;
-    const key = this.groups[group]?.key;
+    const key = this.rows.groups[group]?.key;
     // the group's last loaded record is the row above its add row
-    const last = this.recordRowAt(row - 1);
+    const last = this.rows.recordRowAt(row - 1);
     const above = last >= 0 ? records[last] : undefined;
     const values = {
       ...this.newValues(above, undefined),
-      ...this.groupValuesOf(group)
+      ...this.groupHeaders.groupValuesOf(group)
     };
     this.insertOne(
-      last >= 0 ? last + 1 : this.coreRowOf(row),
+      last >= 0 ? last + 1 : this.rows.coreRowOf(row),
       above === undefined
         ? undefined
         : { recordId: this.args.getRecordId(above), position: 'after' },
@@ -2051,7 +1366,7 @@ export default class EuiSheet<T extends object> extends Component<
   }): void {
     const records = this.args.records;
     const anchor = options.anchor;
-    const row = anchor ? this.rowOf(anchor.recordId, 0) : -1;
+    const row = anchor ? this.rows.rowOf(anchor.recordId, 0) : -1;
     if (anchor && row >= 0) {
       const index = anchor.position === 'after' ? row + 1 : row;
       const values =
@@ -2114,12 +1429,13 @@ export default class EuiSheet<T extends object> extends Component<
     const all = this.args.records;
     const indexes = records
       .map((record) =>
-        this.rowOf(this.args.getRecordId(record), all.indexOf(record))
+        this.rows.rowOf(this.args.getRecordId(record), all.indexOf(record))
       )
       .filter((index) => index >= 0);
     // grouped: each copy goes into its record's group (V03 8.4)
-    const group = this.isGrouped
-      ? (index: number) => this.groupInsertOf(this.gridRowOf(index))
+    const group = this.rows.isGrouped
+      ? (index: number) =>
+          this.groupHeaders.groupInsertOf(this.rows.gridRowOf(index))
       : undefined;
     const changeSet = duplicateRecords(
       { ...this.context, fields: this.fields.allFields, readOnly: false },
@@ -2159,42 +1475,6 @@ export default class EuiSheet<T extends object> extends Component<
     );
   }
 
-  /**
-   * Whether a copy is of the checked records: some are checked and the
-   * event is on a row number or on the header checkbox, where focus is
-   * after a checkbox click. A copy on a data cell copies the range.
-   */
-  /**
-   * Whether a clipboard event is on a group header's cell (V03 9.1): the
-   * sheet takes it with nothing in it, as on the add row, so the grid's
-   * own handler does not copy the header's text.
-   */
-  isGroupHeaderTarget(target: EventTarget | null): boolean {
-    if (!this.isGrouped) return false;
-    const cell = this.dom.dataCell(target) ?? this.dom.rowNumberCell(target);
-    return (
-      !!cell &&
-      this.dom.isClipboardTarget(target, cell) &&
-      this.rowKind(this.dom.rowIndexOf(cell)) === 'group'
-    );
-  }
-
-  isCheckedRowsTarget(target: EventTarget | null): boolean {
-    if (!this.checkedRecords.length || !(target instanceof Element)) {
-      return false;
-    }
-    const rowCell = this.dom.rowNumberCell(target);
-    if (rowCell) return this.dom.isClipboardTarget(target, rowCell);
-    const header = target.closest<HTMLElement>(
-      `[role=columnheader][data-gridcell-column-id="${ROW_COLUMN_ID}"]`
-    );
-    return (
-      !!header &&
-      !!this.wrapper?.contains(header) &&
-      this.dom.isClipboardTarget(target, header)
-    );
-  }
-
   /* -------------------------------------------------------------------- */
   /* The row menu                                                          */
   /* -------------------------------------------------------------------- */
@@ -2207,7 +1487,7 @@ export default class EuiSheet<T extends object> extends Component<
     if (
       col === null &&
       !this.isRowSelected(row) &&
-      !this.checkedRecords.length
+      !this.checked.checkedRecords.length
     ) {
       this.keepRangeOnFocus = true;
       this.selectRows(row, false);
@@ -2218,7 +1498,7 @@ export default class EuiSheet<T extends object> extends Component<
   openMenu(row: number, col: number | null, anchor: WrapperBox): void {
     if (this.editing) this.commit({ refocus: false });
     const records = this.selectionRecords();
-    const record = this.recordAt(row);
+    const record = this.rows.recordAt(row);
     this.menu = {
       row,
       col,
@@ -2239,7 +1519,7 @@ export default class EuiSheet<T extends object> extends Component<
     document.removeEventListener('mousedown', this.onDocumentMouseDown, true);
     if (!menu) return;
     this.menu = null;
-    if (!refocus || menu.row >= this.rowCount) return;
+    if (!refocus || menu.row >= this.rows.rowCount) return;
     if (menu.col === null) {
       this.keepRangeOnFocus = true;
       this.dom.focusRowNumberCell(menu.row);
@@ -2313,7 +1593,7 @@ export default class EuiSheet<T extends object> extends Component<
         id: 'openLink',
         label: messages.openLink(),
         icon: 'popout',
-        onSelect: () => this.openLink(link)
+        onSelect: () => this.cells.openLink(link)
       });
     }
     items.push({
@@ -2354,10 +1634,10 @@ export default class EuiSheet<T extends object> extends Component<
   /** The link of the cell the menu was opened on, if it has one. */
   menuLink(menu: MenuState): string | undefined {
     if (menu.col === null) return undefined;
-    const record = this.recordAt(menu.row);
+    const record = this.rows.recordAt(menu.row);
     const field = this.fields.visibleFields[menu.col];
     if (record === undefined || !field) return undefined;
-    return this.linkOf(
+    return this.cells.linkOf(
       this.fields.typeOf(field),
       field,
       valueOf(record, field.id)
@@ -2402,7 +1682,7 @@ export default class EuiSheet<T extends object> extends Component<
   get expandedRecordValue(): T | undefined {
     const id = this.expandedId;
     if (id === null) return undefined;
-    return this.args.records[this.rowOf(id, 0)];
+    return this.args.records[this.rows.rowOf(id, 0)];
   }
 
   get expandedShell(): 'flyout' | 'modal' {
@@ -2411,7 +1691,7 @@ export default class EuiSheet<T extends object> extends Component<
 
   /** Opens a record of `@records`; `from` is the cell focus returns to on close. */
   expandRecord(recordId: RecordId, from: ExpandedFrom | null): void {
-    if (this.rowOf(recordId, this.hintOf(this.head?.row)) < 0) return;
+    if (this.rows.rowOf(recordId, this.rows.hintOf(this.head?.row)) < 0) return;
     if (this.editing) this.commit({ refocus: false });
     this.expandedFrom = from ?? this.expandedFrom;
     this.setExpanded(recordId);
@@ -2429,11 +1709,14 @@ export default class EuiSheet<T extends object> extends Component<
         this.expandedFrom ??= from;
         return;
       }
-      const row = this.rowOf(from.recordId, this.hintOf(this.head?.row));
+      const row = this.rows.rowOf(
+        from.recordId,
+        this.rows.hintOf(this.head?.row)
+      );
       if (row < 0) return;
       if (from.fieldId === null) {
         this.keepRangeOnFocus = true;
-        this.dom.focusRowNumberCell(this.gridRowOf(row));
+        this.dom.focusRowNumberCell(this.rows.gridRowOf(row));
       } else {
         this.focusRecordCell({
           recordId: from.recordId,
@@ -2447,7 +1730,7 @@ export default class EuiSheet<T extends object> extends Component<
   expandedStep(step: number): T | null {
     const id = this.expandedId;
     if (id === null) return null;
-    const row = this.rowOf(id, 0);
+    const row = this.rows.rowOf(id, 0);
     if (row < 0) return null;
     return this.args.records[row + step] ?? null;
   }
@@ -2467,14 +1750,14 @@ export default class EuiSheet<T extends object> extends Component<
         })
       : '';
     if (text.trim()) return text;
-    const row = this.rowOf(this.args.getRecordId(record), 0);
-    return this.messages.recordTitle(this.numberOf(Math.max(row, 0)));
+    const row = this.rows.rowOf(this.args.getRecordId(record), 0);
+    return this.messages.recordTitle(this.rows.numberOf(Math.max(row, 0)));
   }
 
   /** A one-record context for the form: every field, visible and hidden. */
   formContext(record: T): { ctx: SheetContext<T>; record: T } | null {
     // the current object of the record: the form may hold an older one
-    const row = this.rowOf(this.args.getRecordId(record), 0);
+    const row = this.rows.rowOf(this.args.getRecordId(record), 0);
     const current = this.args.records[row];
     if (current === undefined) return null;
     return {
@@ -2536,7 +1819,7 @@ export default class EuiSheet<T extends object> extends Component<
   }
 
   touchedAt(pos: Pos): Touched {
-    const record = this.recordAt(pos.row);
+    const record = this.rows.recordAt(pos.row);
     const field = this.fields.visibleFields[pos.col];
     if (record === undefined || !field) return [];
     return [{ id: this.args.getRecordId(record), fieldId: field.id }];
@@ -2544,7 +1827,7 @@ export default class EuiSheet<T extends object> extends Component<
 
   /** Every existing cell of a grid range (its records), optionally only the writable ones. */
   touchedIn(gridRange: Range, writableOnly: boolean): Touched {
-    const range = this.recordRange(gridRange);
+    const range = this.rows.recordRange(gridRange);
     return range ? this.touchedInRecords(range, writableOnly) : [];
   }
 
@@ -2586,14 +1869,16 @@ export default class EuiSheet<T extends object> extends Component<
     if (addCell && !addCell.classList.contains('euiDataGridFooterCell')) {
       const row = this.dom.rowIndexOf(addCell);
       const col = this.fields.visibleFields.length - 1;
-      if (col >= 0 && row >= 0 && row < this.rowCount) {
+      if (col >= 0 && row >= 0 && row < this.rows.rowCount) {
         this.moveFocus({ row, col }, false);
       }
       return;
     }
     const rowCell = this.dom.rowNumberCell(event.target);
     // a header keeps no position: its key is what focus follows (V03 8.3)
-    this.noteGroupFocus(rowCell ?? this.dom.dataCell(event.target));
+    this.groupHeaders.noteGroupFocus(
+      rowCell ?? this.dom.dataCell(event.target)
+    );
     if (rowCell) {
       this.focused = null;
       if (this.frozen.frozenCount) this.frozen.onFrozenFocus(0);
@@ -2612,7 +1897,7 @@ export default class EuiSheet<T extends object> extends Component<
     this.rowCursor = null;
     // a group header (V03 9.1): focus only, no range to copy, clear or
     // paste over; the arrows move on through the grid
-    if (this.rowKind(pos.row) === 'group') {
+    if (this.rows.rowKind(pos.row) === 'group') {
       this.frozen.scrollLeftBeforeFocus = null;
       this.focused = null;
       this.readOnlyCue = null;
@@ -2662,7 +1947,7 @@ export default class EuiSheet<T extends object> extends Component<
     this.domCursor = null;
     if (keepRange) return;
     const last = this.fields.visibleFields.length - 1;
-    if (this.extending && this.isRecordRow(row)) {
+    if (this.extending && this.rows.isRecordRow(row)) {
       if (this.rangeKind !== 'rows' || !this.anchor) {
         this.anchor = { row: from ?? row, col: 0 };
         this.rangeKind = 'rows';
@@ -2691,7 +1976,7 @@ export default class EuiSheet<T extends object> extends Component<
     const target = event.target;
     if (to instanceof Node && !this.dom.ownsNode(to)) {
       this.gridHadFocus = false;
-      this.focusedGroup = null;
+      this.groupHeaders.focusedGroup = null;
     } else if (!to && target instanceof Node) {
       // the grid re-inserting the focused cell's row (a scroll) blurs it
       // too, and the cell is connected again by then: without a press, with
@@ -2716,11 +2001,11 @@ export default class EuiSheet<T extends object> extends Component<
     // a header cell (data or row number) whose row a render removed
     if (
       !to &&
-      this.focusedGroup &&
+      this.groupHeaders.focusedGroup &&
       (this.dom.dataCell(target) ?? this.dom.rowNumberCell(target))
     ) {
-      this.groupFocusDropped = true;
-      next(() => (this.groupFocusDropped = false));
+      this.groupHeaders.groupFocusDropped = true;
+      next(() => (this.groupHeaders.groupFocusDropped = false));
     }
   }
 
@@ -2750,7 +2035,11 @@ export default class EuiSheet<T extends object> extends Component<
     if (!focused || this.editing || this.menu || this.imeActive) return null;
     const field = this.fields.visibleFields[focused.pos.col];
     if (!field) return null;
-    const view = this.cellView(focused.pos.row, focused.pos.col, field.id);
+    const view = this.cells.cellView(
+      focused.pos.row,
+      focused.pos.col,
+      field.id
+    );
     if (!view) return null;
     const notice =
       view.errors.length === 0 && samePos(this.readOnlyCue, focused.pos);
@@ -2819,10 +2108,10 @@ export default class EuiSheet<T extends object> extends Component<
       const row = this.dom.rowIndexOf(rowCell);
       // a group header keeps no range (V03 8.6), also after a press on
       // its row number with a range elsewhere: a paste there writes nothing
-      if (this.isGrouped && this.rowKind(row) === 'group') {
+      if (this.rows.isGrouped && this.rows.rowKind(row) === 'group') {
         this.keepRangeOnFocus = false;
       }
-      if (!this.isRecordRow(row) || event.button !== 0) return;
+      if (!this.rows.isRecordRow(row) || event.button !== 0) return;
       // the checkbox and the expand icon are buttons, not a selection
       if (
         target.closest(
@@ -2858,7 +2147,7 @@ export default class EuiSheet<T extends object> extends Component<
       event.shiftKey &&
       !this.editing &&
       this.rangeKind === 'cells' &&
-      this.isRecordRow(pos.row) &&
+      this.rows.isRecordRow(pos.row) &&
       this.dom.dataCell(document.activeElement)
     ) {
       event.preventDefault();
@@ -2872,7 +2161,7 @@ export default class EuiSheet<T extends object> extends Component<
       !event.shiftKey &&
       !this.editing &&
       this.lastPointerType !== 'touch' &&
-      this.isRecordRow(pos.row) &&
+      this.rows.isRecordRow(pos.row) &&
       !target.closest('[data-eui-sheet-opener]')
     ) {
       this.dragFrom = pos;
@@ -2931,7 +2220,9 @@ export default class EuiSheet<T extends object> extends Component<
   selectRows(row: number, extend: boolean): void {
     const last = this.fields.visibleFields.length - 1;
     const anchorRow =
-      extend && this.anchor ? this.clampToRecordRow(this.anchor.row, row) : row;
+      extend && this.anchor
+        ? this.rows.clampToRecordRow(this.anchor.row, row)
+        : row;
     this.anchor = { row: anchorRow, col: 0 };
     this.head = { row, col: last };
     this.rangeKind = 'rows';
@@ -2939,13 +2230,13 @@ export default class EuiSheet<T extends object> extends Component<
 
   /** Selects whole columns of the records: from `col`, or from the range's anchor with `extend`. */
   selectColumns(col: number, extend: boolean): void {
-    const lastRow = this.rowModel.lastRecordRow;
+    const lastRow = this.rows.rowModel.lastRecordRow;
     if (lastRow < 0) return;
     const anchorCol =
       extend && this.anchor && this.rangeKind === 'columns'
         ? this.anchor.col
         : col;
-    this.anchor = { row: this.rowModel.firstRecordRow, col: anchorCol };
+    this.anchor = { row: this.rows.rowModel.firstRecordRow, col: anchorCol };
     this.head = { row: lastRow, col };
     this.rangeKind = 'columns';
   }
@@ -2970,7 +2261,7 @@ export default class EuiSheet<T extends object> extends Component<
         this.dom.rowNumberCell(element) ?? this.dom.dataCell(element);
       if (!target) return;
       const row = this.dom.rowIndexOf(target);
-      if (!this.isRecordRow(row)) return;
+      if (!this.rows.isRecordRow(row)) return;
       if (!this.dragging) {
         if (row === from.row) return;
         this.dragging = true;
@@ -2983,7 +2274,7 @@ export default class EuiSheet<T extends object> extends Component<
     if (!cell) return;
     const pos = this.dom.cursor(cell);
     // the add row is never part of a range
-    if (!this.isRecordRow(pos.row)) return;
+    if (!this.rows.isRecordRow(pos.row)) return;
     if (!this.dragging) {
       if (samePos(pos, from)) return;
       this.dragging = true;
@@ -3031,7 +2322,7 @@ export default class EuiSheet<T extends object> extends Component<
     // on pointerup; focus it again only if something took focus away.
     // onFocusIn sees the cell it knows and keeps the range
     const anchor = this.anchor;
-    if (anchor && anchor.row < this.rowCount) {
+    if (anchor && anchor.row < this.rows.rowCount) {
       this.domCursor = anchor;
       const active = this.dom.dataCell(document.activeElement);
       if (!active || !samePos(this.dom.cursor(active), anchor)) {
@@ -3064,16 +2355,16 @@ export default class EuiSheet<T extends object> extends Component<
     const range = this.range;
     if (!range || this.args.readOnly || this.editing) return null;
     if (this.rangeKind !== 'cells') return null;
-    if (!this.recordRange(range)) return null;
+    if (!this.rows.recordRange(range)) return null;
     return range;
   }
 
   /** Puts the handle at the corner of the range's last cell, or hides it while that corner is not in view. */
   placeFillHandle(element: HTMLElement, range: Range): void {
     // the range's last record row
-    const records = this.recordRange(range);
+    const records = this.rows.recordRange(range);
     const corner = {
-      row: records ? this.gridRowOf(records.bottom) : -1,
+      row: records ? this.rows.gridRowOf(records.bottom) : -1,
       col: range.right
     };
     const cell = records ? this.dom.cellElement(corner) : null;
@@ -3112,7 +2403,7 @@ export default class EuiSheet<T extends object> extends Component<
   get rangeOutline(): Range | null {
     const range = this.range;
     if (!range || this.editing) return null;
-    const records = this.recordRange(range);
+    const records = this.rows.recordRange(range);
     if (!records) return null;
     // one record's cell (a header inside does not make it more)
     if (records.top === records.bottom && range.left === range.right) {
@@ -3137,12 +2428,12 @@ export default class EuiSheet<T extends object> extends Component<
     };
     if (!wrapper || !bounds || !outline) return hide();
     // the range's last record row
-    const records = this.recordRange(range);
+    const records = this.rows.recordRange(range);
     if (!records) return hide();
-    const bottom = this.gridRowOf(records.bottom);
+    const bottom = this.rows.gridRowOf(records.bottom);
     // grouped, one box per run of records (V03 8.5: the drawn selection is
     // the records; a header or an add row between two runs is not boxed)
-    const grouped = this.isGrouped;
+    const grouped = this.rows.isGrouped;
     const boxes = new Map<
       number,
       {
@@ -3164,8 +2455,8 @@ export default class EuiSheet<T extends object> extends Component<
       const col = Number(cell.dataset['gridcellColumnIndex']) - this.colOffset;
       if (row < range.top || row > bottom) continue;
       if (col < range.left || col > range.right) continue;
-      if (grouped && !this.isRecordRow(row)) continue;
-      const run = grouped ? this.rowModel.groupAt(row) : 0;
+      if (grouped && !this.rows.isRecordRow(row)) continue;
+      const run = grouped ? this.rows.rowModel.groupAt(row) : 0;
       const box = cell.getBoundingClientRect();
       const found = boxes.get(run);
       if (!found) {
@@ -3210,7 +2501,7 @@ export default class EuiSheet<T extends object> extends Component<
       let first = range.top;
       let last = bottom;
       if (grouped) {
-        const run = this.recordRunOf(found.minRow);
+        const run = this.rows.recordRunOf(found.minRow);
         first = Math.max(first, run.top);
         last = Math.min(last, run.bottom);
       }
@@ -3289,24 +2580,24 @@ export default class EuiSheet<T extends object> extends Component<
     let row: number;
     let down: number;
     let up: number;
-    if (this.isGrouped) {
+    if (this.rows.isGrouped) {
       // measured in records (V03 8.5): a header or an add row counts for
       // nothing, and stands for the record on the source's side of it
-      const records = this.recordRange(source);
+      const records = this.rows.recordRange(source);
       if (!records) return;
-      row = this.isRecordRow(pos.row)
+      row = this.rows.isRecordRow(pos.row)
         ? pos.row
-        : this.rowModel.nearestRecordRow(
+        : this.rows.rowModel.nearestRecordRow(
             pos.row,
-            pos.row > this.gridRowOf(records.bottom) ? -1 : 1
+            pos.row > this.rows.gridRowOf(records.bottom) ? -1 : 1
           );
       if (row < 0) return;
-      const r = this.recordRowAt(row);
+      const r = this.rows.recordRowAt(row);
       down = r - records.bottom;
       up = records.top - r;
     } else {
       // a fill never reaches the add row
-      row = this.clampToRecordRow(pos.row, pos.row);
+      row = this.rows.clampToRecordRow(pos.row, pos.row);
       down = row - source.bottom;
       up = source.top - row;
     }
@@ -3350,8 +2641,8 @@ export default class EuiSheet<T extends object> extends Component<
     // the click that may follow is the end of the drag
     this.suppressClick = true;
     if (!source || !target || sameRange(source, target)) return;
-    const recordSource = this.recordRange(source);
-    const recordTarget = this.recordRange(target);
+    const recordSource = this.rows.recordRange(source);
+    const recordTarget = this.rows.recordRange(target);
     if (!recordSource || !recordTarget) return;
     this.emit(
       fillRange(this.context, recordSource, recordTarget, {
@@ -3413,7 +2704,7 @@ export default class EuiSheet<T extends object> extends Component<
     const source = this.fillSource;
     if (!target || !source) return false;
     // grouped: a header or an add row inside the target is not filled
-    if (this.isGrouped && !this.isRecordRow(row)) return false;
+    if (this.rows.isGrouped && !this.rows.isRecordRow(row)) return false;
     const inside = (range: Range) =>
       row >= range.top &&
       row <= range.bottom &&
@@ -3497,7 +2788,7 @@ export default class EuiSheet<T extends object> extends Component<
       : cell
         ? this.dom.cursor(cell).row
         : -1;
-    return this.isRecordRow(row) ? row : -1;
+    return this.rows.isRecordRow(row) ? row : -1;
   }
 
   /* -------------------------------------------------------------------- */
@@ -3582,7 +2873,7 @@ export default class EuiSheet<T extends object> extends Component<
       !!text &&
       !!cell &&
       !!field &&
-      this.canEdit(pos) &&
+      this.cells.canEdit(pos) &&
       (this.fields.typeOf(field).opensOnKey?.(text) ?? true);
     if (open) this.startEdit(pos, cell, text);
     else this.dom.focusGridCell(pos);
@@ -3607,8 +2898,8 @@ export default class EuiSheet<T extends object> extends Component<
    * instead of the grid's editor. False when it does not apply.
    */
   editInRecord(pos: Pos): boolean {
-    if (!this.editsInRecord || !this.canEdit(pos)) return false;
-    const record = this.recordAt(pos.row);
+    if (!this.editsInRecord || !this.cells.canEdit(pos)) return false;
+    const record = this.rows.recordAt(pos.row);
     const field = this.fields.visibleFields[pos.col];
     if (record === undefined || !field) return false;
     const recordId = this.args.getRecordId(record);
@@ -3668,30 +2959,35 @@ export default class EuiSheet<T extends object> extends Component<
     const target = event.target as Element;
     if (this.dom.isInMenu(target)) return;
     // a header's chevron or title (V03 8.3), on a data or row-number cell
-    if (this.isGrouped && this.onGroupToggleClick(target)) return;
+    if (this.rows.isGrouped && this.groupHeaders.onGroupToggleClick(target))
+      return;
     if (this.onControlClick(event, target)) return;
     if (event.shiftKey || this.editing) return;
     const cell = this.dom.dataCell(target);
     if (!cell) return;
     const pos = this.dom.cursor(cell);
-    if (this.isAddRow(pos.row)) {
+    if (this.rows.isAddRow(pos.row)) {
       this.appendRecord(pos.row);
       return;
     }
-    const record = this.recordAt(pos.row);
+    const record = this.rows.recordAt(pos.row);
     const field = this.fields.visibleFields[pos.col];
     if (record === undefined || !field) return;
     const type = this.fields.typeOf(field);
     // a click on the link text opens it (first click, no edit)
     if (target.closest('[data-eui-sheet-link]')) {
-      if (this.openLink(this.linkOf(type, field, valueOf(record, field.id)))) {
+      if (
+        this.cells.openLink(
+          this.cells.linkOf(type, field, valueOf(record, field.id))
+        )
+      ) {
         return;
       }
     }
     // a star click is the cell's own (`@onCommit`): no edit
     if (target.closest('[data-eui-sheet-star]')) return;
     if (target.closest('[data-eui-sheet-opener]')) {
-      if (this.canEdit(pos) && !this.editInRecord(pos)) {
+      if (this.cells.canEdit(pos) && !this.editInRecord(pos)) {
         this.startEdit(pos, cell, null);
       }
       return;
@@ -3703,10 +2999,14 @@ export default class EuiSheet<T extends object> extends Component<
         field,
         record
       );
-      if (result) this.commitCellValue(pos.row, pos.col, result.value);
+      if (result) this.cells.commitCellValue(pos.row, pos.col, result.value);
       return;
     }
-    if (pressOnFocusedCell && this.canEdit(pos) && !this.editInRecord(pos)) {
+    if (
+      pressOnFocusedCell &&
+      this.cells.canEdit(pos) &&
+      !this.editInRecord(pos)
+    ) {
       this.startEdit(pos, cell, null);
     }
   }
@@ -3719,18 +3019,18 @@ export default class EuiSheet<T extends object> extends Component<
       return true;
     }
     if (target.closest('[data-eui-sheet-row-check-all]')) {
-      this.toggleAllChecked();
+      this.checked.toggleAllChecked();
       return true;
     }
     const rowCell = this.dom.rowNumberCell(target);
     if (rowCell) {
       const row = this.dom.rowIndexOf(rowCell);
-      if (this.isAddRow(row)) {
+      if (this.rows.isAddRow(row)) {
         this.appendRecord(row);
       } else if (target.closest('[data-eui-sheet-row-check]')) {
-        this.toggleChecked(row, event.shiftKey);
+        this.checked.toggleChecked(row, event.shiftKey);
       } else if (target.closest('[data-eui-sheet-row-expand]')) {
-        const record = this.recordAt(row);
+        const record = this.rows.recordAt(row);
         if (record !== undefined) {
           const recordId = this.args.getRecordId(record);
           this.expandRecord(recordId, { recordId, fieldId: null });
@@ -3751,17 +3051,6 @@ export default class EuiSheet<T extends object> extends Component<
     return false;
   }
 
-  /** Whether the cell at `pos` opens an editor. */
-  canEdit(pos: Pos): boolean {
-    const record = this.recordAt(pos.row);
-    const field = this.fields.visibleFields[pos.col];
-    if (record === undefined || !field) return false;
-    return (
-      !!this.fields.typeOf(field).editor &&
-      !isReadOnly(this.context, field, record)
-    );
-  }
-
   @action
   onDoubleClick(event: MouseEvent): void {
     // the double-click's second click already opened the editor
@@ -3769,7 +3058,7 @@ export default class EuiSheet<T extends object> extends Component<
     const cell = this.dom.dataCell(event.target);
     if (!cell) return;
     const pos = this.dom.cursor(cell);
-    if (this.canEdit(pos) && !this.editInRecord(pos)) {
+    if (this.cells.canEdit(pos) && !this.editInRecord(pos)) {
       this.startEdit(pos, cell, null);
     }
   }
@@ -3832,7 +3121,7 @@ export default class EuiSheet<T extends object> extends Component<
       : cell
         ? this.dom.cursor(cell).row
         : -1;
-    if (!this.isRecordRow(row)) return false;
+    if (!this.rows.isRecordRow(row)) return false;
     let col: number | null = null;
     if (rowCell) {
       if (!this.isRowSelected(row)) this.selectRows(row, false);
@@ -3903,7 +3192,8 @@ export default class EuiSheet<T extends object> extends Component<
       return;
     }
     // Enter or Space on a group header's cell, row number or data (V03 8.6)
-    if (this.isGrouped && this.onGroupKeyDown(event, target)) return;
+    if (this.rows.isGrouped && this.groupHeaders.onGroupKeyDown(event, target))
+      return;
     const rowCell = this.dom.rowNumberCell(target);
     if (rowCell && target === rowCell) {
       this.onRowNumberKeyDown(event, this.dom.rowIndexOf(rowCell));
@@ -3960,11 +3250,11 @@ export default class EuiSheet<T extends object> extends Component<
       this.rangeKind = 'cells';
       return;
     }
-    if (this.isAddRow(pos.row)) {
+    if (this.rows.isAddRow(pos.row)) {
       this.onAddRowKeyDown(event, pos.row);
       return;
     }
-    const record = this.recordAt(pos.row);
+    const record = this.rows.recordAt(pos.row);
     const field = this.fields.visibleFields[pos.col];
     if (record === undefined || !field) return;
     const ctx = this.context;
@@ -3990,7 +3280,7 @@ export default class EuiSheet<T extends object> extends Component<
       if (result) {
         stop(event);
         this.emit(
-          commitValue(ctx, this.recordPos(pos), result.value),
+          commitValue(ctx, this.rows.recordPos(pos), result.value),
           this.touchedAt(pos)
         );
         return;
@@ -4082,9 +3372,9 @@ export default class EuiSheet<T extends object> extends Component<
     if (letter === 'a' && !event.shiftKey) {
       // every cell; focus stays where it is
       stop(event);
-      const model = this.rowModel;
+      const model = this.rows.rowModel;
       // grouped: all the records (V03 8.5); with none, nothing to select
-      if (this.isGrouped && model.firstRecordRow < 0) return true;
+      if (this.rows.isGrouped && model.firstRecordRow < 0) return true;
       this.anchor = { row: Math.max(model.firstRecordRow, 0), col: 0 };
       this.head = {
         row: model.lastRecordRow,
@@ -4112,26 +3402,26 @@ export default class EuiSheet<T extends object> extends Component<
     const lastCol = this.fields.visibleFields.length - 1;
     // with Shift the range's head moves and focus stays on the active cell
     // (V03 batch 1): every target is computed from the head
-    const extend = event.shiftKey && this.isRecordRow(pos.row);
+    const extend = event.shiftKey && this.rows.isRecordRow(pos.row);
     const from =
       extend && this.head && this.anchor && this.rangeKind === 'cells'
         ? this.head
         : pos;
-    const model = this.rowModel;
+    const model = this.rows.rowModel;
     let target: Pos;
     if (command && key in ARROW_DIRECTIONS) {
       const direction = ARROW_DIRECTIONS[key as keyof typeof ARROW_DIRECTIONS];
-      if (this.isGrouped && !this.isRecordRow(from.row)) {
+      if (this.rows.isGrouped && !this.rows.isRecordRow(from.row)) {
         // a header or a group's add row: an empty cell between two records
-        target = this.edgeFromGap(from, direction);
+        target = this.rows.edgeFromGap(from, direction);
       } else {
         // in record rows; the add row is the row after the records above it
-        const core = { row: this.coreRowOf(from.row), col: from.col };
+        const core = { row: this.rows.coreRowOf(from.row), col: from.col };
         const edge = edgeTarget(this.context, core, direction);
         target =
           edge.row === core.row
             ? { row: from.row, col: edge.col }
-            : this.gridPos(edge);
+            : this.rows.gridPos(edge);
       }
     } else if (extend && key in ARROW_DIRECTIONS) {
       const [dRow, dCol] = ARROW_STEPS[key as keyof typeof ARROW_STEPS];
@@ -4142,7 +3432,7 @@ export default class EuiSheet<T extends object> extends Component<
       );
       target = {
         // a header or an add row in the way is stepped over (3b)
-        row: this.isRecordRow(row)
+        row: this.rows.isRecordRow(row)
           ? row
           : model.nearestRecordRow(row, dRow < 0 ? -1 : 1),
         col: clamp(from.col + dCol, 0, lastCol)
@@ -4157,8 +3447,12 @@ export default class EuiSheet<T extends object> extends Component<
       const last = event.shiftKey ? model.lastRecordRow : model.length - 1;
       let row = clamp(from.row + (key === 'PageDown' ? page : -page), 0, last);
       // grouped: never on a header; with Shift on a record (V03 8.6)
-      if (this.isGrouped) {
-        row = this.landingRow(row, key === 'PageDown' ? 1 : -1, event.shiftKey);
+      if (this.rows.isGrouped) {
+        row = this.rows.landingRow(
+          row,
+          key === 'PageDown' ? 1 : -1,
+          event.shiftKey
+        );
       }
       target = { row, col: from.col };
     } else {
@@ -4306,7 +3600,7 @@ export default class EuiSheet<T extends object> extends Component<
   moveFocus(target: Pos, extend: boolean): void {
     // a group header keeps no range (V03 9.1), also when focus stays on it
     // (an edge key that does not move): nothing to clear, fill or paste over
-    if (this.isGrouped && this.rowKind(target.row) === 'group') {
+    if (this.rows.isGrouped && this.rows.rowKind(target.row) === 'group') {
       this.anchor = null;
       this.head = null;
       this.rangeKind = 'cells';
@@ -4314,7 +3608,7 @@ export default class EuiSheet<T extends object> extends Component<
       this.dom.focusGridCell(target);
       return;
     }
-    if (extend && this.anchor && this.isRecordRow(target.row)) {
+    if (extend && this.anchor && this.rows.isRecordRow(target.row)) {
       this.head = target;
     } else {
       this.anchor = target;
@@ -4369,8 +3663,8 @@ export default class EuiSheet<T extends object> extends Component<
     }
     if (event.key !== 'End' || lastCol < 0) return false;
     stop(event);
-    const last = command ? this.lastLandingRow() : row;
-    if (last < 0 && this.isGrouped) return true;
+    const last = command ? this.rows.lastLandingRow() : row;
+    if (last < 0 && this.rows.isGrouped) return true;
     this.moveFocus({ row: last, col: lastCol }, false);
     return true;
   }
@@ -4380,13 +3674,14 @@ export default class EuiSheet<T extends object> extends Component<
    * is not a header (the grid would go to a collapsed last group's header).
    */
   handleGroupedEndKey(event: KeyboardEvent): boolean {
-    if (!this.isGrouped || this.gridColumns.hasAddFieldColumn) return false;
+    if (!this.rows.isGrouped || this.gridColumns.hasAddFieldColumn)
+      return false;
     if (event.key !== 'End' || !event.ctrlKey) return false;
     if (event.altKey || event.shiftKey || event.metaKey) return false;
     const lastCol = this.fields.visibleFields.length - 1;
     if (lastCol < 0) return false;
     stop(event);
-    const last = this.lastLandingRow();
+    const last = this.rows.lastLandingRow();
     if (last >= 0) this.moveFocus({ row: last, col: lastCol }, false);
     return true;
   }
@@ -4396,10 +3691,11 @@ export default class EuiSheet<T extends object> extends Component<
     if (event.altKey || event.shiftKey || event.metaKey) return false;
     // grouped, Ctrl+Home is the sheet's also without row numbers: the
     // grid would go to row 0, a header
-    if (!this.colOffset && !(this.isGrouped && event.ctrlKey)) return false;
+    if (!this.colOffset && !(this.rows.isGrouped && event.ctrlKey))
+      return false;
     stop(event);
     // Ctrl+Home: the first record (the add row when there is none)
-    const first = this.firstLandingRow();
+    const first = this.rows.firstLandingRow();
     if (event.ctrlKey && first < 0) return true;
     this.dom.focusGridCell({ row: event.ctrlKey ? first : row, col: 0 });
     // Home also scrolls to the left edge (the frozen field is in view anyway)
@@ -4427,12 +3723,12 @@ export default class EuiSheet<T extends object> extends Component<
    * cells' (`handleGroupedEndKey`). True when handled.
    */
   handleGroupedRowNumberKey(event: KeyboardEvent, row: number): boolean {
-    if (!this.isGrouped || event.altKey || event.metaKey) return false;
+    if (!this.rows.isGrouped || event.altKey || event.metaKey) return false;
     const { key } = event;
     if ((key === 'PageDown' || key === 'PageUp') && !event.ctrlKey) {
       stop(event);
       const step = key === 'PageDown' ? 1 : -1;
-      const target = this.landingRow(
+      const target = this.rows.landingRow(
         row + step * this.pageRows(),
         step,
         event.shiftKey
@@ -4442,7 +3738,7 @@ export default class EuiSheet<T extends object> extends Component<
     }
     if (key === 'Home' && event.ctrlKey && !event.shiftKey) {
       stop(event);
-      const first = this.firstLandingRow();
+      const first = this.rows.firstLandingRow();
       if (first >= 0) this.dom.focusRowNumberCell(first);
       return true;
     }
@@ -4454,11 +3750,11 @@ export default class EuiSheet<T extends object> extends Component<
     if (this.handleCommandKey(event)) return;
     if (this.handleLastFieldKey(event, row, null)) return;
     if (this.handleGroupedRowNumberKey(event, row)) return;
-    if (this.isAddRow(row)) {
+    if (this.rows.isAddRow(row)) {
       this.onAddRowKeyDown(event, row);
       return;
     }
-    const record = this.recordAt(row);
+    const record = this.rows.recordAt(row);
     if (record === undefined) return;
     const plain = !event.ctrlKey && !event.metaKey && !event.altKey;
     if (isMenuKey(event)) {
@@ -4469,7 +3765,7 @@ export default class EuiSheet<T extends object> extends Component<
     }
     if (event.key === ' ' && plain) {
       stop(event);
-      this.toggleChecked(row, event.shiftKey);
+      this.checked.toggleChecked(row, event.shiftKey);
       return;
     }
     if (event.key === 'Enter' && plain && !event.shiftKey) {
@@ -4486,7 +3782,7 @@ export default class EuiSheet<T extends object> extends Component<
 
   /** Delete and Backspace: the range's writable cells get their empty value. */
   clearSelection(): void {
-    const range = this.range && this.recordRange(this.range);
+    const range = this.range && this.rows.recordRange(this.range);
     if (!range) return;
     this.emit(
       clearRange(this.context, range),
@@ -4496,7 +3792,7 @@ export default class EuiSheet<T extends object> extends Component<
 
   /** Ctrl/Cmd+R: fill the range right, or the cell from the one to its left. */
   fillRightSelection(): void {
-    const range = this.range && this.recordRange(this.range);
+    const range = this.range && this.rows.recordRange(this.range);
     if (!range) return;
     const targets =
       range.right > range.left ? { ...range, left: range.left + 1 } : range;
@@ -4508,7 +3804,7 @@ export default class EuiSheet<T extends object> extends Component<
 
   /** Ctrl/Cmd+D: fill the range down, or the cell from the one above. */
   fill(): void {
-    const range = this.range && this.recordRange(this.range);
+    const range = this.range && this.rows.recordRange(this.range);
     if (!range) return;
     // the cells written: below the top record, or the record itself (from above)
     const targets =
@@ -4533,7 +3829,7 @@ export default class EuiSheet<T extends object> extends Component<
     return {
       fieldIds: this.fields.allFields.map((field) => field.id),
       equals: (fieldId, a, b) => this.fields.valueEquals(fieldId, a, b),
-      keepUnseen: this.groups.some((group) => group.collapsed)
+      keepUnseen: this.rows.groups.some((group) => group.collapsed)
     };
   }
 
@@ -4607,12 +3903,12 @@ export default class EuiSheet<T extends object> extends Component<
     recordId: RecordId;
     fieldId: string;
   }): void {
-    const row = this.rowOf(recordId, this.hintOf(this.head?.row));
+    const row = this.rows.rowOf(recordId, this.rows.hintOf(this.head?.row));
     const col = this.fields.visibleFields.findIndex(
       (field) => field.id === fieldId
     );
     if (row < 0 || col < 0) return;
-    const pos = { row: this.gridRowOf(row), col };
+    const pos = { row: this.rows.gridRowOf(row), col };
     this.anchor = pos;
     this.head = pos;
     this.rangeKind = 'cells';
@@ -4656,13 +3952,13 @@ export default class EuiSheet<T extends object> extends Component<
       }
       this.pendingCells = next;
     }
-    if (this.rejections.size) {
+    if (this.cells.rejections.size) {
       const next = new Map<string, Rejection>();
-      for (const entry of this.rejections.values()) {
+      for (const entry of this.cells.rejections.values()) {
         const id = String(remapId(entry.id, map));
         next.set(cellKey(id, entry.fieldId), { ...entry, id });
       }
-      this.rejections = next;
+      this.cells.rejections = next;
     }
     if (this.pendingFocus) {
       this.pendingFocus = {
@@ -4673,9 +3969,11 @@ export default class EuiSheet<T extends object> extends Component<
     if (this.editing) {
       this.editing.recordId = remapId(this.editing.recordId, map);
     }
-    if ([...this.checkedIds].some((id) => map.has(id))) {
-      this.setChecked(
-        new Set([...this.checkedIds].map((id) => String(remapId(id, map))))
+    if ([...this.checked.checkedIds].some((id) => map.has(id))) {
+      this.checked.setChecked(
+        new Set(
+          [...this.checked.checkedIds].map((id) => String(remapId(id, map)))
+        )
       );
     }
     if (this.localExpandedId !== null) {
@@ -4728,12 +4026,12 @@ export default class EuiSheet<T extends object> extends Component<
     const before = this.args.records.length;
     let shown: Rejection[] = [];
     if (direction === 'undo' && entry.rejections.length) {
-      const next = clearRejections(this.rejections, entry.rejections);
+      const next = clearRejections(this.cells.rejections, entry.rejections);
       if (next) {
         shown = entry.rejections.filter(
           (rejection) => !next.has(cellKey(rejection.id, rejection.fieldId))
         );
-        this.rejections = next;
+        this.cells.rejections = next;
       }
     }
     if (changeSet) {
@@ -4754,7 +4052,7 @@ export default class EuiSheet<T extends object> extends Component<
         ])
       );
       const next = restoreRejections(
-        this.rejections,
+        this.cells.rejections,
         entry.rejections,
         (id, fieldId) => ({
           found: byId.has(id),
@@ -4765,7 +4063,7 @@ export default class EuiSheet<T extends object> extends Component<
         shown = entry.rejections.filter((rejection) =>
           next.has(cellKey(rejection.id, rejection.fieldId))
         );
-        this.rejections = next;
+        this.cells.rejections = next;
       }
     }
     if (!changeSet && !shown.length) return false;
@@ -4826,8 +4124,8 @@ export default class EuiSheet<T extends object> extends Component<
     let focus: Pos;
     if (box) {
       // the box is in record rows
-      focus = this.gridPos({ row: box.top, col: box.left });
-      this.anchor = this.gridPos({ row: box.bottom, col: box.right });
+      focus = this.rows.gridPos({ row: box.top, col: box.left });
+      this.anchor = this.rows.gridPos({ row: box.bottom, col: box.right });
     } else if (changeSet.inserts.length) {
       const field = this.fields.visibleFields[this.head?.col ?? 0];
       if (!field || !focusCell) return;
@@ -4842,8 +4140,9 @@ export default class EuiSheet<T extends object> extends Component<
       // nothing patched (an undo that only removed rows): keep focus on a
       // row that still exists
       const head = this.head;
-      if (!head || rows === 0 || head.row <= this.gridRowOf(rows - 1)) return;
-      focus = { row: this.gridRowOf(rows - 1), col: head.col };
+      if (!head || rows === 0 || head.row <= this.rows.gridRowOf(rows - 1))
+        return;
+      focus = { row: this.rows.gridRowOf(rows - 1), col: head.col };
       this.anchor = focus;
     }
     this.head = focus;
@@ -4877,16 +4176,16 @@ export default class EuiSheet<T extends object> extends Component<
   onCopy(event: ClipboardEvent): void {
     const target = event.target;
     if (this.editing && this.dom.isInEditor(target)) return;
-    if (this.isCheckedRowsTarget(target)) {
+    if (this.checked.isCheckedRowsTarget(target)) {
       if (!event.clipboardData) return;
       event.clipboardData.setData(
         'text/plain',
-        this.rowsTsv(this.checkedRecords)
+        this.rowsTsv(this.checked.checkedRecords)
       );
       stop(event);
       return;
     }
-    if (this.isGroupHeaderTarget(target)) {
+    if (this.groupHeaders.isGroupHeaderTarget(target)) {
       event.clipboardData?.setData('text/plain', '');
       stop(event);
       return;
@@ -4902,7 +4201,7 @@ export default class EuiSheet<T extends object> extends Component<
 
   /** The records of a grid range as TSV; '' when it holds none (the add row). */
   rangeTsv(range: Range): string {
-    const records = this.recordRange(range);
+    const records = this.rows.recordRange(range);
     return toTsv(records ? rangeMatrix(this.context, records) : []);
   }
 
@@ -4916,7 +4215,7 @@ export default class EuiSheet<T extends object> extends Component<
   onCut(event: ClipboardEvent): void {
     const target = event.target;
     if (this.editing && this.dom.isInEditor(target)) return;
-    if (this.isGroupHeaderTarget(target)) {
+    if (this.groupHeaders.isGroupHeaderTarget(target)) {
       event.clipboardData?.setData('text/plain', '');
       stop(event);
       return;
@@ -4931,7 +4230,7 @@ export default class EuiSheet<T extends object> extends Component<
       this.copied = range;
       return;
     }
-    const records = this.recordRange(range);
+    const records = this.rows.recordRange(range);
     if (records) {
       this.emit(
         clearRange(this.context, records, { source: 'cut' }),
@@ -4968,23 +4267,23 @@ export default class EuiSheet<T extends object> extends Component<
     const range = this.range;
     if (!range) return;
     // a header is never pasted over (V03 8.5); its row has no range anyway
-    if (this.isGrouped && this.rowKind(range.top) === 'group') return;
+    if (this.rows.isGrouped && this.rows.rowKind(range.top) === 'group') return;
     stop(event);
     const anchor = { row: range.top, col: range.left };
     const records = this.args.records;
     // a group's add row: every line is an insert into that group (V03 8.5)
-    const addGroup = this.addRowGroupAt(anchor.row);
+    const addGroup = this.rows.addRowGroupAt(anchor.row);
     // the core's anchor: its record row, or `records.length` on an add row
     const at = {
-      row: addGroup >= 0 ? records.length : this.coreRowOf(anchor.row),
+      row: addGroup >= 0 ? records.length : this.rows.coreRowOf(anchor.row),
       col: anchor.col
     };
     // grouped, the lines past the records: into the add row's group, or
     // into the last record's group, with its values and `groupKey`
-    const insert = this.isGrouped ? this.pasteInsert(addGroup) : undefined;
+    const insert = this.rows.isGrouped ? this.pasteInsert(addGroup) : undefined;
     // a block that fits the selection a whole number of times fills it
     // (its records: a header or an add row inside is no line)
-    const selection = this.recordRange(range);
+    const selection = this.rows.recordRange(range);
     let matrix = tileMatrix(
       parseTsv(data.getData('text/plain')),
       selection ? selection.bottom - selection.top + 1 : 1,
@@ -5033,20 +4332,20 @@ export default class EuiSheet<T extends object> extends Component<
    * group, after it. Each with the group's values and `groupKey`.
    */
   pasteInsert(addGroup: number): PasteInsert | undefined {
-    const model = this.rowModel;
+    const model = this.rows.rowModel;
     const group = addGroup >= 0 ? addGroup : model.groupAt(model.lastRecordRow);
-    const key = this.groups[group]?.key;
+    const key = this.rows.groups[group]?.key;
     if (key === undefined) return undefined;
     const insert: PasteInsert = {
-      values: this.groupValuesOf(group),
+      values: this.groupHeaders.groupValuesOf(group),
       groupKey: key
     };
     if (addGroup >= 0) {
       const row = model.addRowOf(addGroup);
       // the group's last loaded record is the row above its add row
-      const last = this.recordRowAt(row - 1);
+      const last = this.rows.recordRowAt(row - 1);
       const above = last >= 0 ? this.args.records[last] : undefined;
-      insert.index = last >= 0 ? last + 1 : this.coreRowOf(row);
+      insert.index = last >= 0 ? last + 1 : this.rows.coreRowOf(row);
       insert.anchor =
         above === undefined
           ? null
@@ -5070,8 +4369,8 @@ export default class EuiSheet<T extends object> extends Component<
     if (addGroup >= 0) return anchorRow + lines - 1;
     const last = at + lines - 1;
     const count = this.args.records.length;
-    if (last < count) return this.gridRowOf(last);
-    const lastRow = count ? this.gridRowOf(count - 1) : -1;
+    if (last < count) return this.rows.gridRowOf(last);
+    const lastRow = count ? this.rows.gridRowOf(count - 1) : -1;
     return lastRow + last - (count - 1);
   }
 
@@ -5165,7 +4464,7 @@ export default class EuiSheet<T extends object> extends Component<
     // an edit ends the copy mark (V03 batch 1)
     if (this.copied) this.copied = null;
     const wrapper = this.wrapper;
-    const record = this.recordAt(pos.row);
+    const record = this.rows.recordAt(pos.row);
     const field = this.fields.visibleFields[pos.col];
     if (!wrapper || record === undefined || !field) return;
     const type = this.fields.typeOf(field);
@@ -5174,7 +4473,7 @@ export default class EuiSheet<T extends object> extends Component<
     if (!rect) return;
     const layout = type.editorLayout ?? 'cell';
     const upload = uploadOf(field);
-    const rejection = this.liveRejection(record, recordId, field.id);
+    const rejection = this.cells.liveRejection(record, recordId, field.id);
     const draft =
       initialKey ??
       rejection?.text ??
@@ -5216,7 +4515,7 @@ export default class EuiSheet<T extends object> extends Component<
   /** The edited record, by id: the owner may have moved it (V02-DESIGN.md 3.2). */
   editorRecord = (editing: Editing): T | undefined =>
     this.args.records[
-      this.rowOf(editing.recordId, this.hintOf(editing.pos.row))
+      this.rows.rowOf(editing.recordId, this.rows.hintOf(editing.pos.row))
     ];
 
   editorValue = (editing: Editing): unknown =>
@@ -5237,7 +4536,10 @@ export default class EuiSheet<T extends object> extends Component<
     // editor leaving the DOM) finds editing === null and returns.
     this.editing = null;
     // the edited record's row now; gone: nothing to save
-    const row = this.rowOf(editing.recordId, this.hintOf(editing.pos.row));
+    const row = this.rows.rowOf(
+      editing.recordId,
+      this.rows.hintOf(editing.pos.row)
+    );
     if (row < 0) return;
     const pos = { row, col: editing.pos.col };
     const ctx = this.context;
@@ -5253,15 +4555,15 @@ export default class EuiSheet<T extends object> extends Component<
     }
     if (refocus) {
       // synchronous is safe: the target row already exists
-      const model = this.rowModel;
-      const from = this.gridRowOf(pos.row);
+      const model = this.rows.rowModel;
+      const from = this.rows.gridRowOf(pos.row);
       let row = clamp(
         from + move[0],
         model.firstRecordRow,
         model.lastRecordRow
       );
       // grouped: over a header or an add row to the next record (V03 8.6)
-      if (this.isGrouped && !this.isRecordRow(row)) {
+      if (this.rows.isGrouped && !this.rows.isRecordRow(row)) {
         const next = model.nearestRecordRow(row, move[0] < 0 ? -1 : 1);
         row = next >= 0 ? next : from;
       }
@@ -5276,9 +4578,15 @@ export default class EuiSheet<T extends object> extends Component<
     const editing = this.editing;
     if (!editing) return;
     this.editing = null;
-    const row = this.rowOf(editing.recordId, this.hintOf(editing.pos.row));
+    const row = this.rows.rowOf(
+      editing.recordId,
+      this.rows.hintOf(editing.pos.row)
+    );
     if (row < 0) return;
-    this.dom.focusGridCell({ row: this.gridRowOf(row), col: editing.pos.col });
+    this.dom.focusGridCell({
+      row: this.rows.gridRowOf(row),
+      col: editing.pos.col
+    });
   };
 
   /* Editor callbacks, bound once */
@@ -5299,7 +4607,10 @@ export default class EuiSheet<T extends object> extends Component<
   onEditorSave = (value: unknown): void => {
     const editing = this.editing;
     if (!editing) return;
-    const row = this.rowOf(editing.recordId, this.hintOf(editing.pos.row));
+    const row = this.rows.rowOf(
+      editing.recordId,
+      this.rows.hintOf(editing.pos.row)
+    );
     if (row < 0) return;
     this.emit(commitValue(this.context, { row, col: editing.pos.col }, value), [
       { id: editing.recordId, fieldId: editing.field.id }
@@ -5693,9 +5004,9 @@ export default class EuiSheet<T extends object> extends Component<
     };
     this.undoStack = prune(this.undoStack);
     this.redoStack = prune(this.redoStack);
-    if ([...this.rejections.values()].some((r) => ids.has(r.fieldId))) {
-      this.rejections = new Map(
-        [...this.rejections].filter(([, r]) => !ids.has(r.fieldId))
+    if ([...this.cells.rejections.values()].some((r) => ids.has(r.fieldId))) {
+      this.cells.rejections = new Map(
+        [...this.cells.rejections].filter(([, r]) => !ids.has(r.fieldId))
       );
     }
     const pendingKeys = [...this.pendingCells]
@@ -5810,7 +5121,7 @@ export default class EuiSheet<T extends object> extends Component<
     touched: Touched,
     options: { mergeInto?: HistoryEntry | null } = {}
   ): HistoryEntry | null {
-    const next = new Map(this.rejections);
+    const next = new Map(this.cells.rejections);
     let changed = false;
     for (const { id, fieldId } of touched) {
       if (next.delete(cellKey(id, fieldId))) changed = true;
@@ -5823,9 +5134,9 @@ export default class EuiSheet<T extends object> extends Component<
     if (changeSet?.deletes?.length) {
       // the removed records' texts and checkboxes go with them
       const gone = new Set(changeSet.deletes.map(String));
-      if ([...gone].some((id) => this.checkedIds.has(id))) {
-        this.setChecked(
-          new Set([...this.checkedIds].filter((id) => !gone.has(id)))
+      if ([...gone].some((id) => this.checked.checkedIds.has(id))) {
+        this.checked.setChecked(
+          new Set([...this.checked.checkedIds].filter((id) => !gone.has(id)))
         );
       }
       for (const [key, entry] of next) {
@@ -5868,7 +5179,7 @@ export default class EuiSheet<T extends object> extends Component<
         changed = true;
       }
     }
-    if (changed) this.rejections = next;
+    if (changed) this.cells.rejections = next;
     if (!changeSet) return null;
     const entry = this.recordHistory(changeSet, stored, options.mergeInto);
     // the rows the owner's next `@records` gains or loses because of it
@@ -5930,8 +5241,8 @@ export default class EuiSheet<T extends object> extends Component<
     // drawn in grid rows
     this.flash = {
       ...range,
-      top: this.gridRowOf(range.top),
-      bottom: this.gridRowOf(range.bottom)
+      top: this.rows.gridRowOf(range.top),
+      bottom: this.rows.gridRowOf(range.bottom)
     };
     if (this.flashTimer) clearTimeout(this.flashTimer);
     // a plain timer: tests' settled() does not wait for a decoration
@@ -6167,7 +5478,7 @@ export default class EuiSheet<T extends object> extends Component<
     const range = this.range;
     if (!range) return false;
     // the range's first record
-    const records = this.recordRange(range);
+    const records = this.rows.recordRange(range);
     const record = records ? this.args.records[records.top] : undefined;
     const field = this.fields.visibleFields[range.left];
     if (record === undefined || !field || !uploadOf(field)) return false;
@@ -6193,7 +5504,7 @@ export default class EuiSheet<T extends object> extends Component<
     options: { rejectOnFailure?: boolean } = {}
   ): Promise<void> {
     const upload = uploadOf(field);
-    const record = this.args.records[this.rowOf(recordId, 0)];
+    const record = this.args.records[this.rows.rowOf(recordId, 0)];
     if (!upload || record === undefined || !files.length) {
       return Promise.resolve();
     }
@@ -6231,7 +5542,7 @@ export default class EuiSheet<T extends object> extends Component<
       (added) => {
         if (!settle()) return;
         // the value now: another upload may have finished meanwhile
-        const row = this.rowOf(recordId, 0);
+        const row = this.rows.rowOf(recordId, 0);
         const now = this.args.records[row];
         if (now === undefined) return;
         const before = valueOf(now, field.id);
@@ -6277,7 +5588,7 @@ export default class EuiSheet<T extends object> extends Component<
     const cell = this.dom.dataCell(target);
     if (!cell) return null;
     const pos = this.dom.cursor(cell);
-    const record = this.recordAt(pos.row);
+    const record = this.rows.recordAt(pos.row);
     const field = this.fields.visibleFields[pos.col];
     if (record === undefined || !field || !uploadOf(field)) return null;
     if (isReadOnly(this.context, field, record)) return null;
@@ -6438,7 +5749,7 @@ export default class EuiSheet<T extends object> extends Component<
       <div
         class="euiSheet__grid"
         style={{this.gridOptions.gridVars}}
-        {{this.gridOptions.measureGroupWidth this.isGrouped}}
+        {{this.gridOptions.measureGroupWidth this.rows.isGrouped}}
       >
         {{#if @isLoading}}
           <EuiProgress
@@ -6456,7 +5767,7 @@ export default class EuiSheet<T extends object> extends Component<
           @leadingControlColumns={{this.gridColumns.leadingControlColumns}}
           @trailingControlColumns={{this.gridColumns.trailingControlColumns}}
           @gridStyle={{this.gridOptions.gridStyle}}
-          @rowCount={{this.rowCount}}
+          @rowCount={{this.rows.rowCount}}
           @renderCellValue={{SheetCell}}
           @renderFooterCellValue={{if this.hasSummary SheetFooterCell}}
           @cellContext={{this.cellContext}}

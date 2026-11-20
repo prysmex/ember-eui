@@ -44,7 +44,7 @@ export default class SheetGridOptions<T extends object> {
     return (
       this.sheet.scrolledX &&
       this.sheet.frozen.frozenCount === 0 &&
-      this.sheet.hasAddRow
+      this.sheet.rows.hasAddRow
     );
   }
 
@@ -82,7 +82,7 @@ export default class SheetGridOptions<T extends object> {
   @cached
   get gridVars(): ReturnType<typeof htmlSafe> | undefined {
     const frozen = this.sheet.frozen.frozenStyle;
-    if (!this.sheet.isGrouped && !this.pinsAddRow) return frozen;
+    if (!this.sheet.rows.isGrouped && !this.pinsAddRow) return frozen;
     const plus = this.sheet.colOffset
       ? this.sheet.gridColumns.rowColumnWidth
       : 0;
@@ -160,11 +160,11 @@ export default class SheetGridOptions<T extends object> {
   /** The add row's class, and each group header row's (V03 9.1). */
   @cached
   get gridStyle(): EuiDataGridStyle | undefined {
-    const model = this.sheet.rowModel;
+    const model = this.sheet.rows.rowModel;
     const rowClasses: Record<number, string> = {};
     const addRow = model.addRowOf(-1);
     if (addRow >= 0) rowClasses[addRow] = 'euiSheet__addRow';
-    this.sheet.groups.forEach((group, i) => {
+    this.sheet.rows.groups.forEach((group, i) => {
       // each expanded leaf's add row looks like the sheet's (V03 8.4)
       const add = model.addRowOf(i);
       if (add >= 0) rowClasses[add] = 'euiSheet__addRow';

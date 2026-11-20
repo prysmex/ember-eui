@@ -35,12 +35,12 @@ export default class SheetCell extends Component<{
 
   /** The group when this cell is in a group header row (V03 9.1). */
   get group(): SheetGroup | undefined {
-    return this.sheet.groupHeaderAt(this.args.rowIndex);
+    return this.sheet.groupHeaders.groupHeaderAt(this.args.rowIndex);
   }
 
   @cached
   get view(): CellView | null {
-    return this.sheet.cellView(
+    return this.sheet.cells.cellView(
       this.args.rowIndex,
       this.col,
       this.args.columnId
@@ -56,7 +56,7 @@ export default class SheetCell extends Component<{
     // header row's CSS places the label (V03 9.1)
     const group = this.group;
     if (group) {
-      this.args.setCellProps(this.sheet.groupCellProps(group));
+      this.args.setCellProps(this.sheet.groupHeaders.groupCellProps(group));
       return '';
     }
     const view = this.view;
@@ -69,7 +69,7 @@ export default class SheetCell extends Component<{
       props['style'] = frozen.style;
     }
     // a checked row's light tint (V03 batch 1); never the add row
-    if (view && this.sheet.isChecked(this.args.rowIndex)) {
+    if (view && this.sheet.checked.isChecked(this.args.rowIndex)) {
       classes.push('euiSheet__cell--checked');
     }
     if (view?.selected) {
@@ -96,7 +96,7 @@ export default class SheetCell extends Component<{
 
   /** The add row's first data cell shows "Add record"; its other cells nothing. */
   get addRecordLabel(): string | undefined {
-    if (this.col !== 0 || !this.sheet.isAddRow(this.args.rowIndex)) {
+    if (this.col !== 0 || !this.sheet.rows.isAddRow(this.args.rowIndex)) {
       return undefined;
     }
     return this.sheet.messages.addRecord();
@@ -104,7 +104,7 @@ export default class SheetCell extends Component<{
 
   /** Any data cell of an add row: it carries the pinned "+ Add record". */
   get isAddRowCell(): boolean {
-    return this.sheet.isAddRow(this.args.rowIndex);
+    return this.sheet.rows.isAddRow(this.args.rowIndex);
   }
 
   get addPinnedLabel(): string {
@@ -134,7 +134,7 @@ export default class SheetCell extends Component<{
   }
 
   onCommit = (value: unknown): void => {
-    this.sheet.commitCellValue(this.args.rowIndex, this.col, value);
+    this.sheet.cells.commitCellValue(this.args.rowIndex, this.col, value);
   };
 
   <template>

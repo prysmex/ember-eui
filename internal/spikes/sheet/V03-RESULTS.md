@@ -1984,3 +1984,33 @@ helper.
 
 `packages/core/src` is unchanged. No dependency was added; the lockfile
 is unchanged. `site/` is unchanged in the repository.
+
+### Batch 3b: real input in Chromium (main session, 2026-11-20)
+
+Production docs build, the d19 groups demo, `playwright-core` on the
+system Chromium with a real mouse wheel, clicks and keys. No page errors.
+
+- Header labels: one visible label per header row, in the row's first
+  rendered cell, at the grid's left edge; `elementFromPoint` there hits it.
+- Collapse with a real click on the chevron: `aria-rowcount` 22 → 17 (the
+  4 "To do" records and their add row), and back to 22 on expand.
+- ArrowDown from a group's last record: its add row, the next header, the
+  next group's first record, in the same column.
+- Copy a record's two cells, ArrowDown to the group's add row, Ctrl+V: one
+  insert into that group ("To do" 4 → 5, `aria-rowcount` 23).
+- 420 px wide, a real sideways wheel (`scrollLeft` 108): each header still
+  shows one label at the left edge, clickable; the group summary stays
+  under its column. 108 px does not unmount column 0 in this demo, so the
+  case where a later column carries the label (GH2) is covered only by the
+  headless test.
+- A header row scrolled under the column header: the column header stays
+  on top (three points along it), at 420 and 1000 px.
+
+Seen on the way, not a group-by issue: without frozen fields the add row's
+"Add record" text is in the first field's cell and scrolls away with it
+(cut to "ecord" at `scrollLeft` 108). The plus in the row-number cell
+scrolls away too.
+
+The first attempts were blocked by an overloaded sandbox (load 24, about
+120 MB free): pages timed out before the demo rendered. After a sandbox
+restart the same checks ran in seconds.

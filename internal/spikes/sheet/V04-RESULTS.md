@@ -249,3 +249,321 @@ console errors.
 
 Three commits, one more than the brief's "one or two": the demo bug was
 found after `5651beb`, and commits are never amended on this branch.
+
+## Batch A: presentation and menus (01-05)
+
+Built 2026-11-20 on `3c887a2` (batch D done), in this checkout. Designs:
+`v04/01-fit-width.md` to `v04/05-copy-with-names.md`. Their line
+references predate 3c; the features live where V03C-DESIGN.md 7 puts
+them. The component grew from 570 to 605 lines (the full-screen wiring,
+its body class, the `<:recordFooter>` pass-through, one listener).
+
+### What was built
+
+- **01 Fit a column to its content.** "Fit to content" in the header
+  menu, a double-click on a column's resize edge, `api.fitField(fieldId)`
+  and `api.fitFields()`. `src/-private/fit-width.ts` (new, 92 lines):
+  `fieldWidth(ctx, field, { cell, header }, chrome)` (pure, with the
+  measures passed in), `textMeasure(font)` (one canvas), and
+  `resizerColumnId(target)`. The width is the larger of the header label
+  plus its chrome (padding, border, the sort arrow when shown, and the
+  room of the drag icon and menu button, which collapse until hover) and
+  the widest of the first 2,000 loaded cells plus the cell's padding (and
+  28 px for a type with an opener), clamped to 80-480 px; the fonts and
+  paddings are read from a rendered header and cell at the moment of the
+  fit (layout px: `offsetWidth` and computed style, not rects).
+  `FieldType.contentWidth(value, field, measure, context)` is on
+  checkbox (24), rating (`max` × 18), singleSelect (one chip),
+  multiSelect, linkedRecord (chips), user (avatar and name) and
+  attachment (24 px thumbnails or an icon and the name, at most 120);
+  the list types count three items and then "+N", as their cells show
+  (`src/core/field-types/content-width.ts`, internal). The width reaches
+  the grid the only way it can (the core keeps resized widths privately
+  and has no setter): a new `columns` array with the width as
+  `initialWidth`, through `@onFieldWidthChange` (the owner's
+  `@fieldWidths`), or without it through `keptWidths` and a tracked
+  `fitEpoch` that only a fit bumps. The double-click is one capture
+  `dblclick` listener on the wrapper (`gridColumns.onResizerDoubleClick`).
+- **02 Full screen.** `@fullScreen`, `@onFullScreenChange`, the block
+  API's `isFullScreen` (a getter, so `blockApi` does not depend on it)
+  and `setFullScreen(on)`, `api.setFullScreen(on)`.
+  `src/-private/sheet/full-screen.ts` (new module `SheetFullScreen`):
+  `isOn`, `set`, `gridHeight` (`'100%'` while on), `lockPage` (a modifier
+  on the wrapper: the body's overflow and the grid's own full-screen body
+  class while on, both undone on exit and on destroy; the outlines and
+  the fill handle re-placed through `layoutTick`) and `endOnEscape`.
+  `euiSheet--fullScreen`: fixed, inset 0, z-index 998 (the grid's own
+  full-screen level), the plain background, 8 px padding, a flex column
+  in which the grid box takes the room between toolbar and footer.
+  Escape on a cell ends it only after an open editor, menu, field editor
+  or shortcut list, a lifted column, the copy mark and a range
+  (`keys.ts`, after the range collapse).
+- **03 `@fieldActions`.** `SheetFieldAction` in `src/types.ts`, exported
+  from the package; the items inside `headerMenu.fieldMenuItems`, after
+  the sheet's items and before "Delete field";
+  `euiSheetFieldAction-<id>-<fieldId>`. `onSelect` runs through
+  `headerMenu.afterClose`, which puts focus back on the field's menu
+  button first (below, deviation 4). "Fit to content" uses it too.
+- **04 `<:recordFooter as |record sheet|>`.** `record-shells.gts`: an
+  `@hasFooter` argument and a `footer` block inside
+  `euiSheetRecord__footer` (a divider), in the flyout and the modal; the
+  component passes `@hasFooter={{has-block "recordFooter"}}` and a
+  `<:footer>` that yields `expandedRecordValue` and `blockApi` to
+  `recordFooter`. Nothing in `expanded.ts`. An Escape in a text box of the
+  block stops at the footer (the flyout's window listener and the
+  modal's own would close the record); the record form's keys are on its
+  boxes, so the block's other keys are its own.
+- **05 Copy with field names.** The row-menu item `copyWithNames`, in
+  Copy's group, with the new `@copyWithFieldNames` (deviation 2):
+  `clipboard.copyRowsWithNames` writes `toTsv([headerLine(fields),
+  ...rowsMatrix(records)])` with the same `writeClipboard`;
+  `headerLine(fields)` (`label ?? id`) is exported from the core.
+- **Messages:** `fitToContent`, `fitAllFields`, `enterFullScreen`,
+  `exitFullScreen`, `copyWithFieldNames` (`euiSheet.<key>`).
+
+### Tests
+
+New files only; no existing test changed. IDs checked first: `FW`, `FS`,
+`FA`, `CN` were unused; `RF` is taken (the expanded record's RF1-RF6 and
+the polish tests' RF1-RF2), so the record footer's are **RFT**.
+
+- `eui-sheet-fit-width-test.gts`: **FW1** (gate) a double-click on the
+  resize edge (two presses, two releases, two clicks, then dblclick)
+  emits the fitted width once and the grid shows it; a press that moves
+  nothing emits nothing. **FW2** "Fit to content": no cell cut, then a
+  very long value: 480. **FW3** no handler, fields with `width`: the
+  fit and an earlier drag of another column both survive the fit and a
+  later new column. **FW4** a checkbox fits to its header label. **FW5**
+  `api.fitFields()`: one call per visible field, each shown; a short
+  field gets 80. **FW6** a single select: the chip ends before the
+  opener, its label whole. **FW7** the item joins a menu that is there;
+  the first field of a bare sheet still has no menu; the API fits it; an
+  unknown id does nothing.
+- `tests/unit/fit-width-test.ts`: **FW8** `fieldWidth` with a fake
+  measure (widest cell, min, max, the header winning, the id as header,
+  the opener, rounding up); **FW9** a type's `contentWidth`, `format`
+  otherwise, only the first 2,000 records; **FW10** the built-in
+  `contentWidth` of checkbox, rating and multiSelect (with "+N").
+- `eui-sheet-full-screen-test.gts` (the test container's two transforms
+  are lifted, so `position: fixed` fills the window): **FS1** the
+  window, the grid ending at the footer, the body's overflow, back in
+  the page; **FS2** Escape: an editor, the row menu, the copy mark and a
+  range each first, then full screen ends, focus stays; **FS3**
+  controlled and local; **FS4** the row menu (an item works), a select
+  panel and the expanded record (after its slide-in; its arrows work)
+  on top, `elementFromPoint` at their centre; **FS5** the body restored
+  on exit and destroy; **FS6** focus, the range and its outline kept
+  through enter and exit; **FS7** the header menu, the field editor and
+  the shortcut list on top, Escape in the header menu closes only it;
+  **FS8** a fixed `EuiHeader` below the sheet, the toolbar on top, the
+  record's flyout at the top, all undone on exit.
+- `eui-sheet-field-actions-test.gts`: **FA1** on every field (the first
+  field gets a menu from it), `onSelect` with that field; **FA2**
+  `isDisabled` per field; **FA3** order, before "Delete field", Delete
+  last; **FA4** focus on the menu button when `onSelect` runs, and focus
+  that `onSelect` moves elsewhere stays there past the popover's 250 ms
+  closing; **FA5** without it, as before.
+- `eui-sheet-record-footer-test.gts`: **RFT1** (flyout and modal) the
+  block with the record and the block API, after the hidden fields,
+  inside the shell, a divider; **RFT2** the arrows re-render it; **RFT3**
+  (both shells) typing types there, no editor, no change set, Escape in
+  the input keeps the record, Escape on the block's button closes it
+  (checked to fail with the Escape guard removed); **RFT4** no footer
+  without the block.
+- `eui-sheet-copy-names-test.gts`: **CN1** one row (a label-less field
+  copies its id), next to Copy, focus back; **CN2** two checked rows, in
+  order; **CN3** a tab, a line break and a quote in labels are quoted;
+  **CN4** without the argument the menu is as before.
+
+Suite per commit (each a full run on that commit's tree, the other
+batch A work set aside): 602, 609, 614, 620, 624, 625, all passing. In
+the run for 03, FS1 failed once (the grid's body still 200 px one frame
+after the toggle: the grid measures in a resize observer) and passed
+alone; it now waits for the measure (in the 03 commit), and the next
+runs passed.
+
+### Checks (before each code commit, on its tree)
+
+- `pnpm lint:types`: no error. The tests' `ember-tsc -p
+  tsconfig.eslint.json`: the 19 baseline errors and no other (one new
+  error in a test import was fixed before the 02 commit).
+- `eslint` and `prettier --check` on each commit's changed files: clean
+  (after fixes: two `settled()` after a helper, formatting).
+- Owner gate: OK (37 module classes, 38 from 02 on).
+- `node scripts/generate-api-docs.mjs --check`: passes for 01, 03, 04,
+  05 and the header fix; not run separately for 02 (the generator reads
+  no sheet source; it passed on the next commit's tree, which contains
+  02).
+- Before the docs commit: `pnpm lint:js`, `pnpm lint:css` (sheet),
+  `pnpm eui:check` (root), `node --test site/lib/*.test.mjs`: below.
+- `packages/core/src` unchanged; no dependency added.
+
+### Deviations
+
+1. **"Fit to content" is not on every field**: it joins a header menu
+   that has other items. VW6 pins that the first field of a bare sheet
+   has no menu button at all; an always-present item would create one.
+   Such a field is fitted by the double-click or the API.
+2. **"Copy with field names" is opt-in, `@copyWithFieldNames`** (a new
+   argument, default false). rows-test (RW, around lines 413, 448, 552,
+   563) and VP1 pin the row menu's exact items, and the README's "every
+   addition is optional; without it the sheet behaves as in v0.3". This
+   is a public argument the design did not list: **the user's decision**
+   whether it should be on by default (that would mean editing those
+   tests).
+3. **A bare sheet's kept width now wins over `field.width` and
+   `@fieldWidths`** (`keptWidth ?? givenWidth`, in `columns` and
+   `frozenWidth`). Before, a given width won, so a fit (or a drag) on a
+   field with a `width` snapped back whenever the columns were rebuilt.
+   With `@onFieldWidthChange` nothing changes (no kept widths). A bare
+   sheet whose app changes `@fieldWidths` later does not override a
+   width the user resized.
+4. **A press on the resize edge that moves nothing emits nothing**
+   (`onColumnResize` returns when the width equals the header's shown
+   width, within 0.5 px). The core calls `setColumnWidth` on every
+   mouseup, so each click of a double-click emitted the unchanged width;
+   FW1 asks for one call.
+5. **Focus after a header-menu item.** The popover leaves focus on its
+   panel and, once the panel is removed after 250 ms, on `<body>`
+   (probed); it never returns it to the menu button. So `afterClose`
+   focuses the field's menu button in a `next()` (only when focus is on
+   the body or in a popover panel), then runs `onSelect`; "Fit to
+   content" uses it too. The sheet's other header items (Edit, Group by,
+   Filter, ...) are unchanged.
+6. **The full-screen module is `src/-private/sheet/full-screen.ts`**
+   (a module class, under the owner gate), not `src/-private/`.
+7. **Full screen also adds the grid's own full-screen body class**
+   (`euiDataGrid__restrictBody` from the core's
+   `euiDataGridFullScreenStyles`), found with real input: the docs
+   site's fixed `EuiHeader` (z-index 1001) covered the toolbar and the
+   exit button. The design took that to be the grid's own behaviour; the
+   grid's own lowers a fixed EUI header to 997 and moves flyouts to the
+   top. A separate commit after 05; FS8.
+8. **Escape that ends full screen is the sheet's, on a cell** (`keys.ts`,
+   the fall-through after the range collapse), not a bubbling listener
+   on the wrapper: a header, the toolbar and app controls keep Escape.
+9. Smaller: `contentWidth` takes a fourth `context` argument (a select
+   needs the record for its options); singleSelect has one too (FW6
+   needs the chip's padding); chips count three and "+N" as the cells
+   do; the 8 px padding of the full-screen wrapper; `fitAllFields` is
+   only a message (the design lists it; there is no built-in "fit all"
+   item).
+
+### Real input in Chromium
+
+Production build of this checkout (the sheet's `pnpm build`, then
+`site`'s `pnpm build`), served with `vite preview`, Playwright's Chromium
+(headless, 1300 × 900), real `page.mouse` and `page.keyboard`, clipboard
+permissions granted, on the new demos d24 ("Full screen and column
+tools", with `localRecords`' field handlers) and d25 ("Comments in the
+expanded record") on `/docs/sheet/docs/sheet`. The final run is after
+the header fix. No page errors, no console errors.
+
+- **Fit from the menu:** Notes 120 px with 5 cut cells → "Fit to
+  content" (hover, the menu button, the item) → 397 px, no rendered
+  Notes cell cut; focus on Notes' menu button afterwards.
+- **Double-click on the resize edge (FW1 held):** the resizer's box is
+  0 px wide (the core's style has no width; its hit area is the 3 px
+  `::after` strip on the column's edge), so the double-click is on the
+  edge itself (`elementFromPoint` there is the resizer). Site (a select)
+  110 → 292 px; no chip cut and none overlapping its opener; the longest
+  label "Querétaro (north plant, building 3)" shown whole. A first try
+  at the resizer's box centre (8 px right of the edge) hit the next
+  header and fitted nothing: that is the core's hit area, not the
+  feature.
+- **`@fieldActions`:** Quantity's menu: Hide column, Move left, Move
+  right, Fit to content, Edit field, Duplicate field, Insert left, Insert
+  right, Summarize, Delete field. "Summarize" wrote "Quantity on hand:
+  9860" in the footer; focus back on the menu button; disabled on Notes.
+- **Full screen** from the toolbar button: the wrapper 0, 0, 1300 × 900,
+  the body's overflow hidden, the button "Exit full screen" and on top,
+  the site header at z-index 997 (1001 again after exit), the grid's
+  body 820 px. Each opened on top (`elementFromPoint` at its centre) and
+  worked: the row menu (Copy with field names, below), the select panel
+  (Monterrey → Guadalajara with ArrowDown, Enter), the header menu and
+  the field editor (Item renamed to "Part" and saved), the expanded
+  record (Space; the next arrow went from Part 006 to Part 007; Escape
+  closed it and full screen stayed), the shortcut list (Ctrl+/; Escape
+  closed it, full screen stayed). The record's flyout starts 49 px down
+  on the site (its own fixed-header offset, inline, wins over the body
+  class's `top: 0`); in the test (FS8) it starts at 0; not changed.
+- **Escape order:** an editor (typed "x") closed, still full; Ctrl+C,
+  the copy mark, Escape cleared it, still full; Shift+ArrowDown twice
+  (3 cells), Escape collapsed it to one, still full; Escape ended full
+  screen, focus still on Notes row 1. The page: the body's overflow
+  back to "", `scrollY` 18950 before and after, the sheet's box the
+  same as before (289, 258, 971 × 384), the body class removed.
+- **Record footer (d25):** Space on a cell, a click in the comment box,
+  "Looks good, ship it" typed (no field editor opened), Enter posted it
+  (the list: Luis's comment, then "You: Looks good, ship it"); "draft"
+  then Escape in the box: the record stayed open; the next arrow showed
+  the next record's title and its two comments; Escape on a record box
+  closed it.
+- **Copy with field names** (read back with `navigator.clipboard`): on
+  row 3, `Item⇥Site⇥Notes⇥Quantity on hand⇥Unit cost⇥Audited` then the
+  row; with rows 2 and 5 checked, the names then those two rows, in
+  order; focus back on the cell.
+- Screenshots (not in the repo):
+  `/tmp/claude-0/-home-user-ember-eui/87cd9e5a-212c-54c3-9d47-30ac398aebd2/scratchpad/v04a/`
+  `fit-menu.png`, `fit-after-menu.png`, `fit-after-dblclick.png`,
+  `field-action-menu.png`, `full-screen.png`, `fs-row-menu.png`,
+  `fs-select.png`, `fs-field-editor.png`, `fs-record.png`,
+  `fs-shortcuts.png`, `after-exit.png`, `record-footer.png`; the
+  script's output in `results.json`. The agent looked at `full-screen.png`
+  (before and after the header fix), `fs-select.png`, `fs-record.png` and
+  `record-footer.png`, not a person.
+
+### Open items
+
+- **Deviation 2 is the user's decision** (on by default would edit
+  rows-test RW and VP1).
+- **Fitting measures loaded records only** (the first 2,000), at the
+  moment of the fit; a font that loads later is not re-measured.
+- **The resize edge's hit area is 3 px** (the core's style gives the
+  resizer no width): the double-click needs a precise pointer; the menu
+  item and the API do not.
+- **Full screen and Tab:** no focus trap (as designed): Tab can leave
+  the sheet for the page behind.
+- **A fixed header that is not `EuiHeader`** at z-index 998 or more
+  still covers the full-screen sheet (the docs say so).
+- **Not verified:** a touch device, Firefox, Safari, dark mode, a screen
+  reader; `@fieldActions` with a real app dialog (only a focus move was
+  tested); fitting with `@frozenFields` (the frozen layout follows a new
+  width, as a drag-resize, but no test fits a frozen field); the suite
+  ran once per commit (no repeat runs).
+
+### Files
+
+- New: `packages/sheet/src/-private/fit-width.ts`,
+  `packages/sheet/src/-private/sheet/full-screen.ts`,
+  `packages/sheet/src/core/field-types/content-width.ts`, the five
+  integration test files and `tests/unit/fit-width-test.ts`,
+  `packages/sheet/docs/sheet-demo/d24-full-screen.md`,
+  `packages/sheet/docs/sheet-demo/d25-record-footer.md`.
+- Changed: `src/components/eui-sheet.gts`; `src/-private/sheet/`
+  `grid-columns.ts`, `header-menu.ts`, `api.ts`, `keys.ts`,
+  `clipboard.ts`, `row-menu.ts`; `src/-private/record-shells.gts`,
+  `row-menu.gts`, `styles.ts`; `src/core/types.ts`, `messages.ts`,
+  `tsv.ts` and seven built-in types in `src/core/field-types/`;
+  `src/types.ts`, `src/index.ts`; `docs/sheet.md` (Arguments, the
+  owner's table, the blocks, "Fit to content", a new "Full screen"
+  section, the API table, Records, Fields, Expanded record);
+  `README.md` (Arguments, blocks, full screen and fit, the API table,
+  Records, Fields, Expanded record, messages, Limits without
+  "fullscreen"; prettier-clean). `docs/sheet.md` and the demos are in
+  the docs' existing style (not prettier-formatted, as before).
+
+### Commits
+
+| Commit | Holds | Suite |
+| --- | --- | --- |
+| `fa2dc2b` | 01 fit to content | 602 / 602 |
+| `55f8f4c` | 02 full screen | 609 / 609 |
+| `5ebb56d` | 03 `@fieldActions` (and FS1 waits for the grid's measure) | 614 / 614 |
+| `0083c8f` | 04 `<:recordFooter>` | 620 / 620 |
+| `f59491c` | 05 copy with field names | 624 / 624 |
+| `10a0121` | full screen puts a fixed EUI header below it (FS8) | 625 / 625 |
+| the docs commit | docs, d24, d25, these results | (no code; 625 carried over) |
+
+`3979f3d` (the readiness plan, `internal/spikes/sheet/READINESS.md`) sits
+between `55f8f4c` and `5ebb56d`: the main session's, not this batch's.

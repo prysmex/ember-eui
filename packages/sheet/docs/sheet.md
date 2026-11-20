@@ -188,7 +188,7 @@ your own store, remove those records.
 | `@onFieldOrderChange` | `(fieldIds) => void`: the visible ids in their new order after "Move left/right" or a header drag. With it, update `@fields`; without it the sheet keeps its own order. |
 | `@fieldDrag` | Drag a header to reorder the fields (also Space, the arrows and Space on a focused header). Default `true`; `false` turns it off. |
 | `@headerLines` | `1` (default), `2` or `3`: the lines a header label may wrap to. The header row grows to fit; a cut label keeps its full text as the header's tooltip. |
-| `@fieldWidths`, `@onFieldWidthChange` | Widths in px by field id (over `field.width`); `(fieldId, width) => void` after a resize. Without the handler the sheet keeps a resized width itself, also when the columns are hidden, shown or moved; keep them in `@fieldWidths` to keep them across renders of the sheet. |
+| `@fieldWidths`, `@onFieldWidthChange` | Widths in px by field id (over `field.width`); `(fieldId, width) => void` after a resize or a fit to content ("Fit to content", a double-click on the resize edge, `api.fitField`). Without the handler the sheet keeps a resized or fitted width itself, over `@fieldWidths` and `field.width`, also when the columns are hidden, shown or moved; keep them in `@fieldWidths` to keep them across renders of the sheet. |
 | `@rowHeight`, `@onRowHeightChange` | `'short'` (default, one line), `'medium'` (2 lines), `'tall'` (4), `'extraTall'` (6); changed by a block's `setRowHeight`. With the handler, update `@rowHeight`. |
 | `@sort`, `@onSortChange` | Your sort, `[{ field, direction: 'asc' or 'desc' }]`, drawn as header arrows; the menu's "Sort" items call the handler with the whole new sort. Without the handler there are no sort items and no arrows. The sheet never sorts. |
 | `@onFilterByField` | `(fieldId) => void`: adds "Filter by this field" to the column menu. |
@@ -205,6 +205,7 @@ your own store, remove those records.
 | `@currentMatch` | `{ recordId, fieldId }` or `null`: your current search match. When it changes the sheet scrolls it into view and rings it, without moving focus or the selection (Search matches, below). |
 | `@onSelectionChange` | `(selection or null) => void`: the selected cells' records and fields, after render, when they change (Summary bar, below). |
 | `@onVisibleRangeChange` | `({ first, last, count }) => void`: the records on screen, as positions in `@records`, after render, when they change (Loading more as you scroll, below). |
+| `@fullScreen`, `@onFullScreenChange` | The sheet fills the window (Full screen, below): `(on) => void` from the block's `setFullScreen`, `api.setFullScreen` and Escape. With the handler the sheet shows exactly `@fullScreen`; without it, `@fullScreen` is the start and the sheet keeps its own state. |
 | `@isLoading` | A thin progress bar over the grid; the grid stays usable. |
 | `@summary` | `{ [fieldId]: text }` (and `''` for the row-number column): shows the summary bar (below). |
 | `@frozenFields` | Leading fields kept in view on horizontal scroll, with the row numbers. Default `0` (off); `1` freezes the first field. |
@@ -220,6 +221,8 @@ your own store, remove those records.
 | `@expandedRecordId`, `@onExpandedRecordChange` | The expanded record, controlled the same way. |
 | `@expandedRecord` | `'flyout'` (default) or `'modal'`. |
 | `@rowActions` | Your items of the row menu: `{ id, label, icon?, color?: 'danger', isDisabled?(records), onSelect(records) }`. |
+| `@fieldActions` | Your items of every visible field's header menu, after the sheet's own and before "Delete field": `{ id, label, icon?, color?: 'danger', isDisabled?(field), onSelect(field) }` (Fields, below). Keep the array stable. |
+| `@copyWithFieldNames` | Adds "Copy with field names" to the row menu, next to Copy (Records, below). Default `false`. |
 | `@onResolve` | `(requests, { signal }) => Promise<result>`: resolves typed or pasted text of linked-record, user and your own types through your API (bulk resolve, below). Without it such text is rejected. |
 | `@editIn` | Where a click on the selected cell, or Enter, edits: `'cell'` (the editor over the cell), `'record'` (the expanded record, with that field's editor open), or `'auto'` (default: the record on a touch screen when the sheet is narrower than 600 px, else the cell). Typing on a cell always edits in the cell. |
 
@@ -246,6 +249,8 @@ state and tells you what the user asked for:
 | Presses a button cell | `@onButtonPress({ recordId, fieldId, record }, { signal })` | run your action; a promise shows it pending, a rejection as the cell's error |
 | Hides, moves, resizes a column | `@onHiddenFieldsChange`, `@onFieldOrderChange`, `@onFieldWidthChange` | update `@fields`, `@hiddenFields`, `@fieldWidths` |
 | Picks a row height in your control | `@onRowHeightChange` (through the block's `setRowHeight`) | update `@rowHeight` |
+| Fits a column to its content | `@onFieldWidthChange` | update `@fieldWidths` |
+| Presses your full-screen button, or Escape | `@onFullScreenChange` (through the block's `setFullScreen`) | update `@fullScreen` |
 
 There is no built-in toolbar. Two blocks take your own controls, inside
 the sheet (so they get its theme) and outside the grid (so they are normal
@@ -264,9 +269,9 @@ tabbable elements):
 
 Each yields the same object: `api` (the sheet's API, below), `fields` (the
 visible ones), `hiddenFields`, `sort`, `rowHeight`, `checkedRecords`,
-`selection` (the selected cells, or `null`; Summary bar, below), `groupBy` and `groups` (`@groupBy` and `@groups`, or `[]`), and
+`selection` (the selected cells, or `null`; Summary bar, below), `groupBy` and `groups` (`@groupBy` and `@groups`, or `[]`), `isFullScreen`, and
 `hideField(id)`, `showField(id)`, `setRowHeight(rowHeight)`,
-`setSort(sort)`, `setGroupBy(groupBy)` and `toggleGroup(key)`, which call
+`setSort(sort)`, `setGroupBy(groupBy)`, `toggleGroup(key)` and `setFullScreen(on)`, which call
 your handlers (or change the sheet's own state without them; `setSort`,
 `setGroupBy` and `toggleGroup` do nothing without `@onSortChange`,
 `@onGroupByChange` and `@onGroupToggle`).
@@ -457,6 +462,59 @@ wrappers; the column resizer inside the header cell).
 `@headerLines={{2}}` (or `3`) lets long header labels wrap instead of
 being cut, independently of `@rowHeight`: the header row grows and the
 rows start below it.
+
+**Fit to content.** "Fit to content" in a column's header menu, a
+double-click on its resize edge, or `api.fitField(fieldId)` give the
+column the width of its header label (with the sort arrow and the menu
+button) and of its widest cell, between 80 and 480 px; `api.fitFields()`
+fits every visible field. The width goes out as a resize's does
+(`@onFieldWidthChange`, or the sheet keeps it). A cell is measured as its
+formatted text, in the cell's font, at the moment of the fit; a type
+whose cell is not text gives `contentWidth(value, field, measure, context)` (the
+built-in checkbox, rating, selects, users, linked records and
+attachments do). Only the loaded records are measured, the first 2,000
+of them: a value on another page does not count. The menu item joins a
+header menu that is there anyway: a first field without sort, filter or
+field handlers still has no menu (fit it with the double-click or the
+API).
+
+## Full screen
+
+The sheet draws no button: put one in `<:toolbar>` and call the block's
+`setFullScreen`. The sheet's wrapper (toolbar, grid and footer) then
+fills the window, the grid takes the room between the toolbar and the
+footer (`@height` is ignored meanwhile) and the page behind does not
+scroll. It does what the grid's own full screen does: it sits just
+below EUI's header level, so flyouts, modals and toasts stay above it,
+a fixed `EuiHeader` goes below it meanwhile and flyouts start at the
+window's top; the sheet's menus, editors, the expanded record and the
+shortcut list open above it as usual. A fixed header of your own (not
+`EuiHeader`) with a z-index of 998 or more covers it. The
+focused cell, the selection and the scroll stay.
+
+```gjs
+<EuiSheet @fields={{this.fields}} @records={{this.records}} …>
+  <:toolbar as |sheet|>
+    <EuiButtonEmpty
+      @size="s"
+      @iconType={{if sheet.isFullScreen "fullScreenExit" "fullScreen"}}
+      {{on "click" (fn sheet.setFullScreen (if sheet.isFullScreen false true))}}
+    >
+      {{if sheet.isFullScreen "Exit full screen" "Full screen"}}
+    </EuiButtonEmpty>
+  </:toolbar>
+</EuiSheet>
+```
+
+`messages.enterFullScreen` and `messages.exitFullScreen` are those two
+labels, translated with the other messages. Escape on a cell ends full
+screen when nothing else uses it: an open editor, a menu, the field
+editor or the shortcut list closes first, then a lifted column drops
+back, the copy mark clears and a range collapses to its cell. Tab works
+as without full screen and can leave the sheet for the page behind; put
+your own focus trap around the sheet if you need one.
+`@fullScreen` and `@onFullScreenChange` control it like the other
+presentation state; `api.setFullScreen(on)` sets it from outside.
 
 ## Summary bar
 
@@ -764,6 +822,8 @@ store:
 | `addField({ index? })` | Opens the field editor to add a field at `index` among the visible fields (default: the end; never before the first field). With `@onFieldCreate`. The blocks have `addField()` too. |
 | `moveRecords(ids, { recordId, position })` | Emits the move of those records before or after a record of `@records`, as a drag there would. With `@canMove`. |
 | `editField(fieldId)` | Opens the field editor on a field, also a hidden one (it opens under the "+" header then). With `@onFieldUpdate`. |
+| `fitField(fieldId)`, `fitFields()` | Fits a visible field's width to its content, or every visible field's (Fit to content, above): `@onFieldWidthChange` once per field, or the sheet keeps the widths. |
+| `setFullScreen(on)` | Full screen on or off (Full screen, above): `@onFullScreenChange`, or the sheet's own state. |
 
 When you replace `@records` with records the sheet did not change
 (another sort, another page, a reload), the selection follows its record:
@@ -842,8 +902,11 @@ show ids. Hovering a row shows its checkbox and an expand icon.
 - **The row menu**: right-click a cell or a row number, or press
   Shift+F10 or the ContextMenu key. It has Insert record above and below,
   Duplicate, Expand record (for one record), Copy (the rows as
-  tab-separated text), your `@rowActions` and Delete. Escape or a click
-  outside closes it. There is no delete key for rows: Delete and
+  tab-separated text), with `@copyWithFieldNames` "Copy with field names"
+  (the same rows after a line of the visible fields' labels, or ids, for
+  a report or an email), your `@rowActions` and Delete. Escape or a click
+  outside closes it. A paste of that text back into the sheet pastes the
+  names as a row, like any text. There is no delete key for rows: Delete and
   Backspace clear cells.
 
 - **Moving** (with `@canMove`): each row number has a grip (shown on
@@ -902,6 +965,21 @@ no local fallback: fields are your data model). A bare app passes
   stays first). Duplicate calls `@onFieldCreate` at once, with the
   field's draft, the label "Name copy", the next index and `copyOf`: you
   decide whether values are copied. Delete asks first.
+- **Your items** (`@fieldActions`) come after the sheet's items and
+  before Delete field, on every visible field; disable one on the
+  fields it does not apply to with `isDisabled(field)`. `onSelect(field)`
+  runs once the menu has closed and focus is back on the header's menu
+  button, so your own dialog can take focus:
+
+  ```js
+  fieldActions = [
+    { id: 'history', label: 'Show history', icon: 'clock', onSelect: (field) => this.openHistory(field.id) },
+    { id: 'sum', label: 'Summarize', isDisabled: (field) => field.type !== 'number', onSelect: (field) => this.summarize(field) },
+  ];
+  ```
+
+  The columns are built from the array: keep it stable (not created in a
+  template), as `@fieldTypes`.
 - **The field editor** opens under the header it belongs to: the name
   (required; Enter saves), the type (`@creatableFieldTypes`, each labelled
   by `type.label`), the type's options (a select's options and colours, a
@@ -963,6 +1041,25 @@ field's text; the arrows go to the previous and next record.
 - While an editor is open, the flyout's or modal's focus trap is off, so
   an editor that renders part of itself elsewhere on the page (a
   calendar) works there too.
+
+`<:recordFooter as |record sheet|>` adds your own block below the fields
+(and the hidden fields), after a line, in the flyout and in the modal:
+`record` is the expanded record, `sheet` the block API the toolbar gets.
+The arrows re-render it with the next record. It is inside the shell's
+focus trap, so its inputs and buttons work with the keyboard; the
+record's keys stay on its boxes, so typing in the block types there, and
+Escape in a text box of the block does not close the record.
+
+```gjs
+<EuiSheet @fields={{this.fields}} @records={{this.records}} …>
+  <:recordFooter as |record|>
+    <MyComments @recordId={{record.id}} />
+  </:recordFooter>
+</EuiSheet>
+```
+
+The sheet stores no comments or history: they are your data, shown by
+your component.
 
 ## Field types
 

@@ -186,6 +186,15 @@ export default class SheetKeys<T extends object> {
       this.sheet.selection.rangeKind = 'cells';
       return;
     }
+    // then it ends full screen (v0.4 02): nothing else on the cell used it
+    if (
+      event.key === 'Escape' &&
+      !event.shiftKey &&
+      this.sheet.fullScreen.endOnEscape()
+    ) {
+      stop(event);
+      return;
+    }
     if (this.sheet.rows.isAddRow(pos.row)) {
       this.onAddRowKeyDown(event, pos.row);
       return;

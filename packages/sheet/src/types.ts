@@ -267,6 +267,8 @@ export interface SheetApi {
   fitField(fieldId: string): void;
   /** Fits every visible field (`@onFieldWidthChange` once per field). */
   fitFields(): void;
+  /** Full screen on or off (v0.4 02): `@onFullScreenChange`, else the sheet's own state. */
+  setFullScreen(on: boolean): void;
 }
 
 /** An app item of the row menu (`@rowActions`). */
@@ -368,6 +370,10 @@ export interface SheetBlockApi<T = any> {
   setGroupBy(groupBy: SheetGroupBy[]): void;
   /** Calls `@onGroupToggle(key, !collapsed)` for that group of `@groups`; nothing without the handler. */
   toggleGroup(key: string): void;
+  /** Whether the sheet fills the window (v0.4 02): for a toolbar button's icon and label. */
+  isFullScreen: boolean;
+  /** Calls `@onFullScreenChange`, or changes the sheet's own state without it. */
+  setFullScreen(on: boolean): void;
 }
 
 /** The cell's box relative to the sheet's wrapper, in CSS px. */
@@ -408,7 +414,7 @@ export interface EuiSheetSignature<T> {
     validate?: (
       context: ValidateContext<T>
     ) => CellErrors | Promise<CellErrors>;
-    /** Receives the sheet's API (`undo`, `redo`, `focusCell`, `scrollToCell`, `getSelection`, `remapIds`, `clearHistory`, `expandRecord`, `insertRecord`, `deleteRecords`, `showShortcuts`, `editField`, `addField`, `moveRecords`, `fitField`, `fitFields`) once, after the first render. */
+    /** Receives the sheet's API (`undo`, `redo`, `focusCell`, `scrollToCell`, `getSelection`, `remapIds`, `clearHistory`, `expandRecord`, `insertRecord`, `deleteRecords`, `showShortcuts`, `editField`, `addField`, `moveRecords`, `fitField`, `fitFields`, `setFullScreen`) once, after the first render. */
     registerApi?: (api: SheetApi) => void;
     /**
      * Fields that exist but are not shown in the grid: listed in the
@@ -502,6 +508,17 @@ export interface EuiSheetSignature<T> {
      * `@isLoading` while it loads.
      */
     onVisibleRangeChange?: (range: SheetVisibleRange) => void;
+    /**
+     * The sheet fills the window (v0.4 02): its toolbar, grid and footer,
+     * above the page (flyouts, modals and toasts stay above it). `@height`
+     * is ignored meanwhile. The page behind does not scroll. Escape on a
+     * cell, when nothing else uses it, ends it. With
+     * `@onFullScreenChange` the sheet shows exactly this; without it, this
+     * is the start and the block's `setFullScreen` changes it.
+     */
+    fullScreen?: boolean;
+    /** Called with the new state (a block's `setFullScreen`, `api.setFullScreen`, Escape). */
+    onFullScreenChange?: (on: boolean) => void;
     /** Shows a thin progress bar over the grid; the grid stays usable. */
     isLoading?: boolean;
     /** Text per field id for the summary bar (`''`: the row-number column). Passing it, even `{}`, shows the bar. */

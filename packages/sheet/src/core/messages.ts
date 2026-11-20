@@ -67,6 +67,10 @@ export interface SheetMessages {
   fitToContent: () => string;
   /** 'Fit all fields': for an app's button that calls `api.fitFields()` (v0.4 01). */
   fitAllFields: () => string;
+  /** 'Full screen': for an app's toolbar button (v0.4 02). */
+  enterFullScreen: () => string;
+  /** 'Exit full screen': the same button while full screen (v0.4 02). */
+  exitFullScreen: () => string;
   /** 'Re-apply': the EmberSearchUi connector's button that runs the search again after edits. */
   reapply: () => string;
   /** 'Text is not a file': text pasted on an attachment cell. */
@@ -541,6 +545,16 @@ export const sheetMessageTokens: Readonly<
   fitAllFields: {
     token: 'euiSheet.fitAllFields',
     defaultMessage: 'Fit all fields',
+    params: []
+  },
+  enterFullScreen: {
+    token: 'euiSheet.enterFullScreen',
+    defaultMessage: 'Full screen',
+    params: []
+  },
+  exitFullScreen: {
+    token: 'euiSheet.exitFullScreen',
+    defaultMessage: 'Exit full screen',
     params: []
   },
   reapply: {

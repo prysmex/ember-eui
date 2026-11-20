@@ -6,6 +6,10 @@
  */
 const CSS = `
 .euiSheet { position: relative; }
+/* full screen (v0.4 02): the wrapper fills the window at the grid's own full-screen level (Borealis levels.header - 2), so flyouts, modals and toasts stay above it and the floating layers (its z-index + 2000) too; a column whose grid box takes the room between the toolbar and the footer */
+.euiSheet.euiSheet--fullScreen { position: fixed; inset: 0; z-index: 998; box-sizing: border-box; display: flex; flex-direction: column; padding: 8px; background: var(--euiSheet-plain, #FFF); }
+.euiSheet--fullScreen > .euiSheet__toolbar, .euiSheet--fullScreen > .euiSheet__footer { flex: none; }
+.euiSheet--fullScreen > .euiSheet__grid { flex: 1 1 auto; min-height: 0; }
 .euiSheet--dragging, .euiSheet--dragging * { user-select: none; -webkit-user-select: none; }
 .euiSheet .euiDataGridRow:hover .euiDataGridRowCell { background-color: var(--euiSheet-hover, rgba(105, 112, 125, 0.06)); }
 /* the selection wins over the row hover, so a range shows while it is dragged in one row */

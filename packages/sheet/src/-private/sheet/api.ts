@@ -31,7 +31,8 @@ export default class SheetApiModule<T extends object> {
     addField: (options = {}) => this.sheet.fieldEditor.addField(options.index),
     moveRecords: (ids, target) => this.sheet.rowDrag.moveFromApi(ids, target),
     fitField: (fieldId) => this.sheet.gridColumns.fitField(fieldId),
-    fitFields: () => this.sheet.gridColumns.fitFields()
+    fitFields: () => this.sheet.gridColumns.fitFields(),
+    setFullScreen: (on) => this.sheet.fullScreen.set(on)
   };
 
   /* Blocks (3.6) */
@@ -39,12 +40,18 @@ export default class SheetApiModule<T extends object> {
   @cached
   get blockApi(): SheetBlockApi<T> {
     const selection = this.sheet.selection;
+    const fullScreen = this.sheet.fullScreen;
     return {
       // a getter: the block API object does not change with the selection,
       // only what reads `selection` does (V03 11.2)
       get selection() {
         return selection.current;
       },
+      // a getter too (v0.4 02), for the same reason
+      get isFullScreen() {
+        return fullScreen.isOn;
+      },
+      setFullScreen: fullScreen.set,
       api: this.sheetApi,
       fields: this.sheet.fields.visibleFields,
       hiddenFields: this.sheet.fields.hiddenFields,

@@ -82,6 +82,7 @@ import SheetRowDrag from '../-private/sheet/row-drag.ts';
 import SheetRowColors from '../-private/sheet/row-colors.ts';
 import SheetButtons from '../-private/sheet/buttons.ts';
 import SheetSelectionHandles from '../-private/sheet/selection-handles.ts';
+import SheetFullScreen from '../-private/sheet/full-screen.ts';
 
 import type { SheetContext, SheetMessages } from '../core/index.ts';
 import type { EuiSheetFieldType, EuiSheetSignature } from '../types.ts';
@@ -140,6 +141,7 @@ export default class EuiSheet<T extends object> extends Component<
   readonly rowColors = new SheetRowColors<T>(this);
   readonly buttons = new SheetButtons<T>(this);
   readonly selectionHandles = new SheetSelectionHandles<T>(this);
+  readonly fullScreen = new SheetFullScreen<T>(this);
 
   /** The grid's API (not the sheet's: that is `sheetApi`). */
   gridApi: EuiDataGridRefProps | null = null;
@@ -293,7 +295,8 @@ export default class EuiSheet<T extends object> extends Component<
         {{if this.gridOptions.pinsAddRow 'euiSheet--pinAddRow'}}
         {{this.gridColumns.headerLinesClass}}
         {{if this.outline.rangeOutline 'euiSheet--ranged'}}
-        {{if this.fieldEditor.addingField 'euiSheet--addingField'}}"
+        {{if this.fieldEditor.addingField 'euiSheet--addingField'}}
+        {{if this.fullScreen.isOn 'euiSheet--fullScreen'}}"
       data-test-subj="euiSheet"
       data-eui-sheet-id={{this.sheetId}}
       ...attributes
@@ -303,6 +306,7 @@ export default class EuiSheet<T extends object> extends Component<
       {{this.registerSheetApi}}
       {{this.scroll.followMatch}}
       {{this.selection.reportChange}}
+      {{this.fullScreen.lockPage this.fullScreen.isOn}}
       {{on "keydown" this.keys.onKeyDown capture=true}}
       {{on "copy" this.clipboard.onCopy capture=true}}
       {{on "cut" this.clipboard.onCut capture=true}}
@@ -361,7 +365,7 @@ export default class EuiSheet<T extends object> extends Component<
           @cellContext={{this.cellContext}}
           @registerApi={{this.registerGridApi}}
           @toolbarVisibility={{false}}
-          @height={{@height}}
+          @height={{this.fullScreen.gridHeight}}
           @sorting={{this.gridColumns.sorting}}
           @rowHeightsOptions={{this.gridOptions.rowHeightsOptions}}
           @onColumnResize={{this.gridColumns.onColumnResize}}

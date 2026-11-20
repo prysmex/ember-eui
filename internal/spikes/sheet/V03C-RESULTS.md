@@ -730,3 +730,24 @@ Stages 3 to 7 could not be pushed from the session that made them
 (GitHub refused its writes with 403); they were handed over as git
 bundles, to push from the user's clone with the same commits. Stages 3
 and 4 were pushed that way during the run.
+
+## 3c: verified by the main session (2026-11-20)
+
+Stages 3-4 and 5-7 were done in a claude.ai cloud session, which could
+not push; the user handed them over as git bundles, fast-forwarded onto
+`feat/sheet` (`0a0e99dd`, then `431558fe`). Checked again in the sandbox
+on `431558fe`:
+
+- `check.sh` against `43d3279c`: verbatim, gates, `lint:types`, the
+  tests' 19 baseline errors, ESLint, Prettier, the API docs check: all
+  OK. The suite: 527 tests, 527 pass.
+- A production docs build, Playwright real input on the system Chromium
+  (the scripts used for batch 3b): two checked rows copy as TSV and paste
+  onto the next rows; the d19 groups demo collapses (22 → 17 grid rows)
+  and expands, a paste on a group's add row inserts into that group;
+  scrolled sideways at 420 px each header shows one label at the left
+  edge, clickable; a header under the column header stays below it. The
+  same results as before the split; no page errors.
+
+Batch 3c is complete: the component is 532 lines, the 33 modules and
+three shared files in `src/-private/sheet/` are 8,438 lines.

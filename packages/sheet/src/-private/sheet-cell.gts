@@ -68,6 +68,14 @@ export default class SheetCell extends Component<{
       classes.push(frozen.className);
       props['style'] = frozen.style;
     }
+    // the row's colour bar without row numbers: on the first field (V03 10.2)
+    if (view && this.col === 0 && !this.sheet.colOffset) {
+      const bar = this.sheet.rowColors.barProps(this.args.rowIndex);
+      if (bar) {
+        classes.push(bar.className);
+        props['style'] = { ...frozen?.style, ...bar.style };
+      }
+    }
     // a checked row's light tint (V03 batch 1); never the add row
     if (view && this.sheet.checked.isChecked(this.args.rowIndex)) {
       classes.push('euiSheet__cell--checked');

@@ -11,6 +11,7 @@ export type { LocalRecordsOptions } from './local-records.ts';
 export {
   attachmentType,
   builtInSheetFieldTypes,
+  colorByOption,
   checkboxType,
   currencyType,
   dateType,
@@ -42,6 +43,7 @@ export type {
   SheetFieldEditorType,
   SheetFieldOptionsSignature,
   SheetRowAction,
+  SheetRowColor,
   SheetRowHeight,
   SheetSort
 } from './types.ts';

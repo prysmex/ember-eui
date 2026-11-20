@@ -57,6 +57,13 @@ export const sheetThemeVars = ({
     '--euiSheet-highlight': colors.backgroundLightText,
     // batch 5: link text (url, email, phone, file names) and rating stars
     '--euiSheet-link': colors.textPrimary,
-    '--euiSheet-star': colors.textWarning
+    '--euiSheet-star': colors.textWarning,
+    // V03 10.2: row colour bars, by name
+    '--euiSheet-rowPrimary': colors.primary,
+    '--euiSheet-rowAccent': colors.accent,
+    '--euiSheet-rowSuccess': colors.success,
+    '--euiSheet-rowWarning': colors.warning,
+    '--euiSheet-rowDanger': colors.danger,
+    '--euiSheet-rowNeutral': colors.textSubdued
   };
 };

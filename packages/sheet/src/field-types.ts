@@ -11,6 +11,7 @@ import {
   dateFieldType,
   durationFieldType,
   emailFieldType,
+  fieldOptions,
   linkedRecordFieldType,
   longTextFieldType,
   multiSelectFieldType,
@@ -21,7 +22,8 @@ import {
   singleSelectFieldType,
   textFieldType,
   urlFieldType,
-  userFieldType
+  userFieldType,
+  valueOf
 } from './core/index.ts';
 import AttachmentCell from './-private/cells/attachment-cell.gts';
 import AvatarCell from './-private/cells/avatar-cell.gts';
@@ -55,6 +57,7 @@ import type {
   CurrencyField,
   DateField,
   DurationField,
+  EuiSheetField,
   LinkedRecordField,
   LinkField,
   LongTextField,
@@ -70,7 +73,7 @@ import type {
   TextField,
   UserField
 } from './core/index.ts';
-import type { EuiSheetFieldType } from './types.ts';
+import type { EuiSheetFieldType, SheetRowColor } from './types.ts';
 
 export const textType: EuiSheetFieldType<string, TextField> = {
   ...textFieldType,
@@ -268,3 +271,26 @@ export const builtInSheetFieldTypes: Record<
 };
 
 export { InputEditor as SheetInputEditor };
+
+/**
+ * `@rowColor` by a select field's option (V03 10.2): the `color` of the
+ * record's option of `field` (a `singleSelect`; for a `multiSelect` its
+ * first value's), the same colour its badge has. EuiBadge's `'default'`
+ * and `'hollow'` are `'neutral'`. `undefined` for no value, or an option
+ * without a colour.
+ */
+export function colorByOption<T>(
+  field: EuiSheetField<T>
+): (record: T) => SheetRowColor | undefined {
+  return (record) => {
+    const raw = valueOf(record, field.id);
+    const value = Array.isArray(raw) ? (raw[0] as unknown) : raw;
+    if (value === null || value === undefined || value === '') return undefined;
+    const option = fieldOptions(field, record).find(
+      (entry) => entry.value === value
+    );
+    const color = option?.color;
+    if (!color) return undefined;
+    return color === 'default' || color === 'hollow' ? 'neutral' : color;
+  };
+}

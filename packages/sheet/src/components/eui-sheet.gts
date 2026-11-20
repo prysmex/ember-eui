@@ -78,6 +78,7 @@ import SheetKeys from '../-private/sheet/keys.ts';
 import SheetClipboard from '../-private/sheet/clipboard.ts';
 import SheetApiModule from '../-private/sheet/api.ts';
 import SheetRowDrag from '../-private/sheet/row-drag.ts';
+import SheetRowColors from '../-private/sheet/row-colors.ts';
 
 import type { SheetContext, SheetMessages } from '../core/index.ts';
 import type { EuiSheetFieldType, EuiSheetSignature } from '../types.ts';
@@ -133,6 +134,7 @@ export default class EuiSheet<T extends object> extends Component<
   readonly clipboard = new SheetClipboard<T>(this);
   readonly api = new SheetApiModule<T>(this);
   readonly rowDrag = new SheetRowDrag<T>(this);
+  readonly rowColors = new SheetRowColors<T>(this);
 
   /** The grid's API (not the sheet's: that is `sheetApi`). */
   gridApi: EuiDataGridRefProps | null = null;

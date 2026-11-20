@@ -96,6 +96,12 @@ export class RowNumberCell extends Component<RowNumberCellSignature> {
       classes.push(frozen.className);
       props['style'] = frozen.style;
     }
+    // the row's colour bar (V03 10.2), sticky with the cell when frozen
+    const bar = this.sheet.rowColors.barProps(this.args.rowIndex);
+    if (bar) {
+      classes.push(bar.className);
+      props['style'] = { ...frozen?.style, ...bar.style };
+    }
     const messages = this.sheet.messages;
     if (this.isAddRow) {
       classes.push('euiSheet__rowCell--add');

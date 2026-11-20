@@ -242,6 +242,17 @@ li:has([data-test-subj^="euiSheetEditField-"]), li:has([data-test-subj^="euiShee
 .euiSheet__groupTitle[data-eui-sheet-group-toggle] { cursor: pointer; }
 .euiSheet__groupTitle[data-eui-sheet-group-toggle]:hover { text-decoration: underline; }
 .euiSheet__groupSummary { display: block; width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; text-align: end; color: var(--euiSheet-textSubdued, #69707D); }
+/* row colours (V03 10.2): a 4 px bar at the row's left edge, kept with the cell's own inset shadows */
+.euiSheet .euiDataGridRowCell.euiSheet__rowColor { box-shadow: inset 4px 0 0 var(--euiSheetRowColor); }
+.euiSheet .euiDataGridRowCell.euiSheet__rowColor.euiSheet__rowCell--selected, .euiSheet .euiDataGridRow:hover .euiDataGridRowCell.euiSheet__rowColor.euiSheet__rowCell--selected { box-shadow: inset 4px 0 0 var(--euiSheetRowColor), inset -3px 0 0 var(--euiSheet-primary, #0B64DD); }
+.euiSheet .euiDataGridRowCell.euiSheet__rowColor.euiSheet__cell--invalid { box-shadow: inset 4px 0 0 var(--euiSheetRowColor), inset 0 0 0 1px var(--euiSheet-danger, #BD271E); }
+.euiSheet--scrolledX .euiDataGridRowCell.euiSheet__rowColor.euiSheet__frozenEdge { box-shadow: inset 4px 0 0 var(--euiSheetRowColor), 4px 0 4px -2px var(--euiSheet-shadow, rgba(0, 0, 0, 0.2)); }
+.euiSheet__rowColor--primary { --euiSheetRowColor: var(--euiSheet-rowPrimary, #0B64DD); }
+.euiSheet__rowColor--accent { --euiSheetRowColor: var(--euiSheet-rowAccent, #BC1E70); }
+.euiSheet__rowColor--success { --euiSheetRowColor: var(--euiSheet-rowSuccess, #008A5E); }
+.euiSheet__rowColor--warning { --euiSheetRowColor: var(--euiSheet-rowWarning, #FACB3D); }
+.euiSheet__rowColor--danger { --euiSheetRowColor: var(--euiSheet-rowDanger, #BD271E); }
+.euiSheet__rowColor--neutral { --euiSheetRowColor: var(--euiSheet-rowNeutral, #69707D); }
 /* row drag (V03 10.1): the grip, the moved rows, the insertion line */
 .euiSheet__rowGrip { display: inline-flex; flex: none; margin-right: 2px; color: var(--euiSheet-textSubdued, #69707D); cursor: grab; visibility: hidden; }
 .euiSheet .euiDataGridRow:hover .euiSheet__rowGrip, .euiSheet__rowCell:focus .euiSheet__rowGrip, .euiSheet--rowDragging .euiSheet__rowCell--moving .euiSheet__rowGrip { visibility: visible; }

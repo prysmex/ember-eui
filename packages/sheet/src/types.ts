@@ -244,6 +244,20 @@ export interface SheetRowAction<T = any> {
   onSelect: (records: T[]) => void;
 }
 
+/**
+ * A row's colour (V03 10.2): a named colour of the theme
+ * (`--euiSheet-row<Name>`, so dark mode follows), or any CSS colour, used
+ * as given.
+ */
+export type SheetRowColor =
+  | 'primary'
+  | 'accent'
+  | 'success'
+  | 'warning'
+  | 'danger'
+  | 'neutral'
+  | (string & {});
+
 /** One sort key. The same shape as EmberSearchUi's `SortItem`. */
 export interface SheetSort {
   field: string;
@@ -422,6 +436,13 @@ export interface EuiSheetSignature<T> {
      * non-empty `@sort`. Default false.
      */
     canMove?: boolean;
+    /**
+     * A colour per record, drawn as a 4 px bar at the row's left edge (on
+     * the row-number cell, or the first field's without row numbers).
+     * `undefined`: none. Called for each rendered row: keep it cheap.
+     * `colorByOption(field)` colours by a select field's option.
+     */
+    rowColor?: (record: T) => SheetRowColor | undefined;
     /** Values of a new record, from its neighbours. Default `{}`. */
     newRecordValues?: (context: {
       above: T | undefined;

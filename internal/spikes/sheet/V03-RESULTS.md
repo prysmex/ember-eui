@@ -2125,3 +2125,43 @@ behaviour lives in modules of `src/-private/sheet/` in the 3c pattern
   RD2, RD3, RD4 (three cases), RD5, RD6, RD10 (frames stubbed as in P8),
   RD12, and with groups RD7, RD8, RD9.
 - Suite: 543 tests, 543 pass (527 + 16).
+
+### 4b: row colours (10.2)
+
+#### What was built
+
+- `@rowColor: (record) => SheetRowColor | undefined` and the type
+  `SheetRowColor` (`src/types.ts`): `'primary' | 'accent' | 'success' |
+  'warning' | 'danger' | 'neutral'` or any CSS colour.
+- Module `row-colors.ts` (`rowColors`): `barProps(row)` gives the class
+  and custom property of a record row's bar. A named colour is a class,
+  `euiSheet__rowColor--<name>`, whose CSS sets `--euiSheetRowColor` from
+  `--euiSheet-row<Name>` (light fallback in `styles.ts`); any other colour
+  is set as given in the cell's style (`--euiSheetRowColor: <colour>`; a
+  value with `;`, `{`, `}`, `<` or `>` is dropped). The bar is an inset
+  4 px `box-shadow` (D10), combined in CSS with the shadows a cell
+  already has (a selected row number's right edge, an invalid cell's
+  ring, the frozen edge's shadow), so neither hides the other.
+- Drawn by `setCellProps` of the row-number cell, merged with the frozen
+  style (so it is sticky with it), or, without row numbers, of the first
+  field's cell. Group headers and add rows have none. The row-number
+  cell's `aria-label` is unchanged.
+- Theme: `--euiSheet-rowPrimary`, `-rowAccent`, `-rowSuccess`,
+  `-rowWarning`, `-rowDanger` from `colors.primary`, `accent`, `success`,
+  `warning`, `danger`, and `-rowNeutral` from `textSubdued` (4.6).
+- `colorByOption(field)` (`src/field-types.ts`, exported): the `color`
+  of the record's option (a multi-select: its first value's; options as
+  a function of the record work); EuiBadge's `'default'` and `'hollow'`
+  become `'neutral'`; `undefined` for no value or an option without a
+  colour.
+
+#### Tests
+
+`tests/integration/components/eui-sheet-row-color-test.gts` (new):
+RC1 (a named colour is the token's computed value; `undefined` none; a
+CSS colour as given; a selected row number keeps it; the first field's
+cell without row numbers; nothing without `@rowColor`), RC2 (dark: the
+token and the bar change), RC3 (`@frozenFields={{1}}`, scrolled 700 px:
+the frozen row-number cell is sticky, has the bar, and
+`elementFromPoint` 1 px inside its left edge hits it), RC4
+(`colorByOption`). Suite: 547 tests, 547 pass (543 + 4).

@@ -612,3 +612,121 @@ Results:
 Deviations from the design: none. The banners landed in their modules
 ("Touch", "The fill handle"; the batch 6 heading above `fillSource` in
 `filling.ts`).
+
+## 3c stage 7
+
+What moved, to `src/-private/sheet/`, as the module map assigns it:
+
+| File | Class, property | Members | Lines |
+| --- | --- | --- | --- |
+| `keys.ts` | `SheetKeys`, `keys` | 15 | 627 |
+| `clipboard.ts` | `SheetClipboard`, `clipboard` | 9 | 313 |
+| `api.ts` | `SheetApiModule`, `api` | 2 | 55 |
+
+Top-level declarations with one user moved above that module's class:
+`ARROWS` (read only by `RANGE_KEYS`'s initialiser), `RANGE_KEYS`,
+`ARROW_DIRECTIONS`, `ARROW_STEPS`, `startsComposition`,
+`isShortcutListKey`, `isMenuKey` (keys); `writeClipboard` (clipboard).
+
+The component goes from 1,463 to 532 lines. Its template changes 8
+paths only (`keys.onKeyDown`, `clipboard.onCopy`, `clipboard.onCut`,
+`clipboard.onPaste`, `api.blockApi` three times, `keys.shortcutsOpen`).
+`registerSheetApi` stays on the component (its `afterRender(this, ...)`
+owner is the component) and hands over `this.api.sheetApi`. One earlier
+module is re-pointed (`rowMenu`: `clipboard.copyRows`). Two `-private`
+files change their paths only: `layer.gts` (`keys.onKeyDown`) and
+`shortcut-list.gts` (`keys.shortcutContext`, `keys.closeShortcuts`).
+
+How: `3c-checks/move.mjs --stage 7 --tops ...` (the eight above), the
+imports by hand, the 23 imports ESLint listed as unused in the component
+removed, then Prettier. The missing-import script lists no name in any
+module. `move.mjs` printed no LOOK line: design 6.1 has no owner site in
+these three modules.
+
+The risks of design stage 7:
+
+- `sheetApi` is one object, built once in a field initialiser of the
+  `api` module (itself built once per component); its closures read the
+  sheet when called (the owner gate checks no initialiser reads `this`
+  at construction).
+- `blockApi` stays `@cached`, verbatim: its tracked reads are still
+  `visibleFields`, `hiddenFields`, `args.sort`, `rowHeight`,
+  `checkedRecords`, `args.groupBy`, `args.groups` (module fields are
+  plain, so `this.sheet.<module>` adds none).
+- `blockApi` hands out members of six modules as values (`hideField`,
+  `showField`, `setRowHeight`, `setSort`, `showShortcuts`, `setGroupBy`,
+  `toggleGroupByKey`). The unbound-method listing was run over all 33
+  modules: every member referenced without a call is an arrow field or
+  `@action`, except the two run-loop targets of stages 4 and 6
+  (`debounce(this, this.runValidate, ...)`, `later(this,
+  this.onLongPress, ...)`).
+
+Results:
+
+- Verbatim: 730 members, top-level declarations, templates and `-private`
+  declarations compared, all equal apart from the twenty owners of
+  stages 1 to 6. Every member is in the file the module map names, and
+  declared once.
+- Gates: OK (33 module classes). `tests/`, `src/core/`, `src/types.ts`,
+  `src/index.ts`, `src/search-ui/` and `packages/core/` are untouched.
+- `pnpm lint:types`: no error. The tests' `ember-tsc`: the baseline's 19
+  errors, the same lines.
+- ESLint and Prettier on the changed files: clean.
+- `node scripts/generate-api-docs.mjs --check`: passes.
+- The suite: 527 tests, 527 pass.
+
+The end checks:
+
+- The component holds only what design 3.1 lists: its class has exactly
+  the 22 members of `module-map.mjs`'s `component` list and the 33 module
+  fields; the file's only other top-level declaration is `isModal`. It
+  has 532 lines (design: about 560). The 33 modules and the three shared
+  files are 8,438 lines; the largest is `keys.ts` at 627 (design: about
+  560; `onKeyDown` alone is 193 and is not split).
+- `pnpm build` on this branch, and the declarations compared with a
+  `pnpm build` of `43d3279c` (a worktree, removed afterwards):
+  `declarations/index.d.ts`, `declarations/types.d.ts` and
+  `declarations/core/**` are the same. What differs, as the design
+  expects: `components/eui-sheet.d.ts` (the class's members are on the
+  modules, decision 1 of section 10; it no longer exports `WrapperBox`
+  and `FieldEditorState`, which moved to `sheet/types.ts` and
+  `sheet/field-editor.ts`), `-private/field-editor.d.ts` (its type import
+  of `FieldEditorState` follows the class), the new
+  `-private/sheet/**`, and the `.d.ts.map` files of the `-private`
+  components whose paths changed (line offsets only).
+- The `@action` probe of stage 0 ran on the test build only; this
+  `pnpm build` (the publish Babel config) compiles the 20 `@action`
+  handlers on plain classes without an error. Whether they bind in the
+  published build was not run in a browser.
+- The pass by hand through the docs demos (large data, groups, frozen
+  fields, the expanded record) was not done: it needs the docs app and a
+  person at the browser. It is the one end check still open.
+
+Deviations from the design: none in the code. The "Keys and clipboard"
+banner was above `onKeyDown`, so it is in `keys.ts`; the clipboard half
+of its section is in `clipboard.ts` without it.
+
+## 3c: summary
+
+| Stage | Commit | Moved to | Component lines | Suite |
+| --- | --- | --- | --- | --- |
+| 0 | (earlier) | `types.ts`, `util.ts`, `header-display.gts` | 7,895 → 7,699 | 527 / 527 |
+| 1 | `4f5f731` | fields, gridColumns, headerMenu, frozen, gridOptions, dom | → 6,649 | 527 / 527 |
+| 2 | `56f2e91` | rows, groupHeaders, checked, cells | → 5,960 | 527 / 527 |
+| 3 | `f5ab257` | selection, outline, scroll, ime, focus | → 4,977 | 527 / 527 |
+| 4 | `0a0e99d` | changes, validate, resolve, uploads, history, records | → 3,776 | 527 / 527 |
+| 5 | `7d52fd0` | edit, expanded, fieldEditor, rowMenu, follow | → 2,210 | 527 / 527 |
+| 6 | `ab8c633` | drag, touch, clicks, filling | → 1,463 | 527 / 527 |
+| 7 | this commit | keys, clipboard, api | → 532 | 527 / 527 |
+
+Owner sites (design 6.1): all 31 handled. 21 sites in 20 members
+(`runFieldHandler` has two) take `this.sheet` (`isDestroying`,
+`isDestroyed`, `afterRender`); the 4 `this.isDestroying` reads became
+`this.sheet.isDestroying` (paths); `later` and `debounce` keep the module
+as their target; `registerSheetApi`'s `afterRender(this, ...)`,
+`guidFor`, `getEuiThemeContext` and `cellContext` stay on the component.
+
+Stages 3 to 7 could not be pushed from the session that made them
+(GitHub refused its writes with 403); they were handed over as git
+bundles, to push from the user's clone with the same commits. Stages 3
+and 4 were pushed that way during the run.

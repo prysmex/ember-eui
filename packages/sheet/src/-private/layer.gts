@@ -83,7 +83,7 @@ export default class SheetLayer extends Component<SheetLayerSignature> {
         class="euiSheetLayer {{@sheet.themeClass}}"
         data-eui-sheet-layer={{@sheet.sheetId}}
         {{copyOverrides @sheet.wrapper}}
-        {{on "keydown" @sheet.onKeyDown capture=true}}
+        {{on "keydown" @sheet.keys.onKeyDown capture=true}}
         {{on "mousedown" @sheet.drag.onMouseDown capture=true}}
         {{on "pointerdown" @sheet.touch.onPointerDown capture=true}}
         {{on "pointermove" @sheet.touch.onPointerMove}}

@@ -30,7 +30,7 @@ export default class ShortcutList extends Component<ShortcutListSignature> {
   }
 
   get sections(): ShortcutListSection[] {
-    return shortcutList(this.sheet.shortcutContext, this.sheet.messages);
+    return shortcutList(this.sheet.keys.shortcutContext, this.sheet.messages);
   }
 
   get title(): string {
@@ -45,7 +45,7 @@ export default class ShortcutList extends Component<ShortcutListSignature> {
     return this.sheet.messages.shortcutOr();
   }
 
-  close = (): void => this.sheet.closeShortcuts();
+  close = (): void => this.sheet.keys.closeShortcuts();
 
   <template>
     <EuiModal

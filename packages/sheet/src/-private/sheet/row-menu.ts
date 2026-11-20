@@ -167,7 +167,7 @@ export default class SheetRowMenu<T extends object> {
       label: count > 1 ? messages.copyRows(count) : messages.copyRow(),
       icon: 'copyClipboard',
       disabled: !count,
-      onSelect: () => this.sheet.copyRows(records)
+      onSelect: () => this.sheet.clipboard.copyRows(records)
     });
     for (const action of this.sheet.args.rowActions ?? []) {
       items.push({

@@ -21,6 +21,7 @@ import {
   getEuiThemeContext,
   useEuiBorealisStyles
 } from '@ember-eui/core/theming';
+import { euiDataGridFullScreenStyles } from '@ember-eui/core/utils/eui/data-grid';
 
 import { createMessages } from '../core/index.ts';
 import { builtInSheetFieldTypes } from '../field-types.ts';
@@ -248,6 +249,18 @@ export default class EuiSheet<T extends object> extends Component<
     return euiClass(context, useEuiBorealisStyles(context, sheetThemeVars));
   }
 
+  /**
+   * The body's classes while full screen (v0.4 02): the grid's own
+   * full-screen ones, which put a fixed EUI header below the sheet and
+   * flyouts at the window's top, and stop the page scrolling.
+   */
+  @cached
+  get fullScreenBodyClass(): string {
+    const context = getEuiThemeContext(this);
+    const styles = useEuiBorealisStyles(context, euiDataGridFullScreenStyles);
+    return `euiDataGrid__restrictBody ${euiClass(context, styles.euiDataGrid__restrictBody)}`;
+  }
+
   /* -------------------------------------------------------------------- */
   /* Grid wiring                                                           */
   /* -------------------------------------------------------------------- */
@@ -306,7 +319,10 @@ export default class EuiSheet<T extends object> extends Component<
       {{this.registerSheetApi}}
       {{this.scroll.followMatch}}
       {{this.selection.reportChange}}
-      {{this.fullScreen.lockPage this.fullScreen.isOn}}
+      {{this.fullScreen.lockPage
+        this.fullScreen.isOn
+        (if this.fullScreen.isOn this.fullScreenBodyClass)
+      }}
       {{on "keydown" this.keys.onKeyDown capture=true}}
       {{on "copy" this.clipboard.onCopy capture=true}}
       {{on "cut" this.clipboard.onCut capture=true}}

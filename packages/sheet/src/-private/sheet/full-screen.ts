@@ -43,24 +43,31 @@ export default class SheetFullScreen<T extends object> {
   }
 
   /**
-   * On the wrapper, with `isOn`: the page behind does not scroll while the
-   * sheet is full screen (restored on exit and on destroy), and the parts
-   * placed over the grid (range outline, copy mark, fill handle) are
-   * placed again once the layout changed.
+   * On the wrapper, with `isOn` and the body's classes: the page behind
+   * does not scroll while the sheet is full screen, and the grid's own
+   * full-screen body classes put a fixed EUI header below the sheet and
+   * flyouts at the window's top (both restored on exit and on destroy);
+   * the parts placed over the grid (range outline, copy mark, fill
+   * handle) are placed again once the layout changed.
    */
-  lockPage = modifier((_element: HTMLElement, [on]: [boolean]) => {
-    const relayout = () =>
-      afterRender(this.sheet, () => this.sheet.scroll.layoutTick++);
-    if (!on) return;
-    const body = document.body;
-    const overflow = body.style.overflow;
-    body.style.overflow = 'hidden';
-    relayout();
-    return () => {
-      body.style.overflow = overflow;
-      if (!this.sheet.isDestroying && !this.sheet.isDestroyed) relayout();
-    };
-  });
+  lockPage = modifier(
+    (_element: HTMLElement, [on, bodyClass]: [boolean, string | undefined]) => {
+      const relayout = () =>
+        afterRender(this.sheet, () => this.sheet.scroll.layoutTick++);
+      if (!on) return;
+      const body = document.body;
+      const overflow = body.style.overflow;
+      const classes = (bodyClass ?? '').split(' ').filter(Boolean);
+      body.style.overflow = 'hidden';
+      body.classList.add(...classes);
+      relayout();
+      return () => {
+        body.style.overflow = overflow;
+        body.classList.remove(...classes);
+        if (!this.sheet.isDestroying && !this.sheet.isDestroyed) relayout();
+      };
+    }
+  );
 
   /**
    * The last step of Escape on a cell (after an open editor or menu, a

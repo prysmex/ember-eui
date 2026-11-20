@@ -13,6 +13,8 @@ import { fn } from '@ember/helper';
 import { on } from '@ember/modifier';
 import { click, render, settled, waitUntil } from '@ember/test-helpers';
 
+import EuiHeader from '@ember-eui/core/components/eui-header';
+
 import EuiSheet from '#src/components/eui-sheet.gts';
 import { localRecords } from '#src/local-records.ts';
 import {
@@ -404,5 +406,70 @@ module('Integration | Component | EuiSheet full screen', function (hooks) {
       .dom('[data-test-subj=euiSheetShortcuts]', document.body)
       .doesNotExist();
     assert.true(isFull(), 'closing it keeps full screen');
+  });
+
+  test('FS8 a fixed EUI header goes below the full-screen sheet, as with the grid`s own full screen; flyouts start at the top', async function (assert) {
+    const state = new State();
+    const store = localRecords(rows(), { getRecordId: getId });
+    await render(
+      <template>
+        <EuiHeader @position="fixed" data-test-header>App header</EuiHeader>
+        <EuiSheet
+          @fields={{FIELDS}}
+          @records={{store.records}}
+          @getRecordId={{getId}}
+          @onChange={{store.apply}}
+          @height={{200}}
+          @registerApi={{state.registerApi}}
+        >
+          <:toolbar as |sheet|>
+            <button
+              type="button"
+              data-test-toggle
+              {{on
+                "click"
+                (fn sheet.setFullScreen (if sheet.isFullScreen false true))
+              }}
+            >Full screen</button>
+          </:toolbar>
+        </EuiSheet>
+      </template>
+    );
+    const header = el('[data-test-header]');
+    assert.strictEqual(header.getAttribute('data-fixed-header'), 'true');
+    await click('[data-test-toggle]');
+    await frame();
+    assert.true(isFull());
+    assert.true(
+      document.body.classList.contains('euiDataGrid__restrictBody'),
+      'the grid`s full-screen body class'
+    );
+    const toggle = el('[data-test-toggle]');
+    assert.true(onTop(toggle), 'the toolbar is not under the header');
+    assert.true(
+      Number(getComputedStyle(header).zIndex) <
+        Number(getComputedStyle(wrapper()).zIndex),
+      'the header is below'
+    );
+    await focusCell(0, 0);
+    await press(' ');
+    await waitUntil(() =>
+      document.querySelector('[data-test-subj=euiSheetRecord]')
+    );
+    const record = el('[data-test-subj=euiSheetRecord]');
+    assert.strictEqual(
+      Math.round(record.getBoundingClientRect().top),
+      0,
+      'the flyout at the top of the window'
+    );
+    await press('Escape');
+    await frame();
+    state.api!.setFullScreen(false);
+    await frame();
+    assert.false(
+      document.body.classList.contains('euiDataGrid__restrictBody'),
+      'removed on exit'
+    );
+    assert.strictEqual(getComputedStyle(header).zIndex, '1001', 'restored');
   });
 });

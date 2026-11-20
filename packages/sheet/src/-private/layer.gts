@@ -90,8 +90,8 @@ export default class SheetLayer extends Component<SheetLayerSignature> {
         {{on "pointerup" @sheet.onPointerEnd}}
         {{on "pointercancel" @sheet.onPointerEnd}}
         {{on "click" @sheet.onClickCapture capture=true}}
-        {{on "focusin" @sheet.onFocusIn}}
-        {{on "focusout" @sheet.onFocusOut}}
+        {{on "focusin" @sheet.focus.onFocusIn}}
+        {{on "focusout" @sheet.focus.onFocusOut}}
         {{on "click" @sheet.onClick}}
         {{on "contextmenu" @sheet.onContextMenu}}
       >

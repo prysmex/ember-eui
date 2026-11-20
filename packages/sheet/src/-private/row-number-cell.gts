@@ -51,7 +51,7 @@ export class RowNumberCell extends Component<RowNumberCellSignature> {
   }
 
   get selected(): boolean {
-    return this.sheet.isRowSelected(this.args.rowIndex);
+    return this.sheet.selection.isRowSelected(this.args.rowIndex);
   }
 
   get selectLabel(): string {
@@ -92,7 +92,7 @@ export class RowNumberCell extends Component<RowNumberCellSignature> {
       );
       if (this.checked) classes.push('euiSheet__rowCell--checked');
       // V03 batch 1: a cell range's rows
-      if (this.sheet.isRowMarked(this.args.rowIndex)) {
+      if (this.sheet.selection.isRowMarked(this.args.rowIndex)) {
         classes.push('euiSheet__rowCell--marked');
       }
       if (this.selected) {

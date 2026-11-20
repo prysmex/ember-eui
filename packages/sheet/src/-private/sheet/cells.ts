@@ -64,7 +64,7 @@ export default class SheetCells<T extends object> {
     const view = this.cellViewFor(
       record,
       field,
-      this.sheet.isSelected(row, col)
+      this.sheet.selection.isSelected(row, col)
     );
     const drop = this.sheet.dropPos;
     if (drop && drop.row === row && drop.col === col) view.dropTarget = true;
@@ -134,7 +134,7 @@ export default class SheetCells<T extends object> {
   /** A cell component's `@onCommit(value)`, at a grid row. */
   commitCellValue(row: number, col: number, value: unknown): void {
     const pos = { row, col };
-    const touched = this.sheet.touchedAt(pos);
+    const touched = this.sheet.selection.touchedAt(pos);
     // off a record: row -1, which the core answers with null, as before
     this.sheet.emit(
       commitValue(this.sheet.context, this.sheet.rows.recordPos(pos), value),

@@ -283,3 +283,83 @@ Results:
 - The suite: 527 tests, 527 pass (run by the main session after the agent was stopped by a restart; the static checks were re-run then too, all OK).
 
 Deviations from the design: none. No section banner moved in this stage.
+
+## 3c stage 3
+
+What moved, to `src/-private/sheet/`, as the module map assigns it:
+
+| File | Class, property | Members | Lines |
+| --- | --- | --- | --- |
+| `selection.ts` | `SheetSelection`, `selection` | 19 | 260 |
+| `outline.ts` | `SheetOutline`, `outline` | 8 | 224 |
+| `scroll.ts` | `SheetScroll`, `scroll` | 9 | 226 |
+| `ime.ts` | `SheetIme`, `ime` | 12 | 110 |
+| `focus.ts` | `SheetFocus`, `focus` | 17 | 321 |
+
+Three constants with one user moved above that module's class:
+`CELL_ERROR_SPACE` and `CELL_ERROR_MAX_WIDTH` (focus), `FLASH_MS`
+(outline).
+
+The component goes from 5,960 to 4,977 lines. Its template changes 23
+paths only (`onScroll`, `onFocusIn`, `onFocusOut`, the range outlines,
+`layoutTick`, `scrolledX`, `headerMarkCss`, `cellError`). `setupWrapper`
+adds and removes the same `this.focus.onPagePress`; `willDestroy` clears
+`this.outline.flashTimer`, in the same place. Four stage 1 and 2 modules
+are re-pointed: `cells.ts` (`selection.isSelected`,
+`selection.touchedAt`), `frozen.ts` and `grid-options.ts`
+(`scroll.scrollElement`, `scroll.scrolledX`), `grid-columns.ts`
+(`scroll.layoutTick`). Four `-private` files change their paths only:
+`ime-catcher.gts` (writes `sheet.ime.imeInput`; the five IME handlers),
+`layer.gts` (`focus.onFocusIn`, `focus.onFocusOut`), `range-outline.gts`
+(`outline.placeRangeOutline`), `row-number-cell.gts`
+(`selection.isRowSelected`, `selection.isRowMarked`). Each was read by
+hand.
+
+How: `3c-checks/move.mjs --stage 3 --tops
+CELL_ERROR_SPACE=focus,CELL_ERROR_MAX_WIDTH=focus,FLASH_MS=outline`, the
+imports by hand, the unused imports ESLint listed (in the component, and
+`run` in `outline.ts`, where `run` is a local name) removed, then
+Prettier. The missing-import script of stage 2 (scratch) lists no name in
+any module.
+
+`move.mjs` printed LOOK for exactly the five owner sites design 6.1 lists
+for these modules; each was changed by hand to `this.sheet`:
+`onFocusIn` (`afterRender`), `revealCell` and `parkFocus` (`isDestroying`,
+`isDestroyed`), `onScroll` (`afterRender(this.sheet,
+this.sheet.focus.parkFocus)`), `flashCells` (`isDestroying`,
+`isDestroyed`, inside the timer). Before that, the owner gate failed on
+all five, as it should. The verbatim check now lists them as OWNER, next
+to stage 1's four.
+
+The other risks of design stage 3:
+
+- No moved field is still declared in the component (a grep of the 21
+  field names, besides the verbatim check's "declared once").
+- `parkFocus` stays an arrow field (the verbatim check compares kinds).
+- A plain method passed as a value would lose its `this`: every
+  reference to a moved method that is not a call was listed. There are
+  three, all in templates (`scroll.onScroll`, `focus.onFocusIn`,
+  `focus.onFocusOut`), and all three are `@action`.
+
+Results:
+
+- Verbatim: 699 members, top-level declarations, templates and `-private`
+  declarations compared, all equal apart from the nine owners above.
+  Every member is in the file the module map names, and declared once.
+- Gates: OK. `tests/`, `src/core/`, `src/types.ts`, `src/index.ts`,
+  `src/search-ui/` and `packages/core/` are untouched.
+- `pnpm lint:types`: no error. The tests' `ember-tsc`: the baseline's 19
+  errors, the same lines.
+- ESLint and Prettier on the changed files: clean.
+- `node scripts/generate-api-docs.mjs --check`: passes.
+- The suite: 527 tests, 527 pass.
+
+Deviations from the design: none in the code. In the comments, as in
+stage 1: the "Called by the cell renderer" banner was above `isSelected`,
+so it is now in `selection.ts`; the rest of its section moved to
+`cells.ts` in stage 2.
+
+From this stage on, the checks run in this one Linux checkout (repo root
+and Linux copy are the same path, so `sync.sh` is not needed), and
+`check.sh` takes the baseline log as an absolute path (it changes
+directory before reading it).

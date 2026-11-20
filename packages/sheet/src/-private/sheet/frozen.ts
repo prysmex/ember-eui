@@ -107,7 +107,7 @@ export default class SheetFrozen<T extends object> {
   clearFrozenOverlap(pos: Pos): void {
     const layout = this.frozenLayout;
     if (!layout || pos.col < this.frozenCount) return;
-    const outer = this.sheet.scrollElement();
+    const outer = this.sheet.scroll.scrollElement();
     const cell = this.sheet.dom.cellElement(pos);
     if (!outer || !cell) return;
     const box = outer.getBoundingClientRect();
@@ -135,14 +135,15 @@ export default class SheetFrozen<T extends object> {
 
   noteScrollLeft(): void {
     if (!this.frozenCount) return;
-    this.scrollLeftBeforeFocus = this.sheet.scrollElement()?.scrollLeft ?? null;
+    this.scrollLeftBeforeFocus =
+      this.sheet.scroll.scrollElement()?.scrollLeft ?? null;
   }
 
   keepFrozenScroll(): void {
     const before = this.scrollLeftBeforeFocus;
     this.scrollLeftBeforeFocus = null;
     if (before === null || !this.frozenCount) return;
-    const outer = this.sheet.scrollElement();
+    const outer = this.sheet.scroll.scrollElement();
     if (outer && Math.abs(outer.scrollLeft - before) > 0.5) {
       this.sheet.gridApi?.scrollTo?.({ scrollLeft: before });
     }

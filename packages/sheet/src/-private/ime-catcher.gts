@@ -21,22 +21,22 @@ interface ImeCatcherSignature {
 
 export default class ImeCatcher extends Component<ImeCatcherSignature> {
   register = modifier((element: HTMLInputElement) => {
-    this.args.sheet.imeInput = element;
+    this.args.sheet.ime.imeInput = element;
     return () => {
-      if (this.args.sheet.imeInput === element) {
-        this.args.sheet.imeInput = null;
+      if (this.args.sheet.ime.imeInput === element) {
+        this.args.sheet.ime.imeInput = null;
       }
     };
   });
 
-  onCompositionStart = (): void => this.args.sheet.onImeCompositionStart();
+  onCompositionStart = (): void => this.args.sheet.ime.onImeCompositionStart();
   onCompositionEnd = (event: CompositionEvent): void =>
-    this.args.sheet.onImeCompositionEnd(event);
+    this.args.sheet.ime.onImeCompositionEnd(event);
   onInput = (event: Event): void =>
-    this.args.sheet.onImeInput(event as InputEvent);
+    this.args.sheet.ime.onImeInput(event as InputEvent);
   onKeyDown = (event: KeyboardEvent): void =>
-    this.args.sheet.onImeKeyDown(event);
-  onBlur = (): void => this.args.sheet.endIme();
+    this.args.sheet.ime.onImeKeyDown(event);
+  onBlur = (): void => this.args.sheet.ime.endIme();
 
   <template>
     <input

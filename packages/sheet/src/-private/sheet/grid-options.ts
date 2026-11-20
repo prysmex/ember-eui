@@ -42,7 +42,7 @@ export default class SheetGridOptions<T extends object> {
    */
   get pinsAddRow(): boolean {
     return (
-      this.sheet.scrolledX &&
+      this.sheet.scroll.scrolledX &&
       this.sheet.frozen.frozenCount === 0 &&
       this.sheet.rows.hasAddRow
     );
@@ -138,7 +138,7 @@ export default class SheetGridOptions<T extends object> {
     if (!grouped || typeof ResizeObserver === 'undefined') return;
     const observer = new ResizeObserver(() => {
       if (isDestroying(this.sheet) || isDestroyed(this.sheet)) return;
-      const width = this.sheet.scrollElement()?.clientWidth ?? 0;
+      const width = this.sheet.scroll.scrollElement()?.clientWidth ?? 0;
       if (width && width !== this.groupMaxWidth) this.groupMaxWidth = width;
     });
     observer.observe(element);

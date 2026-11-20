@@ -48,7 +48,7 @@ export default class RangeOutline extends Component<RangeOutlineSignature> {
       // after the grid rendered the cells of this render
       schedule('afterRender', () => {
         if (this.isDestroying || this.isDestroyed) return;
-        this.args.sheet.placeRangeOutline(element, range);
+        this.args.sheet.outline.placeRangeOutline(element, range);
       });
     }
   );

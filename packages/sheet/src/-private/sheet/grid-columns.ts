@@ -97,7 +97,7 @@ export default class SheetGridColumns<T extends object> {
     if (!this.sheet.args.onFieldWidthChange)
       this.keptWidths.set(columnId, width);
     // the fill handle measures again
-    this.sheet.layoutTick++;
+    this.sheet.scroll.layoutTick++;
     const handler = this.sheet.args.onFieldWidthChange;
     if (!handler) return;
     this.sheet.fields.expectUpdate('fieldWidths');

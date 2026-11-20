@@ -337,6 +337,24 @@ export interface SheetMessages {
   moveRecords: (count: number) => string;
   /** 'Move the rows up or down (on a row number, with @canMove)' */
   shortcutMoveRecords: () => string;
+  /** '"32/11/2026 25:00" is not a date and time': a dateTime field (V03 10.3) */
+  notADateTime: (text: string) => string;
+  /** 'Unknown time zone "Mars/Base"': a dateTime field whose timeZone the browser does not know */
+  unknownTimeZone: (zone: string) => string;
+  /** 'Date and time' */
+  fieldType_dateTime: () => string;
+  /** 'Time zone': the dateTime options of the field editor ('local', 'utc' or an IANA name) */
+  fieldTimeZone: () => string;
+  /** 'local, utc, or a name like America/Mexico_City' */
+  fieldTimeZoneHelp: () => string;
+  /** 'Clock' */
+  fieldClock: () => string;
+  /** '24-hour' */
+  clock24: () => string;
+  /** '12-hour (am/pm)' */
+  clock12: () => string;
+  /** 'Show seconds' */
+  fieldSeconds: () => string;
 }
 
 export interface SheetMessageToken {
@@ -1177,6 +1195,51 @@ export const sheetMessageTokens: Readonly<
   shortcutMoveRecords: {
     token: 'euiSheet.shortcutMoveRecords',
     defaultMessage: 'Move the rows up or down (on a row number)',
+    params: []
+  },
+  notADateTime: {
+    token: 'euiSheet.notADateTime',
+    defaultMessage: '"{text}" is not a date and time',
+    params: ['text']
+  },
+  unknownTimeZone: {
+    token: 'euiSheet.unknownTimeZone',
+    defaultMessage: 'Unknown time zone "{zone}"',
+    params: ['zone']
+  },
+  fieldType_dateTime: {
+    token: 'euiSheet.fieldType_dateTime',
+    defaultMessage: 'Date and time',
+    params: []
+  },
+  fieldTimeZone: {
+    token: 'euiSheet.fieldTimeZone',
+    defaultMessage: 'Time zone',
+    params: []
+  },
+  fieldTimeZoneHelp: {
+    token: 'euiSheet.fieldTimeZoneHelp',
+    defaultMessage: 'local, utc, or a name like America/Mexico_City',
+    params: []
+  },
+  fieldClock: {
+    token: 'euiSheet.fieldClock',
+    defaultMessage: 'Clock',
+    params: []
+  },
+  clock24: {
+    token: 'euiSheet.clock24',
+    defaultMessage: '24-hour',
+    params: []
+  },
+  clock12: {
+    token: 'euiSheet.clock12',
+    defaultMessage: '12-hour (am/pm)',
+    params: []
+  },
+  fieldSeconds: {
+    token: 'euiSheet.fieldSeconds',
+    defaultMessage: 'Show seconds',
     params: []
   }
 };

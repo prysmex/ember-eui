@@ -2165,3 +2165,79 @@ token and the bar change), RC3 (`@frozenFields={{1}}`, scrolled 700 px:
 the frozen row-number cell is sticky, has the bar, and
 `elementFromPoint` 1 px inside its left edge hits it), RC4
 (`colorByOption`). Suite: 547 tests, 547 pass (543 + 4).
+
+### 4c: `dateTime` (10.3)
+
+#### What was built
+
+- `src/core/field-types/date-time.ts` (new), `DateTimeField` in
+  `src/core/types.ts`, registered as `dateTime` in `builtInFieldTypes`
+  and (with its editor) in `builtInSheetFieldTypes`; `dateTimeType` is
+  exported like `dateType`. `date` is not touched (D9).
+- **Stored value**: `toISOString()` of the instant, or `null`.
+  `copyText` is the stored string, so `parse(copyText(v))` is `v` (also
+  for a value with seconds or ms on a field without `seconds`: an ISO
+  string with a designator is that instant, as it is).
+- **Parse**: an ISO string with `Z` or an offset (`+05:30`, `+0530`,
+  `-06`) is that instant; an ISO string without one (`T` or a space), a
+  `D/M/YYYY H:mm[:ss] [am|pm]` (also `-` and `.`, an optional comma, `M/D`
+  with `dateOrder: 'mdy'`; `3 pm` without minutes, `15` without them is
+  an error), and a date alone (midnight) are wall clocks in the field's
+  zone. Typed wall clocks are kept to the minute, or to the second with
+  `seconds`. Anything else: `notADateTime(text)`. No `Date` parsing of
+  typed text.
+- **Zones**: `'utc'` and `'local'` with `Date`'s own getters; an IANA
+  name through `Intl.DateTimeFormat(…, { timeZone, hourCycle: 'h23' })
+  .formatToParts` (one formatter per zone, cached). A wall clock → its
+  instant: the zone's offset a day before and a day after give two
+  candidates; the earlier one whose wall clock matches wins (the autumn
+  overlap resolves to the first), and when neither matches (the spring
+  gap) the offset from before the gap is used, which moves the clock
+  forward by the gap. An unknown zone does not throw: values are shown
+  and read as UTC and `validate` reports `unknownTimeZone(zone)` on every
+  value.
+- **Format**: `DD/MM/YYYY HH:mm` (or `MM/DD/YYYY`), `h:mm am|pm` with
+  `hour12`, `:ss` with `seconds`, in the field's zone. A value that is
+  not an instant is shown as it is (and is a validation error).
+- `compare`: string order, empty first. `series`: one value continues by
+  a calendar day in the field's zone (10:00 stays 10:00 across a DST
+  change); two or more by their constant step in ms; else copies.
+  `validate`: a real instant, `min`, `max` (inclusive, shown in the
+  field's format). `schema: 'datetime'`. No `toNumber`, so `summarize`'s
+  `min` and `max` go through `compare`.
+- **Editor** `src/-private/editors/date-time-editor.gts` (new): as the
+  date editor, typing a digit opens the text input; Enter, F2, a
+  double-click or the opener (`calendar`) open `<input
+  type="datetime-local">` with the zone's wall clock
+  (`dateTimeLocalValue`, exported), `step="1"` with `seconds`; its value
+  is read back as a wall clock in the zone.
+- **Field editor**: `DateTimeOptions` (`simple-options.gts`): time zone
+  (text, empty for local), day/month order, clock (24/12-hour), seconds
+  (switch). `dateTime` is not added to the default `@creatableFieldTypes`
+  (an app lists it).
+- Helpers exported from the core: `validIsoDateTime`,
+  `dateTimeLocalValue`, `validTimeZone`.
+
+#### Tests
+
+- `tests/unit/date-time-test.ts` (new): DT1 (parse: `Z`, offsets, the
+  field zone, the typed forms, am/pm and 12 am/pm, a date alone,
+  seconds, nine errors), DT2 (format in `'utc'` and
+  `'America/Mexico_City'`, `mdy`, 12-hour, seconds, the day changing
+  with the zone; `parse(copyText(v))` for three values in four field
+  settings; the format reads back; the picker's value), DT3 (the gap and
+  the overlap of 2026 in `'America/New_York'`, and the minutes around
+  them), DT4 (`compare`, `series` by a day, across DST, by a week, both
+  directions, `validate` with `min`/`max` and an unknown zone, which is
+  shown in UTC without a throw; `summarize` min and max).
+- `tests/integration/components/eui-sheet-date-time-test.gts` (new):
+  DT5 (typed "19/11/2026 15:30" in a `'utc'` field: the patch is
+  `2026-11-19T15:30:00.000Z`, the cell shows it, copy gives the ISO
+  string, pasting it in a Mexico City 12-hour field and another row
+  writes the same value, shown as "19/11/2026 9:30 am"; a bad paste is
+  invalid with its message), DT5b (the picker in the zone's wall clock),
+  DT6 (a `date` field next to it: typing, its own date picker, and a
+  pasted instant keeps only its date). The existing date tests are
+  unchanged and pass.
+- No test uses `'local'`.
+- Suite: 554 tests, 554 pass (547 + 7).

@@ -14,6 +14,7 @@ export {
   colorByOption,
   checkboxType,
   currencyType,
+  dateTimeType,
   dateType,
   durationType,
   emailType,

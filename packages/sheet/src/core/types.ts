@@ -208,6 +208,26 @@ export interface DateField<T = any> extends EuiSheetField<T> {
 }
 
 /**
+ * A date with a time (V03 10.3, D9): the value is an instant, stored as a
+ * UTC ISO string (`2026-11-19T15:30:00.000Z`) or `null`; it is shown and
+ * typed in `timeZone`.
+ */
+export interface DateTimeField<T = any> extends EuiSheetField<T> {
+  type: 'dateTime';
+  /** The zone values are shown and typed in: 'local' (the browser's, default), 'utc', or an IANA name ('America/Mexico_City'). An unknown name is a validation error on every value. */
+  timeZone?: 'local' | 'utc' | (string & {});
+  /** Order of day and month, as `DateField`. Default 'dmy'. */
+  dateOrder?: 'dmy' | 'mdy';
+  /** 12-hour clock with am/pm. Default false. */
+  hour12?: boolean;
+  /** Show and keep seconds. Default false (minutes). */
+  seconds?: boolean;
+  /** Instants (the stored format), inclusive. */
+  min?: string;
+  max?: string;
+}
+
+/**
  * What the field editor produces (V03 6.4): plain values only. `id` is
  * absent: on create the owner assigns it, on update it is the field's.
  * The owner builds the field (`{ ...previous, ...draft }` on update,

@@ -9,6 +9,7 @@ import {
   checkboxFieldType,
   currencyFieldType,
   dateFieldType,
+  dateTimeFieldType,
   durationFieldType,
   emailFieldType,
   fieldOptions,
@@ -35,6 +36,7 @@ import RatingCell from './-private/cells/rating-cell.gts';
 import SelectCell from './-private/cells/select-cell.gts';
 import AttachmentEditor from './-private/editors/attachment-editor.gts';
 import DateEditor from './-private/editors/date-editor.gts';
+import DateTimeEditor from './-private/editors/date-time-editor.gts';
 import InputEditor from './-private/editors/input-editor.gts';
 import MultiSelectEditor from './-private/editors/multi-select-editor.gts';
 import RecordPickerEditor from './-private/editors/record-picker-editor.gts';
@@ -46,6 +48,7 @@ import SelectOptions from './-private/field-options/select-options.gts';
 import {
   CurrencyOptions,
   DateOptions,
+  DateTimeOptions,
   DurationOptions,
   PercentOptions,
   RatingOptions
@@ -56,6 +59,7 @@ import type {
   CheckboxField,
   CurrencyField,
   DateField,
+  DateTimeField,
   DurationField,
   EuiSheetField,
   LinkedRecordField,
@@ -117,6 +121,20 @@ export const dateType: EuiSheetFieldType<string | null, DateField> = {
   opener: 'calendar',
   opensOnKey: (key) => /^\d$/.test(key),
   fieldOptions: DateOptions
+};
+
+/**
+ * A date with a time (V03 10.3): typing a digit opens the text input;
+ * Enter, F2, a double-click or the opener the native `datetime-local`
+ * picker, in the field's zone. Stored as a UTC ISO string.
+ */
+export const dateTimeType: EuiSheetFieldType<string | null, DateTimeField> = {
+  ...dateTimeFieldType,
+  editor: DateTimeEditor,
+  schema: 'datetime',
+  opener: 'calendar',
+  opensOnKey: (key) => /^\d$/.test(key),
+  fieldOptions: DateTimeOptions
 };
 
 /** The keys a list picker (select, multi-select, records) handles itself while open. */
@@ -245,7 +263,8 @@ export const longTextType: EuiSheetFieldType<string, LongTextField> = {
  * Every built-in type by name: `text`, `number`, `checkbox`,
  * `singleSelect`, `date`, `multiSelect`, `linkedRecord`, `user`,
  * `attachment`, `currency`, `percent`, `duration`, `rating`, `url`,
- * `email`, `phone`, `longText`. `@fieldTypes` is merged over it.
+ * `email`, `phone`, `longText`, `dateTime`. `@fieldTypes` is merged
+ * over it.
  */
 export const builtInSheetFieldTypes: Record<
   string,
@@ -267,7 +286,8 @@ export const builtInSheetFieldTypes: Record<
   url: urlType,
   email: emailType,
   phone: phoneType,
-  longText: longTextType
+  longText: longTextType,
+  dateTime: dateTimeType
 };
 
 export { InputEditor as SheetInputEditor };

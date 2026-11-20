@@ -1,7 +1,8 @@
 /**
  * The small option forms of the built-in types in the field editor (V03
  * 6.4): a currency's code and decimals, a percent's decimals, a rating's
- * stars, a date's day/month order, a duration's format.
+ * stars, a date's day/month order, a duration's format, a date and
+ * time's zone, clock and seconds (V03 10.3).
  */
 import Component from '@glimmer/component';
 import { on } from '@ember/modifier';
@@ -11,6 +12,7 @@ import EuiFieldNumber from '@ember-eui/core/components/eui-field-number';
 import EuiFieldText from '@ember-eui/core/components/eui-field-text';
 import EuiFormRow from '@ember-eui/core/components/eui-form-row';
 import EuiSelect from '@ember-eui/core/components/eui-select';
+import EuiSwitch from '@ember-eui/core/components/eui-switch';
 
 import type { SheetFieldOptionsSignature } from '../../types.ts';
 
@@ -240,6 +242,101 @@ export class DurationOptions extends OptionsBase {
           {{on "change" this.onFormat}}
         />
       </EuiFormRow>
+    </div>
+  </template>
+}
+
+/** A date and time (V03 10.3): its zone, day/month order, clock and seconds. */
+export class DateTimeOptions extends DateOptions {
+  get zone(): string {
+    return (this.option('timeZone') as string | undefined) ?? '';
+  }
+
+  get clock(): string {
+    return this.option('hour12') ? '12' : '24';
+  }
+
+  get clocks(): Array<{ value: string; text: string }> {
+    return [
+      { value: '24', text: this.messages.clock24() },
+      { value: '12', text: this.messages.clock12() }
+    ];
+  }
+
+  get seconds(): boolean {
+    return !!this.option('seconds');
+  }
+
+  onZone = (event: Event): void => {
+    const zone = (event.target as HTMLInputElement).value.trim();
+    this.args.onChange({ timeZone: zone === '' ? undefined : zone });
+  };
+
+  onClock = (event: Event): void => {
+    this.args.onChange({
+      hour12: (event.target as HTMLSelectElement).value === '12'
+    });
+  };
+
+  onSeconds = (): void => {
+    this.args.onChange({ seconds: !this.seconds });
+  };
+
+  <template>
+    <div
+      class="euiSheetFieldEditor__optionRow"
+      data-test-subj="euiSheetFieldOptions"
+    >
+      <EuiFormRow
+        @label={{(this.messages.fieldTimeZone)}}
+        @helpText={{(this.messages.fieldTimeZoneHelp)}}
+        @id="{{this.id}}-zone"
+        @display="rowCompressed"
+      >
+        <EuiFieldText
+          @compressed={{true}}
+          @value={{this.zone}}
+          placeholder="local"
+          id="{{this.id}}-zone"
+          data-test-subj="euiSheetFieldTimeZone"
+          {{on "change" this.onZone}}
+        />
+      </EuiFormRow>
+      <EuiFormRow
+        @label={{(this.messages.fieldDateOrder)}}
+        @id="{{this.id}}-order"
+        @display="rowCompressed"
+      >
+        <EuiSelect
+          @compressed={{true}}
+          @options={{this.orders}}
+          @value={{this.order}}
+          id="{{this.id}}-order"
+          data-test-subj="euiSheetFieldDateOrder"
+          {{on "change" this.onOrder}}
+        />
+      </EuiFormRow>
+      <EuiFormRow
+        @label={{(this.messages.fieldClock)}}
+        @id="{{this.id}}-clock"
+        @display="rowCompressed"
+      >
+        <EuiSelect
+          @compressed={{true}}
+          @options={{this.clocks}}
+          @value={{this.clock}}
+          id="{{this.id}}-clock"
+          data-test-subj="euiSheetFieldClock"
+          {{on "change" this.onClock}}
+        />
+      </EuiFormRow>
+      <EuiSwitch
+        @compressed={{true}}
+        @label={{(this.messages.fieldSeconds)}}
+        @checked={{this.seconds}}
+        @onChange={{this.onSeconds}}
+        data-test-subj="euiSheetFieldSeconds"
+      />
     </div>
   </template>
 }

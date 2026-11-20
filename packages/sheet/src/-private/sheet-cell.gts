@@ -63,7 +63,7 @@ export default class SheetCell extends Component<{
     const props: Record<string, unknown> = {};
     const classes: string[] = [];
     // the frozen field (V02-DESIGN.md 9.2): sticky, also on the add row
-    const frozen = this.sheet.frozenCellProps(this.args.colIndex);
+    const frozen = this.sheet.frozen.frozenCellProps(this.args.colIndex);
     if (frozen) {
       classes.push(frozen.className);
       props['style'] = frozen.style;
@@ -150,14 +150,14 @@ export default class SheetCell extends Component<{
         {{#if this.addRecordIcon}}<EuiIcon @type="plus" @size="s" />{{/if}}
         {{this.addRecordLabel}}
       </span>
-      {{#if this.sheet.pinsAddRow}}
+      {{#if this.sheet.gridOptions.pinsAddRow}}
         <AddPinned
           @label={{this.addPinnedLabel}}
           @inline={{this.addRecordIcon}}
         />
       {{/if}}
     {{else if this.isAddRowCell}}
-      {{#if this.sheet.pinsAddRow}}
+      {{#if this.sheet.gridOptions.pinsAddRow}}
         <AddPinned
           @label={{this.addPinnedLabel}}
           @inline={{this.addRecordIcon}}

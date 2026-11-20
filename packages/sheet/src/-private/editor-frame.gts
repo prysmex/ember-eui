@@ -70,7 +70,9 @@ export default class EditorFrame extends Component<EditorFrameSignature> {
   /** The cell's box in the viewport now (the layer reads it at every placement). */
   anchor = (): LayerAnchor | null => {
     const rect = this.args.rect;
-    return rect && this.args.sheet ? this.args.sheet.toViewport(rect) : null;
+    return rect && this.args.sheet
+      ? this.args.sheet.dom.toViewport(rect)
+      : null;
   };
 
   get minWidth(): number {

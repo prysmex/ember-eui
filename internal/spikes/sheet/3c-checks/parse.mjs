@@ -57,7 +57,7 @@ export function stripTemplates(src, filename) {
   return { code: out, templates };
 }
 
-/** Whether `node` is `this`, `this.sheet` or `this.sheet.<module>`. */
+/** Whether `node` is `this`, `this.sheet`, `this.<module>` or `this.sheet.<module>`. */
 function isHostPath(node, modules) {
   if (node.kind === ts.SyntaxKind.ThisKeyword) return true;
   if (!ts.isPropertyAccessExpression(node)) return false;
@@ -66,6 +66,8 @@ function isHostPath(node, modules) {
     return node.expression.kind === ts.SyntaxKind.ThisKeyword;
   if (!modules.has(name)) return false;
   const inner = node.expression;
+  // `this.<module>` (the component) or `this.sheet.<module>` (a module)
+  if (inner.kind === ts.SyntaxKind.ThisKeyword) return true;
   return (
     ts.isPropertyAccessExpression(inner) &&
     inner.name.text === 'sheet' &&

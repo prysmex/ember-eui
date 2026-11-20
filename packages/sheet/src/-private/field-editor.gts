@@ -306,7 +306,8 @@ export default class FieldEditor extends Component<FieldEditorSignature> {
   }
 
   /** The header's box in the viewport now (the layer reads it at every placement). */
-  anchor = (): LayerAnchor | null => this.sheet.toViewport(this.state.anchor);
+  anchor = (): LayerAnchor | null =>
+    this.sheet.dom.toViewport(this.state.anchor);
 
   minHeight = FIELD_EDITOR_MIN_HEIGHT;
 
@@ -319,7 +320,7 @@ export default class FieldEditor extends Component<FieldEditorSignature> {
   }
 
   get field(): EuiSheetField | undefined {
-    return this.sheet.fieldById(this.state.fieldId);
+    return this.sheet.fields.fieldById(this.state.fieldId);
   }
 
   get confirmText(): string {

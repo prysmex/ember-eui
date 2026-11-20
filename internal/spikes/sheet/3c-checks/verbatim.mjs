@@ -131,6 +131,12 @@ function normalTemplate(t) {
 // The component and the moved code.
 const old = parseFile(read(oldFile), oldFile, modules);
 const oldComponent = old.classes.find((c) => c.isComponent);
+for (const m of oldComponent.members) {
+  if (modules.has(m.name))
+    fail(
+      `module property ${m.name}: also a member of the old component (paths would be ambiguous)`
+    );
+}
 const pool = new Map(); // member name → [{ file, cls, m }]
 const tops = new Map();
 let newComponent;
@@ -180,9 +186,9 @@ for (const m of oldComponent.members) {
   const planned = moduleMap.find((x) => x.members.includes(m.name));
   const want =
     planned && modules.has(planned.prop)
-      ? `src/-private/sheet/${planned.file} ${planned.cls}`
-      : `src/components/eui-sheet.gts ${oldComponent.name}`;
-  const got = `${short(file)} ${cls}`;
+      ? `${planned.file} ${planned.cls}`
+      : `eui-sheet.gts ${oldComponent.name}`;
+  const got = `${file.split('/').at(-1)} ${cls}`;
   if (got !== want)
     fail(`member ${m.name}: in ${got}, the module map says ${want}`);
   if (cls !== newComponent?.name || !file.endsWith('eui-sheet.gts'))

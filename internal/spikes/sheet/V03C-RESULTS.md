@@ -363,3 +363,85 @@ From this stage on, the checks run in this one Linux checkout (repo root
 and Linux copy are the same path, so `sync.sh` is not needed), and
 `check.sh` takes the baseline log as an absolute path (it changes
 directory before reading it).
+
+## 3c stage 4
+
+What moved, to `src/-private/sheet/`, as the module map assigns it:
+
+| File | Class, property | Members | Lines |
+| --- | --- | --- | --- |
+| `changes.ts` | `SheetChanges`, `changes` | 3 | 158 |
+| `validate.ts` | `SheetValidate`, `validate` | 9 | 97 |
+| `resolve.ts` | `SheetResolve`, `resolve` | 7 | 184 |
+| `uploads.ts` | `SheetUploads`, `uploads` | 7 | 195 |
+| `history.ts` | `SheetHistory`, `history` | 13 | 448 |
+| `records.ts` | `SheetRecords`, `records` | 11 | 282 |
+
+Five top-level declarations with one user moved above that module's
+class: `FLASH_SOURCES` (changes), `HISTORY_LIMIT` (history),
+`VALIDATE_DEBOUNCE` and `validateWaiter` (validate), `hasFiles`
+(uploads). `validateWaiter` is built once, at module scope, in
+`validate.ts` only; `resolveWaiter` stays in `util.ts` only (a grep of
+`buildWaiter(` in `src/`).
+
+The component goes from 4,977 to 3,776 lines. Its template changes 3
+paths (`uploads.onDragOver`, `uploads.onDragLeave`, `uploads.onDrop`).
+`willDestroy` has the same statements in the same order, pointed at
+`validate.validateTimer`, `validate.validateController`,
+`validate.endValidateWaiter()` and `resolve.pendingCalls` /
+`resolve.endCall`. Two earlier modules are re-pointed: `cells.ts`
+(`validate.validation`, `uploads.dropPos`, `resolve.pendingCells`) and
+`selection.ts` (`changes.emit`). Two `-private` files change their paths
+only: `record-form.gts` (`history.undo`, `history.redo`) and
+`record-form-field.gts` (`uploads.uploadFiles`). Each was read by hand.
+
+How: `3c-checks/move.mjs --stage 4 --tops
+FLASH_SOURCES=changes,HISTORY_LIMIT=history,VALIDATE_DEBOUNCE=validate,validateWaiter=validate,hasFiles=uploads`,
+the imports by hand, the 35 imports ESLint listed as unused in the
+component removed (with a scratch script that drops named imports), then
+Prettier. The missing-import script lists no name in any module.
+
+Owner sites: `move.mjs` printed LOOK for `insertOne`, `duplicate`
+(`records`) and `selectChanged` (`history`), each
+`afterRender(this, ...)`, changed by hand to `this.sheet`; and for
+`scheduleValidate`'s `debounce(this, this.runValidate, ...)`, which stays
+as it is (design 6.1: the module is a stable target, and `cancel` in
+`willDestroy` gets the same timer). `finishResolve`, `uploadFiles` and
+`runValidate` read `this.isDestroying` / `this.isDestroyed`; `move.mjs`
+rewrote them to `this.sheet.isDestroying` / `this.sheet.isDestroyed`, as
+for any name that stays on the component (the verbatim check counts that
+as a path, not as an owner). The OWNER list is stage 3's nine plus these
+three.
+
+The other checks of this stage:
+
+- No moved field is still declared in the component (a grep of the 14
+  field names).
+- References to a moved plain method that are not calls: only
+  `debounce(this, this.runValidate, ...)` (the target is given). The three
+  drag handlers bound in the template are `@action`.
+- `emit` is verbatim (the order of its steps is in its body).
+
+Results:
+
+- Verbatim: 699 members, top-level declarations, templates and `-private`
+  declarations compared, all equal apart from the twelve owners above.
+  Every member is in the file the module map names, and declared once.
+- Gates: OK. `tests/`, `src/core/`, `src/types.ts`, `src/index.ts`,
+  `src/search-ui/` and `packages/core/` are untouched.
+- `pnpm lint:types`: no error. The tests' `ember-tsc`: the baseline's 19
+  errors, the same lines.
+- ESLint and Prettier on the changed files: clean.
+- `node scripts/generate-api-docs.mjs --check`: passes.
+- The suite: 527 tests, 527 pass.
+
+Deviations from the design: none in the code. In the comments, two that
+travel with the declaration right below them (the verbatim check compares
+each declaration's leading comments):
+
+- `/** Shift+F10 or the ContextMenu key: the row menu. */` sat above
+  `FLASH_SOURCES` in the original (a stray: the function it describes,
+  `isMenuKey`, is further down), so it is now in `changes.ts`.
+- The small heading `/* Following \`@records\` (V02-DESIGN.md 3.2, 3.3) */`
+  sat above `pendingFocus`, so it is now in `records.ts`, not with the
+  `follow` fields it introduced.

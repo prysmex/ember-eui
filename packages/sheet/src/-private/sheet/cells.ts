@@ -50,7 +50,7 @@ export default class SheetCells<T extends object> {
     recordId: RecordId,
     fieldId: string
   ): string | string[] | undefined {
-    const validation = this.sheet.validation;
+    const validation = this.sheet.validate.validation;
     if (!validation) return undefined;
     const id = String(recordId);
     if (validation.records.get(id) !== record) return undefined;
@@ -66,7 +66,7 @@ export default class SheetCells<T extends object> {
       field,
       this.sheet.selection.isSelected(row, col)
     );
-    const drop = this.sheet.dropPos;
+    const drop = this.sheet.uploads.dropPos;
     if (drop && drop.row === row && drop.col === col) view.dropTarget = true;
     return view;
   }
@@ -78,7 +78,9 @@ export default class SheetCells<T extends object> {
     const value = valueOf(record, field.id);
     const recordId = ctx.getRecordId(record);
     const rejection = this.liveRejection(record, recordId, field.id);
-    const pending = this.sheet.pendingCells.get(cellKey(recordId, field.id));
+    const pending = this.sheet.resolve.pendingCells.get(
+      cellKey(recordId, field.id)
+    );
     const text =
       pending && pending.text !== null
         ? pending.text
@@ -136,7 +138,7 @@ export default class SheetCells<T extends object> {
     const pos = { row, col };
     const touched = this.sheet.selection.touchedAt(pos);
     // off a record: row -1, which the core answers with null, as before
-    this.sheet.emit(
+    this.sheet.changes.emit(
       commitValue(this.sheet.context, this.sheet.rows.recordPos(pos), value),
       touched
     );

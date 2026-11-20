@@ -88,7 +88,7 @@ export default class RecordFormField extends Component<RecordFormFieldSignature>
     const { sheet, field, record } = this.args;
     if (typeof field['upload'] !== 'function') return undefined;
     return (files: File[]) =>
-      sheet.uploadFiles(sheet.args.getRecordId(record), field, files);
+      sheet.uploads.uploadFiles(sheet.args.getRecordId(record), field, files);
   }
 
   get openLinkLabel(): string {

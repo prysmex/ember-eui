@@ -210,7 +210,7 @@ export default class SheetSelection<T extends object> {
   clearSelection(): void {
     const range = this.range && this.sheet.rows.recordRange(this.range);
     if (!range) return;
-    this.sheet.emit(
+    this.sheet.changes.emit(
       clearRange(this.sheet.context, range),
       this.touchedInRecords(range, true)
     );

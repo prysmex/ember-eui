@@ -200,13 +200,13 @@ export default class RecordForm extends Component<RecordFormSignature> {
       const letter = key.toLowerCase();
       if (letter === 'z') {
         stop(event);
-        if (event.shiftKey) sheet.redo({ focus: false });
-        else sheet.undo({ focus: false });
+        if (event.shiftKey) sheet.history.redo({ focus: false });
+        else sheet.history.undo({ focus: false });
         return;
       }
       if (letter === 'y' && event.ctrlKey && !event.shiftKey) {
         stop(event);
-        sheet.redo({ focus: false });
+        sheet.history.redo({ focus: false });
       }
       return;
     }

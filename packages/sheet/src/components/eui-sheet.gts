@@ -11,9 +11,8 @@ import { action } from '@ember/object';
 import { on } from '@ember/modifier';
 import { isDestroyed, isDestroying } from '@ember/destroyable';
 import { guidFor } from '@ember/object/internals';
-import { cancel, debounce, later } from '@ember/runloop';
+import { cancel, later } from '@ember/runloop';
 import { service } from '@ember/service';
-import { buildWaiter } from '@ember/test-waiters';
 import { modifier } from 'ember-modifier';
 
 import EuiDataGrid from '@ember-eui/core/components/eui-data-grid';
@@ -26,34 +25,24 @@ import {
 } from '@ember-eui/core/theming';
 
 import {
-  cellKey,
   clearRange,
-  commitText,
   commitValue,
   createMessages,
-  deleteRecords,
-  duplicateRecords,
   edgeTarget,
   fillDown,
   fillRange,
   fillRight,
-  insertRecords,
   isReadOnly,
-  mergeChangeSets,
   parseTsv,
   pasteMatrix,
-  planCommit,
   planPaste,
   rangeMatrix,
-  redoChangeSet,
-  resolveCells,
   tileMatrix,
   toTsv,
-  undoChangeSet,
   valueOf,
   withoutField
 } from '../core/index.ts';
-import type { HistoryOptions, PasteInsert, RowModel } from '../core/index.ts';
+import type { PasteInsert, RowModel } from '../core/index.ts';
 import { builtInSheetFieldTypes } from '../field-types.ts';
 import AutoScroll from '../-private/auto-scroll.ts';
 import FieldEditor, {
@@ -63,17 +52,6 @@ import FieldEditor, {
 import FillHandle from '../-private/fill-handle.gts';
 import ImeCatcher from '../-private/ime-catcher.gts';
 import EditorFrame from '../-private/editor-frame.gts';
-import {
-  composeIdMaps,
-  remapChangeSet,
-  remapId,
-  toIdMap
-} from '../-private/remap.ts';
-import {
-  clearRejections,
-  remapRejections,
-  restoreRejections
-} from '../-private/rejections.ts';
 import { RecordFlyout, RecordModal } from '../-private/record-shells.gts';
 import RangeOutline from '../-private/range-outline.gts';
 import RowMenu from '../-private/row-menu.gts';
@@ -92,10 +70,7 @@ import {
   ADD_FIELD_COLUMN_ID,
   afterRender,
   clamp,
-  EMPTY_CHANGE_SET,
-  isPromise,
   nextTempId,
-  resolveWaiter,
   sameIds,
   sameLayout,
   samePos,
@@ -118,24 +93,24 @@ import SheetOutline from '../-private/sheet/outline.ts';
 import SheetScroll from '../-private/sheet/scroll.ts';
 import SheetIme from '../-private/sheet/ime.ts';
 import SheetFocus from '../-private/sheet/focus.ts';
+import SheetChanges from '../-private/sheet/changes.ts';
+import SheetValidate from '../-private/sheet/validate.ts';
+import SheetResolve from '../-private/sheet/resolve.ts';
+import SheetUploads from '../-private/sheet/uploads.ts';
+import SheetHistory from '../-private/sheet/history.ts';
+import SheetRecords from '../-private/sheet/records.ts';
 
 import type {
-  CellErrors,
   ChangeSet,
   EuiSheetField,
-  PendingCell,
   Pos,
   Range,
   RecordId,
-  ResolvePlan,
-  ResolveResult,
   SheetContext,
-  RecordInsert,
   SheetFieldDraft,
   SheetGroup,
   SheetMessages
 } from '../core/index.ts';
-import type { Rejection } from '../-private/rejections.ts';
 import type { RowMenuItem } from '../-private/row-menu.gts';
 import type { LayerAnchor } from '../-private/layer.gts';
 import type { ShortcutContext } from '../-private/shortcuts.ts';
@@ -156,13 +131,7 @@ import type {
   ExpandedFrom,
   HistoryEntry,
   MenuState,
-  PendingCall,
-  PendingEntry,
-  PendingFocus,
   PendingOwn,
-  Touched,
-  UploadField,
-  Validation,
   WrapperBox
 } from '../-private/sheet/types.ts';
 
@@ -324,15 +293,6 @@ const MENU_ITEMS_THAT_MOVE_FOCUS = new Set([
   'delete'
 ]);
 
-/** Shift+F10 or the ContextMenu key: the row menu. */
-/** The change sets whose cells flash (V03 batch 1), and for how long (ms). */
-const FLASH_SOURCES: ReadonlySet<string> = new Set([
-  'paste',
-  'fill',
-  'undo',
-  'redo'
-]);
-
 /** The fill handle's drawn size in px: a 10 px square and its 2 px ring (`styles.ts`). */
 const FILL_HANDLE_SIZE = 14;
 
@@ -378,19 +338,6 @@ function writeClipboard(text: string): void {
   } else {
     fallback();
   }
-}
-
-/** Undo entries kept per sheet. */
-const HISTORY_LIMIT = 100;
-
-/** Debounce of `@validate` runs, in ms. */
-const VALIDATE_DEBOUNCE = 50;
-
-const validateWaiter = buildWaiter('@ember-eui/sheet:validate');
-
-/** A drag that carries files. */
-function hasFiles(event: DragEvent): boolean {
-  return Array.from(event.dataTransfer?.types ?? []).includes('Files');
 }
 
 function isModal(shell: string): boolean {
@@ -444,9 +391,13 @@ export default class EuiSheet<T extends object> extends Component<
   readonly scroll = new SheetScroll<T>(this);
   readonly ime = new SheetIme<T>(this);
   readonly focus = new SheetFocus<T>(this);
+  readonly changes = new SheetChanges<T>(this);
+  readonly validate = new SheetValidate<T>(this);
+  readonly resolve = new SheetResolve<T>(this);
+  readonly uploads = new SheetUploads<T>(this);
+  readonly history = new SheetHistory<T>(this);
+  readonly records = new SheetRecords<T>(this);
   @tracked editing: Editing | null = null;
-  /** The last applied `@validate` result. */
-  @tracked validation: Validation | null = null;
   /** A drag over other cells is selecting a range (no text selection meanwhile). */
   @tracked dragging = false;
   /** The expanded record without `@onExpandedRecordChange`. */
@@ -461,12 +412,6 @@ export default class EuiSheet<T extends object> extends Component<
   lastFieldTypes: Map<string, string> | null = null;
   /** A created field without `@onFieldOrderChange` goes into the sheet's own order after this field (V03 6.8). */
   createdAfter: { after: string | undefined } | null = null;
-  /** Cells waiting for `@onResolve` or an upload, by cellKey. */
-  @tracked pendingCells: ReadonlyMap<string, PendingEntry> = new Map();
-  /** The attachment cell files are dragged over. */
-  @tracked dropPos: Pos | null = null;
-  /** The `@onResolve` calls and uploads in flight, by token. */
-  pendingCalls = new Map<object, PendingCall>();
   /**
    * An editor is open in the expanded record's form: the shell's focus
    * trap is paused, so focus can reach a surface the editor renders
@@ -514,10 +459,6 @@ export default class EuiSheet<T extends object> extends Component<
   gridApi: EuiDataGridRefProps | null = null;
   wrapper: HTMLElement | null = null;
 
-  /* Undo and redo: the change sets this sheet emitted for user actions */
-  undoStack: HistoryEntry[] = [];
-  redoStack: HistoryEntry[] = [];
-
   /** The cell a left-button press started on, while it may become a drag. */
   dragFrom: Pos | null = null;
   /** The press ended a drag: its click is not a click on a cell. */
@@ -525,10 +466,6 @@ export default class EuiSheet<T extends object> extends Component<
 
   /** Stable object: the grid passes it to every cell renderer. */
   cellContext = { sheet: this as unknown as EuiSheet<object> };
-
-  /* Following `@records` (V02-DESIGN.md 3.2, 3.3) */
-  /** A cell to focus once its record is rendered (inserted rows). */
-  pendingFocus: PendingFocus | null = null;
   /** The `@records` of the last render, and their ids. */
   lastRecords: readonly T[] | null = null;
   lastIds: string[] = [];
@@ -537,35 +474,24 @@ export default class EuiSheet<T extends object> extends Component<
   /** `@groups` of that render (V03 4.2): what a stored add row or header row belongs to. */
   lastGroups: readonly SheetGroup[] = [];
   lastGroupsArg: readonly SheetGroup[] | undefined = undefined;
-  /** What emitted change sets insert and delete, until `@records` changes. */
-  pendingOwn: PendingOwn = { deletes: new Set(), inserts: 0 };
-  /** Every id `remapIds` was told about, old (as a string) → new. */
-  remapped: Map<string, RecordId> = new Map();
 
   /** The sheet's API for its owner (`@registerApi`): one stable object. */
   sheetApi: SheetApi = {
-    undo: () => this.undo(),
-    redo: () => this.redo(),
+    undo: () => this.history.undo(),
+    redo: () => this.history.redo(),
     focusCell: (cell) => this.selection.focusRecordCell(cell),
-    remapIds: (ids) => this.remapIds(ids),
-    clearHistory: () => this.clearHistory(),
+    remapIds: (ids) => this.history.remapIds(ids),
+    clearHistory: () => this.history.clearHistory(),
     expandRecord: (recordId) => {
       if (recordId === null) this.closeExpanded();
       else this.expandRecord(recordId, null);
     },
-    insertRecord: (options = {}) => this.insertFromApi(options),
-    deleteRecords: (ids) => this.deleteRecordIds(ids, false),
+    insertRecord: (options = {}) => this.records.insertFromApi(options),
+    deleteRecords: (ids) => this.records.deleteRecordIds(ids, false),
     showShortcuts: () => this.showShortcuts(),
     editField: (fieldId) => this.editField(fieldId),
     addField: (options = {}) => this.addField(options.index)
   };
-
-  /* `@validate` runs */
-  validateTimer: ReturnType<typeof debounce> | null = null;
-  validateSeq = 0;
-  validateController: AbortController | null = null;
-  validateToken: unknown = null;
-  changedSinceRun: Array<{ recordId: RecordId; fieldId: string }> = [];
 
   /** Messages through `eui-i18n` (each call looks its token up). */
   translatedMessages: SheetMessages = createMessages((token, def, values) =>
@@ -580,15 +506,16 @@ export default class EuiSheet<T extends object> extends Component<
   willDestroy(): void {
     super.willDestroy();
     if (this.outline.flashTimer) clearTimeout(this.outline.flashTimer);
-    if (this.validateTimer) cancel(this.validateTimer);
-    this.validateController?.abort();
-    this.endValidateWaiter();
+    if (this.validate.validateTimer) cancel(this.validate.validateTimer);
+    this.validate.validateController?.abort();
+    this.validate.endValidateWaiter();
     this.stopWatchingRelease();
     this.stopFillDrag();
     this.autoScroll.stop();
     this.cancelLongPress();
     document.removeEventListener('mousedown', this.onDocumentMouseDown, true);
-    for (const token of [...this.pendingCalls.keys()]) this.endCall(token);
+    for (const token of [...this.resolve.pendingCalls.keys()])
+      this.resolve.endCall(token);
   }
 
   /* -------------------------------------------------------------------- */
@@ -713,7 +640,7 @@ export default class EuiSheet<T extends object> extends Component<
     (_element: HTMLElement, [records, groups]: [unknown, unknown]) => {
       void groups;
       // V03 4.2: `@groups` can change while `@records` stays the same array
-      if (records !== this.lastRecords) this.scheduleValidate();
+      if (records !== this.lastRecords) this.validate.scheduleValidate();
       afterRender(this, () => this.recordsRendered());
     }
   );
@@ -735,13 +662,13 @@ export default class EuiSheet<T extends object> extends Component<
     const previousModel = this.lastRowModel;
     const previousGroups = this.lastGroups;
     const ids = records.map((record) => String(this.args.getRecordId(record)));
-    const pending = this.pendingOwn;
+    const pending = this.changes.pendingOwn;
     this.lastRecords = records;
     this.lastIds = ids;
     this.lastRowModel = this.rows.rowModel;
     this.lastGroups = this.rows.groups;
     this.lastGroupsArg = this.args.groups;
-    this.pendingOwn = { deletes: new Set(), inserts: 0 };
+    this.changes.pendingOwn = { deletes: new Set(), inserts: 0 };
     // grouped, the rows moved: what holds grid rows across renders ends (V03 7.4)
     const regrouped =
       !!previousModel &&
@@ -755,10 +682,10 @@ export default class EuiSheet<T extends object> extends Component<
     const imeFocus = regrouped && this.endTransients();
     // a pending cell whose record left `@records` (an owner's re-query) is
     // dropped; one on a row not inserted yet (an async owner) is kept
-    if (previous && this.pendingCells.size) {
+    if (previous && this.resolve.pendingCells.size) {
       const now = new Set(ids);
       const left = previousIds.filter((id) => !now.has(id));
-      if (left.length) this.dropPending([], left);
+      if (left.length) this.resolve.dropPending([], left);
     }
     if (
       previous &&
@@ -793,7 +720,7 @@ export default class EuiSheet<T extends object> extends Component<
     if (this.menu && previous && !sameIds(previousIds, ids)) {
       this.closeMenu(false);
     }
-    this.applyPendingFocus();
+    this.records.applyPendingFocus();
     if (this.rows.isGrouped || previousGroups.length)
       this.groupHeaders.followGroupFocus();
   }
@@ -831,7 +758,7 @@ export default class EuiSheet<T extends object> extends Component<
     );
     if (imeFocus && this.selection.head && !this.editing)
       this.dom.focusGridCell(this.selection.head);
-    this.applyPendingFocus();
+    this.records.applyPendingFocus();
     this.groupHeaders.followGroupFocus();
   }
 
@@ -847,7 +774,7 @@ export default class EuiSheet<T extends object> extends Component<
     const imeFocus =
       !!this.ime.imePos && document.activeElement === this.ime.imeInput;
     if (this.ime.imePos || this.ime.imeActive) this.ime.endIme();
-    if (this.dropPos) this.dropPos = null;
+    if (this.uploads.dropPos) this.uploads.dropPos = null;
     // the menu's items can re-render first and drop the focused one: focus
     // then fell to the page
     const active = document.activeElement;
@@ -1020,258 +947,9 @@ export default class EuiSheet<T extends object> extends Component<
     if (!hadCellFocus) this.focus.focused = null;
   }
 
-  /** Focuses the pending cell once its record is in `@records` (it is rendered by now). */
-  applyPendingFocus(): void {
-    const pending = this.pendingFocus;
-    if (!pending) return;
-    // `lastIds` and `lastRowModel` are of the same render
-    const model = this.lastRowModel ?? this.rows.rowModel;
-    const row = model.gridRowOf(this.lastIds.indexOf(pending.id));
-    if (row < 0) return;
-    this.pendingFocus = null;
-    const col = Math.max(
-      0,
-      this.fields.visibleFields.findIndex(
-        (field) => field.id === pending.fieldId
-      )
-    );
-    const pos = { row, col };
-    this.selection.anchor = pos;
-    this.selection.head = pos;
-    this.selection.rangeKind = 'cells';
-    this.focus.domCursor = pos;
-    this.dom.focusGridCell(pos);
-  }
-
   /** The row menu's anchor in the viewport (the layer reads it at every placement). */
   menuAnchor = (): LayerAnchor | null =>
     this.menu ? this.dom.toViewport(this.menu.anchor) : null;
-
-  /* -------------------------------------------------------------------- */
-  /* Records: insert, delete, duplicate, copy (V02-DESIGN.md 5.6)          */
-  /* -------------------------------------------------------------------- */
-
-  /** `@newRecordValues` for a record between `above` and `below`. */
-  newValues(
-    above: T | undefined,
-    below: T | undefined
-  ): Record<string, unknown> {
-    return this.args.newRecordValues?.({ above, below }) ?? {};
-  }
-
-  /**
-   * Emits the insert of one record at `index`, next to `anchor`; then, when
-   * `focusFieldId` is given, focuses that field of the new row once it is
-   * rendered.
-   */
-  insertOne(
-    index: number,
-    anchor: RecordInsert['anchor'] | undefined,
-    values: Record<string, unknown>,
-    focusFieldId: string | null,
-    groupKey?: string
-  ): void {
-    const changeSet = insertRecords(this.context, {
-      at: index,
-      anchor,
-      values: [values],
-      nextTempId,
-      groupKey
-    });
-    if (this.editing) this.commit({ refocus: false });
-    this.emit(changeSet, []);
-    if (focusFieldId !== null) {
-      this.pendingFocus = {
-        id: changeSet.inserts[0]!.tempId,
-        fieldId: focusFieldId
-      };
-      afterRender(this, () => this.applyPendingFocus());
-    }
-  }
-
-  /** Insert above or below a grid row (Shift+Enter, the menu); focus goes to `fieldId` of the new row. */
-  insertNear(
-    gridRow: number,
-    position: 'before' | 'after',
-    fieldId: string | null
-  ): void {
-    const records = this.args.records;
-    // the neighbours are records: ± 1 in `@records`
-    const row = this.rows.recordRowAt(gridRow);
-    const record = records[row];
-    if (record === undefined) return;
-    const recordId = this.args.getRecordId(record);
-    // grouped: into the record's group, whose values win (V03 8.4)
-    const group = this.groupHeaders.groupInsertOf(gridRow);
-    const values = {
-      ...(position === 'after'
-        ? this.newValues(record, records[row + 1])
-        : this.newValues(records[row - 1], record)),
-      ...group?.values
-    };
-    this.insertOne(
-      position === 'after' ? row + 1 : row,
-      { recordId, position },
-      values,
-      fieldId ?? this.firstEditableField(values),
-      group?.groupKey
-    );
-  }
-
-  /**
-   * An add row (grid row `row`): the sheet's inserts a record at the end, a
-   * group's one into that group (`appendToGroup`); focus goes to its first
-   * editable field.
-   */
-  appendRecord(row: number): void {
-    if (!this.canInsert) return;
-    const group = this.rows.addRowGroupAt(row);
-    if (group >= 0) {
-      this.appendToGroup(row, group);
-      return;
-    }
-    const records = this.args.records;
-    const last = records[records.length - 1];
-    const values = this.newValues(last, undefined);
-    this.insertOne(
-      records.length,
-      last === undefined
-        ? undefined
-        : { recordId: this.args.getRecordId(last), position: 'after' },
-      values,
-      this.firstEditableField(values)
-    );
-  }
-
-  /**
-   * A group's add row (V03 8.4, GR9): one record after the group's last
-   * loaded record, with `@newRecordValues` under the group's values (which
-   * win), its `groupKey`, and an anchor when the group has a record.
-   */
-  appendToGroup(row: number, group: number): void {
-    const records = this.args.records;
-    const key = this.rows.groups[group]?.key;
-    // the group's last loaded record is the row above its add row
-    const last = this.rows.recordRowAt(row - 1);
-    const above = last >= 0 ? records[last] : undefined;
-    const values = {
-      ...this.newValues(above, undefined),
-      ...this.groupHeaders.groupValuesOf(group)
-    };
-    this.insertOne(
-      last >= 0 ? last + 1 : this.rows.coreRowOf(row),
-      above === undefined
-        ? undefined
-        : { recordId: this.args.getRecordId(above), position: 'after' },
-      values,
-      this.firstEditableField(values),
-      key
-    );
-  }
-
-  /** The first visible field a new record with these values can edit. */
-  firstEditableField(values: Record<string, unknown>): string | null {
-    const fields = this.fields.visibleFields;
-    const field =
-      fields.find((f) => !isReadOnly(this.context, f, values as T)) ??
-      fields[0];
-    return field?.id ?? null;
-  }
-
-  /** `SheetApi.insertRecord`: no focus change. */
-  insertFromApi(options: {
-    anchor?: RecordInsert['anchor'];
-    values?: Record<string, unknown>;
-  }): void {
-    const records = this.args.records;
-    const anchor = options.anchor;
-    const row = anchor ? this.rows.rowOf(anchor.recordId, 0) : -1;
-    if (anchor && row >= 0) {
-      const index = anchor.position === 'after' ? row + 1 : row;
-      const values =
-        options.values ?? this.newValues(records[index - 1], records[index]);
-      this.insertOne(index, anchor, values, null);
-      return;
-    }
-    const last = records[records.length - 1];
-    this.insertOne(
-      records.length,
-      last === undefined
-        ? undefined
-        : { recordId: this.args.getRecordId(last), position: 'after' },
-      options.values ?? this.newValues(last, undefined),
-      null
-    );
-  }
-
-  /**
-   * Emits the delete of these records. With `refocus`, focus goes to that
-   * field of the record after them (or before them, at the end).
-   */
-  deleteRecordIds(
-    ids: readonly RecordId[],
-    refocus: false | { fieldId: string | null }
-  ): void {
-    const records = this.args.records;
-    const changeSet = deleteRecords(records, ids, this.args.getRecordId);
-    if (!changeSet) return;
-    if (this.editing) this.commit({ refocus: false });
-    if (refocus) {
-      const gone = new Set(changeSet.deletes!.map(String));
-      const removed = changeSet.removed!;
-      const lastIndex = removed[removed.length - 1]!.index;
-      const firstIndex = removed[0]!.index;
-      const keep = (record: T | undefined) =>
-        record !== undefined &&
-        !gone.has(String(this.args.getRecordId(record)));
-      let neighbour: T | undefined;
-      for (let i = lastIndex + 1; i < records.length && !neighbour; i++) {
-        if (keep(records[i])) neighbour = records[i];
-      }
-      for (let i = firstIndex - 1; i >= 0 && !neighbour; i--) {
-        if (keep(records[i])) neighbour = records[i];
-      }
-      const fieldId = refocus.fieldId ?? this.fields.visibleFields[0]?.id;
-      this.pendingFocus =
-        neighbour && fieldId !== undefined
-          ? { id: String(this.args.getRecordId(neighbour)), fieldId }
-          : null;
-      this.selection.anchor = null;
-      this.selection.head = null;
-      this.selection.rangeKind = 'cells';
-    }
-    this.emit(changeSet, []);
-  }
-
-  /** A copy of each record right after it: every writable field, visible and hidden. */
-  duplicate(records: readonly T[], fieldId: string | null): void {
-    const all = this.args.records;
-    const indexes = records
-      .map((record) =>
-        this.rows.rowOf(this.args.getRecordId(record), all.indexOf(record))
-      )
-      .filter((index) => index >= 0);
-    // grouped: each copy goes into its record's group (V03 8.4)
-    const group = this.rows.isGrouped
-      ? (index: number) =>
-          this.groupHeaders.groupInsertOf(this.rows.gridRowOf(index))
-      : undefined;
-    const changeSet = duplicateRecords(
-      { ...this.context, fields: this.fields.allFields, readOnly: false },
-      indexes,
-      group ? { nextTempId, group } : { nextTempId }
-    );
-    if (!changeSet) return;
-    const focusField = fieldId ?? this.fields.visibleFields[0]?.id;
-    this.emit(changeSet, []);
-    if (focusField !== undefined) {
-      this.pendingFocus = {
-        id: changeSet.inserts[0]!.tempId,
-        fieldId: focusField
-      };
-      afterRender(this, () => this.applyPendingFocus());
-    }
-  }
 
   /** Copies the records' visible fields as TSV. */
   copyRows(records: readonly T[]): void {
@@ -1371,14 +1049,14 @@ export default class EuiSheet<T extends object> extends Component<
           label: messages.insertAbove(),
           icon: 'sortUp',
           onSelect: () =>
-            this.insertNear(menu.row, 'before', this.menuFieldId(menu))
+            this.records.insertNear(menu.row, 'before', this.menuFieldId(menu))
         },
         {
           id: 'insertBelow',
           label: messages.insertBelow(),
           icon: 'sortDown',
           onSelect: () =>
-            this.insertNear(menu.row, 'after', this.menuFieldId(menu))
+            this.records.insertNear(menu.row, 'after', this.menuFieldId(menu))
         },
         {
           id: 'duplicate',
@@ -1388,7 +1066,8 @@ export default class EuiSheet<T extends object> extends Component<
               : messages.duplicateRecord(),
           icon: 'copy',
           disabled: !count,
-          onSelect: () => this.duplicate(records, this.menuFieldId(menu))
+          onSelect: () =>
+            this.records.duplicate(records, this.menuFieldId(menu))
         }
       );
     }
@@ -1441,7 +1120,7 @@ export default class EuiSheet<T extends object> extends Component<
         color: 'danger',
         disabled: !count,
         onSelect: () =>
-          this.deleteRecordIds(
+          this.records.deleteRecordIds(
             records.map((record) => this.args.getRecordId(record)),
             { fieldId: this.menuFieldId(menu) }
           )
@@ -1603,7 +1282,7 @@ export default class EuiSheet<T extends object> extends Component<
     if (!form) return;
     const col = this.fields.allFields.indexOf(field);
     if (col < 0) return;
-    this.emitText(form.ctx, { row: 0, col }, text, [
+    this.changes.emitText(form.ctx, { row: 0, col }, text, [
       { id: this.args.getRecordId(form.record), fieldId: field.id }
     ]);
   }
@@ -1630,7 +1309,7 @@ export default class EuiSheet<T extends object> extends Component<
     const col = this.fields.allFields.indexOf(field);
     if (col < 0) return;
     const changeSet = build(form.ctx, { row: 0, col });
-    this.emit(changeSet, [
+    this.changes.emit(changeSet, [
       { id: this.args.getRecordId(form.record), fieldId: field.id }
     ]);
   }
@@ -2047,7 +1726,7 @@ export default class EuiSheet<T extends object> extends Component<
     const recordSource = this.rows.recordRange(source);
     const recordTarget = this.rows.recordRange(target);
     if (!recordSource || !recordTarget) return;
-    this.emit(
+    this.changes.emit(
       fillRange(this.context, recordSource, recordTarget, {
         copy: event.ctrlKey || event.altKey
       }),
@@ -2282,7 +1961,7 @@ export default class EuiSheet<T extends object> extends Component<
     if (!cell) return;
     const pos = this.dom.cursor(cell);
     if (this.rows.isAddRow(pos.row)) {
-      this.appendRecord(pos.row);
+      this.records.appendRecord(pos.row);
       return;
     }
     const record = this.rows.recordAt(pos.row);
@@ -2341,7 +2020,7 @@ export default class EuiSheet<T extends object> extends Component<
     if (rowCell) {
       const row = this.dom.rowIndexOf(rowCell);
       if (this.rows.isAddRow(row)) {
-        this.appendRecord(row);
+        this.records.appendRecord(row);
       } else if (target.closest('[data-eui-sheet-row-check]')) {
         this.checked.toggleChecked(row, event.shiftKey);
       } else if (target.closest('[data-eui-sheet-row-expand]')) {
@@ -2595,7 +2274,7 @@ export default class EuiSheet<T extends object> extends Component<
       const result = type.navKey(key, valueOf(record, field.id), field);
       if (result) {
         stop(event);
-        this.emit(
+        this.changes.emit(
           commitValue(ctx, this.rows.recordPos(pos), result.value),
           this.selection.touchedAt(pos)
         );
@@ -2612,7 +2291,7 @@ export default class EuiSheet<T extends object> extends Component<
     if (key === 'Enter' && event.shiftKey && plain && this.canInsert) {
       // C10: Shift+Enter inserts a record below
       stop(event);
-      this.insertNear(pos.row, 'after', field.id);
+      this.records.insertNear(pos.row, 'after', field.id);
       return;
     }
     if (key === 'Enter' || key === 'F2') {
@@ -2664,13 +2343,13 @@ export default class EuiSheet<T extends object> extends Component<
     const letter = event.key.toLowerCase();
     if (letter === 'z') {
       stop(event);
-      if (event.shiftKey) this.redo();
-      else this.undo();
+      if (event.shiftKey) this.history.redo();
+      else this.history.undo();
       return true;
     }
     if (letter === 'y' && event.ctrlKey && !event.shiftKey) {
       stop(event);
-      this.redo();
+      this.history.redo();
       return true;
     }
     if (letter === 'd' && !event.shiftKey) {
@@ -2880,7 +2559,7 @@ export default class EuiSheet<T extends object> extends Component<
     const plain = !event.ctrlKey && !event.metaKey && !event.altKey;
     if (event.key === 'Enter' && plain) {
       stop(event);
-      this.appendRecord(row);
+      this.records.appendRecord(row);
       return;
     }
     if (event.key === ' ' && plain) stop(event);
@@ -2962,7 +2641,7 @@ export default class EuiSheet<T extends object> extends Component<
     if (!range) return;
     const targets =
       range.right > range.left ? { ...range, left: range.left + 1 } : range;
-    this.emit(
+    this.changes.emit(
       fillRight(this.context, range),
       this.selection.touchedInRecords(targets, true)
     );
@@ -2976,329 +2655,10 @@ export default class EuiSheet<T extends object> extends Component<
     // the cells written: below the top record, or the record itself (from above)
     const targets =
       range.bottom > range.top ? { ...range, top: range.top + 1 } : range;
-    this.emit(
+    this.changes.emit(
       fillDown(this.context, range),
       this.selection.touchedInRecords(targets, true)
     );
-  }
-
-  /* -------------------------------------------------------------------- */
-  /* Undo and redo                                                         */
-  /* -------------------------------------------------------------------- */
-
-  /**
-   * What undo and redo need besides the records: every field id, visible
-   * and hidden (a restored record's values); and, grouped with a collapsed
-   * group, `keepUnseen`: a record not in `@records` may be in that group,
-   * so its patches are emitted (V03 8.5, GR16).
-   */
-  get historyOptions(): HistoryOptions {
-    return {
-      fieldIds: this.fields.allFields.map((field) => field.id),
-      equals: (fieldId, a, b) => this.fields.valueEquals(fieldId, a, b),
-      keepUnseen: this.rows.groups.some((group) => group.collapsed)
-    };
-  }
-
-  /**
-   * Emits the inverse of the last entry, without the cells changed since,
-   * and clears the texts it rejected. `focus: false` keeps DOM focus where
-   * it is (the expanded record's form).
-   */
-  undo({ focus = true }: { focus?: boolean } = {}): void {
-    if (this.args.readOnly) return;
-    const entry = this.undoStack.pop();
-    if (!entry) return;
-    this.redoStack.push(entry);
-    // a resolve or upload still running for it is dropped (V02-RESULTS, batch 5)
-    this.endCallsOf(entry);
-    const applied = this.applyHistory(
-      undoChangeSet(
-        entry.changeSet,
-        this.args.records,
-        this.args.getRecordId,
-        this.historyOptions
-      ),
-      entry,
-      'undo',
-      focus
-    );
-    // none of its records is in @records (another page of the owner's
-    // data): skipped, and kept on the stack for when they are back (7.3)
-    if (!applied && !this.touchesRecords(entry)) {
-      this.redoStack.pop();
-      this.undoStack.push(entry);
-    }
-  }
-
-  /**
-   * Emits the last undone entry again, without the cells changed since,
-   * and shows its rejected texts again.
-   */
-  redo({ focus = true }: { focus?: boolean } = {}): void {
-    if (this.args.readOnly) return;
-    const entry = this.redoStack.pop();
-    if (!entry) return;
-    this.undoStack.push(entry);
-    const applied = this.applyHistory(
-      redoChangeSet(
-        entry.changeSet,
-        this.args.records,
-        this.args.getRecordId,
-        this.historyOptions
-      ),
-      entry,
-      'redo',
-      focus
-    );
-    if (!applied && !this.touchesRecords(entry)) {
-      this.undoStack.pop();
-      this.redoStack.push(entry);
-    }
-  }
-
-  clearHistory(): void {
-    this.undoStack = [];
-    this.redoStack = [];
-  }
-
-  /**
-   * `SheetApi.remapIds`: rewrites the history, the rejections, a pending
-   * focus, an open editor's record and the ids of the last `@records`.
-   */
-  remapIds(ids: Record<string, RecordId>): void {
-    const map = toIdMap(ids);
-    if (!map.size) return;
-    this.remapped = composeIdMaps(this.remapped, map);
-    const remapEntry = (entry: HistoryEntry): HistoryEntry => ({
-      changeSet: remapChangeSet(entry.changeSet, map),
-      rejections: remapRejections(entry.rejections, (id) => remapId(id, map))
-    });
-    const remapTracked = (entry: HistoryEntry): HistoryEntry => {
-      const next = remapEntry(entry);
-      this.replaceEntry(entry, next);
-      return next;
-    };
-    this.undoStack = this.undoStack.map(remapTracked);
-    this.redoStack = this.redoStack.map(remapTracked);
-    if (this.pendingCells.size) {
-      const next = new Map<string, PendingEntry>();
-      for (const [key, entry] of this.pendingCells) {
-        const cell = entry.cell;
-        if (!cell) {
-          const at = key.indexOf('\u0000');
-          const id = String(remapId(key.slice(0, at), map));
-          next.set(cellKey(id, key.slice(at + 1)), entry);
-          continue;
-        }
-        const id = remapId(cell.recordId ?? cell.tempId!, map);
-        const moved: PendingCell = { ...cell, recordId: id };
-        delete moved.tempId;
-        next.set(cellKey(id, cell.fieldId), { ...entry, cell: moved });
-      }
-      this.pendingCells = next;
-    }
-    if (this.cells.rejections.size) {
-      const next = new Map<string, Rejection>();
-      for (const entry of this.cells.rejections.values()) {
-        const id = String(remapId(entry.id, map));
-        next.set(cellKey(id, entry.fieldId), { ...entry, id });
-      }
-      this.cells.rejections = next;
-    }
-    if (this.pendingFocus) {
-      this.pendingFocus = {
-        ...this.pendingFocus,
-        id: String(remapId(this.pendingFocus.id, map))
-      };
-    }
-    if (this.editing) {
-      this.editing.recordId = remapId(this.editing.recordId, map);
-    }
-    if ([...this.checked.checkedIds].some((id) => map.has(id))) {
-      this.checked.setChecked(
-        new Set(
-          [...this.checked.checkedIds].map((id) => String(remapId(id, map)))
-        )
-      );
-    }
-    if (this.localExpandedId !== null) {
-      this.localExpandedId = remapId(this.localExpandedId, map);
-    }
-    if (this.expandedFrom) {
-      this.expandedFrom = {
-        ...this.expandedFrom,
-        recordId: remapId(this.expandedFrom.recordId, map)
-      };
-    }
-    // a `@records` that only carries the new ids is not a change of rows
-    this.lastIds = this.lastIds.map((id) => String(remapId(id, map)));
-    const deletes = [...this.pendingOwn.deletes].map((id) =>
-      String(remapId(id, map))
-    );
-    this.pendingOwn = { ...this.pendingOwn, deletes: new Set(deletes) };
-  }
-
-  /**
-   * Emits an undo or redo (if anything is left of it), clears (undo) or
-   * restores (redo) the entry's rejected texts, and selects what changed.
-   * An entry with only rejections emits nothing: the data does not change.
-   */
-  /**
-   * Whether a record the entry changed, inserted or deleted is in
-   * `@records`. An entry with none (the owner shows another page or query)
-   * is kept on its stack when undo or redo finds nothing to do.
-   */
-  touchesRecords(entry: HistoryEntry): boolean {
-    const { changeSet } = entry;
-    const ids = new Set(
-      this.args.records.map((record) => String(this.args.getRecordId(record)))
-    );
-    return (
-      changeSet.patches.some((patch) => ids.has(String(patch.recordId))) ||
-      changeSet.inserts.some((insert) => ids.has(insert.tempId)) ||
-      (changeSet.deletes ?? []).some((id) => ids.has(String(id))) ||
-      entry.rejections.some((rejection) => ids.has(String(rejection.id)))
-    );
-  }
-
-  /** Returns whether it emitted a change set or changed the rejected texts shown. */
-  applyHistory(
-    changeSet: ChangeSet | null,
-    entry: HistoryEntry,
-    direction: 'undo' | 'redo',
-    focus: boolean
-  ): boolean {
-    const before = this.args.records.length;
-    let shown: Rejection[] = [];
-    if (direction === 'undo' && entry.rejections.length) {
-      const next = clearRejections(this.cells.rejections, entry.rejections);
-      if (next) {
-        shown = entry.rejections.filter(
-          (rejection) => !next.has(cellKey(rejection.id, rejection.fieldId))
-        );
-        this.cells.rejections = next;
-      }
-    }
-    if (changeSet) {
-      this.emit(
-        changeSet,
-        changeSet.patches.map((patch) => ({
-          id: patch.recordId,
-          fieldId: patch.fieldId
-        }))
-      );
-    }
-    if (direction === 'redo' && entry.rejections.length) {
-      // after emit: the owner may have put back the rows they are on
-      const byId = new Map(
-        this.args.records.map((record) => [
-          String(this.args.getRecordId(record)),
-          record
-        ])
-      );
-      const next = restoreRejections(
-        this.cells.rejections,
-        entry.rejections,
-        (id, fieldId) => ({
-          found: byId.has(id),
-          value: valueOf(byId.get(id), fieldId)
-        })
-      );
-      if (next) {
-        shown = entry.rejections.filter((rejection) =>
-          next.has(cellKey(rejection.id, rejection.fieldId))
-        );
-        this.cells.rejections = next;
-      }
-    }
-    if (!changeSet && !shown.length) return false;
-    this.selectChanged(
-      changeSet ?? { ...EMPTY_CHANGE_SET, source: direction },
-      before,
-      shown.map((rejection) => ({
-        id: rejection.id,
-        fieldId: rejection.fieldId
-      })),
-      focus
-    );
-    return true;
-  }
-
-  /**
-   * Selects the bounding box of the patched cells and focuses its top-left
-   * cell. Only rows that exist both before and after the change are used:
-   * inserted rows are rendered only on the next render, and the grid throws
-   * for a row past its last one. A change that only inserts (an undone
-   * delete) focuses the first inserted record once it is rendered.
-   */
-  selectChanged(
-    changeSet: ChangeSet,
-    rowsBefore: number,
-    extraCells: Touched = [],
-    focusCell = true
-  ): void {
-    // the owner's records after it applied the change set, if it did at once
-    const records = this.args.records;
-    const rows = Math.min(rowsBefore, records.length);
-    const indexOf = new Map(
-      records.map((record, i) => [String(this.args.getRecordId(record)), i])
-    );
-    let box: Range | null = null;
-    const cells: Touched = [
-      ...changeSet.patches.map((patch) => ({
-        id: patch.recordId,
-        fieldId: patch.fieldId
-      })),
-      ...extraCells
-    ];
-    for (const { id, fieldId } of cells) {
-      const row = indexOf.get(String(id));
-      const col = this.fields.visibleFields.findIndex(
-        (field) => field.id === fieldId
-      );
-      if (row === undefined || row >= rows || col < 0) continue;
-      box = box
-        ? {
-            top: Math.min(box.top, row),
-            left: Math.min(box.left, col),
-            bottom: Math.max(box.bottom, row),
-            right: Math.max(box.right, col)
-          }
-        : { top: row, left: col, bottom: row, right: col };
-    }
-    let focus: Pos;
-    if (box) {
-      // the box is in record rows
-      focus = this.rows.gridPos({ row: box.top, col: box.left });
-      this.selection.anchor = this.rows.gridPos({
-        row: box.bottom,
-        col: box.right
-      });
-    } else if (changeSet.inserts.length) {
-      const field = this.fields.visibleFields[this.selection.head?.col ?? 0];
-      if (!field || !focusCell) return;
-      this.pendingFocus = {
-        id: changeSet.inserts[0]!.tempId,
-        fieldId: field.id
-      };
-      // the owner may have applied it already; else the next render does
-      afterRender(this, () => this.applyPendingFocus());
-      return;
-    } else {
-      // nothing patched (an undo that only removed rows): keep focus on a
-      // row that still exists
-      const head = this.selection.head;
-      if (!head || rows === 0 || head.row <= this.rows.gridRowOf(rows - 1))
-        return;
-      focus = { row: this.rows.gridRowOf(rows - 1), col: head.col };
-      this.selection.anchor = focus;
-    }
-    this.selection.head = focus;
-    if (!focusCell) return;
-    // onFocusIn sees the cell it already knows and keeps the range
-    this.focus.domCursor = focus;
-    this.dom.focusGridCell(focus);
   }
 
   onEditKeyDown(event: KeyboardEvent): void {
@@ -3381,7 +2741,7 @@ export default class EuiSheet<T extends object> extends Component<
     }
     const records = this.rows.recordRange(range);
     if (records) {
-      this.emit(
+      this.changes.emit(
         clearRange(this.context, records, { source: 'cut' }),
         this.selection.touchedInRecords(records, true)
       );
@@ -3407,7 +2767,7 @@ export default class EuiSheet<T extends object> extends Component<
       data.files?.length &&
       (!plain.trim() || !types.includes('text/html')) &&
       this.selection.range &&
-      this.pasteFiles(data.files)
+      this.uploads.pasteFiles(data.files)
     ) {
       stop(event);
       return;
@@ -3460,10 +2820,13 @@ export default class EuiSheet<T extends object> extends Component<
     if (this.args.onResolve) {
       // V9: the synchronous part at once, the resolved part later
       const plan = planPaste(this.context, at, matrix, options);
-      const entry = this.emit(plan.changeSet, touched);
-      this.startResolve(plan, entry);
+      const entry = this.changes.emit(plan.changeSet, touched);
+      this.resolve.startResolve(plan, entry);
     } else {
-      this.emit(pasteMatrix(this.context, at, matrix, options), touched);
+      this.changes.emit(
+        pasteMatrix(this.context, at, matrix, options),
+        touched
+      );
     }
     // no setFocusedCell: inserted rows exist only after the next render
     this.selection.anchor = anchor;
@@ -3585,7 +2948,7 @@ export default class EuiSheet<T extends object> extends Component<
     this.draftValue = undefined;
     if (upload) {
       this.editing.onUpload = (files) =>
-        this.uploadFiles(recordId, field, files);
+        this.uploads.uploadFiles(recordId, field, files);
     }
   }
 
@@ -3633,13 +2996,13 @@ export default class EuiSheet<T extends object> extends Component<
     const ctx = this.context;
     const touched = [{ id: editing.recordId, fieldId: editing.field.id }];
     if (result && 'value' in result) {
-      this.emit(commitValue(ctx, pos, result.value), touched);
+      this.changes.emit(commitValue(ctx, pos, result.value), touched);
     } else if (result && 'text' in result) {
-      this.emitText(ctx, pos, result.text, touched);
+      this.changes.emitText(ctx, pos, result.text, touched);
     } else if (this.draftDirty && this.draftKind === 'value') {
-      this.emit(commitValue(ctx, pos, this.draftValue), touched);
+      this.changes.emit(commitValue(ctx, pos, this.draftValue), touched);
     } else if (this.draftDirty) {
-      this.emitText(ctx, pos, this.draft, touched);
+      this.changes.emitText(ctx, pos, this.draft, touched);
     }
     if (refocus) {
       // synchronous is safe: the target row already exists
@@ -3700,29 +3063,11 @@ export default class EuiSheet<T extends object> extends Component<
       this.rows.hintOf(editing.pos.row)
     );
     if (row < 0) return;
-    this.emit(commitValue(this.context, { row, col: editing.pos.col }, value), [
-      { id: editing.recordId, fieldId: editing.field.id }
-    ]);
+    this.changes.emit(
+      commitValue(this.context, { row, col: editing.pos.col }, value),
+      [{ id: editing.recordId, fieldId: editing.field.id }]
+    );
   };
-
-  /**
-   * A typed text: with `@onResolve`, a text the type answers `{ unresolved }`
-   * for is pending and resolved (`planCommit`); else `commitText`.
-   */
-  emitText(
-    ctx: SheetContext<T>,
-    pos: Pos,
-    text: string,
-    touched: Touched
-  ): void {
-    if (!this.args.onResolve) {
-      this.emit(commitText(ctx, pos, text), touched);
-      return;
-    }
-    const plan = planCommit(ctx, pos, text);
-    const entry = this.emit(plan.changeSet, touched);
-    this.startResolve(plan, entry);
-  }
 
   onEditorCommit = (
     result?: SheetEditorResult<unknown>,
@@ -4076,26 +3421,26 @@ export default class EuiSheet<T extends object> extends Component<
           continue;
         }
         const next = { changeSet, rejections };
-        this.replaceEntry(entry, next);
+        this.history.replaceEntry(entry, next);
         kept.push(next);
       }
       return kept;
     };
-    this.undoStack = prune(this.undoStack);
-    this.redoStack = prune(this.redoStack);
+    this.history.undoStack = prune(this.history.undoStack);
+    this.history.redoStack = prune(this.history.redoStack);
     if ([...this.cells.rejections.values()].some((r) => ids.has(r.fieldId))) {
       this.cells.rejections = new Map(
         [...this.cells.rejections].filter(([, r]) => !ids.has(r.fieldId))
       );
     }
-    const pendingKeys = [...this.pendingCells]
+    const pendingKeys = [...this.resolve.pendingCells]
       .filter(([, entry]) => entry.cell && ids.has(entry.cell.fieldId))
       .map(([key]) => key);
-    const uploadKeys = [...this.pendingCells.keys()].filter((key) =>
+    const uploadKeys = [...this.resolve.pendingCells.keys()].filter((key) =>
       ids.has(key.slice(key.indexOf('\u0000') + 1))
     );
     const keys = [...new Set([...pendingKeys, ...uploadKeys])];
-    if (keys.length) this.dropPending(keys);
+    if (keys.length) this.resolve.dropPending(keys);
     if (this.editing && ids.has(this.editing.field.id)) this.editing = null;
     const state = this.fieldEditorState;
     // our own save in flight closes the editor itself
@@ -4169,552 +3514,6 @@ export default class EuiSheet<T extends object> extends Component<
     if (this.editing) this.commit({ refocus: false });
   }
 
-  /* -------------------------------------------------------------------- */
-  /* Emitting change sets                                                  */
-  /* -------------------------------------------------------------------- */
-
-  /**
-   * Updates the rejections (drops the touched cells and entries whose record
-   * is gone, adds the change set's), then calls `@onChange`.
-   */
-  emit(
-    changeSet: ChangeSet | null,
-    touched: Touched,
-    options: { mergeInto?: HistoryEntry | null } = {}
-  ): HistoryEntry | null {
-    const next = new Map(this.cells.rejections);
-    let changed = false;
-    for (const { id, fieldId } of touched) {
-      if (next.delete(cellKey(id, fieldId))) changed = true;
-    }
-    // a newer write to a pending cell discards its result
-    this.dropPending(
-      touched.map(({ id, fieldId }) => cellKey(id, fieldId)),
-      changeSet?.deletes ?? []
-    );
-    if (changeSet?.deletes?.length) {
-      // the removed records' texts and checkboxes go with them
-      const gone = new Set(changeSet.deletes.map(String));
-      if ([...gone].some((id) => this.checked.checkedIds.has(id))) {
-        this.checked.setChecked(
-          new Set([...this.checked.checkedIds].filter((id) => !gone.has(id)))
-        );
-      }
-      for (const [key, entry] of next) {
-        if (gone.has(entry.id)) {
-          next.delete(key);
-          changed = true;
-        }
-      }
-    }
-    if (next.size) {
-      const ids = new Set(
-        this.args.records.map((record) => String(this.args.getRecordId(record)))
-      );
-      for (const [key, entry] of next) {
-        if (!ids.has(entry.id)) {
-          next.delete(key);
-          changed = true;
-        }
-      }
-    }
-    const stored: Rejection[] = [];
-    if (changeSet) {
-      const byId = new Map(
-        this.args.records.map((record) => [
-          String(this.args.getRecordId(record)),
-          record
-        ])
-      );
-      for (const rejection of changeSet.rejected) {
-        const id = String(rejection.recordId ?? rejection.tempId);
-        const entry: Rejection = {
-          id,
-          fieldId: rejection.fieldId,
-          text: rejection.text,
-          message: rejection.message,
-          seenValue: valueOf(byId.get(id), rejection.fieldId)
-        };
-        next.set(cellKey(id, rejection.fieldId), entry);
-        stored.push(entry);
-        changed = true;
-      }
-    }
-    if (changed) this.cells.rejections = next;
-    if (!changeSet) return null;
-    const entry = this.recordHistory(changeSet, stored, options.mergeInto);
-    // the rows the owner's next `@records` gains or loses because of it
-    if (changeSet.inserts.length || changeSet.deletes?.length) {
-      this.pendingOwn.inserts += changeSet.inserts.length;
-      for (const id of changeSet.deletes ?? []) {
-        this.pendingOwn.deletes.add(String(id));
-      }
-    }
-    for (const patch of changeSet.patches) {
-      this.changedSinceRun.push({
-        recordId: patch.recordId,
-        fieldId: patch.fieldId
-      });
-    }
-    for (const insert of changeSet.inserts) {
-      for (const fieldId of Object.keys(insert.values)) {
-        this.changedSinceRun.push({ recordId: insert.tempId, fieldId });
-      }
-    }
-    this.args.onChange(changeSet);
-    this.scheduleValidate();
-    // a change ends the copy mark; a paste, fill, undo or redo flashes its cells
-    if (this.outline.copied) this.outline.copied = null;
-    if (FLASH_SOURCES.has(changeSet.source)) this.outline.flashCells(changeSet);
-    return entry;
-  }
-
-  /**
-   * A user action's change set becomes an undo entry (not an undo or redo,
-   * and not one with only new options), with the rejections it stored: a
-   * paste whose every cell was rejected is undone too. A new entry clears
-   * the redo stack. A bulk resolve (`'resolve'`) joins the last entry, the
-   * paste that asked for it, so one undo reverts both.
-   */
-  recordHistory(
-    changeSet: ChangeSet,
-    rejections: Rejection[],
-    mergeInto?: HistoryEntry | null
-  ): HistoryEntry | null {
-    if (changeSet.source === 'undo' || changeSet.source === 'redo') {
-      return null;
-    }
-    if (
-      !changeSet.patches.length &&
-      !changeSet.inserts.length &&
-      !changeSet.deletes?.length &&
-      !rejections.length
-    ) {
-      return null;
-    }
-    const remap = (id: RecordId) => remapId(id, this.remapped);
-    const entry: HistoryEntry = {
-      changeSet: remapChangeSet(changeSet, this.remapped),
-      rejections: remapRejections(rejections, remap)
-    };
-    // a resolve joins the entry of the paste or edit that asked for it
-    const index = mergeInto ? this.undoStack.indexOf(mergeInto) : -1;
-    if (entry.changeSet.source === 'resolve' && index >= 0) {
-      const target = this.undoStack[index]!;
-      // a resolved text is no longer a rejection of that entry
-      const written = new Set(
-        entry.changeSet.patches.map((patch) =>
-          cellKey(patch.recordId, patch.fieldId)
-        )
-      );
-      const merged: HistoryEntry = {
-        changeSet: mergeChangeSets(target.changeSet, entry.changeSet),
-        rejections: [
-          ...target.rejections.filter(
-            (rejection) =>
-              !written.has(cellKey(rejection.id, rejection.fieldId))
-          ),
-          ...entry.rejections
-        ]
-      };
-      this.undoStack[index] = merged;
-      this.replaceEntry(target, merged);
-      return merged;
-    }
-    this.undoStack.push(entry);
-    if (this.undoStack.length > HISTORY_LIMIT) this.undoStack.shift();
-    this.redoStack = [];
-    return entry;
-  }
-
-  /** A history entry was replaced (merged, remapped): calls that point at it follow. */
-  replaceEntry(from: HistoryEntry, to: HistoryEntry): void {
-    for (const call of this.pendingCalls.values()) {
-      if (call.entry === from) call.entry = to;
-    }
-  }
-
-  /* -------------------------------------------------------------------- */
-  /* Bulk resolve and uploads (V02-DESIGN.md 8.1, 8.2)                     */
-  /* -------------------------------------------------------------------- */
-
-  /**
-   * Stores a plan's pending cells (after its synchronous change set was
-   * emitted: that emit's `touched` covers them) and calls `@onResolve`
-   * once, one request per field.
-   */
-  startResolve(plan: ResolvePlan<T>, entry: HistoryEntry | null): void {
-    const onResolve = this.args.onResolve;
-    if (!onResolve || !plan.pending.length) return;
-    const token = {};
-    const controller = new AbortController();
-    const next = new Map(this.pendingCells);
-    for (const cell of plan.pending) {
-      next.set(cellKey(cell.recordId ?? cell.tempId!, cell.fieldId), {
-        text: cell.text,
-        token,
-        cell
-      });
-    }
-    this.pendingCells = next;
-    this.pendingCalls.set(token, {
-      kind: 'resolve',
-      controller,
-      waiter: resolveWaiter.beginAsync(),
-      entry
-    });
-    let result: Promise<ResolveResult>;
-    try {
-      result = Promise.resolve(
-        onResolve(plan.requests, { signal: controller.signal })
-      );
-    } catch (error) {
-      result = Promise.reject(
-        error instanceof Error ? error : new Error(String(error))
-      );
-    }
-    result.then(
-      (answers) => this.finishResolve(token, answers),
-      () => this.finishResolve(token, null)
-    );
-  }
-
-  /**
-   * Writes the cells still pending under `token`: the resolved values (a
-   * second change set, source 'resolve', merged into the paste's undo
-   * entry), or, when the call failed (`null`), a rejection per cell.
-   */
-  finishResolve(token: object, answers: ResolveResult | null): void {
-    const call = this.pendingCalls.get(token);
-    if (!call || this.isDestroying || this.isDestroyed) return;
-    const cells: PendingCell[] = [];
-    const next = new Map(this.pendingCells);
-    for (const [key, entry] of this.pendingCells) {
-      if (entry.token !== token || !entry.cell) continue;
-      cells.push(entry.cell);
-      next.delete(key);
-    }
-    this.pendingCells = next;
-    const mergeInto = call.entry;
-    this.endCall(token, false);
-    if (!cells.length) return;
-    let changeSet: ChangeSet | null;
-    if (answers) {
-      changeSet = resolveCells(
-        { ...this.context, fields: this.fields.allFields },
-        cells,
-        answers
-      );
-    } else {
-      changeSet = {
-        source: 'resolve',
-        patches: [],
-        inserts: [],
-        rejected: cells.map((cell) => {
-          const message = this.messages.unresolved(cell.text);
-          return cell.recordId !== undefined
-            ? {
-                recordId: cell.recordId,
-                fieldId: cell.fieldId,
-                text: cell.text,
-                message
-              }
-            : {
-                tempId: cell.tempId!,
-                fieldId: cell.fieldId,
-                text: cell.text,
-                message
-              };
-        }),
-        newOptions: []
-      };
-    }
-    this.emit(
-      changeSet,
-      cells.map((cell) => ({
-        id: cell.recordId ?? cell.tempId!,
-        fieldId: cell.fieldId
-      })),
-      { mergeInto }
-    );
-  }
-
-  /** Ends a call and its test waiter; aborts its signal unless it settled (`abort: false`). */
-  endCall(token: object, abort = true): void {
-    const call = this.pendingCalls.get(token);
-    if (!call) return;
-    this.pendingCalls.delete(token);
-    if (abort) call.controller.abort();
-    resolveWaiter.endAsync(call.waiter);
-  }
-
-  /** Ends the calls an undone entry asked for, and drops their cells. */
-  endCallsOf(entry: HistoryEntry): void {
-    const tokens = [...this.pendingCalls]
-      .filter(([, call]) => call.entry === entry)
-      .map(([token]) => token);
-    if (!tokens.length) return;
-    const next = new Map(this.pendingCells);
-    for (const [key, pending] of this.pendingCells) {
-      if (tokens.includes(pending.token)) next.delete(key);
-    }
-    this.pendingCells = next;
-    for (const token of tokens) this.endCall(token);
-  }
-
-  /**
-   * Drops pending resolve cells (by cellKey, or every cell of a record id);
-   * a call none of whose cells is left pending is ended (its signal
-   * aborted). Uploads are kept.
-   */
-  dropPending(
-    keys: readonly string[],
-    recordIds: readonly RecordId[] = []
-  ): void {
-    if (!this.pendingCells.size) return;
-    const ids = new Set(recordIds.map(String));
-    let next: Map<string, PendingEntry> | null = null;
-    for (const [key, entry] of this.pendingCells) {
-      // an upload is not undone by a write: its files are appended to the value then
-      if (!entry.cell) continue;
-      const id = String(entry.cell.recordId ?? entry.cell.tempId);
-      if (!keys.includes(key) && !ids.has(id)) continue;
-      next ??= new Map(this.pendingCells);
-      next.delete(key);
-    }
-    if (!next) return;
-    this.pendingCells = next;
-    const live = new Set([...next.values()].map((entry) => entry.token));
-    for (const [token, call] of [...this.pendingCalls]) {
-      if (call.kind === 'resolve' && !live.has(token)) this.endCall(token);
-    }
-  }
-
-  /** Files pasted on an attachment cell: uploaded to the range's first cell. True when handled. */
-  pasteFiles(files: FileList): boolean {
-    const range = this.selection.range;
-    if (!range) return false;
-    // the range's first record
-    const records = this.rows.recordRange(range);
-    const record = records ? this.args.records[records.top] : undefined;
-    const field = this.fields.visibleFields[range.left];
-    if (record === undefined || !field || !uploadOf(field)) return false;
-    if (isReadOnly(this.context, field, record)) return true;
-    void this.uploadFiles(this.args.getRecordId(record), field, [...files], {
-      rejectOnFailure: true
-    }).catch(() => undefined);
-    return true;
-  }
-
-  /**
-   * One upload pipeline for the editor, a drop and pasted files:
-   * `field.upload(files, { record, field, signal })`, the cell pending
-   * meanwhile, then the new files appended to the value read at that time
-   * (`commitValue`, source 'edit'). On failure the promise rejects and,
-   * with `rejectOnFailure`, the cell gets a rejection (`uploadFailed`).
-   * Files past `maxFiles` are not uploaded.
-   */
-  uploadFiles(
-    recordId: RecordId,
-    field: EuiSheetField,
-    files: File[],
-    options: { rejectOnFailure?: boolean } = {}
-  ): Promise<void> {
-    const upload = uploadOf(field);
-    const record = this.args.records[this.rows.rowOf(recordId, 0)];
-    if (!upload || record === undefined || !files.length) {
-      return Promise.resolve();
-    }
-    const maxFiles = (field as UploadField).maxFiles;
-    const current = valueOf(record, field.id);
-    const room =
-      maxFiles === undefined
-        ? files.length
-        : maxFiles - (Array.isArray(current) ? current.length : 0);
-    const chosen = files.slice(0, Math.max(0, room));
-    if (!chosen.length) return Promise.resolve();
-    const token = {};
-    const controller = new AbortController();
-    const key = cellKey(recordId, field.id);
-    const next = new Map(this.pendingCells);
-    next.set(key, { text: null, token });
-    this.pendingCells = next;
-    this.pendingCalls.set(token, {
-      kind: 'upload',
-      controller,
-      waiter: resolveWaiter.beginAsync(),
-      entry: null
-    });
-    const settle = (): boolean => {
-      const live = this.pendingCalls.has(token);
-      if (this.pendingCells.get(key)?.token === token) {
-        const rest = new Map(this.pendingCells);
-        rest.delete(key);
-        this.pendingCells = rest;
-      }
-      this.endCall(token, false);
-      return live && !this.isDestroying && !this.isDestroyed;
-    };
-    return upload(chosen, { record, field, signal: controller.signal }).then(
-      (added) => {
-        if (!settle()) return;
-        // the value now: another upload may have finished meanwhile
-        const row = this.rows.rowOf(recordId, 0);
-        const now = this.args.records[row];
-        if (now === undefined) return;
-        const before = valueOf(now, field.id);
-        let value = [...(Array.isArray(before) ? before : []), ...added];
-        if (maxFiles !== undefined) value = value.slice(0, maxFiles);
-        const ctx = { ...this.context, records: [now], fields: [field] };
-        this.emit(commitValue(ctx, { row: 0, col: 0 }, value), [
-          { id: recordId, fieldId: field.id }
-        ]);
-      },
-      (error: unknown) => {
-        if (!settle()) throw error;
-        if (options.rejectOnFailure) {
-          this.emit(
-            {
-              source: 'edit',
-              patches: [],
-              inserts: [],
-              rejected: [
-                {
-                  recordId,
-                  fieldId: field.id,
-                  text: chosen.map((file) => file.name).join(', '),
-                  message: this.messages.uploadFailed()
-                }
-              ],
-              newOptions: []
-            },
-            [{ id: recordId, fieldId: field.id }]
-          );
-        }
-        throw error;
-      }
-    );
-  }
-
-  /* Dragging files over an attachment cell */
-
-  /** The attachment cell under a drag with files, if it can take them. */
-  dropCellAt(
-    target: EventTarget | null
-  ): { pos: Pos; record: T; field: EuiSheetField<T> } | null {
-    const cell = this.dom.dataCell(target);
-    if (!cell) return null;
-    const pos = this.dom.cursor(cell);
-    const record = this.rows.recordAt(pos.row);
-    const field = this.fields.visibleFields[pos.col];
-    if (record === undefined || !field || !uploadOf(field)) return null;
-    if (isReadOnly(this.context, field, record)) return null;
-    return { pos, record, field };
-  }
-
-  @action
-  onDragOver(event: DragEvent): void {
-    if (!hasFiles(event)) return;
-    const target = this.dropCellAt(event.target);
-    if (!target) {
-      if (this.dropPos) this.dropPos = null;
-      // over a cell that cannot take files: the "not allowed" cursor (no drop follows)
-      if (this.dom.dataCell(event.target) && event.dataTransfer) {
-        event.preventDefault();
-        event.dataTransfer.dropEffect = 'none';
-      }
-      return;
-    }
-    event.preventDefault();
-    if (event.dataTransfer) event.dataTransfer.dropEffect = 'copy';
-    if (!samePos(this.dropPos, target.pos)) this.dropPos = target.pos;
-  }
-
-  @action
-  onDragLeave(event: DragEvent): void {
-    const to = event.relatedTarget;
-    if (to instanceof Node && this.wrapper?.contains(to)) return;
-    if (this.dropPos) this.dropPos = null;
-  }
-
-  @action
-  onDrop(event: DragEvent): void {
-    if (!hasFiles(event)) return;
-    this.dropPos = null;
-    const target = this.dropCellAt(event.target);
-    if (!target) return;
-    event.preventDefault();
-    event.stopPropagation();
-    const files = [...(event.dataTransfer?.files ?? [])];
-    void this.uploadFiles(
-      this.args.getRecordId(target.record),
-      target.field,
-      files,
-      { rejectOnFailure: true }
-    ).catch(() => undefined);
-  }
-
-  /* -------------------------------------------------------------------- */
-  /* @validate (PACKAGE-DESIGN.md 9.4, layers 4-6)                         */
-  /* -------------------------------------------------------------------- */
-
-  scheduleValidate(): void {
-    if (!this.args.validate) return;
-    this.validateTimer = debounce(this, this.runValidate, VALIDATE_DEBOUNCE);
-  }
-
-  endValidateWaiter(): void {
-    if (this.validateToken !== null) {
-      validateWaiter.endAsync(this.validateToken);
-      this.validateToken = null;
-    }
-  }
-
-  runValidate(): void {
-    this.validateTimer = null;
-    const validate = this.args.validate;
-    if (!validate || this.isDestroying || this.isDestroyed) return;
-    // a newer run supersedes the previous one
-    this.validateController?.abort();
-    this.endValidateWaiter();
-    const seq = ++this.validateSeq;
-    const controller = new AbortController();
-    this.validateController = controller;
-    const records = this.args.records;
-    const snapshot = new Map<string, unknown>(
-      records.map((record) => [String(this.args.getRecordId(record)), record])
-    );
-    const changed = this.changedSinceRun;
-    this.changedSinceRun = [];
-    const isCurrent = () =>
-      seq === this.validateSeq &&
-      !controller.signal.aborted &&
-      !this.isDestroying &&
-      !this.isDestroyed;
-
-    const result = validate({ records, changed, signal: controller.signal });
-    if (!isPromise<CellErrors>(result)) {
-      this.validation = { errors: result, records: snapshot };
-      return;
-    }
-    const token = validateWaiter.beginAsync();
-    this.validateToken = token;
-    const end = () => {
-      if (this.validateToken === token) this.endValidateWaiter();
-    };
-    result.then(
-      (errors) => {
-        if (isCurrent()) this.validation = { errors, records: snapshot };
-        end();
-      },
-      (error: unknown) => {
-        end();
-        // an aborted or superseded run's failure (an AbortError) is expected
-        if (isCurrent()) throw error;
-      }
-    );
-  }
-
   <template>
     <div
       class="euiSheet
@@ -4751,9 +3550,9 @@ export default class EuiSheet<T extends object> extends Component<
       {{on "dblclick" this.onDoubleClick}}
       {{on "contextmenu" this.onContextMenu}}
       {{on "dragstart" this.onDragStart capture=true}}
-      {{on "dragover" this.onDragOver capture=true}}
-      {{on "dragleave" this.onDragLeave}}
-      {{on "drop" this.onDrop capture=true}}
+      {{on "dragover" this.uploads.onDragOver capture=true}}
+      {{on "dragleave" this.uploads.onDragLeave}}
+      {{on "drop" this.uploads.onDrop capture=true}}
     >
       <style data-eui-sheet-marks>
         {{this.selection.headerMarkCss}}

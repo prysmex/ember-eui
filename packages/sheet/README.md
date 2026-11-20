@@ -12,7 +12,10 @@ currency, percent, duration, rating, links, long text, buttons that run
 your action and barcodes (typed, pasted or scanned), and you can add
 your own cells and editors. Rows can be dragged to a new order (a change
 set with `moves`, opt-in with `@canMove`) and coloured by record
-(`@rowColor`). Fields
+(`@rowColor`). It shows your current search match (`@currentMatch`),
+gives you the selection to summarize (`@onSelectionChange`,
+`summarizeCells`), selects ranges by touch with two handles, and shows
+upload progress. Fields
 can be added, edited, duplicated and deleted from the grid (the "+" column
 and the column menu), through your handlers. Records can be drawn in
 groups, with collapsible headers, counts and per-group summaries, from the
@@ -110,6 +113,8 @@ Arguments of `EuiSheet`:
 | `@sort`, `@onSortChange`                                          | Your sort (`[{ field, direction }]`), drawn as arrows; the column menu's sort items call the handler. No handler: no sort items. The sheet never sorts.                                                                |
 | `@onFilterByField`                                                | Adds "Filter by this field" to the column menu: `(fieldId) => void`.                                                                                                                                                   |
 | `@highlight`, `@isLoading`                                        | A searched term, marked in cells; a progress bar over the grid.                                                                                                                                                        |
+| `@currentMatch`                                                   | `{ recordId, fieldId }` or `null`: your current search match, scrolled into view and ringed; focus stays in your search box.                                                                                           |
+| `@onSelectionChange`                                              | `(selection or null) => void`: the selected records and fields, after render, when they change.                                                                                                                        |
 | `@summary`                                                        | `{ [fieldId]: text }` (`''`: the row-number column): the summary bar.                                                                                                                                                  |
 | `@frozenFields`                                                   | Leading fields kept in view on horizontal scroll, with the row numbers. Default `0` (off); `1` freezes the first field.                                                                                                |
 | `@rowNumbers`, `@rowLabel`, `@rowNumberOffset`                    | The row-number column (default on); `(record, position) => text` to show something else than the position; the first record's position on a page.                                                                      |
@@ -123,7 +128,7 @@ Arguments of `EuiSheet`:
 
 Blocks: `<:toolbar as |sheet|>` (above the grid) and `<:footer as |sheet|>`
 (below it) take your own controls. Both yield `{ api, fields, hiddenFields,
-sort, rowHeight, checkedRecords, hideField(id), showField(id),
+sort, rowHeight, checkedRecords, selection, hideField(id), showField(id),
 setRowHeight(height), setSort(sort), showShortcuts() }`. `<:empty>`
 replaces the "No records" message shown when `@records` is empty.
 
@@ -146,6 +151,23 @@ The summary bar shows `@summary`'s texts. Compute them from your backend,
 or over every record with `summarize(ctx, records, field, kind)` (`count`,
 `filled`, `empty`, `percentFilled`, `unique`, `sum`, `average`, `min`,
 `max`, `checked`, `unchecked`; sums use the type's `toNumber`).
+
+The selection is yours to summarize: the blocks' `selection`,
+`api.getSelection()` and `@onSelectionChange` give `{ kind, records,
+recordIds, fields, cellCount }` (header and add rows left out, checked
+rows separate), and `summarizeCells(ctx, selection, kind)` gives `count`,
+`filled`, `sum`, `average`, `min` or `max` over every cell (one field:
+its format; several: a plain number). `@onSelectionChange` runs after
+render, at most once per run loop, when the records, fields or kind
+changed: keep it cheap.
+
+Search is yours too, but the sheet shows your current match:
+`@currentMatch={{this.match}}` scrolls it into view (clear of the frozen
+fields) and draws a ring (`--euiSheet-match`) without taking focus from
+your search box. `findMatches(ctx, records, fields, term)` lists the
+cells whose shown text contains the term, for an owner with every
+record; step through them on Enter. A match not in `@records` (another
+page, a collapsed group) draws nothing until you show it.
 
 `@frozenFields={{1}}` freezes the first field (off by default): it, its
 header, its summary cell and the row numbers stay in view on horizontal
@@ -345,18 +367,20 @@ row menu emit).
 
 `@registerApi={{this.registerApi}}` receives one object:
 
-| Method                               |                                                                                                                       |
-| ------------------------------------ | --------------------------------------------------------------------------------------------------------------------- |
-| `undo()`, `redo()`                   | As Ctrl/Cmd+Z and Ctrl/Cmd+Shift+Z.                                                                                   |
-| `focusCell({ recordId, fieldId })`   | Focuses that cell; nothing when the record is not in `@records` or the field is not shown.                            |
-| `remapIds({ [tempId]: id })`         | The ids your store gave to inserted or restored records: the undo history, rejected texts and a pending focus follow. |
-| `clearHistory()`                     | Drops the undo and redo history.                                                                                      |
-| `expandRecord(id)`                   | Opens the expanded record (`null` closes it).                                                                         |
-| `insertRecord({ anchor?, values? })` | Emits the insert of one record, next to `anchor` or at the end.                                                       |
-| `deleteRecords(ids)`                 | Emits the delete of those records.                                                                                    |
-| `showShortcuts()`                    | Opens the shortcut list (as Ctrl/Cmd+/).                                                                              |
-| `addField({ index? })`               | Opens the field editor to add a field (with `@onFieldCreate`).                                                        |
-| `editField(fieldId)`                 | Opens the field editor on a field, also a hidden one (with `@onFieldUpdate`).                                         |
+| Method                                |                                                                                                                       |
+| ------------------------------------- | --------------------------------------------------------------------------------------------------------------------- |
+| `undo()`, `redo()`                    | As Ctrl/Cmd+Z and Ctrl/Cmd+Shift+Z.                                                                                   |
+| `focusCell({ recordId, fieldId })`    | Focuses that cell; nothing when the record is not in `@records` or the field is not shown.                            |
+| `scrollToCell({ recordId, fieldId })` | Scrolls that cell into view without focusing it.                                                                      |
+| `getSelection()`                      | The selection now, or `null`.                                                                                         |
+| `remapIds({ [tempId]: id })`          | The ids your store gave to inserted or restored records: the undo history, rejected texts and a pending focus follow. |
+| `clearHistory()`                      | Drops the undo and redo history.                                                                                      |
+| `expandRecord(id)`                    | Opens the expanded record (`null` closes it).                                                                         |
+| `insertRecord({ anchor?, values? })`  | Emits the insert of one record, next to `anchor` or at the end.                                                       |
+| `deleteRecords(ids)`                  | Emits the delete of those records.                                                                                    |
+| `showShortcuts()`                     | Opens the shortcut list (as Ctrl/Cmd+/).                                                                              |
+| `addField({ index? })`                | Opens the field editor to add a field (with `@onFieldCreate`).                                                        |
+| `editField(fieldId)`                  | Opens the field editor on a field, also a hidden one (with `@onFieldUpdate`).                                         |
 
 When you replace `@records` with records the sheet did not change (a new
 sort, another page, a reload), the selection collapses to the focused
@@ -374,7 +398,7 @@ come from the EUI theme, so the sheet follows light and dark: put it in an
 `--euiSheet-textDanger`, `--euiSheet-dangerFilled`,
 `--euiSheet-textInverse`, `--euiSheet-shadow`, `--euiSheet-subdued`,
 `--euiSheet-border`, `--euiSheet-link`, `--euiSheet-star`,
-`--euiSheet-textSuccess`, the row colours `--euiSheet-rowPrimary`,
+`--euiSheet-textSuccess`, `--euiSheet-match`, the row colours `--euiSheet-rowPrimary`,
 `-rowAccent`, `-rowSuccess`, `-rowWarning`, `-rowDanger`, `-rowNeutral`,
 and `--euiSheet-highlight`) set by a class on the sheet's wrapper.
 `@rowColor={{this.colorOf}}` draws a 4 px bar at a row's left edge: a
@@ -468,7 +492,7 @@ focus trap is off, so a wormholed calendar works.
 | `multiSelect`           | an array of option values                                        | labels or values separated by `,` (a quoted part keeps its commas)                      | `options`, `createOnPaste`                                                            |
 | `linkedRecord`          | an array of `{ id, label }`                                      | resolved by `@onResolve`                                                                | `search(query, { record, signal })`, `multiple` (default `true`)                      |
 | `user`                  | `{ id, label, avatarUrl? }` or `null` (an array with `multiple`) | with `options`: a label or an `email`; else resolved by `@onResolve`                    | `options` or `search`, `multiple`                                                     |
-| `attachment`            | an array of `{ id, name, url, type?, size?, thumbnailUrl? }`     | none (files are uploaded: picker, drop, pasted files)                                   | `upload(files, { record, field, signal })`, `accept`, `maxFiles`                      |
+| `attachment`            | an array of `{ id, name, url, type?, size?, thumbnailUrl? }`     | none (files are uploaded: picker, drop, pasted files)                                   | `upload(files, { record, field, signal, onProgress })`, `accept`, `maxFiles`          |
 | `currency`              | number or `null`                                                 | `$1,234.50`, `MXN 12`, `12`                                                             | `currency`, `locale`, `precision`, `min`, `max`                                       |
 | `percent`               | a fraction or `null`                                             | `25%` or `25` (both `0.25`)                                                             | `precision`, `min`, `max`                                                             |
 | `duration`              | seconds or `null`                                                | `1:30`, `1:30:00`, `1h 30m`, `90` (minutes; seconds with `'h:mm:ss'`)                   | `durationFormat` (`'h:mm'` or `'h:mm:ss'`)                                            |
@@ -591,7 +615,9 @@ and date cells show a ▾ or calendar button on the hovered or selected cell
 that opens the editor in one click; a click anywhere in a checkbox cell
 toggles it. A click on a rating's star sets it; a click on a link's text
 opens it (a click beside it selects). Files dragged onto an attachment cell
-are uploaded. A field type gets the same with two optional properties:
+are uploaded; an `upload` that calls `onProgress(fraction)` shows a bar
+along the cell's bottom edge, and a progress bar in the editor and the
+expanded record. A field type gets the same with two optional properties:
 
 ```ts
 const zoneType: EuiSheetFieldType<Zone | null> = {
@@ -802,8 +828,9 @@ version you use; this package does not depend on it.
 ## Touch and IME
 
 On touch screens a tap selects and a tap on the selected cell edits, a drag
-scrolls (no range selection by touch yet), and a long press opens the row
-menu. The ▾ buttons, row checkboxes and expand icons are always shown there,
+scrolls, and a long press opens the row menu (with Copy and Paste on a
+range). After a tap the cell has two round handles at its corners: drag
+them to extend the range (they never show after a mouse press). The ▾ buttons, row checkboxes and expand icons are always shown there,
 with 32 px touch areas, and the fill handle is not. `@editIn` (default
 `'auto'`) edits in the expanded record on a touch screen narrower than
 600 px. Dead keys and IMEs compose in a hidden input over the cell, so the
@@ -812,6 +839,6 @@ devices or real IMEs yet.
 
 ## Limits
 
-No range selection by touch, row drag by touch, floating (zoneless) date-times or fullscreen yet. Sorting, filtering, search and paging
-are the owner's (see above, and the EmberSearchUi connector). Uploads show
-no progress (the cell is pending).
+No row or column drag by touch, floating (zoneless) date-times, undo of
+field operations or fullscreen yet. Sorting, filtering, search and paging
+are the owner's (see above, and the EmberSearchUi connector).

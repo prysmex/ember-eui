@@ -2625,3 +2625,496 @@ Playwright's own Chromium (headless), real `page.mouse` and
   `src/types.ts`, `src/field-types.ts`, `src/index.ts`;
   `docs/sheet.md`, `docs/sheet-demo/d15-more-field-types.md`,
   `README.md`.
+
+## Batch 5: search navigation, selection exposure, touch ranges, upload progress
+
+Built 2026-11-20 on `0c8bdb7` (after batch 4), in this checkout, one
+commit per feature. Design: V03-DESIGN.md 11 (11.1-11.8), with D12 as
+recommended. The design's line references (`eui-sheet.gts:2898` and so
+on) predate 3c: the new behaviour lives in modules of
+`src/-private/sheet/` in the 3c pattern. One module is new
+(`selection-handles.ts`); the rest went into `scroll.ts`, `cells.ts`,
+`selection.ts`, `api.ts`, `touch.ts`, `filling.ts`, `row-menu.ts`,
+`clipboard.ts` and `uploads.ts`.
+
+### 5a: search next / previous (11.1)
+
+#### What was built
+
+- `@currentMatch?: { recordId, fieldId } | null`. `scroll.matchPos`
+  (cached) resolves it to a grid position: the record's row in `@records`
+  (through the row model, so a grouped record is found at its grid row)
+  and the field's index among the visible fields; null for a record not
+  in `@records` or a hidden field.
+- **Scroll.** A modifier on the wrapper (`scroll.followMatch`) re-runs
+  when the match or its position changes and, after the render, calls
+  `scroll.scrollToCell` once per cell (it remembers the last cell it
+  scrolled to, and forgets it when the match draws nothing, so a match
+  whose record arrives later, after the owner expanded its group or
+  changed the page, is scrolled to then). `scrollToCell` is the existing
+  `revealCell` (below the sticky header, above the footer, clear of the
+  frozen columns; `gridApi.scrollToItem` first when the cell is not
+  rendered, then up to four frames to place it), which now takes a
+  "still wanted" predicate instead of always comparing with the head.
+  Focus and the selection do not move.
+- **Ring.** `CellView.match`; the cell gets `euiSheet__cell--match`,
+  drawn as the cell's `::after` (absolute, `inset: 0`, a 2 px inset
+  `box-shadow` in `--euiSheet-match`, `z-index: 1`, `pointer-events:
+  none`), so it is over `@highlight`'s marks and does not replace the
+  cell's own shadows (row colour, invalid ring, frozen edge) or the
+  focus outline. Theme token `--euiSheet-match` from `colors.warning`
+  (light fallback `#FACB3D`).
+- `SheetApi.scrollToCell(cell)`: the scroll alone (no ring).
+- `findMatches(ctx, records, fields, term)` (`src/core/search.ts`, new,
+  exported from the core): each type's `format` text, by row then field,
+  without case and without accents (`NFD`, combining marks removed), as
+  `EuiHighlight` marks by default; an empty term has no matches.
+- The EmberSearchUi connector forwards `@currentMatch`.
+
+#### Tests
+
+- `tests/unit/search-test.ts` (new): SN5 (order, case, a select by its
+  label and not its value, accents, numbers by their text, an empty
+  term, only the given fields).
+- `tests/integration/components/eui-sheet-search-nav-test.gts` (new):
+  SN1 (ring on a rendered cell, the `::after` is a 2 px inset ring with
+  `pointer-events: none`; a toolbar input keeps focus; no selection; the
+  ring moves), SN2 (10,000 records, 30 fields: record 9000, field 25 is
+  rendered inside the body below the header; back near the top; focus
+  unchanged), SN3 (`@frozenFields={{1}}`, scrolled so field 2 is under
+  the frozen field: after the match its left edge is right of it), SN4
+  (a missing record, a hidden field, `null`: nothing drawn, no scroll;
+  a record that arrives later in `@records` is then ringed), SN6 (the
+  demo's wiring as a test: `findMatches` over `groupRecords` without
+  `collapsed`, Enter and Shift+Enter in the input step and wrap, a match
+  in a collapsed group draws nothing until the app expands it with
+  `toggleGroup`, then it is ringed at its new grid row; focus stays in
+  the input), SN7 (`api.scrollToCell`: in view, focus and selection
+  unchanged, no ring; unknown cells are no-ops).
+- Suite: 570 tests, 570 pass (563 + 7).
+
+### 5b: the selection, exposed (11.2)
+
+#### What was built
+
+- `SheetSelection<T>` (`src/types.ts`, exported): `kind`, `records` (in
+  the order shown), `recordIds`, `fields` (visible, display order),
+  `cellCount`.
+- `selection.current` (cached getter over the range, `@records` and the
+  visible fields): the records of `rows.recordRange(range)` (so group
+  headers and add rows inside a range are left out) and the range's
+  fields; `null` without a range, or when the range holds no record (the
+  add row). A focused cell is a selection of one cell (the focus sets the
+  range). Checked rows stay separate (`checkedRecords`).
+- `SheetBlockApi.selection` is a **getter** on the block object, so the
+  cached `blockApi` gains no dependency on the selection (only what reads
+  `selection` re-renders); `SheetApi.getSelection()` returns the same
+  object while nothing changed.
+- `@onSelectionChange(selection | null)`: a modifier on the wrapper
+  (`selection.reportChange`, only with the handler) reads `current` and
+  `scheduleOnce('afterRender', report)`; `report` compares a key of the
+  kind, the record ids and the field ids with the last call's and calls
+  the handler only when it changed. So it runs after render, at most once
+  per run loop, once per new rectangle of a drag, and not when `@records`
+  is re-rendered with the same ids.
+- `summarizeCells(ctx, selection, kind)` (`src/core/summary.ts`):
+  `count` (records × fields), `filled` (each type's `isEmpty`), `sum`,
+  `average`, `min`, `max` over each type's `toNumber` of the non-empty
+  cells; with one field formatted with its `format`, with several a plain
+  number rounded to at most two decimals; `''` when no cell has a number.
+  `min`/`max` use a reduce, not a spread (a large selection).
+- The connector forwards `@onSelectionChange`.
+
+#### Tests
+
+- `tests/unit/summary-cells-test.ts` (new): SL4 (two numeric fields,
+  `number` and `currency`: count 6, filled 4, sum 17.5, average 4.38,
+  min 1, max 10; one currency field: its format; text only: `''`; no
+  records).
+- `tests/integration/components/eui-sheet-selection-test.gts` (new):
+  SL1 (the footer block's `selection`: none, a focused cell, a
+  Shift+arrow rectangle, rows by row numbers, a column by its title, the
+  add row is none), SL2 (`@onSelectionChange`: nothing on the first
+  render, once on focus, a mouse drag reports each new rectangle once and
+  a repeated `mouseover` nothing, new record objects with the same ids
+  nothing, two `api.focusCell` calls in one run loop one call with the
+  last, `null` on the add row, a change of kind over the same cell is a
+  call), SL3 (grouped by city: a drag from a record across the add row
+  and the next header lists `r3, r0` only, 4 cells), SL5
+  (`api.getSelection()`, the same object while unchanged; checking a row
+  does not change it).
+- Suite: 575 tests, 575 pass (570 + 5).
+
+### 5c: ranges by touch (11.3, D12)
+
+#### What was built
+
+- **Module `selection-handles.ts` (`selectionHandles`).** `byTouch`
+  (tracked) is set by `touch.onPointerDown` from each press's pointer
+  type, so the handles show only while the last press was a touch (a
+  mouse press on a hybrid device hides them). `range` is the selection's
+  range when it is `'cells'`, holds records, and no editor is open.
+- **`src/-private/selection-handles.gts` (new).** Two `div`s, a 44 px
+  hit area with `touch-action: none` and a 20 px `--euiSheet-primary`
+  circle with a white border drawn by `::before`, `z-index: 5` (above the
+  fill handle). Placed like the fill handle: a modifier on
+  `[corner, range, layoutTick, @records, rowHeight]` schedules
+  `selectionHandles.place` after render; the top-left one is centred on
+  the first record row's left cell's top-left corner, the bottom-right
+  one on the last record row's right cell's bottom-right corner. A
+  handle whose corner cell is not rendered, out of the body, or (for a
+  non-frozen column) left of the frozen columns' edge is hidden. The fill
+  handle is not drawn while the handles are (`filling.fillHandleRange`).
+- **Drag.** `pointerdown` on a handle: `preventDefault` (no compatibility
+  mouse events), `setPointerCapture` (in a try: a synthetic pointer is
+  unknown to the browser), document listeners for `pointermove`,
+  `pointerup`, `pointercancel`. The bottom-right handle fixes the
+  range's top-left as the anchor and moves the head; the top-left handle
+  fixes the bottom-right and moves the anchor. `pointermove` finds the
+  cell under the point (`elementFromPoint`; the handles get
+  `pointer-events: none` while a drag runs, through
+  `euiSheet--handleDragging` on the wrapper, so the moving handle under
+  the finger does not hide the cell) and skips header and add rows. Its
+  own `AutoScroll` (the range drag's class) runs near the edges. The
+  release focuses the anchor only if the drag moved it (5c-fix below).
+  `willDestroy` ends a drag.
+- **Long-press menu.** `touch.onLongPress` opens the menu with
+  `byTouch` (`MenuState.byTouch`); for a `'cells'` range with records it
+  starts with **Copy** (`copyCells`: the range as TSV through the
+  existing `writeClipboard`, with the copy mark) and **Paste**
+  (`pasteCells`, not with `@readOnly`: `navigator.clipboard.readText()`
+  then the paste path). The text part of `onPaste` moved unchanged into
+  `clipboard.pasteText(text, event?)`, which `onPaste` and the menu call.
+  "Copy rows" keeps its id `copy`.
+- Messages `selectionHandle`, `copyCells`, `pasteCells`.
+- A drag on the grid stays a scroll and a long press stays the menu
+  (D12): nothing in the range drag or the long press changed.
+
+#### Tests
+
+`tests/integration/components/eui-sheet-touch-range-test.gts` (new):
+TR1 (a touch tap: two handles on the cell's corners within 1.5 px, the
+44 px box with `touch-action: none` and a 20 px circle, no fill handle;
+a mouse press and click: no handles, the fill handle again), TR2 (the
+bottom-right handle to 3:2 extends the range, focus stays on 1:1, the
+handle follows the corner; the top-left handle to 0:0 moves the anchor
+and focus goes there; a drag onto the add row leaves the corner on the
+last record), TR3b (with the handles shown a touch press, move, a
+`mouseover` and a cancel on other cells leave the range as it was), TR4
+(frames stubbed as in RD10: a handle drag below the body starts the
+loop, ten frames scroll more than 50 px and the range follows past row
+8, the release stops the loop), TR5 (a long press in a range: the menu
+has Copy and Paste and keeps the range; Copy writes the range's TSV and
+draws the copy mark; Paste reads a stubbed `readText` and tiles `X\tY`
+over the 2 × 2 range; a right-click menu has neither). TR3 itself (a
+touch move on the grid selects nothing) is the v0.2 touch tests TC1-TC3,
+unchanged and passing. Suite: 580 tests, 580 pass (575 + 5).
+
+TR1 failed once in the full run (the top-left handle 1.7 px right of the
+corner) and passed alone; it now waits two frames after the render
+before the tap, and passed in the three full runs since. The likely
+cause is a layout change after the first render (the grid sizing its
+columns) that no re-place follows: the handles, like the fill handle,
+are placed only on the renders their arguments change. Not confirmed.
+
+#### 5c-fix: the release after an auto-scroll (commit `36d4436`)
+
+Found with real touch input on the docs site (below): after the
+bottom-right handle's drag auto-scrolled the anchor out of view, the
+release focused the anchor again and the grid scrolled back to it (the
+mouse range drag does the same, through the grid's pointerup). The
+release now focuses the anchor only when the drag moved it (the
+top-left handle); otherwise focus stays where it is, parked on the grid
+while the anchor is not rendered (`focus.parkFocus`), and the view stays.
+Checked again with real touch: the scroll stayed at 325 px, focus was on
+`[role=grid]`, and Delete cleared the 32 selected cells. Suite: 583
+tests, 583 pass.
+
+### 5d: upload progress (11.4)
+
+#### What was built
+
+- `upload(files, { record, field, signal, onProgress })`
+  (`AttachmentField` in `src/core/types.ts`, and the private
+  `UploadField`): `onProgress(fraction)`, 0 to 1 for the whole call. The
+  sheet clamps it, keeps whole percents (`Math.round(x * 100) / 100`),
+  ignores `NaN` and non-numbers, and ignores any call once the call is no
+  longer in `resolve.pendingCalls` (settled, or ended by destroy) or its
+  signal is aborted.
+- `PendingEntry.progress` is a small object with one tracked
+  `fraction` (`UploadProgress`, `uploads.ts`), not a field of the entry:
+  a progress call does not replace `pendingCells` (which every rendered
+  cell reads), so it re-renders only the cell (and editor) that reads
+  it. `CellView.progress` and `uploads.progressOf(recordId, fieldId)`.
+- **Cell.** A pending cell with a progress gets `euiSheet__cellProgress`
+  and `--euiSheetProgress: N%` through `setCellProps` (merged with the
+  frozen style), drawn by the cell's `::before` (absolute, `bottom: 0`,
+  2 px high, `--euiSheet-primary`), and the title
+  `messages.uploading(percent)` ("Uploading… 40%"). Without an
+  `onProgress` call the cell is only pending, as before.
+- **Editor and expanded record.** A new optional editor argument
+  `@progress` (`SheetEditorSignature`, `src/types.ts`); the grid's editor
+  gets `uploads.progressOf(editing.recordId, editing.field.id)`, the
+  expanded record's inline editor `view.progress`. The attachment editor
+  shows an `EuiProgress` (`@max={{100}}`, `@size="xs"`,
+  `@color="primary"`, the title and `aria-label` "Uploading… N%",
+  `euiSheetUploadProgress`) above the file picker, under the file list;
+  the expanded record's Files field shows one under its box while its
+  editor is closed (`euiSheetRecordUploadProgress`).
+- Message `uploading(percent)`.
+
+#### Tests
+
+`tests/integration/components/eui-sheet-upload-progress-test.gts` (new;
+`waitUntil`, since `settled()` waits for a pending upload): UP1 (pasted
+files: pending with no bar before a call; `onProgress(0.4)`: the class,
+the title "Uploading… 40%", `aria-busy`, a `::before` at the bottom,
+2 px high and 40 % of the cell's width within 1 px; 1.7 is clamped to
+100 %, 0.123 shown as 12 %; at resolve no bar, no pending, no title, the
+file saved), UP3 (a call after the promise resolved draws nothing; a
+second upload, then the sheet is torn down: its signal is aborted, later
+calls (and `NaN`) and its resolve write nothing), UP4 (the attachment
+editor's file picker: no progress before, a `<progress value="25">`
+with its title after `onProgress(0.25)`, gone at resolve; an upload
+started in the grid shows `value="60"` under the expanded record's
+Files field). UP2 (an uploader that never calls it is pending as
+before) is the v0.2 attachment tests A1-A3, unchanged and passing.
+Suite: 583 tests, 583 pass (580 + 3).
+
+### 5e: docs (11.7)
+
+- `docs/sheet-demo/d22-search-navigation.md` (new): 300 people, eight
+  fields wide enough to scroll sideways, `@frozenFields={{1}}`, a search
+  input (`EuiFieldText`; `EuiFieldSearch` calls `onSearch` on Enter),
+  "N of M", ‹ › buttons, Enter and Shift+Enter in the input, Escape
+  focuses the match (`api.focusCell`), a "Group by team" switch; the app
+  keeps `findMatches` over `groupRecords` without `collapsed` and an
+  index, and expands a match's collapsed group (and its parents) with
+  `toggleGroup` before showing it. The default term `ana` has 20 matches,
+  from row 6 to row 298 and in the far Notes and Code fields.
+- `docs/sheet-demo/d13-summary.md`: a footer line with the selection's
+  count, sum and average (`selection` from the footer block,
+  `summarizeCells`).
+- `docs/sheet-demo/d17-attachments.md`: the fake uploader reports ten
+  progress steps over 2 s.
+- `docs/sheet.md`: Arguments (`@currentMatch`, `@onSelectionChange`),
+  the owner's table (stepping through matches, selecting cells), the
+  blocks (`selection`), a new "Search matches" subsection (with
+  `findMatches`), Summary bar (a summary of the selection,
+  `summarizeCells`), the API (`scrollToCell`, `getSelection`), Theme
+  (`--euiSheet-match`), Field types (attachment `onProgress`), Touch (the
+  handles, Copy and Paste on a long press), and "Not yet" rewritten from
+  14.3: range by touch, grouping and upload progress removed; row and
+  column drag by touch, field management in the expanded record and
+  option reordering, group header extras, EmberSearchUi group-by,
+  floating date-times, a whole-row tint, undo of field operations, and
+  the v0.2 carry-overs listed.
+- `README.md`: the summary, Arguments, blocks, the selection and search
+  paragraphs, the API, Theme, attachments, Touch, Limits. `prettier
+  --write` re-padded its tables; it is prettier-clean. `docs/*.md` were
+  left in their existing style (not prettier-clean at HEAD, as batch 4
+  noted).
+- Docs site: built as batch 4 says (the sheet's own `pnpm build`, then
+  `site`'s `pnpm build`; the other packages' `dist` were from batch 4 and
+  unchanged); the generated files are ignored, `site/` is unchanged in
+  git. `node --test site/lib/*.test.mjs` passes (8). The site's testem
+  suite was not run.
+
+## Batch 5: summary
+
+| Commit | Holds | Suite |
+| --- | --- | --- |
+| `6b530a1` | search navigation (`@currentMatch`, `scrollToCell`, the ring, `findMatches`), SN1-SN7 | 570 / 570 |
+| `4a764ff` | selection exposure (`SheetSelection`, block `selection`, `getSelection`, `@onSelectionChange`, `summarizeCells`), SL1-SL5 | 575 / 575 |
+| `d8858b6` | ranges by touch (`selection-handles.ts`, `selection-handles.gts`, Copy and Paste on a long press, `clipboard.pasteText`), TR1, TR2, TR3b, TR4, TR5 | 580 / 580 |
+| `e52df83` | upload progress (`onProgress`, the cell's bar, the editor's and the expanded record's `EuiProgress`, `@progress`), UP1, UP3, UP4 | 583 / 583 |
+| `36d4436` | a handle drag keeps its scroll on release (found with real touch) | 583 / 583 |
+| this commit | docs, these results | (no code) |
+
+Every commit: `pnpm lint:types` clean; the tests' `ember-tsc` has the
+baseline's 19 errors and no other; `eslint` and `prettier --check` clean
+on the changed code and test files; the owner gate OK (36, 36, 37, 37,
+37 module classes); `node scripts/generate-api-docs.mjs --check` passes
+(the sheet has no generated API page); the full suite green. For
+`d8858b6` the owner gate and the tests' `ember-tsc` were not run before
+the commit (a shell `&&` chain stopped at an eslint error in the test,
+fixed before the commit, and the later checks were not re-run); they
+were run afterwards on a detached worktree of `d8858b6`: gate OK (37),
+`ember-tsc --noEmit` clean, the tests' 19 baseline errors and no other.
+`packages/core/src` is unchanged; no existing test was edited; no
+dependency was added. The component is 570 lines (547 before: two
+template modifiers, the handles' module field, import, `willDestroy`
+line, wrapper class and template block, and the editor's `@progress`).
+One module is new (`selection-handles.ts`; 40 files in
+`src/-private/sheet/` now).
+
+### Deviations
+
+1. **`summarizeCells` takes `{ records, fields }`**, structurally, not
+   `SheetSelection`: the core cannot import the Ember layer's types. A
+   `SheetSelection` is passed as it is.
+2. **`findMatches` ignores accents** as well as case: `EuiHighlight`
+   (what `@highlight` uses) folds accents by default, and 11.1 says it
+   "matches what `@highlight` marks".
+3. **`@currentMatch` scrolls once per cell**, and again when its record
+   arrives in `@records` later (an expanded group, a new page); a
+   re-render with the same match does not scroll back to it.
+4. **A selection is `null` when its range holds no record** (only the add
+   row), not only without a range; it never has `cellCount` 0.
+5. **Several fields: a plain number rounded to at most two decimals**
+   (11.2 says "a plain number"; `17.5 / 4` is `4.38`).
+6. **`SheetBlockApi.selection` is a getter**, so `blockApi` stays cached
+   on its other dependencies (the brief's "without adding unrelated
+   dependencies"); a destructured copy of the block API reads the
+   selection of that moment.
+7. **`@onSelectionChange` is reported with `scheduleOnce('afterRender')`
+   from a modifier**: "at most once per run loop" is backburner's
+   dedupe of that queue; two changes that each need their own render in
+   one loop (a change made in an earlier `afterRender` callback) can
+   still give two calls, each with a different key.
+8. **Messages beyond 4.6**: `copyCells` ("Copy") and `pasteCells`
+   ("Paste") for the long-press menu items (11.3 asks for the items, 4.6
+   lists only `uploading` and `selectionHandle`).
+9. **Touch menu Paste reads `navigator.clipboard.readText()`**: the only
+   way without a paste event; it needs the page's clipboard permission,
+   and a refusal does nothing (no message).
+10. **The handles' release refocuses the anchor only when it moved** (5c-fix).
+11. **The fill handle is not drawn while the selection handles are**
+    (`filling.fillHandleRange`); 11.3 only says it stays hidden on coarse
+    pointers (which it does), but on a hybrid device both would sit on
+    the same corner.
+12. **`selectionHandle` is the handles' `title`**; they are `aria-hidden`
+    like the fill handle (touch only, not focusable).
+13. **The upload bar is the cell's `::before`**, with the class
+    `euiSheet__cellProgress` on the cell and the width in a custom
+    property, not a child element `.euiSheet__cellProgress`: the cell's
+    content wrapper is padded, so a child's `bottom: 0` and percent width
+    would not be the cell's.
+14. **`PendingEntry.progress` is a tracked holder object** (`{ fraction
+    }`), not a number, so a progress call re-renders one cell instead of
+    every rendered cell (they all read `pendingCells`).
+15. **A new optional editor argument `@progress`** (`SheetEditorSignature`):
+    the attachment editor has no other way to know the cell's progress.
+    The expanded record shows the bar under the Files box only while that
+    field's editor is closed (the open editor shows its own).
+16. **Upload aborts happen only on destroy**: `resolve.dropPending` keeps
+    uploads, so UP3's "after an abort" is the sheet torn down mid-upload.
+17. **Test files and IDs.** SL4 is in a new file
+    (`summary-cells-test.ts`) rather than `summary-test.ts`, so no
+    existing test file was edited. TR3 is TC1-TC3 as they were (11.6) plus
+    a new TR3b; UP2 is A1-A3 as they were. No ID collides (`SN`, `SL`,
+    `TR`, `UP` were unused).
+18. **d22 has 300 records, eight wide fields and `@frozenFields={{1}}`**
+    (11.7 asks only for the toolbar), so the real-input checks far down,
+    far right and with a frozen field run on it; and Escape in its box
+    focuses the match (`api.focusCell`), as 11.1 suggests.
+
+### Visibility changes
+
+- Only with the new arguments or an uploader that reports progress:
+  `@currentMatch` draws the ring; `onProgress` the bar. **One change for
+  every sheet: after a touch press a cell range has two handles**, and the
+  fill handle (already hidden on coarse pointers) is not drawn while they
+  are. A long-press menu on a cell range has two more items at its top.
+  No mouse or keyboard behaviour changed.
+
+### Real input in Chromium
+
+Production docs build of this checkout served with `vite preview`,
+Playwright's own Chromium (headless). No page errors in any run.
+
+- **d22, search** (1300 × 900, real `page.keyboard` and `page.mouse`):
+  a click in the box, Ctrl+A and typing `ana`: "1 of 20", Mariana Ruiz
+  (row 6, Mentor) ringed (`rgb(250, 203, 61) 0px 0px 0px 2px inset`),
+  focus in the input. Twenty Enters stepped through every match and
+  wrapped to "1 of 20"; after each the input had focus, the ringed cell
+  was fully inside the body below the header, and its left edge was right
+  of the frozen Name field: row 21 Notes (scrollLeft 203), row 288 Code
+  `BANANA-7` (scrollTop 10046, scrollLeft 343), row 298. Shift+Enter
+  from 1 went to "20 of 20". "Group by team" on, the first team's chevron
+  clicked (a real click): its match drew nothing; Shift+Enter then Enter
+  back to match 1: the app expanded the team (no "Expand group" toggle
+  left) and the match was ringed in view at grid row 20. Escape in the box
+  focused the ringed cell.
+- **d13, selection** (real mouse): a press on Hours row 2 and an
+  eight-step move to row 5: the footer line read "4 cells selected · Sum
+  30 · Average 7.5" during the drag and after the release (3 + 6 + 9 +
+  12); a Shift+click on Done row 5: "12 cells selected · Sum 30 · Average
+  7.5" (Start and Done have no numbers).
+- **d17, upload** (Enter on Warehouse 1's Files cell, `setInputFiles` on
+  the panel's picker): every 300 ms the cell had the progress class, the
+  title "Uploading… 10%", 30 %, 40 %, 70 %, 80 %, its `::before` 21.9,
+  65.7, 87.6, 153.3, 175.2 px of the 220 px cell, and the panel's
+  `<progress>` the same values; after 2 s no class, no title, no pending,
+  and the panel listed `upload-me.txt`.
+- **Touch handles** (a `hasTouch` context, 1000 × 800, `(pointer:
+  coarse)` matched; `page.touchscreen.tap` for the tap, CDP
+  `Input.dispatchTouchEvent` touchStart/touchMove/touchEnd for the drags
+  and the long press, so real pointer ids and pointer capture): a tap on
+  Hours row 2 in d13: "1 cell selected · Sum 3 · Average 3", the handles'
+  centres exactly on the cell's corners (453, 310.2 and 553, 346.2), no
+  fill handle. The bottom-right handle dragged to row 5: "4 cells
+  selected · Sum 30 · Average 7.5", during the drag and after; the handle
+  on row 5's corner. The top-left handle dragged to Name row 1: "10 cells
+  selected" and focus on that cell. A 700 ms long press inside the range:
+  the menu began with Copy and Paste, then the row items for 5 records.
+  A vertical touch drag on the cells scrolled the grid (scrollTop 0 →
+  135) and kept the range; the top-left handle hid as its corner left the
+  view. A real mouse click then: no handles, the fill handle back.
+  **Auto-scroll by touch**: the bottom-right handle held near the body's
+  bottom edge for 1.5 s scrolled the grid (to 235 px) and extended the
+  range (26 cells); the release then scrolled back to the anchor
+  (scrollTop 15). Fixed in `36d4436`; after the fix, two runs: 225 px
+  during and 240 after the release; 310 during and 325 after, 32 cells,
+  focus parked on `[role=grid]`, and Delete cleared the 32 cells (the
+  Hours summary fell from 274 to 150).
+- Not tried: Copy and Paste from the touch menu with the real clipboard
+  (headless Chromium; TR5 stubs it), a real phone or finger, iOS Safari
+  (its pointer capture and `touch-action` on the handles), the handles
+  under frozen fields (placement code only, no test), dark mode.
+- Screenshots (not in the repo):
+  `/tmp/claude-0/-home-user-ember-eui/87cd9e5a-212c-54c3-9d47-30ac398aebd2/scratchpad/b5/`
+  `d22-first.png`, `d22-far-down.png`, `d22-far-right.png`,
+  `d22-group-expanded.png`, `d13-selection.png`, `d17-progress.png`,
+  `touch-tap.png`, `touch-drag.png`, `touch-menu.png`. Looked at by the
+  agent (d22-far-right, d17-progress, touch-drag), not by a person.
+
+### Open items
+
+- **Real fingers on a phone** are not checked: CDP touch events exercise
+  pointer events with real ids and `touch-action`, not a device's
+  gesture handling (iOS Safari especially). On the manual list with
+  v0.2's long press.
+- **The handles (and the fill handle) are re-placed only on the renders
+  their arguments change**; a layout change without one (the grid sizing
+  its columns, a window resize) can leave them a pixel or two off until
+  the next scroll or selection change (TR1's one failure).
+- **`scrollToItem` alignment**: a match is placed at the nearest edge
+  (row 21's Notes cell sat on the body's bottom edge in d22), not
+  centred.
+- **The touch menu's Paste** needs clipboard read permission; a refusal
+  is silent.
+- **`@onSelectionChange` runs per rectangle during a drag**: the docs
+  tell owners to keep it cheap or debounce.
+- Not checked: Firefox, Safari, a screen reader (the ring and the bar
+  have no text; the bar's percent is the cell's title), dark mode with
+  real input.
+
+### Files
+
+- New: `src/core/search.ts`; `src/-private/sheet/selection-handles.ts`;
+  `src/-private/selection-handles.gts`;
+  `docs/sheet-demo/d22-search-navigation.md`; tests
+  `tests/unit/search-test.ts`, `summary-cells-test.ts`,
+  `tests/integration/components/eui-sheet-search-nav-test.gts`,
+  `eui-sheet-selection-test.gts`, `eui-sheet-touch-range-test.gts`,
+  `eui-sheet-upload-progress-test.gts`.
+- Changed: `src/components/eui-sheet.gts`; `src/core/index.ts`,
+  `summary.ts`, `types.ts`, `messages.ts`; `src/-private/sheet/api.ts`,
+  `cells.ts`, `clipboard.ts`, `filling.ts`, `row-menu.ts`, `scroll.ts`,
+  `selection.ts`, `touch.ts`, `types.ts`, `uploads.ts`;
+  `src/-private/sheet-cell.gts`, `record-form-field.gts`,
+  `editors/attachment-editor.gts`, `styles.ts`, `theme.ts`;
+  `src/search-ui/eui-sheet-search.gts`; `src/types.ts`, `src/index.ts`;
+  `docs/sheet.md`, `docs/sheet-demo/d13-summary.md`,
+  `d17-attachments.md`, `README.md`.

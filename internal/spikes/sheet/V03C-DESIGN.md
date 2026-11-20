@@ -773,3 +773,14 @@ Open questions:
    `touch.ts` 100). They follow "each feature in its own small module".
    If fewer, larger files are preferred, the natural merges are `touch`
    into `drag`, `uploads` into `resolve`, and `outline` into `selection`.
+
+## 10. Decided (the user, 2026-11-20)
+
+- Keep the 33 modules (no merges).
+- Section 9's proposals accepted: instance members of the exported class
+  are internal; one plain property load per cell read is accepted and
+  measured in stage 2; the component keeps its small shared getters;
+  cells call the owning module directly (no facade); the module file
+  names stay, in `src/-private/sheet/`; the header menu's "Filter by this
+  field" item stays inside the `columns` getter, verbatim, for v0.4.
+- The baseline test count is the runner's number at stage 0.

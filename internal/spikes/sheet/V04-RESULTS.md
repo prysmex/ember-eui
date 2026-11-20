@@ -131,8 +131,9 @@ needed.
    test split in two IDs). VR5 checks "the frozen overscan is unchanged"
    as the number of rendered cells per row with and without the handler;
    the FZ tests pass unchanged.
-5. **The demo guards inserting**: `@canInsert` is false until all 1,000
-   records are loaded (an add row at the end of a half-loaded list is
+5. **The demo keeps its own fetch cursor** (`fetched`), not
+   `@records.length` (the fix commit). **It also guards inserting**:
+   `@canInsert` is false until all 1,000 records are loaded (an add row at the end of a half-loaded list is
    odd); the docs say so.
 
 ### Found (not changed, outside this batch)
@@ -153,34 +154,52 @@ needed.
 Production docs build of this checkout (the sheet's `pnpm build`, then
 `site`'s `pnpm build`; the other packages' `dist` from earlier batches;
 turbo not used), served with `vite preview`, Playwright's Chromium
-(headless, 1300 × 900), real `page.mouse.wheel` and `page.mouse.click` on
-d23 (`/docs/sheet/docs/sheet`). No page errors and no console errors.
+(headless, 1300 × 900), real `page.mouse.wheel`, `page.mouse.click` and
+right-clicks on d23 (`/docs/sheet/docs/sheet`). The final run is on the
+demo as committed in the fix commit (below). No page errors and no
+console errors.
 
 - First render: "100 of 1000 loaded in 1 page · records 1–11 in view"
   (so `{ first: 0, last: 10, count: 100 }`), no fetch.
+- A right-click on record 3 and the row menu's "Delete record": 99
+  records, row 3 shows Employee 4, no fetch.
 - 21 wheel steps of 120 px: the first fetch started at scrollTop 2520
-  with "records 71–81 in view" (`last` 80 = `count - 20`), the progress
-  bar shown.
-- While it loaded, a real click on Name of row 75 focused it
-  (`74:2 Employee 75`); six wheel steps up and down: no second fetch.
-  When the page arrived: "200 of 1000 … records 71–81", scrollTop still
-  2520, focus still on that cell, one fetch.
-- Wheeling on to the end of each page while the next one loaded: fetches
-  2 to 9 each started once, at `last` = `count - 20` (records 171–181,
-  271–281, then 374–384 … 874–884); each loop step compared the fetch
-  count before and after a wheel: never two at once (0 duplicates); 10
-  pages in all. At the end: "1000 of 1000 loaded in 10 pages · records
-  991–1000 in view" (`last: 999`), scrollTop at the maximum (35674), the
-  add row shown, the page itself not scrolled.
+  with "records 71–81 in view" (`last` 80, the first report at or past
+  `count - 20` = 79), the progress bar shown.
+- While it loaded, a real click on Name of grid row 75 focused it. When
+  the page arrived (before the script's next wheels: the 800 ms had
+  passed; those wheels went up and down by the same amount, so they show
+  nothing): scrollTop still 2520, focus still on that cell, one fetch.
+- Wheeling on to the grid's end while each next page loaded (the loop
+  keeps wheeling until the scroller is at its maximum, which it reaches
+  within a few steps of a fetch starting, well inside the 800 ms): exactly
+  **9 fetches for the 9 pages after the first**, each at the first report
+  with `last >= count - 20`. That count, not the per-step comparison the script also
+  made (a second fetch would also be +1 per step), is the evidence that
+  no fetch started while one was pending. At the end: "1000 of 1000
+  loaded in 10 pages · records 990–999 in view" (999 records:
+  `last: 998` = `count - 1`), scrollTop at its maximum, the add row
+  shown, the page itself not scrolled.
+- Reading every row afterwards (moving the scroller, no input): 999
+  distinct codes, none twice, E-0003 absent.
+- A delete of the last record once everything was loaded, then more
+  wheels at the end: still 9 fetches.
+- **Bug found and fixed (third commit).** The committed demo fetched from
+  `store.records.length` and derived "more to load" from it, so a delete
+  made the next page start one record early (a record twice) and, after
+  everything was loaded, made it fetch again. Found by the advisor review
+  from the code, not by the run (the earlier runs deleted nothing). The
+  demo now keeps its own `fetched` count, and `docs/sheet.md`'s snippet
+  and text say to keep your own cursor. The run above is after the fix.
 - An earlier run wheeled on past the grid's end while a page was loading:
   the wheel chained to the page (normal browser scroll chaining), the
   demo scrolled out of view and the later wheels missed the grid. The
   script was changed to stop wheeling at the grid's end.
-- Screenshots (not in the repo):
+- Screenshots (not in the repo), of the final run:
   `/tmp/claude-0/-home-user-ember-eui/87cd9e5a-212c-54c3-9d47-30ac398aebd2/scratchpad/v04d/`
   `d23-first.png`, `d23-loading.png`, `d23-after-load.png`,
-  `d23-end.png`. `d23-loading.png` looked at by the agent (progress bar,
-  focused row 75, the footer line), not by a person.
+  `d23-end.png`. The agent looked at an earlier run's `d23-loading.png`
+  (progress bar, focused row, the footer line), not a person.
 
 ### Open items
 
@@ -198,6 +217,10 @@ d23 (`/docs/sheet/docs/sheet`). No page errors and no console errors.
   follow-up).
 - **Focus after a scroll that moves the focused row node** (Found,
   above): a single focused cell is not refocused; pre-existing.
+- **Not verified:** the resize path (a call when the grid's height
+  changes is claimed by the docs from the core's code, not tested); "the
+  selection stays" on an append (only focus and scroll were checked); the
+  suite ran once in full (no repeat runs).
 - Not checked: Firefox, Safari, touch scrolling, a screen reader, dark
   mode; the site's testem suite.
 
@@ -221,4 +244,8 @@ d23 (`/docs/sheet/docs/sheet`). No page errors and no console errors.
 | Commit | Holds | Suite |
 | --- | --- | --- |
 | `5e4204a` | `SheetVisibleRange`, `@onVisibleRangeChange`, `visible-range.ts`, `virtualizationOptions` and the reporter, VR1-VR7 | 592 / 592 |
-| the next commit | docs (`sheet.md`, README, d23), these results | (no code; 592 carried over) |
+| `5651beb` | docs (`sheet.md`, README, d23), these results | (no code; 592 carried over) |
+| the fix commit | d23 and the docs' snippet keep their own fetch cursor (the delete bug above); these results corrected | (no code; 592 carried over) |
+
+Three commits, one more than the brief's "one or two": the demo bug was
+found after `5651beb`, and commits are never amended on this branch.

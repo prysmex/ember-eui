@@ -316,7 +316,8 @@ onVisibleRangeChange = ({ first, last, count }) => {
 
 async loadMore() {
   this.isLoading = true; // pass it as @isLoading: a progress bar over the grid
-  const page = await this.fetchPage(this.records.length);
+  const page = await this.fetchPage(this.fetched); // your own cursor
+  this.fetched += page.length;
   this.records = [...this.records, ...page];
   this.isLoading = false;
 }
@@ -332,6 +333,9 @@ of the three changed: on a scroll, a resize of the grid, and when
 nothing. It is not called during the render, so the handler can set
 state or append records at once.
 
+Keep your own cursor (here `fetched`, or the server's next-page token)
+rather than fetching from `@records.length`: the user can delete and
+insert rows, which changes the length but not where the next page starts.
 Guard the load with your own flag: the sheet calls again while a page is
 loading (the user keeps scrolling), and once more with the new `count`
 when it arrives. Appending at the end keeps the scroll position, the

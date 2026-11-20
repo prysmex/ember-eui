@@ -15,7 +15,9 @@ it fetches the next page (a fake server that takes 800 ms), shows
 `@isLoading` meanwhile and appends to `@records`. The scroll position,
 the selection and the focused cell stay where they are. Scrolling to the
 end again while a page is loading starts no second load: the owner's own
-`isLoading` guards it. The add row appears once everything is loaded.
+`isLoading` guards it. The next page starts after the records fetched so
+far, a count the owner keeps: `@records.length` changes when the user
+deletes or inserts a row. The add row appears once everything is loaded.
 
 </EuiText>
 
@@ -70,13 +72,15 @@ export default class SheetLoadMore extends Component {
   store = localRecords(page(0, PAGE), { getRecordId: this.getId });
 
   @tracked isLoading = false;
+  /** How many of the server's records were fetched: the next page's offset (not `@records.length`: the user inserts and deletes). */
+  @tracked fetched = PAGE;
   @tracked loads = 1;
   /** Fetches started: one per page, never two at once. */
   @tracked requests = 0;
   @tracked range = null;
 
   get hasMore() {
-    return this.store.records.length < TOTAL;
+    return this.fetched < TOTAL;
   }
 
   get canInsert() {
@@ -84,7 +88,7 @@ export default class SheetLoadMore extends Component {
   }
 
   get status() {
-    const loaded = this.store.records.length;
+    const loaded = this.fetched;
     const range = this.range;
     const view = range ? ` · records ${range.first + 1}–${range.last + 1} in view` : '';
     return `${loaded} of ${TOTAL} loaded in ${this.loads} ${this.loads === 1 ? 'page' : 'pages'}${view}`;
@@ -99,8 +103,9 @@ export default class SheetLoadMore extends Component {
   async loadMore() {
     this.isLoading = true;
     this.requests++;
-    const more = await fetchPage(this.store.records.length);
+    const more = await fetchPage(this.fetched);
     if (this.isDestroying || this.isDestroyed) return;
+    this.fetched += more.length;
     this.store.records = [...this.store.records, ...more];
     this.loads++;
     this.isLoading = false;

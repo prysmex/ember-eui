@@ -9,7 +9,7 @@ import Component from '@glimmer/component';
 import { cached, tracked } from '@glimmer/tracking';
 import { action } from '@ember/object';
 import { on } from '@ember/modifier';
-import { isDestroyed, isDestroying } from '@ember/destroyable';
+import { isDestroying } from '@ember/destroyable';
 import { guidFor } from '@ember/object/internals';
 import { cancel, later } from '@ember/runloop';
 import { service } from '@ember/service';
@@ -39,16 +39,12 @@ import {
   rangeMatrix,
   tileMatrix,
   toTsv,
-  valueOf,
-  withoutField
+  valueOf
 } from '../core/index.ts';
-import type { PasteInsert, RowModel } from '../core/index.ts';
+import type { PasteInsert } from '../core/index.ts';
 import { builtInSheetFieldTypes } from '../field-types.ts';
 import AutoScroll from '../-private/auto-scroll.ts';
-import FieldEditor, {
-  draftOf,
-  FIELD_EDITOR_WIDTH
-} from '../-private/field-editor.gts';
+import FieldEditor from '../-private/field-editor.gts';
 import FillHandle from '../-private/fill-handle.gts';
 import ImeCatcher from '../-private/ime-catcher.gts';
 import EditorFrame from '../-private/editor-frame.gts';
@@ -67,16 +63,12 @@ import SheetFooterCell, {
 import { ensureStyles } from '../-private/styles.ts';
 import { sheetThemeVars } from '../-private/theme.ts';
 import {
-  ADD_FIELD_COLUMN_ID,
   afterRender,
   clamp,
   nextTempId,
-  sameIds,
-  sameLayout,
   samePos,
   sameRange,
-  stop,
-  uploadOf
+  stop
 } from '../-private/sheet/util.ts';
 import SheetFields from '../-private/sheet/fields.ts';
 import SheetGridColumns from '../-private/sheet/grid-columns.ts';
@@ -99,117 +91,27 @@ import SheetResolve from '../-private/sheet/resolve.ts';
 import SheetUploads from '../-private/sheet/uploads.ts';
 import SheetHistory from '../-private/sheet/history.ts';
 import SheetRecords from '../-private/sheet/records.ts';
+import SheetEdit from '../-private/sheet/edit.ts';
+import SheetExpanded from '../-private/sheet/expanded.ts';
+import SheetFieldEditor from '../-private/sheet/field-editor.ts';
+import SheetRowMenu from '../-private/sheet/row-menu.ts';
+import SheetFollow from '../-private/sheet/follow.ts';
 
-import type {
-  ChangeSet,
-  EuiSheetField,
-  Pos,
-  Range,
-  RecordId,
-  SheetContext,
-  SheetFieldDraft,
-  SheetGroup,
-  SheetMessages
-} from '../core/index.ts';
-import type { RowMenuItem } from '../-private/row-menu.gts';
-import type { LayerAnchor } from '../-private/layer.gts';
+import type { Pos, Range, SheetContext, SheetMessages } from '../core/index.ts';
 import type { ShortcutContext } from '../-private/shortcuts.ts';
 import type {
   EuiSheetFieldType,
   EuiSheetSignature,
   SheetApi,
-  SheetFieldEditorType,
-  SheetBlockApi,
-  SheetEditorRect,
-  SheetEditorResult
+  SheetBlockApi
 } from '../types.ts';
 import type EuiI18n from '@ember-eui/core/services/eui-i18n';
 import type { EuiDataGridRefProps } from '@ember-eui/core/utils/data-grid/types';
 import type Owner from '@ember/owner';
-import type {
-  CellView,
-  ExpandedFrom,
-  HistoryEntry,
-  MenuState,
-  PendingOwn,
-  WrapperBox
-} from '../-private/sheet/types.ts';
+import type { CellView } from '../-private/sheet/types.ts';
 
 export type { EuiSheetSignature };
 export type { CellView };
-
-/**
- * The open field editor (V03 6.4): what it edits, where it is, and the
- * handler's promise state.
- */
-export class FieldEditorState {
-  mode: 'create' | 'edit' | 'delete';
-  /** The field edited or deleted. */
-  fieldId?: string;
-  /** Where a created field goes. */
-  position?: { index: number; after?: string };
-  draft: SheetFieldDraft;
-  /** Its anchor, relative to the wrapper: the header (or the header row's right end). */
-  anchor: WrapperBox;
-  /** The header focused when it closes: by column id, else by grid column index. */
-  returnTo: { columnId: string; index: number };
-  @tracked isSaving = false;
-  @tracked error: string | undefined = undefined;
-
-  constructor(init: {
-    mode: FieldEditorState['mode'];
-    fieldId?: string;
-    position?: FieldEditorState['position'];
-    draft: SheetFieldDraft;
-    anchor: WrapperBox;
-    returnTo: FieldEditorState['returnTo'];
-  }) {
-    this.mode = init.mode;
-    this.fieldId = init.fieldId;
-    this.position = init.position;
-    this.draft = init.draft;
-    this.anchor = init.anchor;
-    this.returnTo = init.returnTo;
-  }
-}
-
-/**
- * The open editor. One object per edit (the editor is keyed by it), so
- * when the owner moves the record (V02-DESIGN.md 3.2) its position and box
- * change in place and the editor keeps its draft.
- */
-class Editing {
-  @tracked pos: Pos;
-  recordId: RecordId;
-  field: EuiSheetField;
-  type: EuiSheetFieldType;
-  @tracked rect: SheetEditorRect;
-  layout: 'cell' | 'panel' | 'expand';
-  initialKey: string | null;
-  draft: string;
-  /** The editor's `@onUpload` (attachment fields with `upload`). */
-  onUpload?: (files: File[]) => Promise<void>;
-
-  constructor(init: {
-    pos: Pos;
-    recordId: RecordId;
-    field: EuiSheetField;
-    type: EuiSheetFieldType;
-    rect: SheetEditorRect;
-    layout: 'cell' | 'panel' | 'expand';
-    initialKey: string | null;
-    draft: string;
-  }) {
-    this.pos = init.pos;
-    this.recordId = init.recordId;
-    this.field = init.field;
-    this.type = init.type;
-    this.rect = init.rect;
-    this.layout = init.layout;
-    this.initialKey = init.initialKey;
-    this.draft = init.draft;
-  }
-}
 
 const ARROWS = new Set(['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight']);
 
@@ -245,53 +147,6 @@ function startsComposition(event: KeyboardEvent): boolean {
 const LONG_PRESS_MS = 500;
 /** A touch that moves farther than this is a scroll, not a long press. */
 const LONG_PRESS_SLOP = 10;
-/** `@editIn="auto"`: the expanded record edits on a coarse pointer and a sheet narrower than this. */
-const NARROW_SHEET = 600;
-
-/** Whether the primary pointer is coarse (a touch screen). */
-function coarsePointer(): boolean {
-  return (
-    typeof window !== 'undefined' &&
-    typeof window.matchMedia === 'function' &&
-    window.matchMedia('(pointer: coarse)').matches
-  );
-}
-
-/** The types the field editor offers without `@creatableFieldTypes`: the built-ins a draft can fully describe (V03 6.4). */
-const CREATABLE_FIELD_TYPES = [
-  'text',
-  'longText',
-  'number',
-  'currency',
-  'percent',
-  'checkbox',
-  'singleSelect',
-  'multiSelect',
-  'date',
-  'duration',
-  'rating',
-  'url',
-  'email',
-  'phone'
-];
-
-/** The message of a rejected field handler: `error.message`, else the value as text. */
-function errorMessage(error: unknown): string {
-  if (error instanceof Error) return error.message;
-  return typeof error === 'string' ? error : String(error);
-}
-
-/** A field's type name. */
-const typeName = (field: EuiSheetField): string => field.type ?? 'text';
-
-/** Menu items whose action moves focus itself. */
-const MENU_ITEMS_THAT_MOVE_FOCUS = new Set([
-  'insertAbove',
-  'insertBelow',
-  'duplicate',
-  'expand',
-  'delete'
-]);
 
 /** The fill handle's drawn size in px: a 10 px square and its 2 px ring (`styles.ts`). */
 const FILL_HANDLE_SIZE = 14;
@@ -344,32 +199,6 @@ function isModal(shell: string): boolean {
   return shell === 'modal';
 }
 
-/**
- * Whether `next` is `previous` with only what this sheet emitted applied:
- * the ids kept in the same order, the pending deletes gone, and no more
- * new ids than the pending inserts (an owner may give them other ids).
- */
-function isOwnChange(
-  previous: readonly string[],
-  next: readonly string[],
-  pending: PendingOwn
-): boolean {
-  if (!pending.inserts && !pending.deletes.size) return false;
-  const before = new Set(previous);
-  const kept = previous.filter((id) => !pending.deletes.has(id));
-  let k = 0;
-  let added = 0;
-  for (const id of next) {
-    if (!before.has(id)) {
-      added++;
-      continue;
-    }
-    if (kept[k] !== id) return false;
-    k++;
-  }
-  return k === kept.length && added <= pending.inserts;
-}
-
 export default class EuiSheet<T extends object> extends Component<
   EuiSheetSignature<T>
 > {
@@ -397,27 +226,15 @@ export default class EuiSheet<T extends object> extends Component<
   readonly uploads = new SheetUploads<T>(this);
   readonly history = new SheetHistory<T>(this);
   readonly records = new SheetRecords<T>(this);
-  @tracked editing: Editing | null = null;
+  readonly edit = new SheetEdit<T>(this);
+  readonly expanded = new SheetExpanded<T>(this);
+  readonly fieldEditor = new SheetFieldEditor<T>(this);
+  readonly rowMenu = new SheetRowMenu<T>(this);
+  readonly follow = new SheetFollow<T>(this);
   /** A drag over other cells is selecting a range (no text selection meanwhile). */
   @tracked dragging = false;
-  /** The expanded record without `@onExpandedRecordChange`. */
-  @tracked localExpandedId: RecordId | null = null;
-  /** The open row menu. */
-  @tracked menu: MenuState | null = null;
   /** The shortcut list is open (V03 5.5). */
   @tracked shortcutsOpen = false;
-  /** The open field editor (V03 6.4). */
-  @tracked fieldEditorState: FieldEditorState | null = null;
-  /** Every field id of the last render (`@fields` and `@hiddenFields`) and its type: what `watchFields` compares with. */
-  lastFieldTypes: Map<string, string> | null = null;
-  /** A created field without `@onFieldOrderChange` goes into the sheet's own order after this field (V03 6.8). */
-  createdAfter: { after: string | undefined } | null = null;
-  /**
-   * An editor is open in the expanded record's form: the shell's focus
-   * trap is paused, so focus can reach a surface the editor renders
-   * outside the shell (a wormholed calendar; N3).
-   */
-  @tracked formEditorOpen = false;
 
   /* Batch 6: fill handle, auto-scroll, touch, composition (V02-DESIGN.md 8.4-8.6) */
   /** A fill drag: the range it fills from, and the range it fills now (the preview). */
@@ -442,18 +259,8 @@ export default class EuiSheet<T extends object> extends Component<
   } | null = null;
   /** A long press opened the menu: the click (and contextmenu) that follow are its own. */
   longPressOpened = false;
-  /** `@editIn` opened the expanded record to edit this field (8.5). */
-  pendingFormEdit: { recordId: RecordId; fieldId: string } | null = null;
-  /** Where the expanded record was opened from. */
-  expandedFrom: ExpandedFrom | null = null;
   /** What a drag selects: cells, or rows (a press on a row number). */
   dragKind: 'cells' | 'rows' = 'cells';
-
-  /** Plain: the last text (or value) the editor reported, and whether it reported one. */
-  draft = '';
-  draftDirty = false;
-  draftValue: unknown = undefined;
-  draftKind: 'text' | 'value' = 'text';
 
   /** The grid's API (not the sheet's: that is `sheetApi`). */
   gridApi: EuiDataGridRefProps | null = null;
@@ -466,14 +273,6 @@ export default class EuiSheet<T extends object> extends Component<
 
   /** Stable object: the grid passes it to every cell renderer. */
   cellContext = { sheet: this as unknown as EuiSheet<object> };
-  /** The `@records` of the last render, and their ids. */
-  lastRecords: readonly T[] | null = null;
-  lastIds: string[] = [];
-  /** The row model of that render: the stored positions are its grid rows. */
-  lastRowModel: RowModel | null = null;
-  /** `@groups` of that render (V03 4.2): what a stored add row or header row belongs to. */
-  lastGroups: readonly SheetGroup[] = [];
-  lastGroupsArg: readonly SheetGroup[] | undefined = undefined;
 
   /** The sheet's API for its owner (`@registerApi`): one stable object. */
   sheetApi: SheetApi = {
@@ -483,14 +282,14 @@ export default class EuiSheet<T extends object> extends Component<
     remapIds: (ids) => this.history.remapIds(ids),
     clearHistory: () => this.history.clearHistory(),
     expandRecord: (recordId) => {
-      if (recordId === null) this.closeExpanded();
-      else this.expandRecord(recordId, null);
+      if (recordId === null) this.expanded.closeExpanded();
+      else this.expanded.expandRecord(recordId, null);
     },
     insertRecord: (options = {}) => this.records.insertFromApi(options),
     deleteRecords: (ids) => this.records.deleteRecordIds(ids, false),
     showShortcuts: () => this.showShortcuts(),
-    editField: (fieldId) => this.editField(fieldId),
-    addField: (options = {}) => this.addField(options.index)
+    editField: (fieldId) => this.fieldEditor.editField(fieldId),
+    addField: (options = {}) => this.fieldEditor.addField(options.index)
   };
 
   /** Messages through `eui-i18n` (each call looks its token up). */
@@ -513,7 +312,11 @@ export default class EuiSheet<T extends object> extends Component<
     this.stopFillDrag();
     this.autoScroll.stop();
     this.cancelLongPress();
-    document.removeEventListener('mousedown', this.onDocumentMouseDown, true);
+    document.removeEventListener(
+      'mousedown',
+      this.rowMenu.onDocumentMouseDown,
+      true
+    );
     for (const token of [...this.resolve.pendingCalls.keys()])
       this.resolve.endCall(token);
   }
@@ -549,7 +352,7 @@ export default class EuiSheet<T extends object> extends Component<
       setRowHeight: this.gridOptions.setRowHeight,
       setSort: this.gridColumns.setSort,
       showShortcuts: this.showShortcuts,
-      addField: () => this.addField(),
+      addField: () => this.fieldEditor.addField(),
       groupBy: this.args.groupBy ?? [],
       groups: this.args.groups ?? [],
       setGroupBy: this.groupHeaders.setGroupBy,
@@ -632,325 +435,6 @@ export default class EuiSheet<T extends object> extends Component<
     };
   });
 
-  /**
-   * Whenever `@records` is a new array: schedules a `@validate` run and,
-   * after the render, follows the records (`recordsRendered`).
-   */
-  watchRecords = modifier(
-    (_element: HTMLElement, [records, groups]: [unknown, unknown]) => {
-      void groups;
-      // V03 4.2: `@groups` can change while `@records` stays the same array
-      if (records !== this.lastRecords) this.validate.scheduleValidate();
-      afterRender(this, () => this.recordsRendered());
-    }
-  );
-
-  /**
-   * After a render with a new `@records` (V02-DESIGN.md 3.2, 3.3). A change
-   * that is not the sheet's own (the owner re-sorted, re-queried, reloaded)
-   * moves the selection, focus and an open editor to their record; then a
-   * pending focus whose record is now rendered is applied.
-   */
-  recordsRendered(): void {
-    const records = this.args.records;
-    if (records === this.lastRecords) {
-      if (this.args.groups !== this.lastGroupsArg) this.groupsRendered();
-      return;
-    }
-    const previous = this.lastRecords;
-    const previousIds = this.lastIds;
-    const previousModel = this.lastRowModel;
-    const previousGroups = this.lastGroups;
-    const ids = records.map((record) => String(this.args.getRecordId(record)));
-    const pending = this.changes.pendingOwn;
-    this.lastRecords = records;
-    this.lastIds = ids;
-    this.lastRowModel = this.rows.rowModel;
-    this.lastGroups = this.rows.groups;
-    this.lastGroupsArg = this.args.groups;
-    this.changes.pendingOwn = { deletes: new Set(), inserts: 0 };
-    // grouped, the rows moved: what holds grid rows across renders ends (V03 7.4)
-    const regrouped =
-      !!previousModel &&
-      (previousGroups.length > 0 || this.rows.isGrouped) &&
-      !sameLayout(
-        previousModel,
-        previousGroups,
-        this.rows.rowModel,
-        this.rows.groups
-      );
-    const imeFocus = regrouped && this.endTransients();
-    // a pending cell whose record left `@records` (an owner's re-query) is
-    // dropped; one on a row not inserted yet (an async owner) is kept
-    if (previous && this.resolve.pendingCells.size) {
-      const now = new Set(ids);
-      const left = previousIds.filter((id) => !now.has(id));
-      if (left.length) this.resolve.dropPending([], left);
-    }
-    if (
-      previous &&
-      !sameIds(previousIds, ids) &&
-      !isOwnChange(previousIds, ids, pending)
-    ) {
-      this.followRecords(
-        previousIds,
-        ids,
-        previousModel ?? this.rows.rowModel,
-        previousGroups
-      );
-    } else if (regrouped && previousModel) {
-      if (sameIds(previousIds, ids)) {
-        // a new array of the same records under new groups (a re-query
-        // with new headers): the stored positions follow, as on new @groups
-        this.followRecords(previousIds, ids, previousModel, previousGroups);
-      } else {
-        // the sheet's own insert or delete in a group: the rows after it moved
-        this.followRows(previousIds, ids, previousModel, previousGroups);
-      }
-    }
-    if (imeFocus && this.selection.head)
-      this.dom.focusGridCell(this.selection.head);
-    // the expanded record left `@records` (deleted, or the owner re-queried)
-    const expanded = this.expandedId;
-    if (expanded !== null && !ids.includes(String(expanded))) {
-      this.expandedFrom = null;
-      this.setExpanded(null);
-    }
-    // a menu opened on rows that changed
-    if (this.menu && previous && !sameIds(previousIds, ids)) {
-      this.closeMenu(false);
-    }
-    this.records.applyPendingFocus();
-    if (this.rows.isGrouped || previousGroups.length)
-      this.groupHeaders.followGroupFocus();
-  }
-
-  /**
-   * After a render with new `@groups` and the same `@records` (V03 4.2, 7.4
-   * "Stored positions"): when the rows moved, the stored positions are
-   * found again by record id or group key, and a drag, a fill, a
-   * composition, a drop target and an open menu end; focus on a header
-   * follows its key.
-   */
-  groupsRendered(): void {
-    const previousModel = this.lastRowModel;
-    const previousGroups = this.lastGroups;
-    this.lastRowModel = this.rows.rowModel;
-    this.lastGroups = this.rows.groups;
-    this.lastGroupsArg = this.args.groups;
-    if (
-      !previousModel ||
-      sameLayout(
-        previousModel,
-        previousGroups,
-        this.rows.rowModel,
-        this.rows.groups
-      )
-    ) {
-      return;
-    }
-    const imeFocus = this.endTransients();
-    this.followRecords(
-      this.lastIds,
-      this.lastIds,
-      previousModel,
-      previousGroups
-    );
-    if (imeFocus && this.selection.head && !this.editing)
-      this.dom.focusGridCell(this.selection.head);
-    this.records.applyPendingFocus();
-    this.groupHeaders.followGroupFocus();
-  }
-
-  /**
-   * Ends what holds grid rows across renders when grouped rows move
-   * (V03 7.4, GR23): a select drag, a fill drag, a composition, a file-drop
-   * target and the row menu. True when focus was in what ended (the
-   * composition catcher or the menu), so the caller focuses the active cell.
-   */
-  endTransients(): boolean {
-    if (this.dragging || this.dragFrom) this.endDrag();
-    this.stopFillDrag();
-    const imeFocus =
-      !!this.ime.imePos && document.activeElement === this.ime.imeInput;
-    if (this.ime.imePos || this.ime.imeActive) this.ime.endIme();
-    if (this.uploads.dropPos) this.uploads.dropPos = null;
-    // the menu's items can re-render first and drop the focused one: focus
-    // then fell to the page
-    const active = document.activeElement;
-    const menuFocus =
-      !!this.menu &&
-      (this.dom.isInMenu(active) || !active || active === document.body);
-    if (this.menu) this.closeMenu(false);
-    return imeFocus || menuFocus;
-  }
-
-  /**
-   * A grid row of the previous render in this one (V03 4.2): a record's
-   * row by its id, an add row or a header by its group's key; -1 when it
-   * is gone.
-   */
-  refindRow(
-    row: number,
-    previousIds: readonly string[],
-    indexOf: ReadonlyMap<string, number>,
-    previousModel: RowModel,
-    previousGroups: readonly SheetGroup[]
-  ): number {
-    const at = previousModel.at(row);
-    if (!at) return -1;
-    if (at.kind === 'record') {
-      const id = previousIds[at.record];
-      const found = id === undefined ? undefined : indexOf.get(id);
-      return found === undefined ? -1 : this.rows.gridRowOf(found);
-    }
-    if (at.group < 0) return this.rows.rowModel.addRowOf(-1);
-    const key = previousGroups[at.group]?.key;
-    const index = this.rows.groups.findIndex((group) => group.key === key);
-    if (index < 0) return -1;
-    return at.kind === 'add'
-      ? this.rows.rowModel.addRowOf(index)
-      : this.rows.rowModel.headerRowOf(index);
-  }
-
-  /**
-   * Grouped: the rows the checkbox Shift range and the row-number focus
-   * remember (`lastToggledRow`, `rowCursor`) follow their record (V03 7.4).
-   */
-  followRows(
-    previousIds: readonly string[],
-    ids: readonly string[],
-    previousModel: RowModel,
-    previousGroups: readonly SheetGroup[]
-  ): void {
-    const indexOf = new Map(ids.map((id, i) => [id, i]));
-    const refind = (row: number | null): number | null => {
-      if (row === null) return null;
-      const found = this.refindRow(
-        row,
-        previousIds,
-        indexOf,
-        previousModel,
-        previousGroups
-      );
-      return found < 0 ? null : found;
-    };
-    this.checked.lastToggledRow = refind(this.checked.lastToggledRow);
-    this.focus.rowCursor = refind(this.focus.rowCursor);
-  }
-
-  /**
-   * The owner replaced `@records`: the selection collapses to the head's
-   * cell, found again by record id (or the same row, clamped, when that
-   * record is gone); an open editor stays on its record, or is cancelled
-   * without a change set when the record is gone; a drag ends. A data cell
-   * that had focus is focused again at the new position.
-   */
-  followRecords(
-    previousIds: readonly string[],
-    ids: readonly string[],
-    previousModel: RowModel,
-    previousGroups: readonly SheetGroup[] = []
-  ): void {
-    const indexOf = new Map(ids.map((id, i) => [id, i]));
-    const grouped = previousGroups.length > 0 || this.rows.isGrouped;
-    if (grouped)
-      this.followRows(previousIds, ids, previousModel, previousGroups);
-    const active = document.activeElement;
-    // a data cell has focus, or had it until this render removed its row
-    const hadCellFocus =
-      !!this.dom.dataCell(active) ||
-      (this.focus.focusDropped && (!active || active === document.body));
-    let hadEditorFocus = false;
-    if (this.dragging || this.dragFrom) this.endDrag();
-
-    const editing = this.editing;
-    if (editing) {
-      const row = indexOf.get(String(editing.recordId));
-      if (row === undefined) {
-        hadEditorFocus = this.dom.isInEditor(active);
-        this.editing = null;
-      } else {
-        editing.pos = { row: this.rows.gridRowOf(row), col: editing.pos.col };
-        const cell = this.dom.cellElement(editing.pos);
-        const rect = cell && this.dom.rectOf(cell);
-        if (rect) {
-          editing.rect = rect;
-        } else {
-          // the row is not rendered: as on scroll
-          this.commit({ refocus: false });
-        }
-      }
-    }
-
-    // the active cell: the anchor of a cell range (V03 batch 1), else the head
-    const head =
-      this.selection.rangeKind === 'cells' && this.selection.anchor
-        ? this.selection.anchor
-        : this.selection.head;
-    // the copy mark's cells are other records now
-    if (this.outline.copied) this.outline.copied = null;
-    if (head) {
-      const id = previousIds[previousModel.recordRowAt(head.row)];
-      let found = id === undefined ? undefined : indexOf.get(id);
-      // grouped: an add row by its group's key (V03 4.2)
-      let foundRow = -1;
-      if (found === undefined && grouped) {
-        foundRow = this.refindRow(
-          head.row,
-          previousIds,
-          indexOf,
-          previousModel,
-          previousGroups
-        );
-        if (foundRow >= 0) found = this.rows.recordRowAt(foundRow);
-      }
-      // the last record, or the add row when there is none
-      const model = this.rows.rowModel;
-      const lastRow =
-        model.lastRecordRow >= 0 ? model.lastRecordRow : model.length - 1;
-      let row =
-        foundRow >= 0
-          ? foundRow
-          : found === undefined
-            ? clamp(head.row, 0, lastRow)
-            : this.rows.gridRowOf(found);
-      // grouped, the clamp of a lost head: a record (the nearest above
-      // first), else an add row, never a header (V03 8.6)
-      if (
-        model.length &&
-        this.rows.isGrouped &&
-        found === undefined &&
-        foundRow < 0
-      ) {
-        row = this.rows.clampToRecordRow(
-          row,
-          this.rows.landingRow(row, 1, false)
-        );
-      }
-      if (model.length === 0 || row < 0) {
-        this.selection.anchor = null;
-        this.selection.head = null;
-      } else {
-        const pos = { row, col: head.col };
-        this.selection.anchor = pos;
-        this.selection.head = pos;
-        this.selection.rangeKind = 'cells';
-        if ((hadCellFocus || hadEditorFocus) && !this.editing) {
-          // onFocusIn sees the cell it already knows and keeps the range
-          this.focus.domCursor = pos;
-          this.dom.focusGridCell(pos);
-        }
-      }
-    }
-    // the error box is placed again when its cell gets focus
-    if (!hadCellFocus) this.focus.focused = null;
-  }
-
-  /** The row menu's anchor in the viewport (the layer reads it at every placement). */
-  menuAnchor = (): LayerAnchor | null =>
-    this.menu ? this.dom.toViewport(this.menu.anchor) : null;
-
   /** Copies the records' visible fields as TSV. */
   copyRows(records: readonly T[]): void {
     if (!records.length) return;
@@ -970,353 +454,6 @@ export default class EuiSheet<T extends object> extends Component<
         }
       )
     );
-  }
-
-  /* -------------------------------------------------------------------- */
-  /* The row menu                                                          */
-  /* -------------------------------------------------------------------- */
-
-  /** Opens the menu under a cell (Shift+F10, the ContextMenu key). */
-  openMenuAt(row: number, col: number | null, cell: HTMLElement): void {
-    const rect = this.dom.rectOf(cell);
-    if (!rect) return;
-    // the keyboard path acts on the selection, or on this row
-    if (
-      col === null &&
-      !this.selection.isRowSelected(row) &&
-      !this.checked.checkedRecords.length
-    ) {
-      this.focus.keepRangeOnFocus = true;
-      this.selection.selectRows(row, false);
-    }
-    this.openMenu(row, col, rect);
-  }
-
-  openMenu(row: number, col: number | null, anchor: WrapperBox): void {
-    if (this.editing) this.commit({ refocus: false });
-    const records = this.selection.selectionRecords();
-    const record = this.rows.recordAt(row);
-    this.menu = {
-      row,
-      col,
-      anchor: {
-        top: anchor.top,
-        left: anchor.left,
-        width: anchor.width,
-        height: anchor.height
-      },
-      records: records.length ? records : record === undefined ? [] : [record]
-    };
-    document.addEventListener('mousedown', this.onDocumentMouseDown, true);
-  }
-
-  /** Closes the menu; `refocus` focuses the cell it was opened on. */
-  closeMenu(refocus: boolean): void {
-    const menu = this.menu;
-    document.removeEventListener('mousedown', this.onDocumentMouseDown, true);
-    if (!menu) return;
-    this.menu = null;
-    if (!refocus || menu.row >= this.rows.rowCount) return;
-    if (menu.col === null) {
-      this.focus.keepRangeOnFocus = true;
-      this.dom.focusRowNumberCell(menu.row);
-    } else {
-      // onFocusIn sees the cell it already knows and keeps the range
-      this.focus.domCursor = { row: menu.row, col: menu.col };
-      this.dom.focusGridCell({ row: menu.row, col: menu.col });
-    }
-  }
-
-  /** A press outside the menu closes it. */
-  onDocumentMouseDown = (event: MouseEvent): void => {
-    if (this.dom.isInMenu(event.target)) return;
-    // the mouse events a browser sends after the long press that opened it
-    if (this.longPressOpened) return;
-    this.closeMenu(false);
-  };
-
-  get menuItems(): RowMenuItem[] {
-    const menu = this.menu;
-    if (!menu) return [];
-    const records = menu.records as T[];
-    const count = records.length;
-    const messages = this.messages;
-    const items: RowMenuItem[] = [];
-    if (this.canInsert) {
-      items.push(
-        {
-          id: 'insertAbove',
-          label: messages.insertAbove(),
-          icon: 'sortUp',
-          onSelect: () =>
-            this.records.insertNear(menu.row, 'before', this.menuFieldId(menu))
-        },
-        {
-          id: 'insertBelow',
-          label: messages.insertBelow(),
-          icon: 'sortDown',
-          onSelect: () =>
-            this.records.insertNear(menu.row, 'after', this.menuFieldId(menu))
-        },
-        {
-          id: 'duplicate',
-          label:
-            count > 1
-              ? messages.duplicateRecords(count)
-              : messages.duplicateRecord(),
-          icon: 'copy',
-          disabled: !count,
-          onSelect: () =>
-            this.records.duplicate(records, this.menuFieldId(menu))
-        }
-      );
-    }
-    if (count === 1) {
-      items.push({
-        id: 'expand',
-        label: messages.expandRecord(),
-        icon: 'expand',
-        onSelect: () => {
-          const recordId = this.args.getRecordId(records[0]!);
-          this.expandRecord(recordId, {
-            recordId,
-            fieldId: this.menuFieldId(menu)
-          });
-        }
-      });
-    }
-    const link = this.menuLink(menu);
-    if (link) {
-      items.push({
-        id: 'openLink',
-        label: messages.openLink(),
-        icon: 'popout',
-        onSelect: () => this.cells.openLink(link)
-      });
-    }
-    items.push({
-      id: 'copy',
-      label: count > 1 ? messages.copyRows(count) : messages.copyRow(),
-      icon: 'copyClipboard',
-      disabled: !count,
-      onSelect: () => this.copyRows(records)
-    });
-    for (const action of this.args.rowActions ?? []) {
-      items.push({
-        id: action.id,
-        label: action.label,
-        icon: action.icon,
-        color: action.color,
-        disabled: action.isDisabled?.(records) ?? false,
-        onSelect: () => action.onSelect(records)
-      });
-    }
-    if (this.canDelete) {
-      items.push({
-        id: 'delete',
-        label:
-          count > 1 ? messages.deleteRecords(count) : messages.deleteRecord(),
-        icon: 'trash',
-        color: 'danger',
-        disabled: !count,
-        onSelect: () =>
-          this.records.deleteRecordIds(
-            records.map((record) => this.args.getRecordId(record)),
-            { fieldId: this.menuFieldId(menu) }
-          )
-      });
-    }
-    return items;
-  }
-
-  /** The link of the cell the menu was opened on, if it has one. */
-  menuLink(menu: MenuState): string | undefined {
-    if (menu.col === null) return undefined;
-    const record = this.rows.recordAt(menu.row);
-    const field = this.fields.visibleFields[menu.col];
-    if (record === undefined || !field) return undefined;
-    return this.cells.linkOf(
-      this.fields.typeOf(field),
-      field,
-      valueOf(record, field.id)
-    );
-  }
-
-  /** The field the menu was opened on; the first one from a row number. */
-  menuFieldId(menu: MenuState): string | null {
-    const col = menu.col ?? 0;
-    return (
-      this.fields.visibleFields[col]?.id ??
-      this.fields.visibleFields[0]?.id ??
-      null
-    );
-  }
-
-  onMenuSelect = (item: RowMenuItem): void => {
-    // focus goes back to the cell, unless the action moves it (to a new
-    // row, a remaining row, the expanded record)
-    this.closeMenu(!MENU_ITEMS_THAT_MOVE_FOCUS.has(item.id));
-    item.onSelect();
-  };
-
-  /* -------------------------------------------------------------------- */
-  /* The expanded record (V02-DESIGN.md 5.7)                               */
-  /* -------------------------------------------------------------------- */
-
-  /** Controlled with `@onExpandedRecordChange`, else local. */
-  get expandedId(): RecordId | null {
-    return this.args.onExpandedRecordChange
-      ? (this.args.expandedRecordId ?? null)
-      : this.localExpandedId;
-  }
-
-  setExpanded(id: RecordId | null): void {
-    if (id === null && this.formEditorOpen) this.formEditorOpen = false;
-    if (this.args.onExpandedRecordChange) this.args.onExpandedRecordChange(id);
-    else this.localExpandedId = id;
-  }
-
-  /** The expanded record, while it is in `@records`. */
-  get expandedRecordValue(): T | undefined {
-    const id = this.expandedId;
-    if (id === null) return undefined;
-    return this.args.records[this.rows.rowOf(id, 0)];
-  }
-
-  get expandedShell(): 'flyout' | 'modal' {
-    return this.args.expandedRecord === 'modal' ? 'modal' : 'flyout';
-  }
-
-  /** Opens a record of `@records`; `from` is the cell focus returns to on close. */
-  expandRecord(recordId: RecordId, from: ExpandedFrom | null): void {
-    if (
-      this.rows.rowOf(recordId, this.rows.hintOf(this.selection.head?.row)) < 0
-    )
-      return;
-    if (this.editing) this.commit({ refocus: false });
-    this.expandedFrom = from ?? this.expandedFrom;
-    this.setExpanded(recordId);
-  }
-
-  /** Closes it and focuses the cell it was opened from, when that row still exists. */
-  closeExpanded = (): void => {
-    const from = this.expandedFrom;
-    this.expandedFrom = null;
-    this.setExpanded(null);
-    if (!from) return;
-    afterRender(this, () => {
-      // a controlled owner may keep it open
-      if (this.expandedId !== null) {
-        this.expandedFrom ??= from;
-        return;
-      }
-      const row = this.rows.rowOf(
-        from.recordId,
-        this.rows.hintOf(this.selection.head?.row)
-      );
-      if (row < 0) return;
-      if (from.fieldId === null) {
-        this.focus.keepRangeOnFocus = true;
-        this.dom.focusRowNumberCell(this.rows.gridRowOf(row));
-      } else {
-        this.selection.focusRecordCell({
-          recordId: from.recordId,
-          fieldId: from.fieldId
-        });
-      }
-    });
-  };
-
-  /** The record `step` rows from the expanded one, or null at either end. */
-  expandedStep(step: number): T | null {
-    const id = this.expandedId;
-    if (id === null) return null;
-    const row = this.rows.rowOf(id, 0);
-    if (row < 0) return null;
-    return this.args.records[row + step] ?? null;
-  }
-
-  stepExpanded(step: number): void {
-    const record = this.expandedStep(step);
-    if (record) this.setExpanded(this.args.getRecordId(record));
-  }
-
-  /** The expanded record's title: its first field's text, else "Record n". */
-  recordTitleOf(record: T): string {
-    const field = this.fields.allFields[0];
-    const text = field
-      ? this.fields.typeOf(field).format(valueOf(record, field.id), field, {
-          record,
-          messages: this.messages
-        })
-      : '';
-    if (text.trim()) return text;
-    const row = this.rows.rowOf(this.args.getRecordId(record), 0);
-    return this.messages.recordTitle(this.rows.numberOf(Math.max(row, 0)));
-  }
-
-  /** A one-record context for the form: every field, visible and hidden. */
-  formContext(record: T): { ctx: SheetContext<T>; record: T } | null {
-    // the current object of the record: the form may hold an older one
-    const row = this.rows.rowOf(this.args.getRecordId(record), 0);
-    const current = this.args.records[row];
-    if (current === undefined) return null;
-    return {
-      ctx: {
-        ...this.context,
-        records: [current],
-        fields: this.fields.allFields
-      },
-      record: current
-    };
-  }
-
-  /** A value saved from the form (a picked option, a toggled checkbox). */
-  commitFormValue(record: T, field: EuiSheetField<T>, value: unknown): void {
-    this.commitForm(record, field, (ctx, pos) => commitValue(ctx, pos, value));
-  }
-
-  /** A text typed in the form, parsed by the field's type. */
-  commitFormText(record: T, field: EuiSheetField<T>, text: string): void {
-    const form = this.formContext(record);
-    if (!form) return;
-    const col = this.fields.allFields.indexOf(field);
-    if (col < 0) return;
-    this.changes.emitText(form.ctx, { row: 0, col }, text, [
-      { id: this.args.getRecordId(form.record), fieldId: field.id }
-    ]);
-  }
-
-  /** Delete or Backspace on a box: the type's empty value. */
-  clearFormField(record: T, field: EuiSheetField<T>): void {
-    this.commitForm(record, field, (ctx, pos) =>
-      clearRange(ctx, {
-        top: pos.row,
-        left: pos.col,
-        bottom: pos.row,
-        right: pos.col
-      })
-    );
-  }
-
-  commitForm(
-    record: T,
-    field: EuiSheetField<T>,
-    build: (ctx: SheetContext<T>, pos: Pos) => ChangeSet | null
-  ): void {
-    const form = this.formContext(record);
-    if (!form) return;
-    const col = this.fields.allFields.indexOf(field);
-    if (col < 0) return;
-    const changeSet = build(form.ctx, { row: 0, col });
-    this.changes.emit(changeSet, [
-      { id: this.args.getRecordId(form.record), fieldId: field.id }
-    ]);
-  }
-
-  /** Runs `fn` after the next render (the form focuses a box). */
-  afterFormRender(fn: () => void): void {
-    afterRender(this, fn);
   }
 
   /** The press started on the cell that already had focus (a second click edits). */
@@ -1353,7 +490,8 @@ export default class EuiSheet<T extends object> extends Component<
     // a click after a drag that released outside the sheet never came
     this.suppressClick = false;
     this.endDrag();
-    if (this.menu && !this.dom.isInMenu(target)) this.closeMenu(false);
+    if (this.rowMenu.menu && !this.dom.isInMenu(target))
+      this.rowMenu.closeMenu(false);
 
     const rowCell = this.dom.rowNumberCell(target);
     if (rowCell) {
@@ -1377,7 +515,7 @@ export default class EuiSheet<T extends object> extends Component<
       this.selection.selectRows(row, event.shiftKey);
       if (
         !event.shiftKey &&
-        !this.editing &&
+        !this.edit.editing &&
         this.lastPointerType !== 'touch'
       ) {
         this.dragFrom = { row, col: 0 };
@@ -1399,7 +537,7 @@ export default class EuiSheet<T extends object> extends Component<
     if (
       event.button === 0 &&
       event.shiftKey &&
-      !this.editing &&
+      !this.edit.editing &&
       this.selection.rangeKind === 'cells' &&
       this.rows.isRecordRow(pos.row) &&
       this.dom.dataCell(document.activeElement)
@@ -1413,7 +551,7 @@ export default class EuiSheet<T extends object> extends Component<
     if (
       event.button === 0 &&
       !event.shiftKey &&
-      !this.editing &&
+      !this.edit.editing &&
       this.lastPointerType !== 'touch' &&
       this.rows.isRecordRow(pos.row) &&
       !target.closest('[data-eui-sheet-opener]')
@@ -1582,7 +720,7 @@ export default class EuiSheet<T extends object> extends Component<
   /** The range the fill handle is drawn for: cells, a writable sheet, no editor. */
   get fillHandleRange(): Range | null {
     const range = this.selection.range;
-    if (!range || this.args.readOnly || this.editing) return null;
+    if (!range || this.args.readOnly || this.edit.editing) return null;
     if (this.selection.rangeKind !== 'cells') return null;
     if (!this.rows.recordRange(range)) return null;
     return range;
@@ -1808,11 +946,15 @@ export default class EuiSheet<T extends object> extends Component<
     this.lastPointerType = event.pointerType || 'mouse';
     this.longPressOpened = false;
     this.cancelLongPress();
-    if (event.pointerType !== 'touch' || !event.isPrimary || this.editing) {
+    if (
+      event.pointerType !== 'touch' ||
+      !event.isPrimary ||
+      this.edit.editing
+    ) {
       return;
     }
     const target = event.target as Element;
-    if (this.menuRowOf(target) < 0) return;
+    if (this.rowMenu.menuRowOf(target) < 0) return;
     this.longPress = {
       x: event.clientX,
       y: event.clientY,
@@ -1847,8 +989,8 @@ export default class EuiSheet<T extends object> extends Component<
   onLongPress(): void {
     const press = this.longPress;
     this.longPress = null;
-    if (!press || this.editing) return;
-    if (this.openContextMenu(press.target, press.x, press.y)) {
+    if (!press || this.edit.editing) return;
+    if (this.rowMenu.openContextMenu(press.target, press.x, press.y)) {
       this.longPressOpened = true;
     }
   }
@@ -1859,68 +1001,6 @@ export default class EuiSheet<T extends object> extends Component<
     if (!this.longPressOpened || this.dom.isInMenu(event.target)) return;
     this.longPressOpened = false;
     stop(event);
-  }
-
-  /** The grid row of a data cell or a row-number cell on a record; -1 elsewhere. */
-  menuRowOf(target: Element): number {
-    const rowCell = this.dom.rowNumberCell(target);
-    const cell = rowCell ? null : this.dom.dataCell(target);
-    const row = rowCell
-      ? this.dom.rowIndexOf(rowCell)
-      : cell
-        ? this.dom.cursor(cell).row
-        : -1;
-    return this.rows.isRecordRow(row) ? row : -1;
-  }
-
-  /* -------------------------------------------------------------------- */
-  /* @editIn (V02-DESIGN.md 8.5)                                           */
-  /* -------------------------------------------------------------------- */
-
-  /** Whether a click on the selected cell or Enter edits in the expanded record. */
-  get editsInRecord(): boolean {
-    const mode = this.args.editIn ?? 'auto';
-    if (mode === 'record') return true;
-    if (mode !== 'auto') return false;
-    return (
-      coarsePointer() && (this.wrapper?.offsetWidth ?? Infinity) < NARROW_SHEET
-    );
-  }
-
-  /**
-   * `@editIn`: opens the expanded record with the cell's field editing,
-   * instead of the grid's editor. False when it does not apply.
-   */
-  editInRecord(pos: Pos): boolean {
-    if (!this.editsInRecord || !this.cells.canEdit(pos)) return false;
-    const record = this.rows.recordAt(pos.row);
-    const field = this.fields.visibleFields[pos.col];
-    if (record === undefined || !field) return false;
-    const recordId = this.args.getRecordId(record);
-    this.pendingFormEdit = { recordId, fieldId: field.id };
-    // the shell's focus trap waits for the editor (as for any form editor)
-    this.formEditorOpen = true;
-    this.expandRecord(recordId, { recordId, fieldId: field.id });
-    afterRender(this, () => {
-      // no form took it (a controlled owner kept the record closed)
-      if (!this.pendingFormEdit) return;
-      this.pendingFormEdit = null;
-      this.formEditorOpen = false;
-    });
-    return true;
-  }
-
-  /** The expanded record's form asks which field to open on mount. */
-  takePendingFormEdit(record: unknown): string | null {
-    const pending = this.pendingFormEdit;
-    if (!pending || record === undefined) return null;
-    if (
-      String(this.args.getRecordId(record as T)) !== String(pending.recordId)
-    ) {
-      return null;
-    }
-    this.pendingFormEdit = null;
-    return pending.fieldId;
   }
 
   /**
@@ -1956,7 +1036,7 @@ export default class EuiSheet<T extends object> extends Component<
     if (this.rows.isGrouped && this.groupHeaders.onGroupToggleClick(target))
       return;
     if (this.onControlClick(event, target)) return;
-    if (event.shiftKey || this.editing) return;
+    if (event.shiftKey || this.edit.editing) return;
     const cell = this.dom.dataCell(target);
     if (!cell) return;
     const pos = this.dom.cursor(cell);
@@ -1981,8 +1061,8 @@ export default class EuiSheet<T extends object> extends Component<
     // a star click is the cell's own (`@onCommit`): no edit
     if (target.closest('[data-eui-sheet-star]')) return;
     if (target.closest('[data-eui-sheet-opener]')) {
-      if (this.cells.canEdit(pos) && !this.editInRecord(pos)) {
-        this.startEdit(pos, cell, null);
+      if (this.cells.canEdit(pos) && !this.edit.editInRecord(pos)) {
+        this.edit.startEdit(pos, cell, null);
       }
       return;
     }
@@ -1999,9 +1079,9 @@ export default class EuiSheet<T extends object> extends Component<
     if (
       pressOnFocusedCell &&
       this.cells.canEdit(pos) &&
-      !this.editInRecord(pos)
+      !this.edit.editInRecord(pos)
     ) {
-      this.startEdit(pos, cell, null);
+      this.edit.startEdit(pos, cell, null);
     }
   }
 
@@ -2009,7 +1089,7 @@ export default class EuiSheet<T extends object> extends Component<
   onControlClick(event: MouseEvent, target: Element): boolean {
     // the "+" header (V03 6.3)
     if (this.dom.addFieldHeader(target)) {
-      this.addField();
+      this.fieldEditor.addField();
       return true;
     }
     if (target.closest('[data-eui-sheet-row-check-all]')) {
@@ -2027,7 +1107,7 @@ export default class EuiSheet<T extends object> extends Component<
         const record = this.rows.recordAt(row);
         if (record !== undefined) {
           const recordId = this.args.getRecordId(record);
-          this.expandRecord(recordId, { recordId, fieldId: null });
+          this.expanded.expandRecord(recordId, { recordId, fieldId: null });
         }
       }
       return true;
@@ -2048,90 +1128,13 @@ export default class EuiSheet<T extends object> extends Component<
   @action
   onDoubleClick(event: MouseEvent): void {
     // the double-click's second click already opened the editor
-    if (this.editing) return;
+    if (this.edit.editing) return;
     const cell = this.dom.dataCell(event.target);
     if (!cell) return;
     const pos = this.dom.cursor(cell);
-    if (this.cells.canEdit(pos) && !this.editInRecord(pos)) {
-      this.startEdit(pos, cell, null);
+    if (this.cells.canEdit(pos) && !this.edit.editInRecord(pos)) {
+      this.edit.startEdit(pos, cell, null);
     }
-  }
-
-  /** Right-click on a data cell or a row number: the row menu. */
-  @action
-  onContextMenu(event: MouseEvent): void {
-    const target = event.target as Element;
-    // the ContextMenu key's own event, once focus is in the menu: not the
-    // browser's menu over it; and a long press that already opened it
-    if (this.dom.isInMenu(target) || this.longPressOpened) {
-      event.preventDefault();
-      return;
-    }
-    this.cancelLongPress();
-    // a header's menu is a popover that closes on a press outside it: where
-    // the browser fires contextmenu on the press (Linux, macOS), the release
-    // that follows would close it at once, so it opens after the release
-    if ((event.buttons & 2) !== 0 && this.dom.headerCell(target)) {
-      event.preventDefault();
-      const open = (): void => {
-        window.removeEventListener('mouseup', onUp, true);
-        clearTimeout(timer);
-        requestAnimationFrame(() => {
-          if (!this.isDestroying && !this.isDestroyed) {
-            this.openContextMenu(target, event.clientX, event.clientY);
-          }
-        });
-      };
-      const onUp = (up: MouseEvent): void => {
-        if (up.button === 2) open();
-      };
-      window.addEventListener('mouseup', onUp, true);
-      // a release outside the window never comes
-      const timer = setTimeout(open, 1000);
-      return;
-    }
-    if (this.openContextMenu(target, event.clientX, event.clientY)) {
-      event.preventDefault();
-    }
-  }
-
-  /** The row menu at a viewport point, for a right-click or a long press on `target`; whether it opened. */
-  openContextMenu(target: Element, x: number, y: number): boolean {
-    if (this.editing) return false;
-    // a header: its own menu, as its "⋯" button opens it (V03 batch 1)
-    const header = this.dom.headerCell(target);
-    if (header) {
-      const button = header.querySelector<HTMLElement>(
-        '[data-test-subj^=dataGridHeaderCellActionButton-]'
-      );
-      if (!button) return false;
-      button.click();
-      return true;
-    }
-    const rowCell = this.dom.rowNumberCell(target);
-    const cell = rowCell ? null : this.dom.dataCell(target);
-    const row = rowCell
-      ? this.dom.rowIndexOf(rowCell)
-      : cell
-        ? this.dom.cursor(cell).row
-        : -1;
-    if (!this.rows.isRecordRow(row)) return false;
-    let col: number | null = null;
-    if (rowCell) {
-      if (!this.selection.isRowSelected(row))
-        this.selection.selectRows(row, false);
-    } else if (cell) {
-      const pos = this.dom.cursor(cell);
-      col = pos.col;
-      if (!this.selection.isSelected(pos.row, pos.col)) {
-        this.selection.anchor = pos;
-        this.selection.head = pos;
-        this.selection.rangeKind = 'cells';
-      }
-    }
-    const point = this.dom.pointInWrapper(x, y);
-    this.openMenu(row, col, { ...point, width: 0, height: 0 });
-    return true;
   }
 
   /* -------------------------------------------------------------------- */
@@ -2153,17 +1156,17 @@ export default class EuiSheet<T extends object> extends Component<
     ) {
       return;
     }
-    if (this.editing && this.dom.isInEditor(target)) {
+    if (this.edit.editing && this.dom.isInEditor(target)) {
       this.onEditKeyDown(event);
       return;
     }
     // the field editor's keys are its own (its focus trap has Escape)
     if (this.dom.isInFieldEditor(target)) return;
-    if (this.menu && this.dom.isInMenu(target)) {
+    if (this.rowMenu.menu && this.dom.isInMenu(target)) {
       // the panel has ArrowUp/Down and Enter; Escape is the sheet's
       if (event.key === 'Escape' || event.key === 'Tab') {
         stop(event);
-        this.closeMenu(true);
+        this.rowMenu.closeMenu(true);
       }
       return;
     }
@@ -2179,7 +1182,7 @@ export default class EuiSheet<T extends object> extends Component<
     // Ctrl/Cmd+/ on a cell, a row number or a header (V03 5.5, X5)
     if (
       isShortcutListKey(event) &&
-      !this.editing &&
+      !this.edit.editing &&
       this.dom.isInGrid(target)
     ) {
       stop(event);
@@ -2200,7 +1203,7 @@ export default class EuiSheet<T extends object> extends Component<
       const plain = !event.ctrlKey && !event.metaKey && !event.altKey;
       if (plain && (event.key === 'Enter' || event.key === ' ')) {
         stop(event);
-        this.addField();
+        this.fieldEditor.addField();
       }
       return;
     }
@@ -2260,7 +1263,7 @@ export default class EuiSheet<T extends object> extends Component<
 
     if (isMenuKey(event)) {
       stop(event);
-      this.openMenuAt(pos.row, pos.col, cell);
+      this.rowMenu.openMenuAt(pos.row, pos.col, cell);
       return;
     }
     // a dead key or an IME: not prevented, the composition goes to the
@@ -2285,7 +1288,7 @@ export default class EuiSheet<T extends object> extends Component<
       // C9: Space expands the record (also keeps the page from scrolling)
       stop(event);
       const recordId = this.args.getRecordId(record);
-      this.expandRecord(recordId, { recordId, fieldId: field.id });
+      this.expanded.expandRecord(recordId, { recordId, fieldId: field.id });
       return;
     }
     if (key === 'Enter' && event.shiftKey && plain && this.canInsert) {
@@ -2302,7 +1305,7 @@ export default class EuiSheet<T extends object> extends Component<
       }
       if (!type.editor) return;
       stop(event);
-      if (!this.editInRecord(pos)) this.startEdit(pos, cell, null);
+      if (!this.edit.editInRecord(pos)) this.edit.startEdit(pos, cell, null);
       return;
     }
     if (key.length === 1 && plain && !event.isComposing) {
@@ -2315,7 +1318,7 @@ export default class EuiSheet<T extends object> extends Component<
       if (!(type.opensOnKey?.(key) ?? true)) return;
       // preventDefault keeps the character from being typed twice
       stop(event);
-      this.startEdit(pos, cell, key);
+      this.edit.startEdit(pos, cell, key);
       return;
     }
     if (key === 'Delete' || key === 'Backspace') {
@@ -2611,7 +1614,7 @@ export default class EuiSheet<T extends object> extends Component<
     if (isMenuKey(event)) {
       stop(event);
       const cell = this.dom.rowNumberElement(row);
-      if (cell) this.openMenuAt(row, null, cell);
+      if (cell) this.rowMenu.openMenuAt(row, null, cell);
       return;
     }
     if (event.key === ' ' && plain) {
@@ -2622,7 +1625,7 @@ export default class EuiSheet<T extends object> extends Component<
     if (event.key === 'Enter' && plain && !event.shiftKey) {
       stop(event);
       const recordId = this.args.getRecordId(record);
-      this.expandRecord(recordId, { recordId, fieldId: null });
+      this.expanded.expandRecord(recordId, { recordId, fieldId: null });
       return;
     }
     if (
@@ -2663,19 +1666,19 @@ export default class EuiSheet<T extends object> extends Component<
 
   onEditKeyDown(event: KeyboardEvent): void {
     // a key the editor claims is the editor's: no prevent, no stop, no action
-    if (this.editing?.type.handlesKey?.(event)) return;
+    if (this.edit.editing?.type.handlesKey?.(event)) return;
     switch (event.key) {
       case 'Enter':
         stop(event);
-        this.commit({ move: [1, 0] });
+        this.edit.commit({ move: [1, 0] });
         break;
       case 'Tab':
         stop(event);
-        this.commit({ move: [0, event.shiftKey ? -1 : 1] });
+        this.edit.commit({ move: [0, event.shiftKey ? -1 : 1] });
         break;
       case 'Escape':
         stop(event);
-        this.cancel();
+        this.edit.cancel();
         break;
       // anything else: the editor handles it
     }
@@ -2684,7 +1687,7 @@ export default class EuiSheet<T extends object> extends Component<
   @action
   onCopy(event: ClipboardEvent): void {
     const target = event.target;
-    if (this.editing && this.dom.isInEditor(target)) return;
+    if (this.edit.editing && this.dom.isInEditor(target)) return;
     if (this.checked.isCheckedRowsTarget(target)) {
       if (!event.clipboardData) return;
       event.clipboardData.setData(
@@ -2723,7 +1726,7 @@ export default class EuiSheet<T extends object> extends Component<
   @action
   onCut(event: ClipboardEvent): void {
     const target = event.target;
-    if (this.editing && this.dom.isInEditor(target)) return;
+    if (this.edit.editing && this.dom.isInEditor(target)) return;
     if (this.groupHeaders.isGroupHeaderTarget(target)) {
       event.clipboardData?.setData('text/plain', '');
       stop(event);
@@ -2754,7 +1757,7 @@ export default class EuiSheet<T extends object> extends Component<
   onPaste(event: ClipboardEvent): void {
     if (this.args.readOnly) return;
     const target = event.target;
-    if (this.editing && this.dom.isInEditor(target)) return;
+    if (this.edit.editing && this.dom.isInEditor(target)) return;
     if (!this.isRangeTarget(target)) return;
     const data = event.clipboardData;
     if (!data) return;
@@ -2911,176 +1914,6 @@ export default class EuiSheet<T extends object> extends Component<
     return false;
   }
 
-  startEdit(pos: Pos, cell: HTMLElement, initialKey: string | null): void {
-    // an edit ends the copy mark (V03 batch 1)
-    if (this.outline.copied) this.outline.copied = null;
-    const wrapper = this.wrapper;
-    const record = this.rows.recordAt(pos.row);
-    const field = this.fields.visibleFields[pos.col];
-    if (!wrapper || record === undefined || !field) return;
-    const type = this.fields.typeOf(field);
-    const recordId = this.args.getRecordId(record);
-    const rect = this.dom.rectOf(cell);
-    if (!rect) return;
-    const layout = type.editorLayout ?? 'cell';
-    const upload = uploadOf(field);
-    const rejection = this.cells.liveRejection(record, recordId, field.id);
-    const draft =
-      initialKey ??
-      rejection?.text ??
-      type.format(valueOf(record, field.id), field, {
-        record,
-        messages: this.messages
-      });
-    this.draft = draft;
-    this.draftDirty = false;
-    this.editing = new Editing({
-      pos,
-      recordId,
-      field,
-      type,
-      rect,
-      layout,
-      initialKey,
-      draft
-    });
-    this.draftKind = 'text';
-    this.draftValue = undefined;
-    if (upload) {
-      this.editing.onUpload = (files) =>
-        this.uploads.uploadFiles(recordId, field, files);
-    }
-  }
-
-  /**
-   * The open editor as a one-item list, rendered with `{{#each}}` keyed by
-   * identity: each edit gets its own editor instance, and an editor's args
-   * stay those of its own edit while it is torn down (EuiSelectable reads
-   * its options from a scheduled blur handler after the edit ended).
-   */
-  @cached
-  get editingList(): Editing[] {
-    return this.editing ? [this.editing] : [];
-  }
-
-  /** The edited record, by id: the owner may have moved it (V02-DESIGN.md 3.2). */
-  editorRecord = (editing: Editing): T | undefined =>
-    this.args.records[
-      this.rows.rowOf(editing.recordId, this.rows.hintOf(editing.pos.row))
-    ];
-
-  editorValue = (editing: Editing): unknown =>
-    valueOf(this.editorRecord(editing), editing.field.id);
-
-  commit({
-    move = [0, 0],
-    refocus = true,
-    result
-  }: {
-    move?: [number, number];
-    refocus?: boolean;
-    result?: SheetEditorResult<unknown>;
-  } = {}): void {
-    const editing = this.editing;
-    if (!editing) return;
-    // first: the re-entrancy guard. The focusout caused below (or by the
-    // editor leaving the DOM) finds editing === null and returns.
-    this.editing = null;
-    // the edited record's row now; gone: nothing to save
-    const row = this.rows.rowOf(
-      editing.recordId,
-      this.rows.hintOf(editing.pos.row)
-    );
-    if (row < 0) return;
-    const pos = { row, col: editing.pos.col };
-    const ctx = this.context;
-    const touched = [{ id: editing.recordId, fieldId: editing.field.id }];
-    if (result && 'value' in result) {
-      this.changes.emit(commitValue(ctx, pos, result.value), touched);
-    } else if (result && 'text' in result) {
-      this.changes.emitText(ctx, pos, result.text, touched);
-    } else if (this.draftDirty && this.draftKind === 'value') {
-      this.changes.emit(commitValue(ctx, pos, this.draftValue), touched);
-    } else if (this.draftDirty) {
-      this.changes.emitText(ctx, pos, this.draft, touched);
-    }
-    if (refocus) {
-      // synchronous is safe: the target row already exists
-      const model = this.rows.rowModel;
-      const from = this.rows.gridRowOf(pos.row);
-      let row = clamp(
-        from + move[0],
-        model.firstRecordRow,
-        model.lastRecordRow
-      );
-      // grouped: over a header or an add row to the next record (V03 8.6)
-      if (this.rows.isGrouped && !this.rows.isRecordRow(row)) {
-        const next = model.nearestRecordRow(row, move[0] < 0 ? -1 : 1);
-        row = next >= 0 ? next : from;
-      }
-      this.dom.focusGridCell({
-        row,
-        col: clamp(pos.col + move[1], 0, this.fields.visibleFields.length - 1)
-      });
-    }
-  }
-
-  cancel = (): void => {
-    const editing = this.editing;
-    if (!editing) return;
-    this.editing = null;
-    const row = this.rows.rowOf(
-      editing.recordId,
-      this.rows.hintOf(editing.pos.row)
-    );
-    if (row < 0) return;
-    this.dom.focusGridCell({
-      row: this.rows.gridRowOf(row),
-      col: editing.pos.col
-    });
-  };
-
-  /* Editor callbacks, bound once */
-
-  onDraftChange = (text: string): void => {
-    this.draft = text;
-    this.draftDirty = true;
-    this.draftKind = 'text';
-  };
-
-  onDraftValue = (value: unknown): void => {
-    this.draftValue = value;
-    this.draftDirty = true;
-    this.draftKind = 'value';
-  };
-
-  /** The editor's `@onSave`: saves a value and keeps it open. */
-  onEditorSave = (value: unknown): void => {
-    const editing = this.editing;
-    if (!editing) return;
-    const row = this.rows.rowOf(
-      editing.recordId,
-      this.rows.hintOf(editing.pos.row)
-    );
-    if (row < 0) return;
-    this.changes.emit(
-      commitValue(this.context, { row, col: editing.pos.col }, value),
-      [{ id: editing.recordId, fieldId: editing.field.id }]
-    );
-  };
-
-  onEditorCommit = (
-    result?: SheetEditorResult<unknown>,
-    options?: { move?: [number, number] }
-  ): void => {
-    this.commit({ result, move: options?.move });
-  };
-
-  onEditorFocusOut = (): void => {
-    // no refocus: a clicked cell must keep focus
-    if (this.editing) this.commit({ refocus: false });
-  };
-
   /* The empty state (V03 batch 1) */
 
   /** No records and not loading: a message under the grid (the add row stays the action). */
@@ -3088,371 +1921,10 @@ export default class EuiSheet<T extends object> extends Component<
     return this.args.records.length === 0 && !this.args.isLoading;
   }
 
-  /** The field editor is open from the "+" header: it shows as open. */
-  get addingField(): boolean {
-    return this.fieldEditorState?.returnTo.columnId === ADD_FIELD_COLUMN_ID;
-  }
-
-  /** The open field editor, as a list keyed by its state (a new one starts a new form). */
-  get fieldEditorList(): FieldEditorState[] {
-    return this.fieldEditorState ? [this.fieldEditorState] : [];
-  }
-
-  /**
-   * The types the field editor offers: `@creatableFieldTypes` (default
-   * `CREATABLE_FIELD_TYPES`) that exist, and on edit the field's own type
-   * first when it is not one of them (a linked record field keeps its type).
-   */
-  fieldEditorTypes(
-    field: EuiSheetField<T> | undefined,
-    mode: FieldEditorState['mode']
-  ): SheetFieldEditorType[] {
-    const names = [...(this.args.creatableFieldTypes ?? CREATABLE_FIELD_TYPES)];
-    if (field && mode !== 'create' && !names.includes(typeName(field))) {
-      names.unshift(typeName(field));
-    }
-    const messages = this.messages as unknown as Record<
-      string,
-      (() => string) | undefined
-    >;
-    const types: SheetFieldEditorType[] = [];
-    for (const name of names) {
-      const type = this.types[name];
-      if (!type) continue;
-      const entry: SheetFieldEditorType = {
-        name,
-        label: type.label ?? messages[`fieldType_${name}`]?.() ?? name
-      };
-      if (type.fieldOptions) entry.fieldOptions = type.fieldOptions;
-      types.push(entry);
-    }
-    return types;
-  }
-
-  /**
-   * Where the field editor goes: under the header of `columnId` (else the
-   * "+" header), its left edge kept inside the wrapper; without either, at
-   * the wrapper's top right, under the header row (a hidden field, V03
-   * 6.8). The layer places it in the viewport from there (below, or above
-   * when there is no room below; clamped, then scrolling).
-   */
-  fieldEditorPlace(columnId: string): { anchor: WrapperBox } {
-    const width = this.wrapper?.offsetWidth ?? FIELD_EDITOR_WIDTH;
-    const maxLeft = Math.max(0, width - FIELD_EDITOR_WIDTH);
-    const header =
-      this.dom.headerElement(columnId) ??
-      (this.gridColumns.hasAddFieldColumn
-        ? this.dom.headerElement(ADD_FIELD_COLUMN_ID)
-        : null);
-    const rect = header && this.dom.rectOf(header);
-    if (rect) {
-      return {
-        anchor: {
-          top: rect.top,
-          left: clamp(rect.left, 0, maxLeft),
-          width: rect.width,
-          height: rect.height
-        }
-      };
-    }
-    const any = this.wrapper?.querySelector<HTMLElement>('[role=columnheader]');
-    const anyRect = any && this.dom.rectOf(any);
-    return {
-      anchor: {
-        top: anyRect ? anyRect.top : 0,
-        left: maxLeft,
-        width: 0,
-        height: anyRect ? anyRect.height : 0
-      }
-    };
-  }
-
-  openFieldEditor(
-    init: ConstructorParameters<typeof FieldEditorState>[0]
-  ): void {
-    if (this.editing) this.commit({ refocus: false });
-    if (this.menu) this.closeMenu(false);
-    this.fieldEditorState = new FieldEditorState(init);
-  }
-
-  /**
-   * `api.addField`, the "+" column, "Insert left/right": the editor to
-   * create a field at `index` among the visible fields (default the end;
-   * never before the first field), under `columnId`'s header.
-   */
-  addField(index?: number, columnId?: string, after?: string): void {
-    if (!this.args.onFieldCreate) return;
-    const fields = this.fields.visibleFields;
-    const count = fields.length;
-    const at = clamp(index ?? count, count ? 1 : 0, count);
-    const afterId = after ?? fields[at - 1]?.id;
-    const anchor =
-      columnId ??
-      (this.gridColumns.hasAddFieldColumn
-        ? ADD_FIELD_COLUMN_ID
-        : (afterId ?? ''));
-    const position: { index: number; after?: string } = { index: at };
-    if (afterId !== undefined) position.after = afterId;
-    const types = this.fieldEditorTypes(undefined, 'create');
-    const type = types.some((entry) => entry.name === 'text')
-      ? 'text'
-      : (types[0]?.name ?? 'text');
-    this.openFieldEditor({
-      mode: 'create',
-      position,
-      draft: { label: '', type },
-      ...this.fieldEditorPlace(anchor),
-      returnTo: {
-        columnId: anchor,
-        index: this.gridColumns.gridIndexOf(anchor)
-      }
-    });
-  }
-
-  /** `api.editField` and "Edit field": the editor on a field, also a hidden one. */
-  editField(fieldId: string): void {
-    if (!this.args.onFieldUpdate) return;
-    const field = this.fields.fieldById(fieldId);
-    if (!field || field.manageable === false) return;
-    const columnId = this.fields.visibleFieldIds.includes(fieldId)
-      ? fieldId
-      : ADD_FIELD_COLUMN_ID;
-    this.openFieldEditor({
-      mode: 'edit',
-      fieldId,
-      draft: draftOf(field),
-      ...this.fieldEditorPlace(columnId),
-      returnTo: { columnId, index: this.gridColumns.gridIndexOf(columnId) }
-    });
-  }
-
-  /** "Duplicate field": `@onFieldCreate` at once, with a copy of the field's draft next to it. */
-  duplicateField(fieldId: string): void {
-    const handler = this.args.onFieldCreate;
-    const index = this.fields.visibleFieldIds.indexOf(fieldId);
-    const field = this.fields.visibleFields[index];
-    if (!handler || !field || field.manageable === false) return;
-    const draft: SheetFieldDraft = {
-      ...draftOf(field),
-      label: this.messages.duplicateFieldLabel(field.label ?? field.id)
-    };
-    this.noteCreatedAfter(field.id);
-    void handler(draft, {
-      index: index + 1,
-      after: field.id,
-      copyOf: field.id
-    });
-  }
-
-  /** "Delete field": the confirmation, in the editor's frame (V03 6.6). */
-  askDeleteField(fieldId: string): void {
-    const field = this.fields.fieldById(fieldId);
-    if (!this.args.onFieldDelete || !field || field.manageable === false) {
-      return;
-    }
-    if (this.fields.visibleFieldIds[0] === fieldId) return;
-    this.openFieldEditor({
-      mode: 'delete',
-      fieldId,
-      draft: draftOf(field),
-      ...this.fieldEditorPlace(fieldId),
-      returnTo: {
-        columnId: fieldId,
-        index: this.gridColumns.gridIndexOf(fieldId)
-      }
-    });
-  }
-
-  /** Save in the editor: `@onFieldCreate` or `@onFieldUpdate`. */
-  saveFieldEditor(draft: SheetFieldDraft): void {
-    const state = this.fieldEditorState;
-    if (!state || state.isSaving) return;
-    if (state.mode === 'create') {
-      const handler = this.args.onFieldCreate;
-      if (!handler) return;
-      const position = { ...state.position! };
-      this.noteCreatedAfter(position.after);
-      this.runFieldHandler(state, () => handler(draft, position));
-      return;
-    }
-    const handler = this.args.onFieldUpdate;
-    const previous = this.fields.fieldById(state.fieldId);
-    if (!handler || !previous || state.mode !== 'edit') return;
-    this.runFieldHandler(state, () =>
-      handler(previous.id, draft, { previous })
-    );
-  }
-
-  /** The delete confirmation's button: `@onFieldDelete`. */
-  confirmDeleteField(): void {
-    const state = this.fieldEditorState;
-    const handler = this.args.onFieldDelete;
-    if (!state || state.isSaving || state.mode !== 'delete' || !handler) return;
-    const fieldId = state.fieldId!;
-    this.runFieldHandler(state, () => handler(fieldId));
-  }
-
-  /**
-   * Calls a field handler (V03 6.2): without a promise the editor closes
-   * at once; with one it stays open, busy, and closes when it resolves or
-   * shows the rejection's message.
-   */
-  runFieldHandler(
-    state: FieldEditorState,
-    call: () => void | Promise<void>
-  ): void {
-    state.error = undefined;
-    let result: unknown;
-    try {
-      result = call();
-    } catch (error) {
-      state.error = errorMessage(error);
-      return;
-    }
-    if (!result || typeof (result as Promise<void>).then !== 'function') {
-      this.closeFieldEditor(true);
-      return;
-    }
-    state.isSaving = true;
-    (result as Promise<void>).then(
-      () => {
-        if (isDestroying(this) || isDestroyed(this)) return;
-        state.isSaving = false;
-        if (this.fieldEditorState === state) this.closeFieldEditor(true);
-      },
-      (error: unknown) => {
-        if (isDestroying(this) || isDestroyed(this)) return;
-        state.isSaving = false;
-        state.error = errorMessage(error);
-      }
-    );
-  }
-
-  /**
-   * Closes the field editor; `refocus` focuses the header it belongs to.
-   * Not while its handler's promise is pending: Escape, Cancel, a click
-   * outside or a scroll then do nothing, so a rejection is still shown
-   * (V03 6.2).
-   */
-  closeFieldEditor(refocus: boolean): void {
-    const state = this.fieldEditorState;
-    if (!state || state.isSaving) return;
-    this.fieldEditorState = null;
-    if (!refocus) return;
-    afterRender(this, () => this.dom.focusHeader(state.returnTo));
-  }
-
-  /** Without `@onFieldOrderChange` but with the sheet's own order, a created field goes after this one (V03 6.8). */
-  noteCreatedAfter(after: string | undefined): void {
-    this.createdAfter =
-      this.fields.localOrder && !this.args.onFieldOrderChange
-        ? { after }
-        : null;
-  }
-
-  /** Whenever `@fields` or `@hiddenFields` is a new array: after the render, `fieldsRendered`. */
-  watchFields = modifier(
-    (_element: HTMLElement, [fields, hidden]: [unknown, unknown]) => {
-      void fields;
-      void hidden;
-      afterRender(this, () => this.fieldsRendered());
-    }
-  );
-
-  /**
-   * After `@fields` or `@hiddenFields` changed (V03 6.6): a field that is
-   * gone from both, or whose type changed, is forgotten (its undo
-   * entries, rejected texts, pending cells, an editor on it); a created
-   * field is placed in the sheet's own order; the selection is clamped.
-   * A hide moves a field between the two lists and is not a loss.
-   */
-  fieldsRendered(): void {
-    const all = [...this.args.fields, ...(this.args.hiddenFields ?? [])];
-    const now = new Map(all.map((field) => [field.id, typeName(field)]));
-    const before = this.lastFieldTypes;
-    this.lastFieldTypes = now;
-    if (!before) return;
-    const gone: string[] = [];
-    for (const [id, type] of before) {
-      if (now.get(id) !== type) gone.push(id);
-    }
-    const created = this.createdAfter;
-    if (created) {
-      const added = [...now.keys()].filter((id) => !before.has(id));
-      if (added.length) {
-        this.createdAfter = null;
-        this.placeCreated(added, created.after);
-      }
-    }
-    if (gone.length) this.forgetFields(gone);
-    this.selection.clampSelection();
-  }
-
-  /** Puts created fields into the sheet's own order after `after`. */
-  placeCreated(ids: string[], after: string | undefined): void {
-    const order = this.fields.localOrder;
-    if (!order || this.args.onFieldOrderChange) return;
-    const rest = order.filter((id) => !ids.includes(id));
-    const at = after === undefined ? 0 : rest.indexOf(after) + 1;
-    if (after !== undefined && at === 0) rest.push(...ids);
-    else rest.splice(at, 0, ...ids);
-    this.fields.localOrder = rest;
-  }
-
-  /** Drops what the sheet keeps per field for fields the owner deleted or retyped (V03 6.6). */
-  forgetFields(fieldIds: string[]): void {
-    const ids = new Set(fieldIds);
-    const prune = (entries: HistoryEntry[]): HistoryEntry[] => {
-      const kept: HistoryEntry[] = [];
-      for (const entry of entries) {
-        let changeSet: ChangeSet | null = entry.changeSet;
-        for (const id of fieldIds) {
-          if (changeSet) changeSet = withoutField(changeSet, id);
-        }
-        const rejections = entry.rejections.filter(
-          (rejection) => !ids.has(rejection.fieldId)
-        );
-        if (!changeSet) continue;
-        if (
-          changeSet === entry.changeSet &&
-          rejections.length === entry.rejections.length
-        ) {
-          kept.push(entry);
-          continue;
-        }
-        const next = { changeSet, rejections };
-        this.history.replaceEntry(entry, next);
-        kept.push(next);
-      }
-      return kept;
-    };
-    this.history.undoStack = prune(this.history.undoStack);
-    this.history.redoStack = prune(this.history.redoStack);
-    if ([...this.cells.rejections.values()].some((r) => ids.has(r.fieldId))) {
-      this.cells.rejections = new Map(
-        [...this.cells.rejections].filter(([, r]) => !ids.has(r.fieldId))
-      );
-    }
-    const pendingKeys = [...this.resolve.pendingCells]
-      .filter(([, entry]) => entry.cell && ids.has(entry.cell.fieldId))
-      .map(([key]) => key);
-    const uploadKeys = [...this.resolve.pendingCells.keys()].filter((key) =>
-      ids.has(key.slice(key.indexOf('\u0000') + 1))
-    );
-    const keys = [...new Set([...pendingKeys, ...uploadKeys])];
-    if (keys.length) this.resolve.dropPending(keys);
-    if (this.editing && ids.has(this.editing.field.id)) this.editing = null;
-    const state = this.fieldEditorState;
-    // our own save in flight closes the editor itself
-    if (state?.fieldId && ids.has(state.fieldId) && !state.isSaving) {
-      this.closeFieldEditor(false);
-    }
-  }
-
   /** `api.showShortcuts()`, the block's `showShortcuts()` and Ctrl/Cmd+/. */
   showShortcuts = (): void => {
-    if (this.editing) this.commit({ refocus: false });
-    this.closeMenu(false);
+    if (this.edit.editing) this.edit.commit({ refocus: false });
+    this.rowMenu.closeMenu(false);
     this.shortcutsOpen = true;
   };
 
@@ -3470,50 +1942,6 @@ export default class EuiSheet<T extends object> extends Component<
     };
   }
 
-  /**
-   * How far a cell editor grows past its cell (V03 batch 1): 2 px on each
-   * side, less where the grid body's visible area ends (the header, the
-   * frozen edge, the scroll bars), so it is not cut off.
-   */
-  growOf = (
-    editing: Editing
-  ): {
-    top: number;
-    right: number;
-    bottom: number;
-    left: number;
-  } => {
-    const rect = editing.rect;
-    const wrapper = this.wrapper;
-    const bounds = this.scroll.scrollBounds();
-    const side = (room: number) => clamp(Math.floor(room), 0, 2);
-    if (!wrapper || !bounds) return { top: 0, right: 0, bottom: 0, left: 0 };
-    const origin = wrapper.getBoundingClientRect();
-    const scale = wrapper.offsetWidth ? origin.width / wrapper.offsetWidth : 1;
-    const clipLeft =
-      bounds.frozenRight !== undefined &&
-      editing.pos.col >= this.frozen.frozenCount
-        ? bounds.frozenRight
-        : bounds.left;
-    const toWrapper = (x: number, from: number) => (x - from) / scale;
-    return {
-      top: side(rect.top - toWrapper(bounds.top, origin.top)),
-      left: side(rect.left - toWrapper(clipLeft, origin.left)),
-      right: side(
-        toWrapper(bounds.right, origin.left) - rect.left - rect.width
-      ),
-      bottom: side(
-        toWrapper(bounds.bottom, origin.top) - rect.top - rect.height
-      )
-    };
-  };
-
-  /** A header drag starting (V03 5.3, CD9) saves the open editor first. */
-  @action
-  onDragStart(): void {
-    if (this.editing) this.commit({ refocus: false });
-  }
-
   <template>
     <div
       class="euiSheet
@@ -3524,13 +1952,13 @@ export default class EuiSheet<T extends object> extends Component<
         {{if this.gridOptions.pinsAddRow 'euiSheet--pinAddRow'}}
         {{this.gridColumns.headerLinesClass}}
         {{if this.outline.rangeOutline 'euiSheet--ranged'}}
-        {{if this.addingField 'euiSheet--addingField'}}"
+        {{if this.fieldEditor.addingField 'euiSheet--addingField'}}"
       data-test-subj="euiSheet"
       data-eui-sheet-id={{this.sheetId}}
       ...attributes
       {{this.setupWrapper}}
-      {{this.watchRecords @records @groups}}
-      {{this.watchFields @fields @hiddenFields}}
+      {{this.follow.watchRecords @records @groups}}
+      {{this.fieldEditor.watchFields @fields @hiddenFields}}
       {{this.registerSheetApi}}
       {{on "keydown" this.onKeyDown capture=true}}
       {{on "copy" this.onCopy capture=true}}
@@ -3548,8 +1976,8 @@ export default class EuiSheet<T extends object> extends Component<
       {{on "mouseover" this.onMouseOver}}
       {{on "click" this.onClick}}
       {{on "dblclick" this.onDoubleClick}}
-      {{on "contextmenu" this.onContextMenu}}
-      {{on "dragstart" this.onDragStart capture=true}}
+      {{on "contextmenu" this.rowMenu.onContextMenu}}
+      {{on "dragstart" this.edit.onDragStart capture=true}}
       {{on "dragover" this.uploads.onDragOver capture=true}}
       {{on "dragleave" this.uploads.onDragLeave}}
       {{on "drop" this.uploads.onDrop capture=true}}
@@ -3703,45 +2131,51 @@ export default class EuiSheet<T extends object> extends Component<
       {{#if this.shortcutsOpen}}
         <ShortcutList @sheet={{this}} />
       {{/if}}
-      {{#if this.menu}}
+      {{#if this.rowMenu.menu}}
         <RowMenu
           @sheet={{this}}
-          @anchor={{this.menuAnchor}}
-          @items={{this.menuItems}}
-          @onSelect={{this.onMenuSelect}}
+          @anchor={{this.rowMenu.menuAnchor}}
+          @items={{this.rowMenu.menuItems}}
+          @onSelect={{this.rowMenu.onMenuSelect}}
         />
       {{/if}}
-      {{#each this.fieldEditorList key="@identity" as |state|}}
+      {{#each this.fieldEditor.fieldEditorList key="@identity" as |state|}}
         <FieldEditor @sheet={{this}} @state={{state}} />
       {{/each}}
-      {{#if this.expandedRecordValue}}
-        {{#if (isModal this.expandedShell)}}
-          <RecordModal @sheet={{this}} @record={{this.expandedRecordValue}} />
+      {{#if this.expanded.expandedRecordValue}}
+        {{#if (isModal this.expanded.expandedShell)}}
+          <RecordModal
+            @sheet={{this}}
+            @record={{this.expanded.expandedRecordValue}}
+          />
         {{else}}
-          <RecordFlyout @sheet={{this}} @record={{this.expandedRecordValue}} />
+          <RecordFlyout
+            @sheet={{this}}
+            @record={{this.expanded.expandedRecordValue}}
+          />
         {{/if}}
       {{/if}}
-      {{#each this.editingList key="@identity" as |editing|}}
+      {{#each this.edit.editingList key="@identity" as |editing|}}
         <EditorFrame
           @sheet={{this}}
           @rect={{editing.rect}}
-          @grow={{this.growOf editing}}
+          @grow={{this.edit.growOf editing}}
           @layout={{editing.layout}}
-          @onFocusOut={{this.onEditorFocusOut}}
+          @onFocusOut={{this.edit.onEditorFocusOut}}
         >
           {{#if editing.type.editor}}
             <editing.type.editor
-              @value={{this.editorValue editing}}
+              @value={{this.edit.editorValue editing}}
               @field={{editing.field}}
-              @record={{this.editorRecord editing}}
+              @record={{this.edit.editorRecord editing}}
               @draft={{editing.draft}}
               @initialKey={{editing.initialKey}}
-              @onDraftChange={{this.onDraftChange}}
-              @onDraftValue={{this.onDraftValue}}
-              @onSave={{this.onEditorSave}}
+              @onDraftChange={{this.edit.onDraftChange}}
+              @onDraftValue={{this.edit.onDraftValue}}
+              @onSave={{this.edit.onEditorSave}}
               @onUpload={{editing.onUpload}}
-              @onCommit={{this.onEditorCommit}}
-              @onCancel={{this.cancel}}
+              @onCommit={{this.edit.onEditorCommit}}
+              @onCancel={{this.edit.cancel}}
               @messages={{this.messages}}
               @themeClass={{this.themeClass}}
             />

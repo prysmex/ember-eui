@@ -25,7 +25,7 @@ export default class SheetOutline<T extends object> {
   /** The range the outline is drawn for: more than one cell, no editor. */
   get rangeOutline(): Range | null {
     const range = this.sheet.selection.range;
-    if (!range || this.sheet.editing) return null;
+    if (!range || this.sheet.edit.editing) return null;
     const records = this.sheet.rows.recordRange(range);
     if (!records) return null;
     // one record's cell (a header inside does not make it more)
@@ -170,11 +170,11 @@ export default class SheetOutline<T extends object> {
 
   /** The copy mark and the flash are not drawn over an open editor. */
   get copiedOutline(): Range | null {
-    return this.sheet.editing ? null : this.copied;
+    return this.sheet.edit.editing ? null : this.copied;
   }
 
   get flashOutline(): Range | null {
-    return this.sheet.editing ? null : this.flash;
+    return this.sheet.edit.editing ? null : this.flash;
   }
 
   /**

@@ -78,27 +78,31 @@ export default class SheetHeaderMenu<T extends object> {
       });
     if (onFieldUpdate && manageable) {
       item('EditField', messages.editField(), 'pencil', () =>
-        this.sheet.editField(field.id)
+        this.sheet.fieldEditor.editField(field.id)
       );
     }
     if (onFieldCreate && manageable) {
       item('DuplicateField', messages.duplicateField(), 'copy', () =>
-        this.sheet.duplicateField(field.id)
+        this.sheet.fieldEditor.duplicateField(field.id)
       );
     }
     if (onFieldCreate) {
       if (index > 0) {
         item('InsertFieldLeft', messages.insertFieldLeft(), 'arrowLeft', () =>
-          this.sheet.addField(index, field.id, fields[index - 1]!.id)
+          this.sheet.fieldEditor.addField(
+            index,
+            field.id,
+            fields[index - 1]!.id
+          )
         );
       }
       item('InsertFieldRight', messages.insertFieldRight(), 'arrowRight', () =>
-        this.sheet.addField(index + 1, field.id, field.id)
+        this.sheet.fieldEditor.addField(index + 1, field.id, field.id)
       );
     }
     if (onFieldDelete && manageable && index > 0) {
       item('DeleteField', messages.deleteField(), 'trash', () =>
-        this.sheet.askDeleteField(field.id)
+        this.sheet.fieldEditor.askDeleteField(field.id)
       );
     }
     return items;

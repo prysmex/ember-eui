@@ -75,12 +75,20 @@ export default class RecordFormField extends Component<RecordFormFieldSignature>
   }
 
   onCellCommit = (value: unknown): void => {
-    this.args.sheet.commitFormValue(this.args.record, this.args.field, value);
+    this.args.sheet.expanded.commitFormValue(
+      this.args.record,
+      this.args.field,
+      value
+    );
   };
 
   /** The editor's `@onSave`: saves and keeps it open. */
   onSave = (value: unknown): void => {
-    this.args.sheet.commitFormValue(this.args.record, this.args.field, value);
+    this.args.sheet.expanded.commitFormValue(
+      this.args.record,
+      this.args.field,
+      value
+    );
   };
 
   /** The editor's `@onUpload` (fields with `upload`). */

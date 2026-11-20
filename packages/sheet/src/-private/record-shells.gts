@@ -65,15 +65,15 @@ class RecordShell extends Component<RecordShellSignature> {
   }
 
   get title(): string {
-    return this.sheet.recordTitleOf(this.args.record);
+    return this.sheet.expanded.recordTitleOf(this.args.record);
   }
 
   get hasPrevious(): boolean {
-    return this.sheet.expandedStep(-1) !== null;
+    return this.sheet.expanded.expandedStep(-1) !== null;
   }
 
   get hasNext(): boolean {
-    return this.sheet.expandedStep(1) !== null;
+    return this.sheet.expanded.expandedStep(1) !== null;
   }
 
   get closeLabel(): string {
@@ -88,9 +88,9 @@ class RecordShell extends Component<RecordShellSignature> {
     return this.sheet.messages.nextRecord();
   }
 
-  previous = (): void => this.sheet.stepExpanded(-1);
-  next = (): void => this.sheet.stepExpanded(1);
-  close = (): void => this.sheet.closeExpanded();
+  previous = (): void => this.sheet.expanded.stepExpanded(-1);
+  next = (): void => this.sheet.expanded.stepExpanded(1);
+  close = (): void => this.sheet.expanded.closeExpanded();
 }
 
 export class RecordFlyout extends RecordShell {
@@ -101,7 +101,7 @@ export class RecordFlyout extends RecordShell {
       @ownFocus={{true}}
       @closeButtonAriaLabel={{this.closeLabel}}
       @focusTrapOptions={{this.flyoutFocusTrapOptions}}
-      @isFocusTrapActive={{if this.sheet.formEditorOpen false true}}
+      @isFocusTrapActive={{if this.sheet.expanded.formEditorOpen false true}}
       id={{this.shellId}}
       class="euiSheetRecord {{this.sheet.themeClass}}"
       aria-labelledby={{this.titleId}}
@@ -146,7 +146,7 @@ export class RecordModal extends RecordShell {
       @onClose={{this.close}}
       @closeButtonAriaLabel={{this.closeLabel}}
       @initialFocus={{this.initialFocus}}
-      @isFocusTrapPaused={{this.sheet.formEditorOpen}}
+      @isFocusTrapPaused={{this.sheet.expanded.formEditorOpen}}
       id={{this.shellId}}
       class="euiSheetRecord euiSheetRecord--modal {{this.sheet.themeClass}}"
       data-test-subj="euiSheetRecord"

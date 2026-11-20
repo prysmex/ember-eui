@@ -61,7 +61,7 @@ export default class RecordForm extends Component<RecordFormSignature> {
     super(owner, args);
     // `@editIn`: the sheet opened this record to edit one field (the sheet
     // already set `formEditorOpen`, so the shell's focus trap waits)
-    const fieldId = args.sheet.takePendingFormEdit(args.record);
+    const fieldId = args.sheet.edit.takePendingFormEdit(args.record);
     const field = fieldId && this.fields.find((f) => f.id === fieldId);
     if (field && this.canEdit(field) && this.typeOf(field).editor) {
       const view = args.sheet.cells.cellViewFor(args.record, field);
@@ -76,7 +76,7 @@ export default class RecordForm extends Component<RecordFormSignature> {
 
   set editing(editing: FormEditing | null) {
     this._editing = editing;
-    this.sheet.formEditorOpen = editing !== null;
+    this.sheet.expanded.formEditorOpen = editing !== null;
   }
   element: HTMLElement | null = null;
 
@@ -138,13 +138,13 @@ export default class RecordForm extends Component<RecordFormSignature> {
     // the record the editor was opened on (the sheet finds its current object)
     const record = editing.record;
     if (result && 'value' in result) {
-      this.sheet.commitFormValue(record, field, result.value);
+      this.sheet.expanded.commitFormValue(record, field, result.value);
     } else if (result && 'text' in result) {
-      this.sheet.commitFormText(record, field, result.text);
+      this.sheet.expanded.commitFormText(record, field, result.text);
     } else if (editing.dirty && editing.kind === 'value') {
-      this.sheet.commitFormValue(record, field, editing.latestValue);
+      this.sheet.expanded.commitFormValue(record, field, editing.latestValue);
     } else if (editing.dirty) {
-      this.sheet.commitFormText(record, field, editing.latest);
+      this.sheet.expanded.commitFormText(record, field, editing.latest);
     }
     if (focus !== 'none') {
       this.focusBox(
@@ -184,7 +184,7 @@ export default class RecordForm extends Component<RecordFormSignature> {
     const index = ids.indexOf(fieldId) + offset;
     const target = ids[Math.min(Math.max(index, 0), ids.length - 1)];
     if (target === undefined) return;
-    this.sheet.afterFormRender(() => {
+    this.sheet.expanded.afterFormRender(() => {
       const box = this.element?.querySelector<HTMLElement>(
         `[data-eui-sheet-record-box="${CSS.escape(target)}"]`
       );
@@ -218,7 +218,7 @@ export default class RecordForm extends Component<RecordFormSignature> {
       const result = type.navKey(key, valueOf(record, field.id), field);
       if (result) {
         stop(event);
-        sheet.commitFormValue(record, field, result.value);
+        sheet.expanded.commitFormValue(record, field, result.value);
         return;
       }
     }
@@ -241,7 +241,7 @@ export default class RecordForm extends Component<RecordFormSignature> {
     }
     if ((key === 'Delete' || key === 'Backspace') && editable) {
       stop(event);
-      sheet.clearFormField(record, field);
+      sheet.expanded.clearFormField(record, field);
     }
   };
 
@@ -255,7 +255,11 @@ export default class RecordForm extends Component<RecordFormSignature> {
         this.args.record
       );
       if (result)
-        this.sheet.commitFormValue(this.args.record, field, result.value);
+        this.sheet.expanded.commitFormValue(
+          this.args.record,
+          field,
+          result.value
+        );
       return;
     }
     this.open(field, null);
@@ -303,11 +307,15 @@ export default class RecordForm extends Component<RecordFormSignature> {
     const sheet = this.sheet;
     if (!editing) return;
     next(() => {
-      sheet.formEditorOpen = false;
+      sheet.expanded.formEditorOpen = false;
       if (editing.dirty && field && editing.kind === 'value') {
-        sheet.commitFormValue(editing.record, field, editing.latestValue);
+        sheet.expanded.commitFormValue(
+          editing.record,
+          field,
+          editing.latestValue
+        );
       } else if (editing.dirty && field) {
-        sheet.commitFormText(editing.record, field, editing.latest);
+        sheet.expanded.commitFormText(editing.record, field, editing.latest);
       }
     });
   }

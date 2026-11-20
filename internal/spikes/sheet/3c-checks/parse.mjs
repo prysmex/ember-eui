@@ -75,6 +75,21 @@ function isHostPath(node, modules) {
   );
 }
 
+/** A template's text with `<path>.<module>.` written `<path>.`, whitespace dropped. */
+function normalTemplateText(text, modules) {
+  const mods = [...modules].join('|');
+  let s = text;
+  if (mods)
+    s = s.replace(
+      new RegExp(
+        `((?:@sheet|this\\.sheet|this\\.args\\.sheet|this)\\.)(?:${mods})\\.`,
+        'g'
+      ),
+      '$1'
+    );
+  return s.replace(/\s+/g, '');
+}
+
 /**
  * The canonical form of a node: every token's text, parentheses dropped
  * (the tree keeps precedence), `export` dropped, and a member access on a
@@ -104,6 +119,18 @@ export function canon(node, sf, modules) {
     if (n.kind === ts.SyntaxKind.ExportKeyword) return;
     if (n.kind === ts.SyntaxKind.SyntaxList && n.getChildCount(sf) === 0)
       return;
+    // A `<template>` inside a declaration (stripTemplates made it
+    // `__tpl(`...`)`): only its module paths may change, as for the
+    // templates compared on their own (verbatim.mjs normalTemplate).
+    if (
+      n.kind === ts.SyntaxKind.NoSubstitutionTemplateLiteral &&
+      ts.isCallExpression(n.parent) &&
+      ts.isIdentifier(n.parent.expression) &&
+      n.parent.expression.text === '__tpl'
+    ) {
+      out.push(normalTemplateText(n.getText(sf), modules));
+      return;
+    }
     const kids = n.getChildren(sf);
     if (kids.length === 0) {
       if (n.kind === ts.SyntaxKind.EndOfFileToken) return;

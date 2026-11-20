@@ -171,7 +171,8 @@ export default class SheetScroll<T extends object> {
       target.classList.contains('euiDataGrid__virtualized')
     ) {
       // a grid scroll cancels the field editor (V03 6.4)
-      if (this.sheet.fieldEditorState) this.sheet.closeFieldEditor(false);
+      if (this.sheet.fieldEditor.fieldEditorState)
+        this.sheet.fieldEditor.closeFieldEditor(false);
       const scrolledX = target.scrollLeft > 0;
       if (scrolledX !== this.scrolledX) this.scrolledX = scrolledX;
       // after the grid rendered the rows of this scroll (V03 batch 1)
@@ -188,12 +189,12 @@ export default class SheetScroll<T extends object> {
     // scroll that brings a just-focused cell into view arrives a frame
     // later); else it saves and closes, before a stale position shows and
     // before the re-mounted focused cell can pull focus
-    const editing = this.sheet.editing;
+    const editing = this.sheet.edit.editing;
     if (editing) {
       const cell = this.cellInView(editing.pos);
       const rect = cell && this.sheet.dom.rectOf(cell);
       if (rect) editing.rect = rect;
-      else this.sheet.commit({ refocus: false });
+      else this.sheet.edit.commit({ refocus: false });
     }
     // the catcher follows its cell the same way (the far column's late
     // scroll comes between a dead key and its character); out of view it
@@ -210,7 +211,7 @@ export default class SheetScroll<T extends object> {
         input?.blur();
       }
     }
-    if (this.sheet.menu) this.sheet.closeMenu(false);
+    if (this.sheet.rowMenu.menu) this.sheet.rowMenu.closeMenu(false);
     this.layoutTick++;
     // the error box follows its cell, or hides while the cell is not rendered
     const focused = this.sheet.focus.focused;

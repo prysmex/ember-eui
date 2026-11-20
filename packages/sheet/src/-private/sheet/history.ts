@@ -172,8 +172,11 @@ export default class SheetHistory<T extends object> {
         id: String(remapId(this.sheet.records.pendingFocus.id, map))
       };
     }
-    if (this.sheet.editing) {
-      this.sheet.editing.recordId = remapId(this.sheet.editing.recordId, map);
+    if (this.sheet.edit.editing) {
+      this.sheet.edit.editing.recordId = remapId(
+        this.sheet.edit.editing.recordId,
+        map
+      );
     }
     if ([...this.sheet.checked.checkedIds].some((id) => map.has(id))) {
       this.sheet.checked.setChecked(
@@ -184,17 +187,20 @@ export default class SheetHistory<T extends object> {
         )
       );
     }
-    if (this.sheet.localExpandedId !== null) {
-      this.sheet.localExpandedId = remapId(this.sheet.localExpandedId, map);
+    if (this.sheet.expanded.localExpandedId !== null) {
+      this.sheet.expanded.localExpandedId = remapId(
+        this.sheet.expanded.localExpandedId,
+        map
+      );
     }
-    if (this.sheet.expandedFrom) {
-      this.sheet.expandedFrom = {
-        ...this.sheet.expandedFrom,
-        recordId: remapId(this.sheet.expandedFrom.recordId, map)
+    if (this.sheet.expanded.expandedFrom) {
+      this.sheet.expanded.expandedFrom = {
+        ...this.sheet.expanded.expandedFrom,
+        recordId: remapId(this.sheet.expanded.expandedFrom.recordId, map)
       };
     }
     // a `@records` that only carries the new ids is not a change of rows
-    this.sheet.lastIds = this.sheet.lastIds.map((id) =>
+    this.sheet.follow.lastIds = this.sheet.follow.lastIds.map((id) =>
       String(remapId(id, map))
     );
     const deletes = [...this.sheet.changes.pendingOwn.deletes].map((id) =>

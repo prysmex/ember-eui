@@ -445,3 +445,97 @@ each declaration's leading comments):
 - The small heading `/* Following \`@records\` (V02-DESIGN.md 3.2, 3.3) */`
   sat above `pendingFocus`, so it is now in `records.ts`, not with the
   `follow` fields it introduced.
+
+## 3c stage 5
+
+What moved, to `src/-private/sheet/`, as the module map assigns it:
+
+| File | Class, property | Members | Lines |
+| --- | --- | --- | --- |
+| `edit.ts` | `SheetEdit`, `edit` | 22 | 359 |
+| `expanded.ts` | `SheetExpanded`, `expanded` | 18 | 202 |
+| `field-editor.ts` | `SheetFieldEditor`, `fieldEditor` | 21 | 472 |
+| `row-menu.ts` | `SheetRowMenu`, `rowMenu` | 13 | 318 |
+| `follow.ts` | `SheetFollow`, `follow` | 12 | 377 |
+
+Top-level declarations with one user moved above that module's class:
+the `Editing` class, `NARROW_SHEET` and `coarsePointer` (edit); the
+`FieldEditorState` class (still exported), `CREATABLE_FIELD_TYPES`,
+`errorMessage` and `typeName` (fieldEditor); `MENU_ITEMS_THAT_MOVE_FOCUS`
+(rowMenu); `isOwnChange` (follow). `move.mjs --tops` skips class
+declarations, so the two classes were moved by a scratch script that cuts
+the same range (the statement with its leading comment) and puts it above
+the module's class. `-private/field-editor.gts` now imports
+`FieldEditorState` (type only) from `./sheet/field-editor.ts` instead of
+from the component, as design 3.1 says. `sheet/field-editor.ts` imports
+`draftOf` and `FIELD_EDITOR_WIDTH` from `-private/field-editor.gts`; the
+way back is a type import, so there is no run-time cycle.
+
+The component goes from 3,776 to 2,210 lines. Its template changes 24
+paths only (`follow.watchRecords`, `fieldEditor.watchFields`, the menu,
+the field editor, the record shells, the editor block and its callbacks,
+`fieldEditor.addingField`, `edit.onDragStart`, `rowMenu.onContextMenu`);
+the two modifiers stay on the same element, in the same place.
+`willDestroy` removes `this.rowMenu.onDocumentMouseDown`, the same arrow
+field `openMenu` adds and `closeMenu` removes. Seven earlier modules are
+re-pointed (`focus`, `headerMenu`, `history`, `ime`, `outline`,
+`records`, `scroll`). Five `-private` files change their paths only:
+`field-editor.gts`, `layer.gts` (`rowMenu.onContextMenu`),
+`record-form.gts` (writes `sheet.expanded.formEditorOpen`),
+`record-form-field.gts`, `record-shells.gts`. Each was read by hand.
+
+How: `3c-checks/move.mjs --stage 5 --tops ...` (the seven above), the two
+classes by the scratch script, the imports by hand, the 24 imports ESLint
+listed as unused in the component removed, then Prettier. The
+missing-import script lists no name in any module.
+
+Owner sites: `move.mjs` printed LOOK for exactly design 6.1's sites in
+these modules, each changed by hand to `this.sheet`: `watchRecords`,
+`closeExpanded`, `afterFormRender`, `editInRecord`, `closeFieldEditor`,
+`watchFields` (`afterRender`), `runFieldHandler` (`isDestroying`,
+`isDestroyed`, twice). `onContextMenu`'s `this.isDestroying` /
+`this.isDestroyed` became `this.sheet.isDestroying` /
+`this.sheet.isDestroyed` (a path, as in stage 4). The OWNER list is
+stage 4's twelve plus these seven.
+
+A fix to the checks in this stage: `RecordFlyout` and `RecordModal` in
+`record-shells.gts` extend `RecordShell`, not `Component<...>`, so the
+verbatim check compares them as top-level classes, and their inline
+`<template>` was compared as raw text: the path
+`this.sheet.formEditorOpen` → `this.sheet.expanded.formEditorOpen`
+failed. `parse.mjs` now writes a template inside a declaration the way
+`verbatim.mjs` already compares templates on their own (module paths
+dropped, whitespace ignored). Tested both ways: with the fix the stage
+passes; with `false true` swapped in `RecordFlyout`'s template, or a
+renamed member in `RecordModal`'s, it still fails.
+
+The other checks of this stage:
+
+- No moved field is still declared in the component (a grep of the 18
+  field names).
+- References to a moved plain method that are not calls: none. Template
+  handlers are `@action` or arrow fields; `growOf`, `editorValue` and
+  `editorRecord` stay arrow fields (the verbatim check compares kinds).
+- `commit`, `editingList` (`@cached`) and the listener pairs are
+  verbatim; `onContextMenu`'s `window` `mouseup` listener is a local
+  function, added and removed in the same body.
+
+Results:
+
+- Verbatim: 718 members, top-level declarations, templates and `-private`
+  declarations compared, all equal apart from the nineteen owners above.
+  Every member is in the file the module map names, and declared once.
+- Gates: OK. `tests/`, `src/core/`, `src/types.ts`, `src/index.ts`,
+  `src/search-ui/` and `packages/core/` are untouched.
+- `pnpm lint:types`: no error. The tests' `ember-tsc`: the baseline's 19
+  errors, the same lines.
+- ESLint and Prettier on the changed files: clean.
+- `node scripts/generate-api-docs.mjs --check`: passes.
+- The suite: 527 tests, 527 pass.
+
+Deviations from the design: none in the code. The banners stage 1 left
+in `dom.ts` ("Edit lifecycle") and `fields.ts` ("Field management (V03
+6)") stay there: putting them back would need an allowance in the
+verbatim check, and they are comments only. This stage's banners landed
+in their modules ("@editIn", "Editor callbacks, bound once", "The
+expanded record", "The row menu").

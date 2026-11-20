@@ -234,8 +234,8 @@ export default class SheetFocus<T extends object> {
     const focused = this.focused;
     if (
       !focused ||
-      this.sheet.editing ||
-      this.sheet.menu ||
+      this.sheet.edit.editing ||
+      this.sheet.rowMenu.menu ||
       this.sheet.ime.imeActive
     )
       return null;

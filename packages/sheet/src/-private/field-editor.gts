@@ -28,7 +28,7 @@ import EuiTextArea from '@ember-eui/core/components/eui-text-area';
 import SheetLayer, { placeLayer } from './layer.gts';
 
 import type EuiSheet from '../components/eui-sheet.gts';
-import type { FieldEditorState } from '../components/eui-sheet.gts';
+import type { FieldEditorState } from './sheet/field-editor.ts';
 import type { EuiSheetField, SheetFieldDraft } from '../core/index.ts';
 import type { SheetFieldEditorSignature } from '../types.ts';
 import type { LayerAnchor } from './layer.gts';
@@ -329,20 +329,21 @@ export default class FieldEditor extends Component<FieldEditorSignature> {
   }
 
   get types() {
-    return this.sheet.fieldEditorTypes(this.field, this.state.mode);
+    return this.sheet.fieldEditor.fieldEditorTypes(this.field, this.state.mode);
   }
 
   get content() {
     return this.sheet.args.fieldEditor;
   }
 
-  save = (draft: SheetFieldDraft): void => this.sheet.saveFieldEditor(draft);
+  save = (draft: SheetFieldDraft): void =>
+    this.sheet.fieldEditor.saveFieldEditor(draft);
 
-  cancel = (): void => this.sheet.closeFieldEditor(true);
+  cancel = (): void => this.sheet.fieldEditor.closeFieldEditor(true);
 
-  confirmDelete = (): void => this.sheet.confirmDeleteField();
+  confirmDelete = (): void => this.sheet.fieldEditor.confirmDeleteField();
 
-  onClickOutside = (): void => this.sheet.closeFieldEditor(false);
+  onClickOutside = (): void => this.sheet.fieldEditor.closeFieldEditor(false);
 
   onEscape = (event: KeyboardEvent): void => {
     event.preventDefault();

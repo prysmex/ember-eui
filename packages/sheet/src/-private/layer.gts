@@ -93,7 +93,7 @@ export default class SheetLayer extends Component<SheetLayerSignature> {
         {{on "focusin" @sheet.focus.onFocusIn}}
         {{on "focusout" @sheet.focus.onFocusOut}}
         {{on "click" @sheet.onClick}}
-        {{on "contextmenu" @sheet.onContextMenu}}
+        {{on "contextmenu" @sheet.rowMenu.onContextMenu}}
       >
         {{yield}}
       </div>

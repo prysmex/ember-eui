@@ -27,8 +27,8 @@ export default class SheetRecords<T extends object> {
     const pending = this.pendingFocus;
     if (!pending) return;
     // `lastIds` and `lastRowModel` are of the same render
-    const model = this.sheet.lastRowModel ?? this.sheet.rows.rowModel;
-    const row = model.gridRowOf(this.sheet.lastIds.indexOf(pending.id));
+    const model = this.sheet.follow.lastRowModel ?? this.sheet.rows.rowModel;
+    const row = model.gridRowOf(this.sheet.follow.lastIds.indexOf(pending.id));
     if (row < 0) return;
     this.pendingFocus = null;
     const col = Math.max(
@@ -76,7 +76,7 @@ export default class SheetRecords<T extends object> {
       nextTempId,
       groupKey
     });
-    if (this.sheet.editing) this.sheet.commit({ refocus: false });
+    if (this.sheet.edit.editing) this.sheet.edit.commit({ refocus: false });
     this.sheet.changes.emit(changeSet, []);
     if (focusFieldId !== null) {
       this.pendingFocus = {
@@ -213,7 +213,7 @@ export default class SheetRecords<T extends object> {
     const records = this.sheet.args.records;
     const changeSet = deleteRecords(records, ids, this.sheet.args.getRecordId);
     if (!changeSet) return;
-    if (this.sheet.editing) this.sheet.commit({ refocus: false });
+    if (this.sheet.edit.editing) this.sheet.edit.commit({ refocus: false });
     if (refocus) {
       const gone = new Set(changeSet.deletes!.map(String));
       const removed = changeSet.removed!;

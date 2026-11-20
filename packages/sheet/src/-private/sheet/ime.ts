@@ -104,7 +104,7 @@ export default class SheetIme<T extends object> {
       !!field &&
       this.sheet.cells.canEdit(pos) &&
       (this.sheet.fields.typeOf(field).opensOnKey?.(text) ?? true);
-    if (open) this.sheet.startEdit(pos, cell, text);
+    if (open) this.sheet.edit.startEdit(pos, cell, text);
     else this.sheet.dom.focusGridCell(pos);
   }
 }

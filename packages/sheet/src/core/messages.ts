@@ -331,6 +331,12 @@ export interface SheetMessages {
   expandGroup: () => string;
   /** 'Collapse group': an expanded header's toggle */
   collapseGroup: () => string;
+  /** 'Drag to move the record': the row drag grip's title (V03 10.1) */
+  moveRecord: () => string;
+  /** 'Drag to move 3 records': the grip of a row among checked or selected rows */
+  moveRecords: (count: number) => string;
+  /** 'Move the rows up or down (on a row number, with @canMove)' */
+  shortcutMoveRecords: () => string;
 }
 
 export interface SheetMessageToken {
@@ -1156,6 +1162,21 @@ export const sheetMessageTokens: Readonly<
   collapseGroup: {
     token: 'euiSheet.collapseGroup',
     defaultMessage: 'Collapse group',
+    params: []
+  },
+  moveRecord: {
+    token: 'euiSheet.moveRecord',
+    defaultMessage: 'Drag to move the record',
+    params: []
+  },
+  moveRecords: {
+    token: 'euiSheet.moveRecords',
+    defaultMessage: 'Drag to move {count} records',
+    params: ['count']
+  },
+  shortcutMoveRecords: {
+    token: 'euiSheet.shortcutMoveRecords',
+    defaultMessage: 'Move the rows up or down (on a row number)',
     params: []
   }
 };

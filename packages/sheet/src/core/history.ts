@@ -9,6 +9,7 @@ import type {
   ChangeSet,
   RecordId,
   RecordInsert,
+  RecordMove,
   RecordRemoval
 } from './types.ts';
 
@@ -23,11 +24,16 @@ const sameValue: ValueEquals = (_fieldId, a, b) => Object.is(a, b);
  * each `removed` record an insert that puts it back (`restore`), at its old
  * index and after its old neighbour, in ascending index. A restore's
  * `values` are the record's values for `fieldIds` (none without them).
+ * Each move becomes the move back, in the same order (not reversed: a
+ * row's `from.after` may be an earlier moved row, put back by then):
+ * after `from.after`, or, for a record that was first, before the first
+ * of `order` (the record ids now; without it such a move has no anchor).
  * Source 'undo'; no rejections or new options.
  */
 export function invertChangeSet(
   changeSet: ChangeSet,
-  fieldIds?: readonly string[]
+  fieldIds?: readonly string[],
+  order?: readonly RecordId[]
 ): ChangeSet {
   const inserts: RecordInsert[] = [...(changeSet.removed ?? [])]
     .sort((a, b) => a.index - b.index)
@@ -48,7 +54,7 @@ export function invertChangeSet(
       }
       return insert;
     });
-  return {
+  const result: ChangeSet = {
     source: 'undo',
     patches: changeSet.patches.map((patch) => ({
       recordId: patch.recordId,
@@ -61,6 +67,32 @@ export function invertChangeSet(
     rejected: [],
     newOptions: []
   };
+  if (changeSet.moves?.length) {
+    result.moves = changeSet.moves.map((move) => invertMove(move, order));
+  }
+  return result;
+}
+
+/** The move back of one move (`invertChangeSet`). Its `from` is where the record is now. */
+function invertMove(
+  move: RecordMove,
+  order: readonly RecordId[] | undefined
+): RecordMove {
+  const back: RecordMove = { recordId: move.recordId, from: {} };
+  if (move.from.after !== undefined) {
+    back.anchor = { recordId: move.from.after, position: 'after' };
+  } else if (order?.length) {
+    back.anchor = { recordId: order[0]!, position: 'before' };
+  }
+  if (move.from.groupKey !== undefined) back.groupKey = move.from.groupKey;
+  if (order) {
+    const at = order.findIndex((id) => String(id) === String(move.recordId));
+    if (at > 0) back.from.after = order[at - 1];
+  } else if (move.anchor?.position === 'after') {
+    back.from.after = move.anchor.recordId;
+  }
+  if (move.groupKey !== undefined) back.from.groupKey = move.groupKey;
+  return back;
 }
 
 /**
@@ -76,7 +108,8 @@ export function invertChangeSet(
  * - an insert is kept when no record has its `tempId` (or its restored
  *   record's id) yet. It keeps its position: right after (or before) its
  *   anchor's current index when the anchor exists, else `index`, clamped
- *   to the end.
+ *   to the end;
+ * - a move is kept when its record exists (or, with `keepUnseen`, always).
  *
  * `removed` follows the kept deletions. `null` when nothing is left.
  * `rejected` and `newOptions` are dropped.
@@ -125,7 +158,13 @@ export function withoutConflicts<T>(
     records.map((record) => String(getRecordId(record)))
   );
 
-  if (!patches.length && !deletes.length && !inserts.length) return null;
+  const moves = (changeSet.moves ?? []).filter(
+    (move) => options.keepUnseen || byId.has(String(move.recordId))
+  );
+
+  if (!patches.length && !deletes.length && !inserts.length && !moves.length) {
+    return null;
+  }
   const result: ChangeSet = {
     source: changeSet.source,
     patches,
@@ -134,6 +173,7 @@ export function withoutConflicts<T>(
     newOptions: []
   };
   if (deletes.length) result.deletes = deletes;
+  if (moves.length) result.moves = moves;
   if (changeSet.removed && deletes.length) {
     const kept = new Set(deletes.map(String));
     const removed = changeSet.removed.filter((removal: RecordRemoval) =>
@@ -198,7 +238,11 @@ export function undoChangeSet<T>(
   options: HistoryOptions = {}
 ): ChangeSet | null {
   return withoutConflicts(
-    invertChangeSet(entry, options.fieldIds),
+    invertChangeSet(
+      entry,
+      options.fieldIds,
+      entry.moves?.length ? records.map(getRecordId) : undefined
+    ),
     records,
     getRecordId,
     {
@@ -229,6 +273,7 @@ export function redoChangeSet<T>(
   };
   if (entry.deletes) redo.deletes = entry.deletes;
   if (entry.removed) redo.removed = entry.removed;
+  if (entry.moves) redo.moves = entry.moves;
   return withoutConflicts(redo, records, getRecordId, {
     equals: options.equals,
     keepUnseen: options.keepUnseen
@@ -239,8 +284,8 @@ export function redoChangeSet<T>(
  * Two change sets as one history entry (a paste and the bulk resolve it
  * asked for): patches of the same cell collapse to `first.from` →
  * `second.to`; a patch of `second` on a record `first` inserts is folded
- * into that insert's `values`; inserts, deletes, removed, rejections and
- * new options are concatenated. Source of `first`.
+ * into that insert's `values`; inserts, deletes, removed, moves,
+ * rejections and new options are concatenated. Source of `first`.
  */
 export function mergeChangeSets(
   first: ChangeSet,
@@ -281,6 +326,8 @@ export function mergeChangeSets(
   if (deletes.length) result.deletes = deletes;
   const removed = [...(first.removed ?? []), ...(second.removed ?? [])];
   if (removed.length) result.removed = removed;
+  const moves = [...(first.moves ?? []), ...(second.moves ?? [])];
+  if (moves.length) result.moves = moves;
   return result;
 }
 
@@ -292,7 +339,7 @@ function cellOf(patch: CellPatch): string {
  * A history entry without one field (V03 6.6): its patches, rejections and
  * new options dropped, and its inserts' values without the field (undo
  * checks every value an insert set, so a stale one would keep the insert
- * from being undone). Deletes are kept. `null` when nothing is left; the
+ * from being undone). Deletes and moves are kept. `null` when nothing is left; the
  * same object when the entry never touched the field. For a field the
  * owner deleted or retyped: the sheet cannot undo field operations, so its
  * history must not write the field's old values back.
@@ -314,7 +361,12 @@ export function withoutField(
     delete values[fieldId];
     return { ...insert, values };
   });
-  if (!patches.length && !inserts.length && !entry.deletes?.length) {
+  if (
+    !patches.length &&
+    !inserts.length &&
+    !entry.deletes?.length &&
+    !entry.moves?.length
+  ) {
     return null;
   }
   return {

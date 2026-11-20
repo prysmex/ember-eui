@@ -84,6 +84,17 @@ export default class SheetDrag<T extends object> {
         this.sheet.focus.keepRangeOnFocus = false;
       }
       if (!this.sheet.rows.isRecordRow(row) || event.button !== 0) return;
+      // the grip starts a row drag (V03 10.1); not by touch (a touch drag scrolls)
+      if (
+        !event.shiftKey &&
+        target.closest('[data-eui-sheet-row-grip]') &&
+        this.sheet.rowDrag.showsGrip &&
+        !this.sheet.edit.editing &&
+        this.sheet.touch.lastPointerType !== 'touch'
+      ) {
+        this.sheet.rowDrag.start(event, row);
+        return;
+      }
       // the checkbox and the expand icon are buttons, not a selection
       if (
         target.closest(

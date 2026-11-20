@@ -62,6 +62,20 @@ export class RowNumberCell extends Component<RowNumberCellSignature> {
     return this.sheet.messages.expandRecord();
   }
 
+  /** The row drag's grip (V03 10.1): with `@canMove`, on a record's row. */
+  get showsGrip(): boolean {
+    return this.sheet.rowDrag.showsGrip;
+  }
+
+  get gripLabel(): string {
+    const count = this.showsGrip
+      ? this.sheet.rowDrag.idsFor(this.args.rowIndex).length
+      : 1;
+    return count > 1
+      ? this.sheet.messages.moveRecords(count)
+      : this.sheet.messages.moveRecord();
+  }
+
   // as SheetCell: setCellProps only schedules, so calling it in render is allowed
   get cellProps(): string {
     const props: Record<string, unknown> = {};
@@ -91,6 +105,10 @@ export class RowNumberCell extends Component<RowNumberCellSignature> {
         this.sheet.rows.positionOf(this.args.rowIndex)
       );
       if (this.checked) classes.push('euiSheet__rowCell--checked');
+      // V03 10.1: a row being dragged
+      if (this.sheet.rowDrag.isMoving(this.args.rowIndex)) {
+        classes.push('euiSheet__rowCell--moving');
+      }
       // V03 batch 1: a cell range's rows
       if (this.sheet.selection.isRowMarked(this.args.rowIndex)) {
         classes.push('euiSheet__rowCell--marked');
@@ -124,6 +142,15 @@ export class RowNumberCell extends Component<RowNumberCellSignature> {
       {{/if}}
     {{else if this.hasRecord}}
       <span class="euiSheet__rowStart">
+        {{#if this.showsGrip}}
+          <span
+            class="euiSheet__rowGrip"
+            data-eui-sheet-row-grip
+            data-test-subj="euiSheetRowGrip"
+            title={{this.gripLabel}}
+            aria-hidden="true"
+          ><EuiIcon @type="grab" @size="s" /></span>
+        {{/if}}
         <span
           class="euiSheet__rowLabel"
           data-test-subj="euiSheetRowLabel"

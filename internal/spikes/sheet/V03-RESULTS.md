@@ -2036,3 +2036,92 @@ the plus and the text in place; a click on it inserts; frozen fields
 pin nothing. Full suite 527/527. Real wheel in Chromium at 420 px on the
 d19 demo: one pinned copy at the left edge, no page errors
 (`internal` screenshot not kept).
+
+## Batch 4: row drag, row colours, date with time, button, barcode
+
+Built 2026-11-20 on `431558f` (after the 3c split), in this checkout,
+one commit per feature. Design: V03-DESIGN.md 10 (10.1-10.7, 10.3.1,
+10.3.2), with D5, D9, D10, D17 and D18 as recommended. The design's line
+references (`eui-sheet.gts:2649` and so on) predate 3c: the new
+behaviour lives in modules of `src/-private/sheet/` in the 3c pattern
+(a plain class taking the component as `sheet`).
+
+### 4a: drag to reorder rows (10.1)
+
+#### What was built
+
+- **Core.** `applyChangeSet` applies `moves` after the patches, deletes
+  and inserts: each record is taken out and put back next to its anchor;
+  a move without an anchor, or whose record or anchor is not found, or
+  whose anchor is the record itself, changes nothing. New builder
+  `moveRecords(ctx, ids, target, options)` (`change-set.ts`, exported
+  with `MoveRecordsOptions`): one move per record in record order, the
+  first anchored to the nearest record that does not move (before the
+  target when one is there, else after it, inside `options.group` when
+  given), each next one after the previous; `from` is the record before
+  it and its group key; records from another group get patches to the
+  group's values; `null` for a drop that changes nothing (same order,
+  same groups, no patch). `invertChangeSet(changeSet, fieldIds, order?)`
+  turns each move into the move back, in the same order (4.3): after
+  `from.after`, or before the first of `order` (the record ids now) for a
+  record that was first; `undoChangeSet` passes the records' ids.
+  `withoutConflicts` keeps a move whose record exists (or with
+  `keepUnseen`); `redoChangeSet`, `mergeChangeSets` and `withoutField`
+  carry moves; the private `remapChangeSet` remaps their ids.
+  `applyChangeSetToGroups` already counted moves (3b).
+- **Module `row-drag.ts` (`rowDrag`).** `enabled` is `@canMove`, not
+  `@readOnly`, no non-empty `@sort`; `showsGrip` also needs row numbers.
+  A press on the grip (`span[data-eui-sheet-row-grip]`, a `grab` icon at
+  the row-number cell's start, shown on hover, focus and `(hover: none)`;
+  title `moveRecord` / `moveRecords(count)`) is taken in the sheet's
+  capture `mousedown` (`drag.ts` hands it over) and becomes a drag past
+  4 px. What moves: the checked records when the row is checked, the
+  rows of a `'rows'` range that holds it, else the row. The target comes
+  from `elementFromPoint` → row → upper or lower half; the insertion line
+  (`src/-private/drop-line.gts`, 2 px `--euiSheet-primary`, as wide as
+  `.euiSheet__grid`, clamped to the body) is placed from that row's
+  rect; a collapsed header gets a box instead of a line. The moved rows'
+  cells get `euiSheet__rowCell--moving` (content at 45 % opacity). The
+  drag has its own `AutoScroll` (the range drag's class). Escape cancels;
+  the release emits one change set through `changes.emit` and the click
+  after it is suppressed. A press without a drag selects the row, as a
+  press on the row number does.
+- **Targets with groups.** A record row: next to it, in its leaf group. A
+  header: its first leaf group (a parent header leads to its first child
+  leaf), at its start; collapsed: `groupKey` only, no anchor. An add
+  row: the end of its group. A drop into another group carries patches
+  of each level's field (`groupHeaders.groupValuesOf`) and `groupKey`;
+  when one of those fields is read-only for a moved record the target is
+  blocked: the line turns `--euiSheet-danger`, the cursor `not-allowed`,
+  and the release emits nothing.
+- **Keys (`keys.ts`, `handleMoveKey`).** Alt+Shift+ArrowUp/Down on a
+  record's row number, or on a cell with a `'rows'` range: the rows move
+  one record, one change set per press. Grouped, a step past a group's
+  edge lands at the next group's start (or the previous group's end). At
+  the first or last record the key is taken and nothing moves. A new
+  shortcut-list row (`shortcutMoveRecords`, shown with `@canMove`).
+- **After a move** (a drop, a key, or its undo or redo) the moved rows
+  are selected as a `'rows'` range once the owner's new `@records` is
+  rendered (the records watcher calls `rowDrag.applyPendingSelect` after
+  `followRecords`), and the row number of the pressed (or first) record
+  gets focus. An owner that ignored the move: nothing is selected.
+- **History (`history.ts` module).** An entry with only moves is
+  recorded; `touchesRecords` counts moved records; an undo or redo of a
+  move selects its rows as above instead of `selectChanged`.
+- `SheetApi.moveRecords(ids, target)` emits the same set (no selection
+  change). `@canMove` (default false). The row-number column is 12 px
+  wider with the grip (10.7).
+
+#### Tests
+
+- `tests/unit/move-records-test.ts` (new), RD11a-RD11e: `applyChangeSet`
+  with moves (before, after, a missing anchor, no anchor, chained, with
+  patches); `moveRecords` (anchors, `from`, no-ops, a target among the
+  moved, unknown ids); undo and redo round-trips (adjacent, not
+  adjacent, one of them first, upwards) and the inverse's own `from`;
+  groups (patches, keys, a collapsed group, the end of one group against
+  the start of the next); `mergeChangeSets` and `withoutField`.
+- `tests/integration/components/eui-sheet-row-drag-test.gts` (new): RD1,
+  RD2, RD3, RD4 (three cases), RD5, RD6, RD10 (frames stubbed as in P8),
+  RD12, and with groups RD7, RD8, RD9.
+- Suite: 543 tests, 543 pass (527 + 16).

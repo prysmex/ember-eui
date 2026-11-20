@@ -26,7 +26,8 @@ export default class SheetApiModule<T extends object> {
     deleteRecords: (ids) => this.sheet.records.deleteRecordIds(ids, false),
     showShortcuts: () => this.sheet.keys.showShortcuts(),
     editField: (fieldId) => this.sheet.fieldEditor.editField(fieldId),
-    addField: (options = {}) => this.sheet.fieldEditor.addField(options.index)
+    addField: (options = {}) => this.sheet.fieldEditor.addField(options.index),
+    moveRecords: (ids, target) => this.sheet.rowDrag.moveFromApi(ids, target)
   };
 
   /* Blocks (3.6) */

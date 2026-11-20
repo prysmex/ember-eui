@@ -58,7 +58,11 @@ export default class SheetFollow<T extends object> {
       void groups;
       // V03 4.2: `@groups` can change while `@records` stays the same array
       if (records !== this.lastRecords) this.sheet.validate.scheduleValidate();
-      afterRender(this.sheet, () => this.recordsRendered());
+      afterRender(this.sheet, () => {
+        this.recordsRendered();
+        // a row drag's rows, at their new place (V03 10.1)
+        this.sheet.rowDrag.applyPendingSelect();
+      });
     }
   );
 
@@ -190,6 +194,7 @@ export default class SheetFollow<T extends object> {
   endTransients(): boolean {
     if (this.sheet.drag.dragging || this.sheet.drag.dragFrom)
       this.sheet.drag.endDrag();
+    if (this.sheet.rowDrag.press) this.sheet.rowDrag.end();
     this.sheet.filling.stopFillDrag();
     const imeFocus =
       !!this.sheet.ime.imePos &&

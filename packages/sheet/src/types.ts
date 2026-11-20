@@ -220,6 +220,15 @@ export interface SheetApi {
   editField(fieldId: string): void;
   /** Opens the field editor to create a field at `index` among the visible fields (default: the end). Needs `@onFieldCreate`. */
   addField(options?: { index?: number }): void;
+  /**
+   * Emits the move of these records next to `target` (a record in
+   * `@records`), as a row drag would (V03 10.1): one change set, source
+   * `'move'`. Needs `@canMove`; nothing with `@readOnly` or a `@sort`.
+   */
+  moveRecords(
+    ids: RecordId[],
+    target: { recordId: RecordId; position: 'before' | 'after' }
+  ): void;
 }
 
 /** An app item of the row menu (`@rowActions`). */
@@ -314,7 +323,7 @@ export interface EuiSheetSignature<T> {
     validate?: (
       context: ValidateContext<T>
     ) => CellErrors | Promise<CellErrors>;
-    /** Receives the sheet's API (`undo`, `redo`, `focusCell`, `remapIds`, `clearHistory`, `expandRecord`, `insertRecord`, `deleteRecords`, `showShortcuts`, `editField`, `addField`) once, after the first render. */
+    /** Receives the sheet's API (`undo`, `redo`, `focusCell`, `remapIds`, `clearHistory`, `expandRecord`, `insertRecord`, `deleteRecords`, `showShortcuts`, `editField`, `addField`, `moveRecords`) once, after the first render. */
     registerApi?: (api: SheetApi) => void;
     /**
      * Fields that exist but are not shown in the grid: listed in the
@@ -404,6 +413,15 @@ export interface EuiSheetSignature<T> {
     canInsert?: boolean;
     /** Deleting records (the menu). Default `!@readOnly`. */
     canDelete?: boolean;
+    /**
+     * Drag a row's grip (in the row-number cell), or Alt+Shift+ArrowUp/Down,
+     * to reorder records (V03 10.1): `@onChange` gets a change set with
+     * `moves` (source `'move'`; with patches of the group fields when a
+     * drag crosses groups). The sheet moves nothing: apply the moves and
+     * pass the records in their new order. Off with `@readOnly` and with a
+     * non-empty `@sort`. Default false.
+     */
+    canMove?: boolean;
     /** Values of a new record, from its neighbours. Default `{}`. */
     newRecordValues?: (context: {
       above: T | undefined;

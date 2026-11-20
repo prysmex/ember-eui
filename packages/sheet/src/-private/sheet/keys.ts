@@ -129,6 +129,8 @@ export default class SheetKeys<T extends object> {
     )
       return;
     const rowCell = this.sheet.dom.rowNumberCell(target);
+    // Alt+Shift+ArrowUp/Down moves rows (V03 10.1)
+    if (this.handleMoveKey(event, target, rowCell)) return;
     if (rowCell && target === rowCell) {
       this.onRowNumberKeyDown(event, this.sheet.dom.rowIndexOf(rowCell));
       return;
@@ -277,6 +279,44 @@ export default class SheetKeys<T extends object> {
     }
     // arrows, End, PageUp/Down (with or without Shift), Tab, Escape,
     // Ctrl/Meta combos: the grid's own handling
+  }
+
+  /**
+   * Alt+Shift+ArrowUp / ArrowDown on a record's row number, or on a cell
+   * with a `'rows'` range: the rows move one record (V03 10.1). True when
+   * taken (also at the first or last record, where nothing moves).
+   */
+  handleMoveKey(
+    event: KeyboardEvent,
+    target: EventTarget | null,
+    rowCell: HTMLElement | null
+  ): boolean {
+    if (
+      !event.altKey ||
+      !event.shiftKey ||
+      event.ctrlKey ||
+      event.metaKey ||
+      (event.key !== 'ArrowUp' && event.key !== 'ArrowDown') ||
+      !this.sheet.rowDrag.enabled ||
+      this.sheet.edit.editing
+    ) {
+      return false;
+    }
+    const selection = this.sheet.selection;
+    let row = -1;
+    if (rowCell && target === rowCell) row = this.sheet.dom.rowIndexOf(rowCell);
+    else if (
+      selection.rangeKind === 'rows' &&
+      selection.anchor &&
+      this.sheet.dom.dataCell(target) === target
+    )
+      row = selection.anchor.row;
+    if (row < 0 || !this.sheet.rows.isRecordRow(row)) return false;
+    stop(event);
+    // Shift here is part of the command, not a range extension
+    this.sheet.focus.extending = false;
+    this.sheet.rowDrag.moveByKey(row, event.key === 'ArrowDown' ? 1 : -1);
+    return true;
   }
 
   /** Ctrl/Cmd+Z, Ctrl/Cmd+Shift+Z, Ctrl+Y, Ctrl/Cmd+D, Ctrl/Cmd+A on a cell or row number; true when handled. */
@@ -621,7 +661,8 @@ export default class SheetKeys<T extends object> {
       readOnly: !!this.sheet.args.readOnly,
       canInsert: this.sheet.canInsert,
       rowNumbers: this.sheet.showRowNumbers,
-      fieldDrag: this.sheet.fields.fieldDrag
+      fieldDrag: this.sheet.fields.fieldDrag,
+      canMove: this.sheet.rowDrag.enabled
     };
   }
 }

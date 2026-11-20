@@ -30,6 +30,7 @@ import ImeCatcher from '../-private/ime-catcher.gts';
 import EditorFrame from '../-private/editor-frame.gts';
 import { RecordFlyout, RecordModal } from '../-private/record-shells.gts';
 import RangeOutline from '../-private/range-outline.gts';
+import DropLine from '../-private/drop-line.gts';
 import RowMenu from '../-private/row-menu.gts';
 import ShortcutList from '../-private/shortcut-list.gts';
 import {
@@ -76,6 +77,7 @@ import SheetFilling from '../-private/sheet/filling.ts';
 import SheetKeys from '../-private/sheet/keys.ts';
 import SheetClipboard from '../-private/sheet/clipboard.ts';
 import SheetApiModule from '../-private/sheet/api.ts';
+import SheetRowDrag from '../-private/sheet/row-drag.ts';
 
 import type { SheetContext, SheetMessages } from '../core/index.ts';
 import type { EuiSheetFieldType, EuiSheetSignature } from '../types.ts';
@@ -130,6 +132,7 @@ export default class EuiSheet<T extends object> extends Component<
   readonly keys = new SheetKeys<T>(this);
   readonly clipboard = new SheetClipboard<T>(this);
   readonly api = new SheetApiModule<T>(this);
+  readonly rowDrag = new SheetRowDrag<T>(this);
 
   /** The grid's API (not the sheet's: that is `sheetApi`). */
   gridApi: EuiDataGridRefProps | null = null;
@@ -157,6 +160,7 @@ export default class EuiSheet<T extends object> extends Component<
     this.drag.stopWatchingRelease();
     this.filling.stopFillDrag();
     this.drag.autoScroll.stop();
+    this.rowDrag.end();
     this.touch.cancelLongPress();
     document.removeEventListener(
       'mousedown',
@@ -269,6 +273,8 @@ export default class EuiSheet<T extends object> extends Component<
       class="euiSheet
         {{this.themeClass}}
         {{if this.drag.dragging 'euiSheet--dragging'}}
+        {{if this.rowDrag.active 'euiSheet--dragging euiSheet--rowDragging'}}
+        {{if this.rowDrag.line.blocked 'euiSheet--rowDragBlocked'}}
         {{if this.filling.fillTarget 'euiSheet--dragging euiSheet--filling'}}
         {{if this.scroll.scrolledX 'euiSheet--scrolledX'}}
         {{if this.gridOptions.pinsAddRow 'euiSheet--pinAddRow'}}
@@ -433,6 +439,9 @@ export default class EuiSheet<T extends object> extends Component<
             <span role="status">{{this.messages.noRecords}}</span>
           {{/if}}
         </div>
+      {{/if}}
+      {{#if this.rowDrag.line}}
+        <DropLine @line={{this.rowDrag.line}} />
       {{/if}}
       {{#if this.filling.fillHandleRange}}
         <FillHandle

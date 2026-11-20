@@ -429,7 +429,7 @@ export interface ChangeSet {
   deletes?: RecordId[];
   /** Present whenever `deletes` comes from a user delete or its redo: same order as `deletes`. */
   removed?: RecordRemoval[];
-  /** Records that change place (V03 4.3). `applyChangeSet` does not apply them yet; `applyChangeSetToGroups` reads them. */
+  /** Records that change place (V03 4.3): a row drag, its undo or redo. Optional; with patches when the drag crossed groups. */
   moves?: RecordMove[];
   rejected: CellRejection[];
   newOptions: NewOption[];

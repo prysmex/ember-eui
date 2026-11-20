@@ -72,6 +72,10 @@ export default class SheetCell extends Component<{
     if (view && this.sheet.checked.isChecked(this.args.rowIndex)) {
       classes.push('euiSheet__cell--checked');
     }
+    // V03 10.1: a row being dragged
+    if (view && this.sheet.rowDrag.isMoving(this.args.rowIndex)) {
+      classes.push('euiSheet__rowCell--moving');
+    }
     if (view?.selected) {
       classes.push('euiSheet__cell--selected');
       props['aria-selected'] = 'true';

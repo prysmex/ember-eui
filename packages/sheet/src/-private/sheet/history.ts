@@ -233,6 +233,7 @@ export default class SheetHistory<T extends object> {
       changeSet.patches.some((patch) => ids.has(String(patch.recordId))) ||
       changeSet.inserts.some((insert) => ids.has(insert.tempId)) ||
       (changeSet.deletes ?? []).some((id) => ids.has(String(id))) ||
+      (changeSet.moves ?? []).some((move) => ids.has(String(move.recordId))) ||
       entry.rejections.some((rejection) => ids.has(String(rejection.id)))
     );
   }
@@ -244,7 +245,8 @@ export default class SheetHistory<T extends object> {
     direction: 'undo' | 'redo',
     focus: boolean
   ): boolean {
-    const before = this.sheet.args.records.length;
+    const recordsBefore = this.sheet.args.records;
+    const before = recordsBefore.length;
     let shown: Rejection[] = [];
     if (direction === 'undo' && entry.rejections.length) {
       const next = clearRejections(
@@ -291,6 +293,12 @@ export default class SheetHistory<T extends object> {
       }
     }
     if (!changeSet && !shown.length) return false;
+    // a move's rows are selected at their new place (V03 10.1)
+    if (changeSet?.moves?.length) {
+      const ids = changeSet.moves.map((move) => move.recordId);
+      if (focus) this.sheet.rowDrag.selectAfter(ids, ids[0]!, recordsBefore);
+      return true;
+    }
     this.selectChanged(
       changeSet ?? { ...EMPTY_CHANGE_SET, source: direction },
       before,
@@ -406,6 +414,7 @@ export default class SheetHistory<T extends object> {
       !changeSet.patches.length &&
       !changeSet.inserts.length &&
       !changeSet.deletes?.length &&
+      !changeSet.moves?.length &&
       !rejections.length
     ) {
       return null;

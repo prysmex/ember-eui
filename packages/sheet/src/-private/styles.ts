@@ -242,8 +242,20 @@ li:has([data-test-subj^="euiSheetEditField-"]), li:has([data-test-subj^="euiShee
 .euiSheet__groupTitle[data-eui-sheet-group-toggle] { cursor: pointer; }
 .euiSheet__groupTitle[data-eui-sheet-group-toggle]:hover { text-decoration: underline; }
 .euiSheet__groupSummary { display: block; width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; text-align: end; color: var(--euiSheet-textSubdued, #69707D); }
+/* row drag (V03 10.1): the grip, the moved rows, the insertion line */
+.euiSheet__rowGrip { display: inline-flex; flex: none; margin-right: 2px; color: var(--euiSheet-textSubdued, #69707D); cursor: grab; visibility: hidden; }
+.euiSheet .euiDataGridRow:hover .euiSheet__rowGrip, .euiSheet__rowCell:focus .euiSheet__rowGrip, .euiSheet--rowDragging .euiSheet__rowCell--moving .euiSheet__rowGrip { visibility: visible; }
+.euiSheet__rowGrip:hover { color: var(--euiSheet-primary, #0B64DD); }
+.euiSheet .euiDataGridRowCell.euiSheet__rowCell--moving [data-datagrid-cellcontent] { opacity: 0.45; }
+.euiSheet--rowDragging, .euiSheet--rowDragging * { cursor: grabbing !important; }
+.euiSheet--rowDragBlocked, .euiSheet--rowDragBlocked * { cursor: not-allowed !important; }
+.euiSheet__dropLine { position: absolute; z-index: 5; box-sizing: border-box; height: 2px; margin-top: -1px; background: var(--euiSheet-primary, #0B64DD); pointer-events: none; }
+.euiSheet__dropLine.euiSheet__dropLine--box { margin-top: 0; background: transparent; border: 2px solid var(--euiSheet-primary, #0B64DD); }
+.euiSheet__dropLine.euiSheet__dropLine--blocked { background: var(--euiSheet-danger, #BD271E); }
+.euiSheet__dropLine.euiSheet__dropLine--box.euiSheet__dropLine--blocked { background: transparent; border-color: var(--euiSheet-danger, #BD271E); }
 @media (pointer: coarse) { .euiSheet__fillHandle { display: none; } }
 @media (hover: none) {
+  .euiSheet__rowGrip { visibility: visible; }
   .euiSheet__opener, .euiSheet__rowExpand { visibility: visible; }
   .euiSheet__rowCheck { display: inline-block; }
   .euiSheet__opener::after, .euiSheet__rowExpand::after, .euiSheet__rowCheck::before { content: ''; position: absolute; top: 50%; left: 50%; width: 32px; height: 32px; transform: translate(-50%, -50%); }

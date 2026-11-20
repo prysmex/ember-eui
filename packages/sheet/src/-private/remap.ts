@@ -35,8 +35,8 @@ export function remapId(id: RecordId, ids: IdMap): RecordId {
 
 /**
  * The change set with every record id it names remapped: patches, inserts
- * (`tempId`, `anchor`, `restore`), deletes, removed (`recordId`, `after`)
- * and rejections (a rejection on a `tempId` becomes one on the record).
+ * (`tempId`, `anchor`, `restore`), deletes, removed (`recordId`, `after`),
+ * moves (`recordId`, `anchor`, `from.after`) and rejections (a rejection on a `tempId` becomes one on the record).
  * The same object when nothing changes.
  */
 export function remapChangeSet(changeSet: ChangeSet, ids: IdMap): ChangeSet {
@@ -84,6 +84,20 @@ export function remapChangeSet(changeSet: ChangeSet, ids: IdMap): ChangeSet {
     result.removed = changeSet.removed.map((removal) => {
       const next = { ...removal, recordId: id(removal.recordId) };
       if (removal.after !== undefined) next.after = id(removal.after);
+      return next;
+    });
+  }
+  if (changeSet.moves) {
+    result.moves = changeSet.moves.map((move) => {
+      const next = {
+        ...move,
+        recordId: id(move.recordId),
+        from: { ...move.from }
+      };
+      if (move.anchor) {
+        next.anchor = { ...move.anchor, recordId: id(move.anchor.recordId) };
+      }
+      if (move.from.after !== undefined) next.from.after = id(move.from.after);
       return next;
     });
   }

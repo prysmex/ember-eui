@@ -246,6 +246,26 @@ export interface ButtonField<T = any> extends EuiSheetField<T> {
 }
 
 /**
+ * A barcode (V03 10.3.2, D18): a text shown as a code, typed, pasted or
+ * scanned. The value is a plain string or `null`; the symbology is not
+ * stored.
+ */
+export interface BarcodeField<T = any> extends EuiSheetField<T> {
+  type: 'barcode';
+  /** Formats a scan may read (`'qr_code'`, `'ean_13'`, `'code_128'`, …, the BarcodeDetector names). Default: all the device supports. */
+  formats?: string[];
+  /** A pattern the text must match, as text fields have (`RegExp.test`; anchor it with `^…$`). */
+  pattern?: string;
+  /** Message when `pattern` fails. Default `messages.pattern()`. */
+  patternMessage?: string;
+  /** The app's scanner, for browsers without BarcodeDetector (e.g. a zxing wrapper). `null`: nothing read. */
+  scan?: (options: {
+    formats?: string[];
+    signal: AbortSignal;
+  }) => Promise<string | null>;
+}
+
+/**
  * What the field editor produces (V03 6.4): plain values only. `id` is
  * absent: on create the owner assigns it, on update it is the field's.
  * The owner builds the field (`{ ...previous, ...draft }` on update,

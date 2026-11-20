@@ -506,6 +506,7 @@ export default class EuiSheet<T extends object> extends Component<
               @record={{this.edit.editorRecord editing}}
               @draft={{editing.draft}}
               @initialKey={{editing.initialKey}}
+              @openedByOpener={{editing.opener}}
               @onDraftChange={{this.edit.onDraftChange}}
               @onDraftValue={{this.edit.onDraftValue}}
               @onSave={{this.edit.onEditorSave}}

@@ -264,6 +264,18 @@ li:has([data-test-subj^="euiSheetEditField-"]), li:has([data-test-subj^="euiShee
 .euiSheet__button.euiSheet__button--disabled { color: var(--euiSheet-textSubdued, #69707D); cursor: default; opacity: 0.6; }
 .euiSheet__button.euiSheet__button--disabled:hover { background-color: transparent; text-decoration: none; }
 .euiSheet__button[aria-busy] { cursor: progress; }
+/* barcode cells and the scan panel (V03 10.3.2) */
+.euiSheet__barcode { display: inline-flex; align-items: center; gap: 6px; max-width: 100%; }
+.euiSheet__barcodeMark { flex: none; width: 12px; height: 12px; opacity: 0.7; background: repeating-linear-gradient(90deg, currentColor 0 1px, transparent 1px 2px, currentColor 2px 4px, transparent 4px 5px); }
+.euiSheet__barcodeText { overflow: hidden; text-overflow: ellipsis; font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
+.euiSheet__barcodeEditor { position: relative; height: 100%; }
+.euiSheet__barcodeEditor .euiSheet__input { padding-right: 28px; }
+.euiSheet__scanButton { position: absolute; top: 50%; right: 4px; transform: translateY(-50%); }
+.euiSheet__scan { position: absolute; top: 100%; left: 0; z-index: 3; box-sizing: border-box; display: flex; flex-direction: column; gap: 6px; width: max(100%, 260px); margin-top: 4px; padding: 8px; border: 1px solid var(--euiSheet-border, #D3DAE6); border-radius: 6px; background: var(--euiSheet-plain, #FFF); color: var(--euiSheet-text, #343741); box-shadow: 0 4px 12px var(--euiSheet-elevation, rgba(0, 0, 0, 0.25)); }
+.euiSheet__scanTitle { font-weight: 600; }
+.euiSheet__scanVideo { width: 100%; max-height: 180px; border-radius: 4px; background: var(--euiSheet-subdued, #F7F8FC); object-fit: cover; }
+.euiSheet__scanVideo.euiSheet__scanVideo--off { display: none; }
+.euiSheet__scanError { color: var(--euiSheet-textDanger, #BD271E); }
 /* row drag (V03 10.1): the grip, the moved rows, the insertion line */
 .euiSheet__rowGrip { display: inline-flex; flex: none; margin-right: 2px; color: var(--euiSheet-textSubdued, #69707D); cursor: grab; visibility: hidden; }
 .euiSheet .euiDataGridRow:hover .euiSheet__rowGrip, .euiSheet__rowCell:focus .euiSheet__rowGrip, .euiSheet--rowDragging .euiSheet__rowCell--moving .euiSheet__rowGrip { visibility: visible; }

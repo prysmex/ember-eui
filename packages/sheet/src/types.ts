@@ -37,9 +37,11 @@ export interface EuiSheetFieldType<
   /**
    * An EUI icon type (e.g. `'arrowDown'`, `'calendar'`) shown at the end of
    * the hovered or selected cell; a click on it opens the editor at once.
-   * Default: none (a second click on the selected cell opens it).
+   * A function of the field: per field, `undefined` for none (the barcode's
+   * camera, only where it can scan). Default: none (a second click on the
+   * selected cell opens it).
    */
-  opener?: string;
+  opener?: string | ((field: F) => string | undefined);
   /**
    * A click anywhere in the cell saves the value it returns (the checkbox
    * toggles), instead of selecting then editing. `{ press: true }`: the
@@ -161,6 +163,8 @@ export interface SheetEditorSignature<
     draft: string;
     /** The printable key that opened the editor, or null (Enter, F2, double-click). */
     initialKey: string | null;
+    /** Opened by a click on the type's opener icon (the barcode editor then starts scanning, V03 10.3.2). */
+    openedByOpener?: boolean;
     /** Reports the text to parse if the editor is closed by blur, scroll, or a key the sheet handles. */
     onDraftChange: (text: string) => void;
     /**

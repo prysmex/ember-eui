@@ -6,6 +6,7 @@
  */
 import {
   attachmentFieldType,
+  barcodeFieldType,
   buttonFieldType,
   checkboxFieldType,
   currencyFieldType,
@@ -29,6 +30,7 @@ import {
 } from './core/index.ts';
 import AttachmentCell from './-private/cells/attachment-cell.gts';
 import AvatarCell from './-private/cells/avatar-cell.gts';
+import BarcodeCell from './-private/cells/barcode-cell.gts';
 import ButtonCell from './-private/cells/button-cell.gts';
 import CheckboxCell from './-private/cells/checkbox-cell.gts';
 import ChipsCell from './-private/cells/chips-cell.gts';
@@ -37,6 +39,8 @@ import LongTextCell from './-private/cells/long-text-cell.gts';
 import RatingCell from './-private/cells/rating-cell.gts';
 import SelectCell from './-private/cells/select-cell.gts';
 import AttachmentEditor from './-private/editors/attachment-editor.gts';
+import BarcodeEditor from './-private/editors/barcode-editor.gts';
+import { canScan } from './-private/editors/barcode-scan.gts';
 import DateEditor from './-private/editors/date-editor.gts';
 import DateTimeEditor from './-private/editors/date-time-editor.gts';
 import InputEditor from './-private/editors/input-editor.gts';
@@ -59,6 +63,7 @@ import {
 
 import type {
   AttachmentField,
+  BarcodeField,
   ButtonField,
   CheckboxField,
   CurrencyField,
@@ -151,6 +156,19 @@ export const buttonType: EuiSheetFieldType<null, ButtonField> = {
   onCellClick: () => ({ press: true }),
   opensOnKey: () => false,
   fieldOptions: ButtonOptions
+};
+
+/**
+ * A barcode (V03 10.3.2): the text in the monospace font. Typing (or a USB
+ * scanner) opens the text input; where the field can scan (`field.scan`,
+ * or BarcodeDetector and a camera) the opener is a camera that opens the
+ * editor scanning.
+ */
+export const barcodeType: EuiSheetFieldType<string | null, BarcodeField> = {
+  ...barcodeFieldType,
+  cell: BarcodeCell,
+  editor: BarcodeEditor,
+  opener: (field) => (canScan(field) ? 'videoPlayer' : undefined)
 };
 
 /** The keys a list picker (select, multi-select, records) handles itself while open. */
@@ -279,8 +297,8 @@ export const longTextType: EuiSheetFieldType<string, LongTextField> = {
  * Every built-in type by name: `text`, `number`, `checkbox`,
  * `singleSelect`, `date`, `multiSelect`, `linkedRecord`, `user`,
  * `attachment`, `currency`, `percent`, `duration`, `rating`, `url`,
- * `email`, `phone`, `longText`, `dateTime`, `button`. `@fieldTypes`
- * is merged over it.
+ * `email`, `phone`, `longText`, `dateTime`, `button`, `barcode`.
+ * `@fieldTypes` is merged over it.
  */
 export const builtInSheetFieldTypes: Record<
   string,
@@ -304,7 +322,8 @@ export const builtInSheetFieldTypes: Record<
   phone: phoneType,
   longText: longTextType,
   dateTime: dateTimeType,
-  button: buttonType
+  button: buttonType,
+  barcode: barcodeType
 };
 
 export { InputEditor as SheetInputEditor };

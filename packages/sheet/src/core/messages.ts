@@ -365,6 +365,12 @@ export interface SheetMessages {
   fieldButtonIcon: () => string;
   /** 'Colour' */
   fieldButtonColor: () => string;
+  /** 'Barcode' */
+  fieldType_barcode: () => string;
+  /** 'Scan a code': the barcode editor's camera button and scan panel (V03 10.3.2) */
+  scanBarcode: () => string;
+  /** 'The camera is not available or was not allowed': the scan panel */
+  cameraDenied: () => string;
 }
 
 export interface SheetMessageToken {
@@ -1275,6 +1281,21 @@ export const sheetMessageTokens: Readonly<
   fieldButtonColor: {
     token: 'euiSheet.fieldButtonColor',
     defaultMessage: 'Colour',
+    params: []
+  },
+  fieldType_barcode: {
+    token: 'euiSheet.fieldType_barcode',
+    defaultMessage: 'Barcode',
+    params: []
+  },
+  scanBarcode: {
+    token: 'euiSheet.scanBarcode',
+    defaultMessage: 'Scan a code',
+    params: []
+  },
+  cameraDenied: {
+    token: 'euiSheet.cameraDenied',
+    defaultMessage: 'The camera is not available or was not allowed',
     params: []
   }
 };

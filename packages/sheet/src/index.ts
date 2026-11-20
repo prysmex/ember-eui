@@ -10,6 +10,7 @@ export { LocalRecords, localRecords } from './local-records.ts';
 export type { LocalRecordsOptions } from './local-records.ts';
 export {
   attachmentType,
+  barcodeType,
   builtInSheetFieldTypes,
   buttonType,
   colorByOption,

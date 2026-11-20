@@ -1,4 +1,5 @@
 import { attachmentFieldType } from './attachment.ts';
+import { barcodeFieldType } from './barcode.ts';
 import { buttonFieldType } from './button.ts';
 import { checkboxFieldType } from './checkbox.ts';
 import { currencyFieldType } from './currency.ts';
@@ -20,6 +21,7 @@ import type { FieldTypeRegistry } from '../types.ts';
 
 export {
   attachmentFieldType,
+  barcodeFieldType,
   buttonFieldType,
   checkboxFieldType,
   currencyFieldType,
@@ -53,7 +55,7 @@ export { LINK_PROTOCOLS, safeLink } from './link.ts';
  * The built-in core types, without components: `text`, `number`,
  * `checkbox`, `singleSelect`, `date`, `multiSelect`, `linkedRecord`,
  * `user`, `attachment`, `currency`, `percent`, `duration`, `rating`,
- * `url`, `email`, `phone`, `longText`, `dateTime`, `button`.
+ * `url`, `email`, `phone`, `longText`, `dateTime`, `button`, `barcode`.
  */
 export const builtInFieldTypes: FieldTypeRegistry = {
   text: textFieldType,
@@ -74,7 +76,8 @@ export const builtInFieldTypes: FieldTypeRegistry = {
   phone: phoneFieldType,
   longText: longTextFieldType,
   dateTime: dateTimeFieldType,
-  button: buttonFieldType
+  button: buttonFieldType,
+  barcode: barcodeFieldType
 };
 
 /** The built-ins plus `extra`; a type of `extra` with a built-in name replaces it. */

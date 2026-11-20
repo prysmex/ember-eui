@@ -2309,3 +2309,65 @@ over the column write nothing in it and reject nothing; one button
 cell: a paste emits nothing and a typed key shows "Read only"), BT5
 (the expanded record's button presses and shows the rejection).
 Suite: 559 tests, 559 pass (554 + 5).
+
+### 4e: `barcode` (10.3.2)
+
+#### What was built
+
+- `src/core/field-types/barcode.ts` (new), `BarcodeField` in
+  `src/core/types.ts` (`formats`, `pattern`, `patternMessage`, `scan`),
+  registered as `barcode`; `barcodeType` exported. The value is a
+  string or `null` (D18). `parse` trims (empty is `null`); `format` and
+  `copyText` are the text; `compare` is string order, empty first;
+  `validate` tests `pattern` as text fields do (`RegExp.test`, so `^…$`
+  for a whole match; an invalid pattern is ignored), with
+  `patternMessage`.
+- **Cell** `src/-private/cells/barcode-cell.gts`: the text in a
+  monospace font after a small barcode mark drawn by CSS (a repeating
+  gradient in `currentColor`: EUI has no barcode icon), with
+  `@highlight`.
+- **Editor** `src/-private/editors/barcode-editor.gts`: the input
+  editor; where the field can scan (`field.scan`, or `BarcodeDetector`
+  and `navigator.mediaDevices.getUserMedia`), a camera button
+  (`videoPlayer`, EUI has no camera icon) inside it opens the scan
+  panel. The type's opener is the same camera, only where the field can
+  scan: `EuiSheetFieldType.opener` may now be a function of the field.
+  A click on the opener opens the editor already scanning: the editor
+  gets a new optional `@openedByOpener` (`Editing.opener`, set by
+  `clicks.ts`'s opener branch through a new `startEdit` option); Enter,
+  F2 and typing open the text input only.
+- **Scan panel** `src/-private/editors/barcode-scan.gts`: `field.scan({
+  formats, signal })` when given; else a `BarcodeDetector` (with
+  `formats`) on a `getUserMedia({ video: { facingMode: 'environment' }
+  })` stream in a `<video>`, a decode every 150 ms until one reads. The
+  first code is committed as typed text (`{ text }`, so it is trimmed and
+  validated) and the editor closes. Cancel closes the panel and keeps the
+  input; Escape closes the editor; both, and leaving, stop the stream
+  and abort the signal. A refused camera (`NotAllowedError`,
+  `SecurityError`) shows `cameraDenied()`; another error its message.
+  `barcodeDevice` (exported from that module, like `frames` of the
+  auto-scroll) lets tests replace the detector and the camera.
+- A USB or Bluetooth scanner types into the cell like a keyboard: any
+  printable key opens the input, Enter commits and moves down.
+- Messages `scanBarcode`, `cameraDenied`, `fieldType_barcode`
+  (`cancel` exists).
+
+#### Tests
+
+- `tests/unit/barcode-test.ts` (new): BC1 (trim, empty, `pattern` and
+  `patternMessage`, an invalid pattern, copy and paste round-trip,
+  `compare`).
+- `tests/integration/components/eui-sheet-barcode-test.gts` (new): BC2
+  (the opener opens the editor scanning with `formats`; the stubbed
+  `field.scan` resolving `7501234567890` commits it and closes; Enter
+  opens the input only and its camera button opens the panel; Escape
+  closes the editor and aborts the signal, a late answer writes
+  nothing; Cancel aborts and keeps the input), BC2b (a stubbed detector
+  and a camera that rejects with `NotAllowedError`: the panel shows
+  `cameraDenied`), BC3 (`barcodeDevice.detector` stubbed away and no
+  `field.scan`: no opener, no camera button; typing then Enter commits
+  and moves down, twice).
+- The real camera path (`BarcodeDetector` on a live stream) is not run:
+  CI has no camera, and headless Chromium on Linux has no
+  `BarcodeDetector`. It is checked only by reading (10.7).
+- Suite: 563 tests, 563 pass (559 + 4).

@@ -137,7 +137,8 @@ export default class SheetCell extends Component<{
   get opener(): string | undefined {
     const view = this.view;
     if (!view || view.readOnly || !view.type.editor) return undefined;
-    return view.type.opener;
+    const opener = view.type.opener;
+    return typeof opener === 'function' ? opener(view.field) : opener;
   }
 
   /** `@highlight`, when there is something to mark. */

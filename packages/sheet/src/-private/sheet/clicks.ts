@@ -75,7 +75,7 @@ export default class SheetClicks<T extends object> {
     if (target.closest('[data-eui-sheet-star]')) return;
     if (target.closest('[data-eui-sheet-opener]')) {
       if (this.sheet.cells.canEdit(pos) && !this.sheet.edit.editInRecord(pos)) {
-        this.sheet.edit.startEdit(pos, cell, null);
+        this.sheet.edit.startEdit(pos, cell, null, { opener: true });
       }
       return;
     }

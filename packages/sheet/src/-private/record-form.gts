@@ -254,7 +254,7 @@ export default class RecordForm extends Component<RecordFormSignature> {
         field,
         this.args.record
       );
-      if (result)
+      if (result && 'value' in result)
         this.sheet.expanded.commitFormValue(
           this.args.record,
           field,

@@ -68,9 +68,21 @@ export default class SheetCell extends Component<{
       classes.push(frozen.className);
       props['style'] = frozen.style;
     }
+    // the row's colour bar without row numbers: on the first field (V03 10.2)
+    if (view && this.col === 0 && !this.sheet.colOffset) {
+      const bar = this.sheet.rowColors.barProps(this.args.rowIndex);
+      if (bar) {
+        classes.push(bar.className);
+        props['style'] = { ...frozen?.style, ...bar.style };
+      }
+    }
     // a checked row's light tint (V03 batch 1); never the add row
     if (view && this.sheet.checked.isChecked(this.args.rowIndex)) {
       classes.push('euiSheet__cell--checked');
+    }
+    // V03 10.1: a row being dragged
+    if (view && this.sheet.rowDrag.isMoving(this.args.rowIndex)) {
+      classes.push('euiSheet__rowCell--moving');
     }
     if (view?.selected) {
       classes.push('euiSheet__cell--selected');
@@ -79,8 +91,21 @@ export default class SheetCell extends Component<{
     if (view?.pending) {
       classes.push('euiSheet__cell--pending');
       props['aria-busy'] = 'true';
+      // an upload's progress (V03 11.4): a bar along the bottom edge, drawn
+      // by the cell's ::before, and the percent as its title
+      if (view.progress !== undefined) {
+        const percent = Math.round(view.progress * 100);
+        classes.push('euiSheet__cellProgress');
+        props['style'] = {
+          ...(props['style'] as Record<string, unknown> | undefined),
+          '--euiSheetProgress': `${percent}%`
+        };
+        props['title'] = this.sheet.messages.uploading(percent);
+      }
     }
     if (view?.dropTarget) classes.push('euiSheet__cell--dropTarget');
+    // V03 11.1: the owner's current search match
+    if (view?.match) classes.push('euiSheet__cell--match');
     if (this.sheet.filling.isFillPreview(this.args.rowIndex, this.col)) {
       classes.push('euiSheet__cell--fillPreview');
     }
@@ -125,7 +150,8 @@ export default class SheetCell extends Component<{
   get opener(): string | undefined {
     const view = this.view;
     if (!view || view.readOnly || !view.type.editor) return undefined;
-    return view.type.opener;
+    const opener = view.type.opener;
+    return typeof opener === 'function' ? opener(view.field) : opener;
   }
 
   /** `@highlight`, when there is something to mark. */
@@ -175,6 +201,8 @@ export default class SheetCell extends Component<{
           @onCommit={{this.onCommit}}
           @highlight={{this.highlight}}
           @link={{this.view.link}}
+          @pending={{this.view.pending}}
+          @disabled={{this.view.disabled}}
         />
       {{else if this.highlight}}
         <EuiHighlight

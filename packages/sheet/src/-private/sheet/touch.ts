@@ -41,6 +41,8 @@ export default class SheetTouch<T extends object> {
   @action
   onPointerDown(event: PointerEvent): void {
     this.lastPointerType = event.pointerType || 'mouse';
+    // the selection handles show after a touch press (V03 11.3)
+    this.sheet.selectionHandles.notePress(this.lastPointerType);
     this.longPressOpened = false;
     this.cancelLongPress();
     if (
@@ -87,7 +89,9 @@ export default class SheetTouch<T extends object> {
     const press = this.longPress;
     this.longPress = null;
     if (!press || this.sheet.edit.editing) return;
-    if (this.sheet.rowMenu.openContextMenu(press.target, press.x, press.y)) {
+    if (
+      this.sheet.rowMenu.openContextMenu(press.target, press.x, press.y, true)
+    ) {
       this.longPressOpened = true;
     }
   }

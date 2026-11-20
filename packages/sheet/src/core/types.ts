@@ -136,13 +136,20 @@ export interface SheetAttachment {
 
 export interface AttachmentField<T = any> extends EuiSheetField<T> {
   type: 'attachment';
-  /** Stores the files and returns them as attachments. Without it the field has no file picker and no drop. */
+  /**
+   * Stores the files and returns them as attachments. Without it the field
+   * has no file picker and no drop. `onProgress(fraction)` (V03 11.4)
+   * takes 0 to 1 for the whole call: the cell draws a bar and the editor a
+   * progress; an uploader that never calls it shows the cell pending only.
+   * Calls after the promise settled or the signal was aborted are ignored.
+   */
   upload?: (
     files: File[],
     context: {
       record: T | undefined;
       field: AttachmentField<T>;
       signal: AbortSignal;
+      onProgress: (fraction: number) => void;
     }
   ) => Promise<SheetAttachment[]>;
   /** The file input's `accept`. */
@@ -205,6 +212,64 @@ export interface DateField<T = any> extends EuiSheetField<T> {
   /** ISO dates, inclusive. */
   min?: string;
   max?: string;
+}
+
+/**
+ * A date with a time (V03 10.3, D9): the value is an instant, stored as a
+ * UTC ISO string (`2026-11-19T15:30:00.000Z`) or `null`; it is shown and
+ * typed in `timeZone`.
+ */
+export interface DateTimeField<T = any> extends EuiSheetField<T> {
+  type: 'dateTime';
+  /** The zone values are shown and typed in: 'local' (the browser's, default), 'utc', or an IANA name ('America/Mexico_City'). An unknown name is a validation error on every value. */
+  timeZone?: 'local' | 'utc' | (string & {});
+  /** Order of day and month, as `DateField`. Default 'dmy'. */
+  dateOrder?: 'dmy' | 'mdy';
+  /** 12-hour clock with am/pm. Default false. */
+  hour12?: boolean;
+  /** Show and keep seconds. Default false (minutes). */
+  seconds?: boolean;
+  /** Instants (the stored format), inclusive. */
+  min?: string;
+  max?: string;
+}
+
+/**
+ * A button (V03 10.3.1, D17): a cell that runs an action of the app on its
+ * record (`@onButtonPress`), or opens `url`. It stores no value.
+ */
+export interface ButtonField<T = any> extends EuiSheetField<T> {
+  type: 'button';
+  /** The button's text. Default: the field's label. */
+  buttonLabel?: string | ((record: T) => string);
+  /** An EUI icon type drawn before the text. */
+  icon?: string;
+  /** 'primary' (default), 'success', 'warning', 'danger' or 'text'. */
+  color?: 'primary' | 'success' | 'warning' | 'danger' | 'text';
+  /** No press for this record (drawn disabled). */
+  disabled?: (record: T) => boolean;
+  /** A link instead of an action: without `@onButtonPress` the press opens it in a new tab. */
+  url?: (record: T) => string | undefined;
+}
+
+/**
+ * A barcode (V03 10.3.2, D18): a text shown as a code, typed, pasted or
+ * scanned. The value is a plain string or `null`; the symbology is not
+ * stored.
+ */
+export interface BarcodeField<T = any> extends EuiSheetField<T> {
+  type: 'barcode';
+  /** Formats a scan may read (`'qr_code'`, `'ean_13'`, `'code_128'`, …, the BarcodeDetector names). Default: all the device supports. */
+  formats?: string[];
+  /** A pattern the text must match, as text fields have (`RegExp.test`; anchor it with `^…$`). */
+  pattern?: string;
+  /** Message when `pattern` fails. Default `messages.pattern()`. */
+  patternMessage?: string;
+  /** The app's scanner, for browsers without BarcodeDetector (e.g. a zxing wrapper). `null`: nothing read. */
+  scan?: (options: {
+    formats?: string[];
+    signal: AbortSignal;
+  }) => Promise<string | null>;
 }
 
 /**
@@ -294,6 +359,12 @@ export interface FieldType<
   toNumber?(value: V | null | undefined, field: F): number | null;
   /** Default: `value == null || value === ''`. */
   isEmpty?(value: unknown): boolean;
+  /**
+   * The type stores no value (a button, V03 10.3.1): every cell is
+   * read-only (`isReadOnly` with a context that has `types`), so a paste,
+   * fill, clear or cut skips the column, and the column has no sort items.
+   */
+  readOnly?: boolean;
   /** A key pressed on the cell in nav mode that changes the value without an editor. */
   navKey?(
     key: string,
@@ -429,7 +500,7 @@ export interface ChangeSet {
   deletes?: RecordId[];
   /** Present whenever `deletes` comes from a user delete or its redo: same order as `deletes`. */
   removed?: RecordRemoval[];
-  /** Records that change place (V03 4.3). `applyChangeSet` does not apply them yet; `applyChangeSetToGroups` reads them. */
+  /** Records that change place (V03 4.3): a row drag, its undo or redo. Optional; with patches when the drag crossed groups. */
   moves?: RecordMove[];
   rejected: CellRejection[];
   newOptions: NewOption[];

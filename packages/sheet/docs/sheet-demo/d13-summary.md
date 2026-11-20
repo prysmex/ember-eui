@@ -17,13 +17,21 @@ the owner recomputes, the bar follows. The first field stays in view when
 you scroll right, and so do its summary and the count under the row
 numbers.
 
+The line under the grid summarizes the selection, as Airtable's bar
+does: select a few Hours cells (drag, Shift+click or Shift+arrows) and
+it shows their count, sum and average; select across Hours and Done and
+only the numbers are added. The footer block's `selection` gives the
+selected records and fields, and `summarizeCells` computes the figures
+(the sheet aggregates nothing). A selection holds loaded records, so its
+summary is exact; the bar above is the owner's summary of all.
+
 </EuiText>
 
 ```gjs component
 import Component from '@glimmer/component';
 import { tracked } from '@glimmer/tracking';
-import { EuiButtonGroup, EuiFlexGroup, EuiFlexItem } from '@ember-eui/core/components';
-import { EuiSheet, builtInFieldTypes, defaultMessages, localRecords, summarize } from '@ember-eui/sheet';
+import { EuiButtonGroup, EuiFlexGroup, EuiFlexItem, EuiText } from '@ember-eui/core/components';
+import { EuiSheet, builtInFieldTypes, defaultMessages, localRecords, summarize, summarizeCells } from '@ember-eui/sheet';
 
 const FIELDS = [
   { id: 'name', label: 'Name', required: true },
@@ -67,6 +75,16 @@ const START_KINDS = [
 ];
 
 const CONTEXT = { types: builtInFieldTypes, messages: defaultMessages };
+
+/** The footer's line: the selection's count, sum and average (sum and average only when a cell has a number). */
+function selectionLine(selection) {
+  if (!selection) return 'Select cells to summarize them.';
+  const count = summarizeCells(CONTEXT, selection, 'count');
+  const sum = summarizeCells(CONTEXT, selection, 'sum');
+  const average = summarizeCells(CONTEXT, selection, 'average');
+  const cells = count === '1' ? '1 cell' : `${count} cells`;
+  return sum === '' ? `${cells} selected` : `${cells} selected · Sum ${sum} · Average ${average}`;
+}
 
 export default class SheetSummary extends Component {
   getId = (record) => record.id;
@@ -129,6 +147,11 @@ export default class SheetSummary extends Component {
           </EuiFlexItem>
         </EuiFlexGroup>
       </:toolbar>
+      <:footer as |sheet|>
+        <EuiText @size='xs' @color='subdued' data-test-subj='selectionSummary'>
+          {{selectionLine sheet.selection}}
+        </EuiText>
+      </:footer>
     </EuiSheet>
   </template>
 }

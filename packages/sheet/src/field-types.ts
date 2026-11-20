@@ -6,11 +6,15 @@
  */
 import {
   attachmentFieldType,
+  barcodeFieldType,
+  buttonFieldType,
   checkboxFieldType,
   currencyFieldType,
   dateFieldType,
+  dateTimeFieldType,
   durationFieldType,
   emailFieldType,
+  fieldOptions,
   linkedRecordFieldType,
   longTextFieldType,
   multiSelectFieldType,
@@ -21,10 +25,13 @@ import {
   singleSelectFieldType,
   textFieldType,
   urlFieldType,
-  userFieldType
+  userFieldType,
+  valueOf
 } from './core/index.ts';
 import AttachmentCell from './-private/cells/attachment-cell.gts';
 import AvatarCell from './-private/cells/avatar-cell.gts';
+import BarcodeCell from './-private/cells/barcode-cell.gts';
+import ButtonCell from './-private/cells/button-cell.gts';
 import CheckboxCell from './-private/cells/checkbox-cell.gts';
 import ChipsCell from './-private/cells/chips-cell.gts';
 import LinkCell from './-private/cells/link-cell.gts';
@@ -32,7 +39,10 @@ import LongTextCell from './-private/cells/long-text-cell.gts';
 import RatingCell from './-private/cells/rating-cell.gts';
 import SelectCell from './-private/cells/select-cell.gts';
 import AttachmentEditor from './-private/editors/attachment-editor.gts';
+import BarcodeEditor from './-private/editors/barcode-editor.gts';
+import { canScan } from './-private/editors/barcode-scan.gts';
 import DateEditor from './-private/editors/date-editor.gts';
+import DateTimeEditor from './-private/editors/date-time-editor.gts';
 import InputEditor from './-private/editors/input-editor.gts';
 import MultiSelectEditor from './-private/editors/multi-select-editor.gts';
 import RecordPickerEditor from './-private/editors/record-picker-editor.gts';
@@ -42,8 +52,10 @@ import TextareaEditor, {
 } from './-private/editors/textarea-editor.gts';
 import SelectOptions from './-private/field-options/select-options.gts';
 import {
+  ButtonOptions,
   CurrencyOptions,
   DateOptions,
+  DateTimeOptions,
   DurationOptions,
   PercentOptions,
   RatingOptions
@@ -51,10 +63,14 @@ import {
 
 import type {
   AttachmentField,
+  BarcodeField,
+  ButtonField,
   CheckboxField,
   CurrencyField,
   DateField,
+  DateTimeField,
   DurationField,
+  EuiSheetField,
   LinkedRecordField,
   LinkField,
   LongTextField,
@@ -70,7 +86,7 @@ import type {
   TextField,
   UserField
 } from './core/index.ts';
-import type { EuiSheetFieldType } from './types.ts';
+import type { EuiSheetFieldType, SheetRowColor } from './types.ts';
 
 export const textType: EuiSheetFieldType<string, TextField> = {
   ...textFieldType,
@@ -114,6 +130,45 @@ export const dateType: EuiSheetFieldType<string | null, DateField> = {
   opener: 'calendar',
   opensOnKey: (key) => /^\d$/.test(key),
   fieldOptions: DateOptions
+};
+
+/**
+ * A date with a time (V03 10.3): typing a digit opens the text input;
+ * Enter, F2, a double-click or the opener the native `datetime-local`
+ * picker, in the field's zone. Stored as a UTC ISO string.
+ */
+export const dateTimeType: EuiSheetFieldType<string | null, DateTimeField> = {
+  ...dateTimeFieldType,
+  editor: DateTimeEditor,
+  schema: 'datetime',
+  opener: 'calendar',
+  opensOnKey: (key) => /^\d$/.test(key),
+  fieldOptions: DateTimeOptions
+};
+
+/**
+ * A button (V03 10.3.1): no value; a click on it, or Enter or Space on the
+ * selected cell, calls `@onButtonPress` (or opens `field.url`).
+ */
+export const buttonType: EuiSheetFieldType<null, ButtonField> = {
+  ...buttonFieldType,
+  cell: ButtonCell,
+  onCellClick: () => ({ press: true }),
+  opensOnKey: () => false,
+  fieldOptions: ButtonOptions
+};
+
+/**
+ * A barcode (V03 10.3.2): the text in the monospace font. Typing (or a USB
+ * scanner) opens the text input; where the field can scan (`field.scan`,
+ * or BarcodeDetector and a camera) the opener is a camera that opens the
+ * editor scanning.
+ */
+export const barcodeType: EuiSheetFieldType<string | null, BarcodeField> = {
+  ...barcodeFieldType,
+  cell: BarcodeCell,
+  editor: BarcodeEditor,
+  opener: (field) => (canScan(field) ? 'videoPlayer' : undefined)
 };
 
 /** The keys a list picker (select, multi-select, records) handles itself while open. */
@@ -242,7 +297,8 @@ export const longTextType: EuiSheetFieldType<string, LongTextField> = {
  * Every built-in type by name: `text`, `number`, `checkbox`,
  * `singleSelect`, `date`, `multiSelect`, `linkedRecord`, `user`,
  * `attachment`, `currency`, `percent`, `duration`, `rating`, `url`,
- * `email`, `phone`, `longText`. `@fieldTypes` is merged over it.
+ * `email`, `phone`, `longText`, `dateTime`, `button`, `barcode`.
+ * `@fieldTypes` is merged over it.
  */
 export const builtInSheetFieldTypes: Record<
   string,
@@ -264,7 +320,33 @@ export const builtInSheetFieldTypes: Record<
   url: urlType,
   email: emailType,
   phone: phoneType,
-  longText: longTextType
+  longText: longTextType,
+  dateTime: dateTimeType,
+  button: buttonType,
+  barcode: barcodeType
 };
 
 export { InputEditor as SheetInputEditor };
+
+/**
+ * `@rowColor` by a select field's option (V03 10.2): the `color` of the
+ * record's option of `field` (a `singleSelect`; for a `multiSelect` its
+ * first value's), the same colour its badge has. EuiBadge's `'default'`
+ * and `'hollow'` are `'neutral'`. `undefined` for no value, or an option
+ * without a colour.
+ */
+export function colorByOption<T>(
+  field: EuiSheetField<T>
+): (record: T) => SheetRowColor | undefined {
+  return (record) => {
+    const raw = valueOf(record, field.id);
+    const value = Array.isArray(raw) ? (raw[0] as unknown) : raw;
+    if (value === null || value === undefined || value === '') return undefined;
+    const option = fieldOptions(field, record).find(
+      (entry) => entry.value === value
+    );
+    const color = option?.color;
+    if (!color) return undefined;
+    return color === 'default' || color === 'hollow' ? 'neutral' : color;
+  };
+}

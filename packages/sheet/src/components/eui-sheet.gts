@@ -26,10 +26,12 @@ import { createMessages } from '../core/index.ts';
 import { builtInSheetFieldTypes } from '../field-types.ts';
 import FieldEditor from '../-private/field-editor.gts';
 import FillHandle from '../-private/fill-handle.gts';
+import SelectionHandles from '../-private/selection-handles.gts';
 import ImeCatcher from '../-private/ime-catcher.gts';
 import EditorFrame from '../-private/editor-frame.gts';
 import { RecordFlyout, RecordModal } from '../-private/record-shells.gts';
 import RangeOutline from '../-private/range-outline.gts';
+import DropLine from '../-private/drop-line.gts';
 import RowMenu from '../-private/row-menu.gts';
 import ShortcutList from '../-private/shortcut-list.gts';
 import {
@@ -76,6 +78,10 @@ import SheetFilling from '../-private/sheet/filling.ts';
 import SheetKeys from '../-private/sheet/keys.ts';
 import SheetClipboard from '../-private/sheet/clipboard.ts';
 import SheetApiModule from '../-private/sheet/api.ts';
+import SheetRowDrag from '../-private/sheet/row-drag.ts';
+import SheetRowColors from '../-private/sheet/row-colors.ts';
+import SheetButtons from '../-private/sheet/buttons.ts';
+import SheetSelectionHandles from '../-private/sheet/selection-handles.ts';
 
 import type { SheetContext, SheetMessages } from '../core/index.ts';
 import type { EuiSheetFieldType, EuiSheetSignature } from '../types.ts';
@@ -130,6 +136,10 @@ export default class EuiSheet<T extends object> extends Component<
   readonly keys = new SheetKeys<T>(this);
   readonly clipboard = new SheetClipboard<T>(this);
   readonly api = new SheetApiModule<T>(this);
+  readonly rowDrag = new SheetRowDrag<T>(this);
+  readonly rowColors = new SheetRowColors<T>(this);
+  readonly buttons = new SheetButtons<T>(this);
+  readonly selectionHandles = new SheetSelectionHandles<T>(this);
 
   /** The grid's API (not the sheet's: that is `sheetApi`). */
   gridApi: EuiDataGridRefProps | null = null;
@@ -157,6 +167,9 @@ export default class EuiSheet<T extends object> extends Component<
     this.drag.stopWatchingRelease();
     this.filling.stopFillDrag();
     this.drag.autoScroll.stop();
+    this.rowDrag.end();
+    this.selectionHandles.end();
+    this.buttons.abortAll();
     this.touch.cancelLongPress();
     document.removeEventListener(
       'mousedown',
@@ -269,7 +282,13 @@ export default class EuiSheet<T extends object> extends Component<
       class="euiSheet
         {{this.themeClass}}
         {{if this.drag.dragging 'euiSheet--dragging'}}
+        {{if this.rowDrag.active 'euiSheet--dragging euiSheet--rowDragging'}}
+        {{if this.rowDrag.line.blocked 'euiSheet--rowDragBlocked'}}
         {{if this.filling.fillTarget 'euiSheet--dragging euiSheet--filling'}}
+        {{if
+          this.selectionHandles.dragging
+          'euiSheet--dragging euiSheet--handleDragging'
+        }}
         {{if this.scroll.scrolledX 'euiSheet--scrolledX'}}
         {{if this.gridOptions.pinsAddRow 'euiSheet--pinAddRow'}}
         {{this.gridColumns.headerLinesClass}}
@@ -282,6 +301,8 @@ export default class EuiSheet<T extends object> extends Component<
       {{this.follow.watchRecords @records @groups}}
       {{this.fieldEditor.watchFields @fields @hiddenFields}}
       {{this.registerSheetApi}}
+      {{this.scroll.followMatch}}
+      {{this.selection.reportChange}}
       {{on "keydown" this.keys.onKeyDown capture=true}}
       {{on "copy" this.clipboard.onCopy capture=true}}
       {{on "cut" this.clipboard.onCut capture=true}}
@@ -434,6 +455,9 @@ export default class EuiSheet<T extends object> extends Component<
           {{/if}}
         </div>
       {{/if}}
+      {{#if this.rowDrag.line}}
+        <DropLine @line={{this.rowDrag.line}} />
+      {{/if}}
       {{#if this.filling.fillHandleRange}}
         <FillHandle
           @sheet={{this}}
@@ -442,6 +466,15 @@ export default class EuiSheet<T extends object> extends Component<
           @records={{@records}}
           @rowHeight={{this.gridOptions.rowHeight}}
           @onPress={{this.filling.onFillHandlePress}}
+        />
+      {{/if}}
+      {{#if this.selectionHandles.range}}
+        <SelectionHandles
+          @sheet={{this}}
+          @range={{this.selectionHandles.range}}
+          @tick={{this.scroll.layoutTick}}
+          @records={{@records}}
+          @rowHeight={{this.gridOptions.rowHeight}}
         />
       {{/if}}
       <ImeCatcher @sheet={{this}} />
@@ -492,10 +525,15 @@ export default class EuiSheet<T extends object> extends Component<
               @record={{this.edit.editorRecord editing}}
               @draft={{editing.draft}}
               @initialKey={{editing.initialKey}}
+              @openedByOpener={{editing.opener}}
               @onDraftChange={{this.edit.onDraftChange}}
               @onDraftValue={{this.edit.onDraftValue}}
               @onSave={{this.edit.onEditorSave}}
               @onUpload={{editing.onUpload}}
+              @progress={{this.uploads.progressOf
+                editing.recordId
+                editing.field.id
+              }}
               @onCommit={{this.edit.onEditorCommit}}
               @onCancel={{this.edit.cancel}}
               @messages={{this.messages}}

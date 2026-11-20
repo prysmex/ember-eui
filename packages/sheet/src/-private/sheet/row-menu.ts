@@ -52,7 +52,12 @@ export default class SheetRowMenu<T extends object> {
     this.openMenu(row, col, rect);
   }
 
-  openMenu(row: number, col: number | null, anchor: WrapperBox): void {
+  openMenu(
+    row: number,
+    col: number | null,
+    anchor: WrapperBox,
+    byTouch = false
+  ): void {
     if (this.sheet.edit.editing) this.sheet.edit.commit({ refocus: false });
     const records = this.sheet.selection.selectionRecords();
     const record = this.sheet.rows.recordAt(row);
@@ -65,7 +70,8 @@ export default class SheetRowMenu<T extends object> {
         width: anchor.width,
         height: anchor.height
       },
-      records: records.length ? records : record === undefined ? [] : [record]
+      records: records.length ? records : record === undefined ? [] : [record],
+      byTouch
     };
     document.addEventListener('mousedown', this.onDocumentMouseDown, true);
   }
@@ -102,6 +108,29 @@ export default class SheetRowMenu<T extends object> {
     const count = records.length;
     const messages = this.sheet.messages;
     const items: RowMenuItem[] = [];
+    // by touch there are no copy and paste keys: the cell range's own items (V03 11.3)
+    const range = this.sheet.selection.range;
+    if (
+      menu.byTouch &&
+      range &&
+      this.sheet.selection.rangeKind === 'cells' &&
+      this.sheet.rows.recordRange(range)
+    ) {
+      items.push({
+        id: 'copyCells',
+        label: messages.copyCells(),
+        icon: 'copyClipboard',
+        onSelect: () => this.sheet.clipboard.copyRange(range)
+      });
+      if (!this.sheet.args.readOnly) {
+        items.push({
+          id: 'pasteCells',
+          label: messages.pasteCells(),
+          icon: 'importAction',
+          onSelect: () => this.sheet.clipboard.pasteFromClipboard()
+        });
+      }
+    }
     if (this.sheet.canInsert) {
       items.push(
         {
@@ -277,8 +306,13 @@ export default class SheetRowMenu<T extends object> {
     }
   }
 
-  /** The row menu at a viewport point, for a right-click or a long press on `target`; whether it opened. */
-  openContextMenu(target: Element, x: number, y: number): boolean {
+  /** The row menu at a viewport point, for a right-click or a long press (`byTouch`) on `target`; whether it opened. */
+  openContextMenu(
+    target: Element,
+    x: number,
+    y: number,
+    byTouch = false
+  ): boolean {
     if (this.sheet.edit.editing) return false;
     // a header: its own menu, as its "⋯" button opens it (V03 batch 1)
     const header = this.sheet.dom.headerCell(target);
@@ -312,7 +346,7 @@ export default class SheetRowMenu<T extends object> {
       }
     }
     const point = this.sheet.dom.pointInWrapper(x, y);
-    this.openMenu(row, col, { ...point, width: 0, height: 0 });
+    this.openMenu(row, col, { ...point, width: 0, height: 0 }, byTouch);
     return true;
   }
 }

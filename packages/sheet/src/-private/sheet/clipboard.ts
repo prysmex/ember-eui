@@ -56,6 +56,25 @@ export default class SheetClipboard<T extends object> {
     writeClipboard(this.rowsTsv(records));
   }
 
+  /** The touch menu's Copy (V03 11.3): the range as TSV, with the copy mark, as Ctrl/Cmd+C. */
+  copyRange(range: Range): void {
+    writeClipboard(this.rangeTsv(range));
+    this.sheet.outline.copied = range;
+  }
+
+  /** The touch menu's Paste (V03 11.3): the clipboard's text over the range, as Ctrl/Cmd+V; nothing when it cannot be read. */
+  pasteFromClipboard(): void {
+    const clipboard = navigator.clipboard as Clipboard | undefined;
+    if (!clipboard?.readText || this.sheet.args.readOnly) return;
+    clipboard.readText().then(
+      (text) => {
+        if (this.sheet.isDestroying || this.sheet.isDestroyed) return;
+        this.pasteText(text);
+      },
+      () => undefined
+    );
+  }
+
   /** The records' visible fields as TSV, in the given order. */
   rowsTsv(records: readonly T[]): string {
     return toTsv(
@@ -163,15 +182,24 @@ export default class SheetClipboard<T extends object> {
       return;
     }
     if (!Array.from(data.types).includes('text/plain')) return;
+    this.pasteText(data.getData('text/plain'), event);
+  }
+
+  /**
+   * Pastes TSV text over the range (Ctrl/Cmd+V, the touch menu's Paste);
+   * false when there is no range to paste on. `event` is stopped once the
+   * paste is the sheet's.
+   */
+  pasteText(text: string, event?: ClipboardEvent): boolean {
     const range = this.sheet.selection.range;
-    if (!range) return;
+    if (!range) return false;
     // a header is never pasted over (V03 8.5); its row has no range anyway
     if (
       this.sheet.rows.isGrouped &&
       this.sheet.rows.rowKind(range.top) === 'group'
     )
-      return;
-    stop(event);
+      return false;
+    if (event) stop(event);
     const anchor = { row: range.top, col: range.left };
     const records = this.sheet.args.records;
     // a group's add row: every line is an insert into that group (V03 8.5)
@@ -191,7 +219,7 @@ export default class SheetClipboard<T extends object> {
     // (its records: a header or an add row inside is no line)
     const selection = this.sheet.rows.recordRange(range);
     let matrix = tileMatrix(
-      parseTsv(data.getData('text/plain')),
+      parseTsv(text),
       selection ? selection.bottom - selection.top + 1 : 1,
       range.right - range.left + 1
     );
@@ -201,7 +229,7 @@ export default class SheetClipboard<T extends object> {
         0,
         Math.max(this.sheet.args.records.length - at.row, 0)
       );
-      if (!matrix.length) return;
+      if (!matrix.length) return true;
     }
     const width = Math.max(...matrix.map((line) => line.length));
     const right = Math.min(
@@ -235,6 +263,7 @@ export default class SheetClipboard<T extends object> {
       col: right
     };
     this.sheet.selection.rangeKind = 'cells';
+    return true;
   }
 
   /**

@@ -111,3 +111,63 @@ function toNumbers(
   }
   return numbers;
 }
+
+/** What `summarizeCells` computes over a selection (V03 11.2). */
+export type SheetCellSummaryKind =
+  'count' | 'filled' | 'sum' | 'average' | 'min' | 'max';
+
+/**
+ * One summary over every cell of a selection (the block's `selection`,
+ * `api.getSelection()`, `@onSelectionChange`): Airtable's bar over a
+ * rectangle. The sheet never calls it.
+ *
+ * - `count`: the cells (records × fields); `filled`: the non-empty ones
+ *   (each type's `isEmpty`).
+ * - `sum`, `average`, `min`, `max`: over each type's `toNumber` of the
+ *   non-empty cells (types without it count for nothing). Formatted with
+ *   the field's `format` when the selection is one field, else a plain
+ *   number rounded to at most two decimals. `''` when no cell has a
+ *   number.
+ */
+export function summarizeCells<T>(
+  ctx: Pick<SheetContext<T>, 'types' | 'messages'>,
+  selection: {
+    readonly records: readonly T[];
+    readonly fields: readonly EuiSheetField<T>[];
+  },
+  kind: SheetCellSummaryKind
+): string {
+  const { records, fields } = selection;
+  if (kind === 'count') return String(records.length * fields.length);
+  let filled = 0;
+  const numbers: number[] = [];
+  for (const field of fields) {
+    const type = resolveType(ctx.types, field) as FieldType<unknown>;
+    const values = records
+      .map((record) => valueOf(record, field.id))
+      .filter((value) => !isEmptyValue(type, value));
+    filled += values.length;
+    numbers.push(...(toNumbers(type, field, values) ?? []));
+  }
+  if (kind === 'filled') return String(filled);
+  if (!numbers.length) return '';
+  const sum = numbers.reduce((total, n) => total + n, 0);
+  const result =
+    kind === 'sum'
+      ? sum
+      : kind === 'average'
+        ? sum / numbers.length
+        : // no spread: a selection may hold more numbers than a call takes
+          numbers.reduce((a, b) =>
+            kind === 'min' ? Math.min(a, b) : Math.max(a, b)
+          );
+  const field = fields.length === 1 ? fields[0] : undefined;
+  if (field) {
+    const type = resolveType(ctx.types, field) as FieldType<unknown>;
+    return type.format(result, field, {
+      record: undefined,
+      messages: ctx.messages
+    });
+  }
+  return String(Math.round(result * 100) / 100);
+}

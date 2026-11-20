@@ -6,16 +6,19 @@ order: 17
 
 <EuiText>
 
-Files is an `attachment` field with a fake `upload` that takes 800 ms and
-fails for a file whose name contains `fail`. Up to four files per cell
+Files is an `attachment` field with a fake `upload` that takes about
+2 seconds, reports its progress with `onProgress`, and fails for a file
+whose name contains `fail`. Up to four files per cell
 (`maxFiles`). Uploaded images are shown from `blob:` URLs, so they last
 until the page is reloaded.
 
 Try: click the paperclip on a Files cell (or Enter): the panel lists the
 files (each name opens it in a new tab) with remove buttons and a file
-picker; pick a file, and the panel stays open while it uploads and then
-lists it. Drag a file from your desktop onto a Files cell: the cell is
-outlined while you hover it, shows as pending, then gets the file. Copy
+picker; pick a file, and the panel stays open while it uploads (a
+progress bar under the files) and then lists it. Drag a file from your
+desktop onto a Files cell: the cell is outlined while you hover it,
+shows as pending with a thin bar along its bottom edge that fills up
+(hover it for "Uploading… 40%"), then gets the file. Copy
 an image (a screenshot) and paste it on a Files cell. Drop a file named
 `fail.txt`: the cell is marked "Upload failed". Pasting text on a Files
 cell is rejected ("Text is not a file"); copying a Files cell gives its
@@ -33,9 +36,15 @@ const swatch = (color) =>
 
 let uploads = 0;
 
-/** The fake storage: 800 ms, and a file named fail… fails. */
-function upload(files, { signal }) {
+/** The fake storage: 2 s in ten steps, each reported with onProgress; a file named fail… fails at the end. */
+function upload(files, { signal, onProgress }) {
   return new Promise((resolve, reject) => {
+    let step = 0;
+    const tick = setInterval(() => {
+      step += 1;
+      onProgress(step / 10);
+      if (step >= 10) clearInterval(tick);
+    }, 200);
     const timer = setTimeout(() => {
       if (files.some((file) => file.name.toLowerCase().includes('fail'))) {
         reject(new Error('The storage refused the file'));
@@ -50,8 +59,11 @@ function upload(files, { signal }) {
           size: file.size,
         })),
       );
-    }, 800);
-    signal.addEventListener('abort', () => clearTimeout(timer));
+    }, 2000);
+    signal.addEventListener('abort', () => {
+      clearTimeout(timer);
+      clearInterval(tick);
+    });
   });
 }
 

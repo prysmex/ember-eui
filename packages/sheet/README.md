@@ -7,8 +7,15 @@ a change set (what the user typed, cleared or pasted); you apply it to your
 own store. It edits with the keyboard, selects ranges, copies and pastes
 blocks as TSV (to and from spreadsheets), and shows cell errors. It has
 built-in field types for text, numbers, checkboxes, selects, dates,
-linked records, users, attachments, currency, percent, duration, rating,
-links and long text, and you can add your own cells and editors. Fields
+dates with a time in a zone, linked records, users, attachments,
+currency, percent, duration, rating, links, long text, buttons that run
+your action and barcodes (typed, pasted or scanned), and you can add
+your own cells and editors. Rows can be dragged to a new order (a change
+set with `moves`, opt-in with `@canMove`) and coloured by record
+(`@rowColor`). It shows your current search match (`@currentMatch`),
+gives you the selection to summarize (`@onSelectionChange`,
+`summarizeCells`), selects ranges by touch with two handles, and shows
+upload progress. Fields
 can be added, edited, duplicated and deleted from the grid (the "+" column
 and the column menu), through your handlers. Records can be drawn in
 groups, with collapsible headers, counts and per-group summaries, from the
@@ -106,6 +113,8 @@ Arguments of `EuiSheet`:
 | `@sort`, `@onSortChange`                                          | Your sort (`[{ field, direction }]`), drawn as arrows; the column menu's sort items call the handler. No handler: no sort items. The sheet never sorts.                                                                |
 | `@onFilterByField`                                                | Adds "Filter by this field" to the column menu: `(fieldId) => void`.                                                                                                                                                   |
 | `@highlight`, `@isLoading`                                        | A searched term, marked in cells; a progress bar over the grid.                                                                                                                                                        |
+| `@currentMatch`                                                   | `{ recordId, fieldId }` or `null`: your current search match, scrolled into view and ringed; focus stays in your search box.                                                                                           |
+| `@onSelectionChange`                                              | `(selection or null) => void`: the selected records and fields, after render, when they change.                                                                                                                        |
 | `@summary`                                                        | `{ [fieldId]: text }` (`''`: the row-number column): the summary bar.                                                                                                                                                  |
 | `@frozenFields`                                                   | Leading fields kept in view on horizontal scroll, with the row numbers. Default `0` (off); `1` freezes the first field.                                                                                                |
 | `@rowNumbers`, `@rowLabel`, `@rowNumberOffset`                    | The row-number column (default on); `(record, position) => text` to show something else than the position; the first record's position on a page.                                                                      |
@@ -119,7 +128,7 @@ Arguments of `EuiSheet`:
 
 Blocks: `<:toolbar as |sheet|>` (above the grid) and `<:footer as |sheet|>`
 (below it) take your own controls. Both yield `{ api, fields, hiddenFields,
-sort, rowHeight, checkedRecords, hideField(id), showField(id),
+sort, rowHeight, checkedRecords, selection, hideField(id), showField(id),
 setRowHeight(height), setSort(sort), showShortcuts() }`. `<:empty>`
 replaces the "No records" message shown when `@records` is empty.
 
@@ -142,6 +151,23 @@ The summary bar shows `@summary`'s texts. Compute them from your backend,
 or over every record with `summarize(ctx, records, field, kind)` (`count`,
 `filled`, `empty`, `percentFilled`, `unique`, `sum`, `average`, `min`,
 `max`, `checked`, `unchecked`; sums use the type's `toNumber`).
+
+The selection is yours to summarize: the blocks' `selection`,
+`api.getSelection()` and `@onSelectionChange` give `{ kind, records,
+recordIds, fields, cellCount }` (header and add rows left out, checked
+rows separate), and `summarizeCells(ctx, selection, kind)` gives `count`,
+`filled`, `sum`, `average`, `min` or `max` over every cell (one field:
+its format; several: a plain number). `@onSelectionChange` runs after
+render, at most once per run loop, when the records, fields or kind
+changed: keep it cheap.
+
+Search is yours too, but the sheet shows your current match:
+`@currentMatch={{this.match}}` scrolls it into view (clear of the frozen
+fields) and draws a ring (`--euiSheet-match`) without taking focus from
+your search box. `findMatches(ctx, records, fields, term)` lists the
+cells whose shown text contains the term, for an owner with every
+record; step through them on Enter. A match not in `@records` (another
+page, a collapsed group) draws nothing until you show it.
 
 `@frozenFields={{1}}` freezes the first field (off by default): it, its
 header, its summary cell and the row numbers stay in view on horizontal
@@ -341,18 +367,20 @@ row menu emit).
 
 `@registerApi={{this.registerApi}}` receives one object:
 
-| Method                               |                                                                                                                       |
-| ------------------------------------ | --------------------------------------------------------------------------------------------------------------------- |
-| `undo()`, `redo()`                   | As Ctrl/Cmd+Z and Ctrl/Cmd+Shift+Z.                                                                                   |
-| `focusCell({ recordId, fieldId })`   | Focuses that cell; nothing when the record is not in `@records` or the field is not shown.                            |
-| `remapIds({ [tempId]: id })`         | The ids your store gave to inserted or restored records: the undo history, rejected texts and a pending focus follow. |
-| `clearHistory()`                     | Drops the undo and redo history.                                                                                      |
-| `expandRecord(id)`                   | Opens the expanded record (`null` closes it).                                                                         |
-| `insertRecord({ anchor?, values? })` | Emits the insert of one record, next to `anchor` or at the end.                                                       |
-| `deleteRecords(ids)`                 | Emits the delete of those records.                                                                                    |
-| `showShortcuts()`                    | Opens the shortcut list (as Ctrl/Cmd+/).                                                                              |
-| `addField({ index? })`               | Opens the field editor to add a field (with `@onFieldCreate`).                                                        |
-| `editField(fieldId)`                 | Opens the field editor on a field, also a hidden one (with `@onFieldUpdate`).                                         |
+| Method                                |                                                                                                                       |
+| ------------------------------------- | --------------------------------------------------------------------------------------------------------------------- |
+| `undo()`, `redo()`                    | As Ctrl/Cmd+Z and Ctrl/Cmd+Shift+Z.                                                                                   |
+| `focusCell({ recordId, fieldId })`    | Focuses that cell; nothing when the record is not in `@records` or the field is not shown.                            |
+| `scrollToCell({ recordId, fieldId })` | Scrolls that cell into view without focusing it.                                                                      |
+| `getSelection()`                      | The selection now, or `null`.                                                                                         |
+| `remapIds({ [tempId]: id })`          | The ids your store gave to inserted or restored records: the undo history, rejected texts and a pending focus follow. |
+| `clearHistory()`                      | Drops the undo and redo history.                                                                                      |
+| `expandRecord(id)`                    | Opens the expanded record (`null` closes it).                                                                         |
+| `insertRecord({ anchor?, values? })`  | Emits the insert of one record, next to `anchor` or at the end.                                                       |
+| `deleteRecords(ids)`                  | Emits the delete of those records.                                                                                    |
+| `showShortcuts()`                     | Opens the shortcut list (as Ctrl/Cmd+/).                                                                              |
+| `addField({ index? })`                | Opens the field editor to add a field (with `@onFieldCreate`).                                                        |
+| `editField(fieldId)`                  | Opens the field editor on a field, also a hidden one (with `@onFieldUpdate`).                                         |
 
 When you replace `@records` with records the sheet did not change (a new
 sort, another page, a reload), the selection collapses to the focused
@@ -370,8 +398,12 @@ come from the EUI theme, so the sheet follows light and dark: put it in an
 `--euiSheet-textDanger`, `--euiSheet-dangerFilled`,
 `--euiSheet-textInverse`, `--euiSheet-shadow`, `--euiSheet-subdued`,
 `--euiSheet-border`, `--euiSheet-link`, `--euiSheet-star`,
-`--euiSheet-highlight`) set by a class on the sheet's
-wrapper. To change one, set it on the sheet itself (`<EuiSheet
+`--euiSheet-textSuccess`, `--euiSheet-match`, the row colours `--euiSheet-rowPrimary`,
+`-rowAccent`, `-rowSuccess`, `-rowWarning`, `-rowDanger`, `-rowNeutral`,
+and `--euiSheet-highlight`) set by a class on the sheet's wrapper.
+`@rowColor={{this.colorOf}}` draws a 4 px bar at a row's left edge: a
+named colour (`'danger'`, …) is the theme's, any other a CSS colour as
+given; `colorByOption(field)` colours by a select's option colours. To change one, set it on the sheet itself (`<EuiSheet
 style="--euiSheet-selected: #E6F0FF" …>`) or with a more specific
 selector: set on a parent element it loses to the sheet's class. The row
 menu, the field editor and the panel editors render at the end of
@@ -393,6 +425,16 @@ there adds its lines); Shift+Enter adds one below the cell. Right-click,
 Shift+F10 or the ContextMenu key open the row menu: insert above/below,
 duplicate, expand, copy the rows, your `@rowActions`, delete. Each is one
 change set and one undo step. Delete and Backspace never delete rows.
+
+With `@canMove` each row number has a grip: drag it (a line shows where
+the rows go; checked rows, or selected whole rows, move together; Escape
+cancels), or press Alt+Shift+ArrowUp/Down on a row number. The change
+set has `source: 'move'` and `moves` (`{ recordId, anchor?, groupKey?,
+from }`, in order: put each record next to its anchor); grouped, a drop in
+another group also patches its group fields. `applyChangeSet` and
+`localRecords` apply moves; your backend keeps the order (an order
+column). Undo moves them back. Off with a `@sort` or `@readOnly`;
+`api.moveRecords(ids, { recordId, position })` does the same.
 
 ## Fields
 
@@ -440,23 +482,26 @@ focus trap is off, so a wormholed calendar works.
 
 ## Field types
 
-| Type                    | Value                                                            | Accepted text                                                                           | Options                                                           |
-| ----------------------- | ---------------------------------------------------------------- | --------------------------------------------------------------------------------------- | ----------------------------------------------------------------- |
-| `text` (default)        | string                                                           | anything                                                                                | `maxLength`, `pattern`, `patternMessage`                          |
-| `number`                | number or `null`                                                 | `12`, `-1.5`, `1,234.5` (no exponent, currency or `%`)                                  | `min`, `max`, `decimalSeparator` (`'.'` or `','`)                 |
-| `checkbox`              | boolean                                                          | `true 1 yes y x ✓ si sí`, `false 0 no n` and empty                                      |                                                                   |
-| `singleSelect`          | an option's `value` or `null`                                    | an option's label (any case) or value                                                   | `options` (an array or a function of the record), `createOnPaste` |
-| `date`                  | ISO `YYYY-MM-DD` or `null`                                       | `2026-11-19` (also with a time), `2026/11/19`, `19/11/2026`, `19-11-2026`, `19.11.2026` | `dateOrder` (`'dmy'` default, or `'mdy'`), `min`, `max` (ISO)     |
-| `multiSelect`           | an array of option values                                        | labels or values separated by `,` (a quoted part keeps its commas)                      | `options`, `createOnPaste`                                        |
-| `linkedRecord`          | an array of `{ id, label }`                                      | resolved by `@onResolve`                                                                | `search(query, { record, signal })`, `multiple` (default `true`)  |
-| `user`                  | `{ id, label, avatarUrl? }` or `null` (an array with `multiple`) | with `options`: a label or an `email`; else resolved by `@onResolve`                    | `options` or `search`, `multiple`                                 |
-| `attachment`            | an array of `{ id, name, url, type?, size?, thumbnailUrl? }`     | none (files are uploaded: picker, drop, pasted files)                                   | `upload(files, { record, field, signal })`, `accept`, `maxFiles`  |
-| `currency`              | number or `null`                                                 | `$1,234.50`, `MXN 12`, `12`                                                             | `currency`, `locale`, `precision`, `min`, `max`                   |
-| `percent`               | a fraction or `null`                                             | `25%` or `25` (both `0.25`)                                                             | `precision`, `min`, `max`                                         |
-| `duration`              | seconds or `null`                                                | `1:30`, `1:30:00`, `1h 30m`, `90` (minutes; seconds with `'h:mm:ss'`)                   | `durationFormat` (`'h:mm'` or `'h:mm:ss'`)                        |
-| `rating`                | 1 to `max`, or `null`                                            | `0` to `max`                                                                            | `max` (default 5)                                                 |
-| `url`, `email`, `phone` | string                                                           | anything (validated: a web address, `x@y.z`, digits and `+ ( ) -`)                      | `maxLength`                                                       |
-| `longText`              | string with line breaks                                          | anything                                                                                | `maxLength`                                                       |
+| Type                    | Value                                                            | Accepted text                                                                           | Options                                                                               |
+| ----------------------- | ---------------------------------------------------------------- | --------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------- |
+| `text` (default)        | string                                                           | anything                                                                                | `maxLength`, `pattern`, `patternMessage`                                              |
+| `number`                | number or `null`                                                 | `12`, `-1.5`, `1,234.5` (no exponent, currency or `%`)                                  | `min`, `max`, `decimalSeparator` (`'.'` or `','`)                                     |
+| `checkbox`              | boolean                                                          | `true 1 yes y x ✓ si sí`, `false 0 no n` and empty                                      |                                                                                       |
+| `singleSelect`          | an option's `value` or `null`                                    | an option's label (any case) or value                                                   | `options` (an array or a function of the record), `createOnPaste`                     |
+| `date`                  | ISO `YYYY-MM-DD` or `null`                                       | `2026-11-19` (also with a time), `2026/11/19`, `19/11/2026`, `19-11-2026`, `19.11.2026` | `dateOrder` (`'dmy'` default, or `'mdy'`), `min`, `max` (ISO)                         |
+| `multiSelect`           | an array of option values                                        | labels or values separated by `,` (a quoted part keeps its commas)                      | `options`, `createOnPaste`                                                            |
+| `linkedRecord`          | an array of `{ id, label }`                                      | resolved by `@onResolve`                                                                | `search(query, { record, signal })`, `multiple` (default `true`)                      |
+| `user`                  | `{ id, label, avatarUrl? }` or `null` (an array with `multiple`) | with `options`: a label or an `email`; else resolved by `@onResolve`                    | `options` or `search`, `multiple`                                                     |
+| `attachment`            | an array of `{ id, name, url, type?, size?, thumbnailUrl? }`     | none (files are uploaded: picker, drop, pasted files)                                   | `upload(files, { record, field, signal, onProgress })`, `accept`, `maxFiles`          |
+| `currency`              | number or `null`                                                 | `$1,234.50`, `MXN 12`, `12`                                                             | `currency`, `locale`, `precision`, `min`, `max`                                       |
+| `percent`               | a fraction or `null`                                             | `25%` or `25` (both `0.25`)                                                             | `precision`, `min`, `max`                                                             |
+| `duration`              | seconds or `null`                                                | `1:30`, `1:30:00`, `1h 30m`, `90` (minutes; seconds with `'h:mm:ss'`)                   | `durationFormat` (`'h:mm'` or `'h:mm:ss'`)                                            |
+| `rating`                | 1 to `max`, or `null`                                            | `0` to `max`                                                                            | `max` (default 5)                                                                     |
+| `url`, `email`, `phone` | string                                                           | anything (validated: a web address, `x@y.z`, digits and `+ ( ) -`)                      | `maxLength`                                                                           |
+| `longText`              | string with line breaks                                          | anything                                                                                | `maxLength`                                                                           |
+| `dateTime`              | a UTC ISO instant (`2026-11-19T15:30:00.000Z`) or `null`         | ISO with `Z` or an offset; ISO without, `19/11/2026 15:30`, `3:30 pm`: in the zone      | `timeZone` (`'local'`, `'utc'`, IANA), `dateOrder`, `hour12`, `seconds`, `min`, `max` |
+| `button`                | none                                                             | none (paste, fill, clear and cut skip it)                                               | `buttonLabel`, `icon`, `color`, `disabled(record)`, `url(record)`                     |
+| `barcode`               | string or `null`                                                 | anything, trimmed                                                                       | `pattern`, `patternMessage`, `formats`, `scan({ formats, signal })`                   |
 
 Dates are shown as `DD/MM/YYYY` (or `MM/DD/YYYY`) and copied as ISO.
 
@@ -469,6 +514,17 @@ it. URL, email, phone: link-styled text; a click on it opens the link in a
 new tab (only `http:`, `https:`, `mailto:`, `tel:`), the row menu has "Open
 link". Long text: a text area that grows from the cell; Shift+Enter or
 Alt+Enter adds a line, Enter saves.
+
+Date and time: shown in `timeZone` as `DD/MM/YYYY HH:mm` (or 12-hour,
+seconds), copied as the ISO instant; typing opens a text input, Enter the
+browser's date-and-time picker in the field's zone; a wall clock in a DST
+gap moves forward, one in an overlap is the first. Button: a click on it,
+or Enter or Space on the selected cell, calls `@onButtonPress({ recordId,
+fieldId, record }, { signal })` (or opens `url(record)` without it); a
+promise shows it pending, a rejection is the cell's error until the next
+press; not a change set. Barcode: monospace text; a USB scanner types it;
+with `field.scan` or the browser's `BarcodeDetector` the camera icon opens
+a scan panel.
 
 Array values are compared by content (`equals`); the sheet never changes a
 value in place, and your store should not either.
@@ -504,7 +560,8 @@ onResolve = async (requests, { signal }) => {
 | Enter, F2, double-click                        | Opens the editor on the current value (a date: the browser's date input)                                                                                 | Enter saves and goes down                                       |
 | Tab, Shift+Tab                                 | The grid's                                                                                                                                               | Saves and goes right / left                                     |
 | Escape                                         | The grid's                                                                                                                                               | Closes without saving                                           |
-| Space                                          | Toggles a checkbox; elsewhere expands the record                                                                                                         | Types                                                           |
+| Space                                          | Toggles a checkbox; presses a button; elsewhere expands the record                                                                                       | Types                                                           |
+| Alt+Shift+ArrowUp/Down                         | With `@canMove`, on a row number (or with whole rows selected): moves the rows one record                                                                |                                                                 |
 | A digit                                        | Sets a rating (0 clears)                                                                                                                                 |                                                                 |
 | Shift+Enter                                    | Adds a record below (as Enter when inserting is off)                                                                                                     | Saves and goes down; in long text, adds a line (also Alt+Enter) |
 | Shift+F10, ContextMenu                         | Opens the row menu                                                                                                                                       |                                                                 |
@@ -558,7 +615,9 @@ and date cells show a ▾ or calendar button on the hovered or selected cell
 that opens the editor in one click; a click anywhere in a checkbox cell
 toggles it. A click on a rating's star sets it; a click on a link's text
 opens it (a click beside it selects). Files dragged onto an attachment cell
-are uploaded. A field type gets the same with two optional properties:
+are uploaded; an `upload` that calls `onProgress(fraction)` shows a bar
+along the cell's bottom edge, and a progress bar in the editor and the
+expanded record. A field type gets the same with two optional properties:
 
 ```ts
 const zoneType: EuiSheetFieldType<Zone | null> = {
@@ -769,8 +828,9 @@ version you use; this package does not depend on it.
 ## Touch and IME
 
 On touch screens a tap selects and a tap on the selected cell edits, a drag
-scrolls (no range selection by touch yet), and a long press opens the row
-menu. The ▾ buttons, row checkboxes and expand icons are always shown there,
+scrolls, and a long press opens the row menu (with Copy and Paste on a
+range). After a tap the cell has two round handles at its corners: drag
+them to extend the range (they never show after a mouse press). The ▾ buttons, row checkboxes and expand icons are always shown there,
 with 32 px touch areas, and the fill handle is not. `@editIn` (default
 `'auto'`) edits in the expanded record on a touch screen narrower than
 600 px. Dead keys and IMEs compose in a hidden input over the cell, so the
@@ -779,6 +839,6 @@ devices or real IMEs yet.
 
 ## Limits
 
-No range selection by touch, dragging a record into another group or fullscreen yet. Sorting, filtering, search and paging
-are the owner's (see above, and the EmberSearchUi connector). Uploads show
-no progress (the cell is pending).
+No row or column drag by touch, floating (zoneless) date-times, undo of
+field operations or fullscreen yet. Sorting, filtering, search and paging
+are the owner's (see above, and the EmberSearchUi connector).

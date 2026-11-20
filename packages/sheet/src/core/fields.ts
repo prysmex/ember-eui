@@ -31,12 +31,17 @@ function flag<T>(
     : Boolean(value);
 }
 
+/**
+ * Sheet-level `readOnly`, the field's `readOnly`, or (given `ctx.types`) a
+ * type that stores no value (`FieldType.readOnly`, a button).
+ */
 export function isReadOnly<T>(
-  ctx: Pick<SheetContext<T>, 'readOnly'>,
+  ctx: Pick<SheetContext<T>, 'readOnly'> & { types?: FieldTypeRegistry },
   field: EuiSheetField<T>,
   record: T | undefined
 ): boolean {
-  return Boolean(ctx.readOnly) || flag(field.readOnly, record);
+  if (ctx.readOnly || ctx.types?.[field.type ?? 'text']?.readOnly) return true;
+  return flag(field.readOnly, record);
 }
 
 export function isRequired<T>(

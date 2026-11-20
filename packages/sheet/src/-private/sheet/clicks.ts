@@ -75,18 +75,25 @@ export default class SheetClicks<T extends object> {
     if (target.closest('[data-eui-sheet-star]')) return;
     if (target.closest('[data-eui-sheet-opener]')) {
       if (this.sheet.cells.canEdit(pos) && !this.sheet.edit.editInRecord(pos)) {
-        this.sheet.edit.startEdit(pos, cell, null);
+        this.sheet.edit.startEdit(pos, cell, null, { opener: true });
       }
       return;
     }
     if (type.onCellClick) {
+      // a button (V03 10.3.1): a click on it presses it, selected or not;
+      // a click elsewhere in the cell only selects
+      if (this.sheet.buttons.pressable(type, field, record)) {
+        if (target.closest('[data-eui-sheet-button]'))
+          this.sheet.buttons.press(record, field);
+        return;
+      }
       if (isReadOnly(this.sheet.context, field, record)) return;
       const result = type.onCellClick(
         valueOf(record, field.id) as never,
         field,
         record
       );
-      if (result)
+      if (result && 'value' in result)
         this.sheet.cells.commitCellValue(pos.row, pos.col, result.value);
       return;
     }

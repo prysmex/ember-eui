@@ -16,12 +16,15 @@ import EuiButtonIcon from '@ember-eui/core/components/eui-button-icon';
 import EuiFilePicker from '@ember-eui/core/components/eui-file-picker';
 import EuiIcon from '@ember-eui/core/components/eui-icon';
 import EuiPanel from '@ember-eui/core/components/eui-panel';
+import EuiProgress from '@ember-eui/core/components/eui-progress';
 
 import { safeFileUrl } from '../../core/index.ts';
 import { thumbnailOf } from '../cells/attachment-cell.gts';
 
 import type { SheetAttachment } from '../../core/index.ts';
 import type { SheetEditorSignature } from '../../types.ts';
+
+const isNumber = (value: unknown): boolean => typeof value === 'number';
 
 interface Row {
   file: SheetAttachment;
@@ -70,6 +73,18 @@ export default class AttachmentEditor extends Component<
 
   get failedLabel(): string {
     return this.messages.uploadFailed();
+  }
+
+  /** The upload's progress in percent, while the uploader reports one (V03 11.4). */
+  get percent(): number | undefined {
+    const progress = this.args.progress;
+    return progress === undefined ? undefined : Math.round(progress * 100);
+  }
+
+  get progressLabel(): string {
+    return this.percent === undefined
+      ? ''
+      : this.messages.uploading(this.percent);
   }
 
   /** A new array without the file: values are never mutated. */
@@ -153,6 +168,18 @@ export default class AttachmentEditor extends Component<
             {{/if}}
           </div>
         {{/each}}
+        {{#if (isNumber this.percent)}}
+          <EuiProgress
+            @value={{this.percent}}
+            @max={{100}}
+            @size="xs"
+            @color="primary"
+            class="euiSheet__uploadProgress"
+            aria-label={{this.progressLabel}}
+            title={{this.progressLabel}}
+            data-test-subj="euiSheetUploadProgress"
+          />
+        {{/if}}
         {{#if @onUpload}}
           <EuiFilePicker
             @multiple={{true}}

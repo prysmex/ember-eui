@@ -18,6 +18,8 @@ import type { ComponentLike } from '@glint/template';
 
 /** Its width without `@rowLabel`. */
 const ROW_COLUMN_WIDTH = 64;
+/** The row drag grip's room in the row-number column (V03 10.7). */
+const GRIP_WIDTH = 12;
 /** A frozen field's width without `@fieldWidths` or `field.width`. */
 const FROZEN_DEFAULT_WIDTH = 200;
 
@@ -166,7 +168,8 @@ export default class SheetGridColumns<T extends object> {
     const fields = this.sheet.fields.visibleFields;
     return fields.map((field, index) => {
       const type = this.sheet.fields.typeOf(field);
-      const canSort = sortable && field.sortable !== false;
+      // a type without values (a button) has no sort (V03 10.3.1)
+      const canSort = sortable && field.sortable !== false && !type.readOnly;
       const actions: EuiDataGridColumnActions = {
         showHide: index > 0 && field.hideable !== false,
         // the first field stays first (6.3)
@@ -218,8 +221,10 @@ export default class SheetGridColumns<T extends object> {
   /** The row-number column: wider only for `@rowLabel` labels. */
   @cached
   get rowColumnWidth(): number {
+    // the row drag's grip (V03 10.7): 12 px more
+    const grip = this.sheet.rowDrag.showsGrip ? GRIP_WIDTH : 0;
     const label = this.sheet.args.rowLabel;
-    if (!label) return ROW_COLUMN_WIDTH;
+    if (!label) return ROW_COLUMN_WIDTH + grip;
     let longest = 0;
     this.sheet.args.records.forEach((record, i) => {
       longest = Math.max(
@@ -227,7 +232,7 @@ export default class SheetGridColumns<T extends object> {
         label(record, this.sheet.rows.numberOf(i)).length
       );
     });
-    return Math.max(ROW_COLUMN_WIDTH, 24 + 8 * longest);
+    return Math.max(ROW_COLUMN_WIDTH, 24 + 8 * longest) + grip;
   }
 
   @cached

@@ -1,13 +1,14 @@
 /** Scrolling: the scroll element, its bounds, and revealing a cell (V03C-DESIGN.md 3.2). */
-import { tracked } from '@glimmer/tracking';
+import { cached, tracked } from '@glimmer/tracking';
 import { action } from '@ember/object';
 import { isDestroyed, isDestroying } from '@ember/destroyable';
 import { next, run } from '@ember/runloop';
+import { modifier } from 'ember-modifier';
 
 import { afterRender, samePos } from './util.ts';
 
 import type EuiSheet from '../../components/eui-sheet.gts';
-import type { Pos } from '../../core/index.ts';
+import type { Pos, RecordId } from '../../core/index.ts';
 import type { ScrollBounds } from '../auto-scroll.ts';
 
 export default class SheetScroll<T extends object> {
@@ -16,6 +17,9 @@ export default class SheetScroll<T extends object> {
   constructor(sheet: EuiSheet<T>) {
     this.sheet = sheet;
   }
+
+  /** The cell `followMatch` last scrolled to (`recordId` and `fieldId`), so a re-render does not scroll again. */
+  lastMatch: string | null = null;
 
   /** The grid is scrolled horizontally (the frozen edge's shadow). */
   @tracked scrolledX = false;
@@ -102,7 +106,11 @@ export default class SheetScroll<T extends object> {
    * is not rendered is first brought near with the grid's `scrollToItem`,
    * then placed once rendered (a few frames at most).
    */
-  revealCell(pos: Pos, attempts = 4): void {
+  revealCell(
+    pos: Pos,
+    wanted: () => boolean = () => samePos(this.sheet.selection.head, pos),
+    attempts = 4
+  ): void {
     const place = (): boolean => {
       const cell = this.sheet.dom.cellElement(pos);
       const bounds = this.scrollBounds();
@@ -137,10 +145,55 @@ export default class SheetScroll<T extends object> {
     if (attempts <= 0) return;
     requestAnimationFrame(() => {
       if (isDestroying(this.sheet) || isDestroyed(this.sheet)) return;
-      if (!samePos(this.sheet.selection.head, pos)) return;
-      this.revealCell(pos, attempts - 1);
+      if (!wanted()) return;
+      this.revealCell(pos, wanted, attempts - 1);
     });
   }
+
+  /* Search navigation (V03 11.1) */
+
+  /** The grid position of a record's field, or null when the record is not in `@records` or the field is not shown. */
+  posOfCell(cell: { recordId: RecordId; fieldId: string }): Pos | null {
+    const row = this.sheet.rows.rowOf(cell.recordId, 0);
+    const col = this.sheet.fields.visibleFields.findIndex(
+      (field) => field.id === cell.fieldId
+    );
+    if (row < 0 || col < 0) return null;
+    return { row: this.sheet.rows.gridRowOf(row), col };
+  }
+
+  /** `@currentMatch`'s cell, when it is drawn: in `@records` and a visible field. */
+  @cached
+  get matchPos(): Pos | null {
+    const match = this.sheet.args.currentMatch;
+    return match ? this.posOfCell(match) : null;
+  }
+
+  /** `SheetApi.scrollToCell`: into view, without focus or a selection change. */
+  scrollToCell(cell: { recordId: RecordId; fieldId: string }): void {
+    const pos = this.posOfCell(cell);
+    if (!pos) return;
+    // a later frame places it while the cell is still there
+    this.revealCell(pos, () => samePos(this.posOfCell(cell), pos));
+  }
+
+  /**
+   * Scrolls `@currentMatch` into view once per cell, after the render
+   * that shows it: when it changes, or when its record arrives in
+   * `@records` (the owner expanded its group or changed the page).
+   */
+  followMatch = modifier(() => {
+    const match = this.sheet.args.currentMatch;
+    const pos = this.matchPos;
+    if (!match || !pos) {
+      this.lastMatch = null;
+      return;
+    }
+    const key = `${String(match.recordId)}\u0000${match.fieldId}`;
+    if (key === this.lastMatch) return;
+    this.lastMatch = key;
+    afterRender(this.sheet, () => this.scrollToCell(match));
+  });
 
   /** The rows fully in view: what PageUp and PageDown move by (at least 1). */
   pageRows(): number {

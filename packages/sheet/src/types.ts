@@ -37,18 +37,24 @@ export interface EuiSheetFieldType<
   /**
    * An EUI icon type (e.g. `'arrowDown'`, `'calendar'`) shown at the end of
    * the hovered or selected cell; a click on it opens the editor at once.
-   * Default: none (a second click on the selected cell opens it).
+   * A function of the field: per field, `undefined` for none (the barcode's
+   * camera, only where it can scan). Default: none (a second click on the
+   * selected cell opens it).
    */
-  opener?: string;
+  opener?: string | ((field: F) => string | undefined);
   /**
    * A click anywhere in the cell saves the value it returns (the checkbox
-   * toggles), instead of selecting then editing. `undefined`: nothing.
+   * toggles), instead of selecting then editing. `{ press: true }`: the
+   * cell is a button (V03 10.3.1): a click on its
+   * `[data-eui-sheet-button]` element, or Enter or Space on the selected
+   * cell, calls `@onButtonPress`; a click elsewhere in the cell selects
+   * it. `undefined`: nothing.
    */
   onCellClick?: (
     value: V | null | undefined,
     field: F,
     record: unknown
-  ) => { value: V | null } | undefined;
+  ) => { value: V | null } | { press: true } | undefined;
   /**
    * The grid schema of the column (`'numeric'`, `'datetime'`, `'boolean'`,
    * `'currency'`): the header menu's sort labels ("Sort Low-High") and the
@@ -128,7 +134,18 @@ export interface SheetCellSignature<
     highlight?: string;
     /** `type.link(value)` when its scheme is one the sheet opens: draw the text as a link (`[data-eui-sheet-link]`). */
     link?: string;
+    /** The cell waits for something (a bulk resolve, an upload, a button's promise). */
+    pending?: boolean;
+    /** A button cell (`onCellClick` → `{ press: true }`) with no press for this record. */
+    disabled?: boolean;
   };
+}
+
+/** What `@onButtonPress` gets: the pressed button's record and field (V03 10.3.1). */
+export interface SheetButtonPress<T = any> {
+  recordId: RecordId;
+  fieldId: string;
+  record: T;
 }
 
 export type SheetEditorResult<V> = { value: V } | { text: string };
@@ -146,6 +163,8 @@ export interface SheetEditorSignature<
     draft: string;
     /** The printable key that opened the editor, or null (Enter, F2, double-click). */
     initialKey: string | null;
+    /** Opened by a click on the type's opener icon (the barcode editor then starts scanning, V03 10.3.2). */
+    openedByOpener?: boolean;
     /** Reports the text to parse if the editor is closed by blur, scroll, or a key the sheet handles. */
     onDraftChange: (text: string) => void;
     /**
@@ -163,6 +182,8 @@ export interface SheetEditorSignature<
      * when the upload fails. The sheet passes it when the field has `upload`.
      */
     onUpload?: (files: File[]) => Promise<void>;
+    /** The cell's upload progress, 0 to 1, while an upload reports one (V03 11.4); undefined otherwise. */
+    progress?: number;
     /** Closes the editor. `{ value }` is saved as is, `{ text }` goes through type.parse, nothing saves the reported draft. `move` is [rows, cols]; default [0, 0]. */
     onCommit: (
       result?: SheetEditorResult<V>,
@@ -194,6 +215,14 @@ export interface SheetApi {
   /** Focuses a cell by record and field. No-op when the record is not in `@records` or the field is not shown. */
   focusCell(cell: { recordId: RecordId; fieldId: string }): void;
   /**
+   * Scrolls a cell into view (below the header, clear of the frozen
+   * fields) without focusing it or changing the selection (V03 11.1).
+   * No-op when the record is not in `@records` or the field is not shown.
+   */
+  scrollToCell(cell: { recordId: RecordId; fieldId: string }): void;
+  /** The selection now, or null (V03 11.2): the block's `selection`. */
+  getSelection(): SheetSelection | null;
+  /**
    * Tells the sheet the ids the owner gave to inserted (or restored)
    * records: `{ [tempId or old id]: newId }`. The undo history, the
    * rejected texts and a pending focus are rewritten, so undo still finds
@@ -220,6 +249,15 @@ export interface SheetApi {
   editField(fieldId: string): void;
   /** Opens the field editor to create a field at `index` among the visible fields (default: the end). Needs `@onFieldCreate`. */
   addField(options?: { index?: number }): void;
+  /**
+   * Emits the move of these records next to `target` (a record in
+   * `@records`), as a row drag would (V03 10.1): one change set, source
+   * `'move'`. Needs `@canMove`; nothing with `@readOnly` or a `@sort`.
+   */
+  moveRecords(
+    ids: RecordId[],
+    target: { recordId: RecordId; position: 'before' | 'after' }
+  ): void;
 }
 
 /** An app item of the row menu (`@rowActions`). */
@@ -233,6 +271,38 @@ export interface SheetRowAction<T = any> {
   isDisabled?: (records: T[]) => boolean;
   /** The records of the selection: the checked ones when any is checked, else the selected rows. */
   onSelect: (records: T[]) => void;
+}
+
+/**
+ * A row's colour (V03 10.2): a named colour of the theme
+ * (`--euiSheet-row<Name>`, so dark mode follows), or any CSS colour, used
+ * as given.
+ */
+export type SheetRowColor =
+  | 'primary'
+  | 'accent'
+  | 'success'
+  | 'warning'
+  | 'danger'
+  | 'neutral'
+  | (string & {});
+
+/**
+ * The selection (V03 11.2): the range's records and visible fields. A
+ * focused cell is a selection of one cell. Group headers and add rows
+ * inside a range are not in it; checked rows are separate
+ * (`checkedRecords`). Only loaded records: a summary of it is exact,
+ * a summary of "all" is the owner's (`@summary`).
+ */
+export interface SheetSelection<T = any> {
+  kind: 'cells' | 'rows' | 'columns';
+  /** The selection's records, in the order shown. */
+  records: T[];
+  recordIds: RecordId[];
+  /** Its visible fields, in display order. */
+  fields: EuiSheetField<T>[];
+  /** records.length × fields.length. */
+  cellCount: number;
 }
 
 /** One sort key. The same shape as EmberSearchUi's `SortItem`. */
@@ -256,6 +326,8 @@ export interface SheetBlockApi<T = any> {
   rowHeight: SheetRowHeight;
   /** The checked records of `@records`, in their order. */
   checkedRecords: T[];
+  /** The selection (the range's records and fields), or null; `summarizeCells` summarizes it. */
+  selection: SheetSelection<T> | null;
   /** Each calls the matching handler, or changes the sheet's own state without one. */
   hideField(fieldId: string): void;
   showField(fieldId: string): void;
@@ -314,7 +386,7 @@ export interface EuiSheetSignature<T> {
     validate?: (
       context: ValidateContext<T>
     ) => CellErrors | Promise<CellErrors>;
-    /** Receives the sheet's API (`undo`, `redo`, `focusCell`, `remapIds`, `clearHistory`, `expandRecord`, `insertRecord`, `deleteRecords`, `showShortcuts`, `editField`, `addField`) once, after the first render. */
+    /** Receives the sheet's API (`undo`, `redo`, `focusCell`, `scrollToCell`, `getSelection`, `remapIds`, `clearHistory`, `expandRecord`, `insertRecord`, `deleteRecords`, `showShortcuts`, `editField`, `addField`, `moveRecords`) once, after the first render. */
     registerApi?: (api: SheetApi) => void;
     /**
      * Fields that exist but are not shown in the grid: listed in the
@@ -376,6 +448,24 @@ export interface EuiSheetSignature<T> {
     onFilterByField?: (fieldId: string) => void;
     /** A term the owner searched for: matching text is highlighted in cells. */
     highlight?: string;
+    /**
+     * The owner's current search match (V03 11.1): when it changes to a
+     * cell of `@records` in a visible field, the sheet scrolls it into view
+     * and rings it (`--euiSheet-match`). Focus and the selection do not
+     * move, so a search box keeps focus. A record that is not in `@records`
+     * (another page, a collapsed group) or a hidden field draws nothing:
+     * show it first. `findMatches` lists the matches of an owner that holds
+     * every record.
+     */
+    currentMatch?: { recordId: RecordId; fieldId: string } | null;
+    /**
+     * The selection changed (V03 11.2): called after render, at most once
+     * per run loop, when its record ids, field ids or kind changed (so a
+     * drag reports each new rectangle once); `null` when there is none.
+     * The sheet aggregates nothing: `summarizeCells(ctx, selection, kind)`.
+     * It runs during a drag: keep it cheap, or debounce.
+     */
+    onSelectionChange?: (selection: SheetSelection<T> | null) => void;
     /** Shows a thin progress bar over the grid; the grid stays usable. */
     isLoading?: boolean;
     /** Text per field id for the summary bar (`''`: the row-number column). Passing it, even `{}`, shows the bar. */
@@ -404,6 +494,35 @@ export interface EuiSheetSignature<T> {
     canInsert?: boolean;
     /** Deleting records (the menu). Default `!@readOnly`. */
     canDelete?: boolean;
+    /**
+     * Drag a row's grip (in the row-number cell), or Alt+Shift+ArrowUp/Down,
+     * to reorder records (V03 10.1): `@onChange` gets a change set with
+     * `moves` (source `'move'`; with patches of the group fields when a
+     * drag crosses groups). The sheet moves nothing: apply the moves and
+     * pass the records in their new order. Off with `@readOnly` and with a
+     * non-empty `@sort`. Default false.
+     */
+    canMove?: boolean;
+    /**
+     * A colour per record, drawn as a 4 px bar at the row's left edge (on
+     * the row-number cell, or the first field's without row numbers).
+     * `undefined`: none. Called for each rendered row: keep it cheap.
+     * `colorByOption(field)` colours by a select field's option.
+     */
+    rowColor?: (record: T) => SheetRowColor | undefined;
+    /**
+     * A button field's press (V03 10.3.1, D17), one handler for every
+     * button field: route by `fieldId`. A returned promise makes the cell
+     * pending (a second press is ignored until it settles); a rejection's
+     * message is the cell's error until the next press. `signal` is
+     * aborted when the sheet is destroyed. Not a change set, not undoable.
+     * Without it a field's `url` opens; with neither the button is
+     * disabled.
+     */
+    onButtonPress?: (
+      press: SheetButtonPress<T>,
+      options: { signal: AbortSignal }
+    ) => void | Promise<unknown>;
     /** Values of a new record, from its neighbours. Default `{}`. */
     newRecordValues?: (context: {
       above: T | undefined;

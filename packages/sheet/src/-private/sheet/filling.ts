@@ -34,6 +34,8 @@ export default class SheetFilling<T extends object> {
       return null;
     if (this.sheet.selection.rangeKind !== 'cells') return null;
     if (!this.sheet.rows.recordRange(range)) return null;
+    // the touch selection handles take its corner (V03 11.3)
+    if (this.sheet.selectionHandles.range) return null;
     return range;
   }
 

@@ -32,6 +32,14 @@ export interface CellView {
   link: string | undefined;
   /** Files dragged over the cell will be dropped on it. */
   dropTarget: boolean;
+  /** A button cell (V03 10.3.1): its type's `onCellClick` answers `{ press: true }`. */
+  pressable?: boolean;
+  /** A button cell with no press for its record. */
+  disabled?: boolean;
+  /** The cell is `@currentMatch` (V03 11.1): drawn with a ring. */
+  match?: boolean;
+  /** A pending upload's progress, 0 to 1, once its uploader reported one (V03 11.4). */
+  progress?: number;
 }
 
 /**
@@ -40,6 +48,8 @@ export interface CellView {
  */
 export interface PendingEntry {
   text: string | null;
+  /** An upload's progress (V03 11.4): tracked on its own, so a call re-renders only its cell. */
+  progress?: { readonly fraction: number | undefined };
   /** The call it waits for. */
   token: object;
   /** The cell to resolve; none for an upload. */
@@ -124,6 +134,8 @@ export interface MenuState {
   anchor: WrapperBox;
   /** The records it acts on, fixed when it opened. */
   records: unknown[];
+  /** Opened by a long press (V03 11.3): it also has Copy and Paste for a cell range. */
+  byTouch?: boolean;
 }
 
 /** Where the expanded record was opened from, to focus it again on close. */
@@ -136,7 +148,12 @@ export interface ExpandedFrom {
 export type UploadField = EuiSheetField & {
   upload?: (
     files: File[],
-    context: { record: unknown; field: EuiSheetField; signal: AbortSignal }
+    context: {
+      record: unknown;
+      field: EuiSheetField;
+      signal: AbortSignal;
+      onProgress: (fraction: number) => void;
+    }
   ) => Promise<SheetAttachment[]>;
   maxFiles?: number;
 };

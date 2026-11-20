@@ -17,6 +17,7 @@ import type {
   Range,
   RecordId,
   RecordInsert,
+  RecordMove,
   RecordRemoval,
   SheetContext
 } from './types.ts';
@@ -43,6 +44,7 @@ function changeSet(
   };
   if (parts.deletes) result.deletes = parts.deletes;
   if (parts.removed) result.removed = parts.removed;
+  if (parts.moves) result.moves = parts.moves;
   return result;
 }
 
@@ -212,6 +214,9 @@ export function pasteMatrix<T>(
  * insert placed before it in this call), right before or after it; else at
  * `index` (an index past the end appends). An insert with `restore` puts
  * back `restore.record` as it is, unless `restoreRecord` is given.
+ * Then each move, in order (V03 4.3): the record is taken out and put
+ * back right before or after its anchor; a move without an anchor, or
+ * whose record or anchor is not in the array, changes nothing.
  * `rejected` and `newOptions` do not touch records.
  */
 export function applyChangeSet<T extends object>(
@@ -225,7 +230,7 @@ export function applyChangeSet<T extends object>(
     restoreRecord?: (insert: RecordInsert) => T;
   }
 ): T[] {
-  const { getRecordId, createRecord, restoreRecord } = options;
+  const { getRecordId } = options;
   const byId = new Map<RecordId, Record<string, unknown>>();
   for (const patch of changeSet.patches) {
     const values = byId.get(patch.recordId) ?? {};
@@ -240,7 +245,24 @@ export function applyChangeSet<T extends object>(
     const values = byId.get(getRecordId(record));
     return values ? ({ ...record, ...values } as T) : record;
   });
-  if (!changeSet.inserts.length) return next;
+  if (changeSet.inserts.length) applyInserts(next, changeSet, options);
+  if (changeSet.moves?.length) {
+    applyMoves(next, changeSet.moves, (record) => getRecordId(record));
+  }
+  return next;
+}
+
+/** The inserts of `applyChangeSet`, in place. */
+function applyInserts<T extends object>(
+  next: T[],
+  changeSet: ChangeSet,
+  options: {
+    getRecordId: (record: T) => RecordId;
+    createRecord?: (values: Record<string, unknown>, tempId: string) => T;
+    restoreRecord?: (insert: RecordInsert) => T;
+  }
+): void {
+  const { getRecordId, createRecord, restoreRecord } = options;
 
   // tempId → the record this call created for it, whatever its id
   const created = new Map<string, T>();
@@ -281,7 +303,151 @@ export function applyChangeSet<T extends object>(
     created.set(insert.tempId, record);
     lastAt = at;
   }
-  return next;
+}
+
+/**
+ * The moves of a change set, in place, in order: each record is taken out
+ * and put back next to its anchor. Skipped: no anchor, the record or the
+ * anchor not found, the anchor being the record itself.
+ */
+function applyMoves<I>(
+  items: I[],
+  moves: readonly RecordMove[],
+  idOf: (item: I) => RecordId
+): void {
+  const find = (id: RecordId): number => {
+    const wanted = String(id);
+    return items.findIndex((item) => String(idOf(item)) === wanted);
+  };
+  for (const move of moves) {
+    if (!move.anchor) continue;
+    if (String(move.anchor.recordId) === String(move.recordId)) continue;
+    const from = find(move.recordId);
+    if (from < 0) continue;
+    const [item] = items.splice(from, 1);
+    const anchor = find(move.anchor.recordId);
+    if (anchor < 0) {
+      items.splice(from, 0, item!);
+      continue;
+    }
+    items.splice(
+      move.anchor.position === 'after' ? anchor + 1 : anchor,
+      0,
+      item!
+    );
+  }
+}
+
+/** Where a row drag (or `SheetApi.moveRecords`) puts records: options of `moveRecords`. */
+export interface MoveRecordsOptions {
+  /**
+   * With `@groups`: the group the records land in. `start` and `end` are
+   * the record indexes of its loaded records (`end` exclusive; equal for a
+   * collapsed or empty group): the anchor is one of them. `values` are the
+   * group's values (each level's field), patched on records that come
+   * from another group.
+   */
+  group?: {
+    key: string;
+    start: number;
+    end: number;
+    values?: Record<string, unknown>;
+  };
+  /** With `@groups`: the key of the group the record at this index is in. */
+  groupKeyOf?: (index: number) => string | undefined;
+  /** Value equality for the group patches. Default `Object.is`. */
+  equals?: (fieldId: string, a: unknown, b: unknown) => boolean;
+}
+
+/**
+ * The move of records next to a target (pure, V03 4.3, 10.1): one
+ * `RecordMove` per record, in their order in `ctx.records`. The first is
+ * anchored to the record that does not move nearest the target (before it
+ * when one is there, else after it; inside `group` when given), each next
+ * one after the previous. `target` is a record of `ctx.records` (it may be
+ * one of the moved ones); absent, the end of `group` (or of the records).
+ * Into a group with no other loaded record the moves have no anchor, only
+ * `groupKey`. Records from another group get patches to the group's
+ * values. Source 'move'. `null` when nothing would change, or a target or
+ * every id is not found.
+ */
+export function moveRecords<T>(
+  ctx: Pick<SheetContext<T>, 'records' | 'getRecordId'>,
+  ids: readonly RecordId[],
+  target: RecordMove['anchor'] | undefined,
+  options: MoveRecordsOptions = {}
+): ChangeSet | null {
+  const records = ctx.records;
+  const idOf = (index: number) => ctx.getRecordId(records[index]!);
+  const wanted = new Set(ids.map(String));
+  const indexes: number[] = [];
+  records.forEach((record, index) => {
+    if (wanted.has(String(ctx.getRecordId(record)))) indexes.push(index);
+  });
+  if (!indexes.length) return null;
+  const moving = new Set(indexes);
+  const group = options.group;
+  let gap: number;
+  if (target) {
+    const at = records.findIndex(
+      (record) => String(ctx.getRecordId(record)) === String(target.recordId)
+    );
+    if (at < 0) return null;
+    gap = target.position === 'after' ? at + 1 : at;
+  } else {
+    gap = group ? group.end : records.length;
+  }
+  const start = group ? Math.max(0, group.start) : 0;
+  const end = group ? Math.min(records.length, group.end) : records.length;
+  gap = Math.min(Math.max(gap, start), end);
+  let anchor: RecordMove['anchor'];
+  for (let i = gap - 1; i >= start && !anchor; i--) {
+    if (!moving.has(i)) anchor = { recordId: idOf(i), position: 'after' };
+  }
+  for (let i = gap; i < end && !anchor; i++) {
+    if (!moving.has(i)) anchor = { recordId: idOf(i), position: 'before' };
+  }
+  // every record moves, and no group to land in: nothing to place them by
+  if (!anchor && !group) return null;
+
+  const moves: RecordMove[] = indexes.map((index, k) => {
+    const move: RecordMove = { recordId: idOf(index), from: {} };
+    if (index > 0) move.from.after = idOf(index - 1);
+    const fromKey = options.groupKeyOf?.(index);
+    if (fromKey !== undefined) move.from.groupKey = fromKey;
+    const to =
+      k === 0
+        ? anchor
+        : { recordId: idOf(indexes[k - 1]!), position: 'after' as const };
+    if (to) move.anchor = to;
+    if (group) move.groupKey = group.key;
+    return move;
+  });
+
+  const patches: CellPatch[] = [];
+  const equals = options.equals ?? ((_id, a, b) => Object.is(a, b));
+  if (group?.values) {
+    for (const index of indexes) {
+      if (options.groupKeyOf?.(index) === group.key) continue;
+      const record = records[index];
+      for (const [fieldId, to] of Object.entries(group.values)) {
+        const from = valueOf(record, fieldId);
+        if (equals(fieldId, from, to)) continue;
+        patches.push({ recordId: idOf(index), fieldId, from, to });
+      }
+    }
+  }
+
+  const before = records.map((record) => String(ctx.getRecordId(record)));
+  const after = [...before];
+  applyMoves(after, moves, (id) => id);
+  const sameOrder = after.every((id, i) => id === before[i]);
+  const sameGroups = moves.every(
+    (move) =>
+      move.groupKey === undefined || move.groupKey === move.from.groupKey
+  );
+  if (sameOrder && sameGroups && !patches.length) return null;
+  return changeSet('move', { patches, moves });
 }
 
 /**

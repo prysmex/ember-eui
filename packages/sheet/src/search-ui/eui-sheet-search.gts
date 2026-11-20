@@ -52,6 +52,8 @@ type ForwardedArgs<Doc> = Pick<
   | 'rowHeight'
   | 'onRowHeightChange'
   | 'frozenFields'
+  | 'currentMatch'
+  | 'onSelectionChange'
   | 'fieldDrag'
   | 'headerLines'
   | 'onFieldCreate'
@@ -231,6 +233,8 @@ export default class EuiSheetSearch<Doc extends object> extends Component<
       @sort={{this.search.sort}}
       @onSortChange={{this.search.setSort}}
       @highlight={{this.search.term}}
+      @currentMatch={{@currentMatch}}
+      @onSelectionChange={{@onSelectionChange}}
       @isLoading={{this.search.isLoading}}
       @rowNumberOffset={{this.search.rowNumberOffset}}
       @hiddenFields={{@hiddenFields}}

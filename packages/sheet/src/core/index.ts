@@ -14,6 +14,7 @@ export * from './fill.ts';
 export * from './nav.ts';
 export * from './errors.ts';
 export * from './summary.ts';
+export * from './search.ts';
 export * from './resolve.ts';
 export * from './list.ts';
 export * from './convert.ts';

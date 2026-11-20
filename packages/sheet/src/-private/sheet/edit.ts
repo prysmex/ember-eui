@@ -39,6 +39,8 @@ class Editing {
   layout: 'cell' | 'panel' | 'expand';
   initialKey: string | null;
   draft: string;
+  /** Opened by a click on the type's opener icon (V03 10.3.2: the barcode's camera). */
+  opener = false;
   /** The editor's `@onUpload` (attachment fields with `upload`). */
   onUpload?: (files: File[]) => Promise<void>;
 
@@ -132,7 +134,12 @@ export default class SheetEdit<T extends object> {
     return pending.fieldId;
   }
 
-  startEdit(pos: Pos, cell: HTMLElement, initialKey: string | null): void {
+  startEdit(
+    pos: Pos,
+    cell: HTMLElement,
+    initialKey: string | null,
+    options: { opener?: boolean } = {}
+  ): void {
     // an edit ends the copy mark (V03 batch 1)
     if (this.sheet.outline.copied) this.sheet.outline.copied = null;
     const wrapper = this.sheet.wrapper;
@@ -169,6 +176,7 @@ export default class SheetEdit<T extends object> {
       initialKey,
       draft
     });
+    if (options.opener) this.editing.opener = true;
     this.draftKind = 'text';
     this.draftValue = undefined;
     if (upload) {

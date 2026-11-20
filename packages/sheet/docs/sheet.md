@@ -113,11 +113,23 @@ When your store gives a new record another id (a server's id), tell the
 sheet with `api.remapIds({ [tempId]: newId })` (below), so that undo
 still finds it.
 
+With `@canMove`, a row drag (Records, below) emits `source: 'move'` and
+`moves`: one `{ recordId, anchor?, groupKey?, from }` per moved record,
+in their final order. Apply them in order: take the record out and put
+it back before or after `anchor.recordId` (the first move is anchored to
+a record that does not move, each next one after the previous). A move
+without an anchor goes into `groupKey`, a group with no loaded record to
+anchor to; its patches already wrote the group's values. `from` (the
+record before it and its group) is what undo uses. `applyChangeSet` and
+`localRecords` apply moves; an owner that ignores them shows nothing
+moving, which is why row drag is opt-in. Keep the order in your data: an
+order column, or fractional positions (a move then writes one record).
+
 ## Undo and redo
 
 Ctrl/Cmd+Z undoes the last change made in the sheet (an edit, a paste, a
-clear, a fill, a checkbox toggle, an insert, a duplicate or a delete of
-records); Ctrl/Cmd+Shift+Z and Ctrl+Y redo it.
+clear, a fill, a checkbox toggle, an insert, a duplicate, a delete or a
+move of records); Ctrl/Cmd+Shift+Z and Ctrl+Y redo it.
 The sheet keeps the last 100 change sets it emitted, per sheet, and an
 undo is one more change set through `@onChange`: `source: 'undo'`, each
 patch with `from` and `to` swapped, and the rows a paste inserted listed
@@ -134,7 +146,9 @@ your own store, remove those records.
   without it, the row is not removed by undo (it is skipped). A row
   changed since it was inserted is not removed either.
 - An undo of a delete puts each record back after the neighbour it had,
-  even when your records were re-sorted since. A redo of a delete names
+  even when your records were re-sorted since. An undo of a move moves
+  each record back after the record that was before it (or first), in
+  the same order, with the group values it had. A redo of a delete names
   the record's id; if your server gave the restored record a new id,
   call `remapIds` for it too.
 - A change whose records are not in `@records` any more (another page, a
@@ -186,8 +200,10 @@ your own store, remove those records.
 | `@onFieldUpdate` | `(fieldId, draft, { previous }) => void or Promise`: adds "Edit field". |
 | `@onFieldDelete` | `(fieldId) => void or Promise`: adds "Delete field", after a confirmation. |
 | `@fieldEditor` | A component that replaces the field editor's content (the sheet keeps its frame). |
-| `@creatableFieldTypes` | The types the field editor offers, in order. Default: `text`, `longText`, `number`, `currency`, `percent`, `checkbox`, `singleSelect`, `multiSelect`, `date`, `duration`, `rating`, `url`, `email`, `phone`. |
+| `@creatableFieldTypes` | The types the field editor offers, in order. Default: `text`, `longText`, `number`, `currency`, `percent`, `checkbox`, `singleSelect`, `multiSelect`, `date`, `duration`, `rating`, `url`, `email`, `phone`. `dateTime`, `button` and `barcode` have their options there too (zone, clock and seconds; text, icon and colour); list them to offer them. |
 | `@highlight` | A term you searched for: matching text is marked in cells (any case, every match). |
+| `@currentMatch` | `{ recordId, fieldId }` or `null`: your current search match. When it changes the sheet scrolls it into view and rings it, without moving focus or the selection (Search matches, below). |
+| `@onSelectionChange` | `(selection or null) => void`: the selected cells' records and fields, after render, when they change (Summary bar, below). |
 | `@isLoading` | A thin progress bar over the grid; the grid stays usable. |
 | `@summary` | `{ [fieldId]: text }` (and `''` for the row-number column): shows the summary bar (below). |
 | `@frozenFields` | Leading fields kept in view on horizontal scroll, with the row numbers. Default `0` (off); `1` freezes the first field. |
@@ -195,6 +211,9 @@ your own store, remove those records.
 | `@rowLabel` | `(record, position) => string`: what a row number shows instead of its position (for example the record's id). The column widens to fit. |
 | `@rowNumberOffset` | The position of the first record when `@records` is one page of your data: page 2 of 50 passes `50`. Default `0`. |
 | `@canInsert`, `@canDelete` | The add row (grouped: the groups' add rows), Shift+Enter and the menu's insert and duplicate; the menu's delete. Default: `!@readOnly`. Without inserting, a paste stops at the last record. |
+| `@canMove` | Row drag (Records, below): a grip in each row number, and Alt+Shift+ArrowUp/Down, emit change sets with `moves`. Off with `@readOnly`, a non-empty `@sort` or `@rowNumbers={{false}}` (the keys and `api.moveRecords` need no row numbers). Default `false`. |
+| `@rowColor` | `(record) => colour or undefined`: a 4 px bar at the row's left edge (Theme, below). `colorByOption(field)` colours by a select's options. |
+| `@onButtonPress` | `({ recordId, fieldId, record }, { signal }) => void or Promise`: a button field's press (Field types, below), for every button field. |
 | `@newRecordValues` | `({ above, below }) => values`: the values of a new record, from its neighbours. Default `{}`. |
 | `@checkedRecordIds`, `@onCheckedChange` | The checked rows. With the handler, the sheet shows exactly `@checkedRecordIds` and calls the handler with the new list; without it, it keeps its own. |
 | `@expandedRecordId`, `@onExpandedRecordChange` | The expanded record, controlled the same way. |
@@ -217,8 +236,12 @@ state and tells you what the user asked for:
 | Collapses or expands a group | `@onGroupToggle(key, collapsed)` | drop or add its records, pass the header with `collapsed` |
 | "Filter by this field" | `@onFilterByField(fieldId)` | open your filter UI |
 | Types in your search box | (nothing: the box is yours) | filter `@records`, pass `@highlight` |
+| Steps to the next match in your box | (nothing) | pass `@currentMatch` (expand its group or change the page first) |
+| Selects cells | `@onSelectionChange(selection)` | show a summary of the selection (`summarizeCells`) |
 | Changes page in your pager | (nothing) | pass that page as `@records`, and `@rowNumberOffset` |
 | Waits | | pass `@isLoading` |
+| Drags a row (with `@canMove`) | `@onChange` with `moves` | put the records in the new order, pass them |
+| Presses a button cell | `@onButtonPress({ recordId, fieldId, record }, { signal })` | run your action; a promise shows it pending, a rejection as the cell's error |
 | Hides, moves, resizes a column | `@onHiddenFieldsChange`, `@onFieldOrderChange`, `@onFieldWidthChange` | update `@fields`, `@hiddenFields`, `@fieldWidths` |
 | Picks a row height in your control | `@onRowHeightChange` (through the block's `setRowHeight`) | update `@rowHeight` |
 
@@ -239,12 +262,39 @@ tabbable elements):
 
 Each yields the same object: `api` (the sheet's API, below), `fields` (the
 visible ones), `hiddenFields`, `sort`, `rowHeight`, `checkedRecords`,
-`groupBy` and `groups` (`@groupBy` and `@groups`, or `[]`), and
+`selection` (the selected cells, or `null`; Summary bar, below), `groupBy` and `groups` (`@groupBy` and `@groups`, or `[]`), and
 `hideField(id)`, `showField(id)`, `setRowHeight(rowHeight)`,
 `setSort(sort)`, `setGroupBy(groupBy)` and `toggleGroup(key)`, which call
 your handlers (or change the sheet's own state without them; `setSort`,
 `setGroupBy` and `toggleGroup` do nothing without `@onSortChange`,
 `@onGroupByChange` and `@onGroupToggle`).
+
+### Search matches
+
+The sheet does not search, but it shows your current match:
+`@currentMatch={{this.match}}` scrolls that cell into view (below the
+header, clear of the frozen fields) and draws a ring inside it
+(`--euiSheet-match`), over `@highlight`'s marks. Focus stays in your
+search box, so typing goes on. Keep your matches and an index, pass
+`matches[index]`, and step on Enter and Shift+Enter; `api.focusCell` is
+for when the user leaves the box. A match that is not in `@records` (on
+another page, in a collapsed group) or whose field is hidden draws
+nothing: change the page, expand the group (`toggleGroup`) or show the
+field first; the sheet scrolls to it once its record arrives. An owner
+that holds every record lists its matches with `findMatches`:
+
+```js
+import { builtInFieldTypes, defaultMessages, findMatches } from '@ember-eui/sheet';
+
+const ctx = { types: builtInFieldTypes, messages: defaultMessages, getRecordId: (r) => r.id };
+findMatches(ctx, records, fields, 'ana'); // [{ recordId, fieldId }, …], by row then field
+```
+
+It matches what `@highlight` marks: each type's shown text, ignoring
+case and accents. An owner that pages gets its matches from its backend.
+With groups, list them over the records in display order with every
+group expanded (`groupRecords` without `collapsed`), as the "Search
+navigation" example does.
 
 Sorting a local array needs a few lines in your component (the "View
 intents" example does it with each type's `compare`). For filtering,
@@ -387,6 +437,31 @@ averages use the type's `toNumber` (numbers have it), minimum and maximum
 `toNumber` or else `compare` (dates, text), and the text is formatted with
 the type's `format`. What to summarize is your control, in `<:toolbar>`
 or `<:footer>`.
+
+**A summary of the selection.** The blocks' `selection`,
+`api.getSelection()` and `@onSelectionChange` give the selected cells:
+`{ kind: 'cells' or 'rows' or 'columns', records, recordIds, fields,
+cellCount }`, records in the order shown and the visible fields in
+display order. A focused cell is a selection of one cell; group headers
+and add rows inside a range are not in it, and the checked rows stay
+separate (`checkedRecords`). `@onSelectionChange` is called after the
+render, at most once per run loop, when the record ids, the field ids or
+the kind changed (`null` when there is none), so a drag reports each new
+rectangle once: keep it cheap, or debounce it. The sheet aggregates
+nothing: call `summarize` per field, or `summarizeCells` for one figure
+over every cell, as Airtable's bar does:
+
+```js
+import { summarizeCells } from '@ember-eui/sheet';
+
+summarizeCells(ctx, selection, 'sum'); // 'count', 'filled', 'sum', 'average', 'min', 'max'
+```
+
+Numbers go through each type's `toNumber`; with one field the result
+has its `format` (a currency, a percent), with several it is a plain
+number with at most two decimals; `''` when no cell has a number. A
+selection holds loaded records only, so its summary is exact; a summary
+of "all" is yours (`@summary`).
 
 ## Group by
 
@@ -636,6 +711,8 @@ store:
 | --- | --- |
 | `undo()`, `redo()` | Ctrl/Cmd+Z and Ctrl/Cmd+Shift+Z, from outside the sheet. |
 | `focusCell({ recordId, fieldId })` | Focuses that cell. Nothing happens when the record is not in `@records` or the field is not shown. |
+| `scrollToCell({ recordId, fieldId })` | Scrolls that cell into view without focusing it or changing the selection (`@currentMatch` does this and draws the ring). |
+| `getSelection()` | The selection now (Summary bar, above), or `null`. |
 | `remapIds({ [tempId]: id })` | The ids your store gave to inserted (or restored) records. The undo history, rejected texts and a pending focus are rewritten. |
 | `clearHistory()` | Drops the undo and redo history. |
 | `expandRecord(id)` | Opens that record (`null` closes it). |
@@ -643,6 +720,7 @@ store:
 | `deleteRecords(ids)` | Emits the delete of those records. |
 | `showShortcuts()` | Opens the shortcut list (as Ctrl/Cmd+/ on the grid). The blocks have `showShortcuts()` too, for a toolbar button. |
 | `addField({ index? })` | Opens the field editor to add a field at `index` among the visible fields (default: the end; never before the first field). With `@onFieldCreate`. The blocks have `addField()` too. |
+| `moveRecords(ids, { recordId, position })` | Emits the move of those records before or after a record of `@records`, as a drag there would. With `@canMove`. |
 | `editField(fieldId)` | Opens the field editor on a field, also a hidden one (it opens under the "+" header then). With `@onFieldUpdate`. |
 
 When you replace `@records` with records the sheet did not change
@@ -664,8 +742,12 @@ properties set by a class on the sheet's wrapper (`--euiSheet-primary`,
 `--euiSheet-textInverse`, `--euiSheet-shadow`, `--euiSheet-subdued`,
 `--euiSheet-border`, `--euiSheet-link` (link text and file names),
 `--euiSheet-star` (a rating's stars), `--euiSheet-checked` (checked rows),
-`--euiSheet-elevation` (the open editor's and the row menu's shadow), and
-`--euiSheet-highlight` for what is coming). `--euiSheet-selected`, the
+`--euiSheet-elevation` (the open editor's and the row menu's shadow),
+`--euiSheet-textSuccess` (a success button's text), `--euiSheet-match`
+(the current search match's ring, the theme's warning), the row colours
+`--euiSheet-rowPrimary`, `-rowAccent`, `-rowSuccess`, `-rowWarning`,
+`-rowDanger` and `-rowNeutral`, and `--euiSheet-highlight` for what is
+coming). `--euiSheet-selected`, the
 range tint, is the theme's primary at 12 % (20 % in dark). To change
 one, set it on the sheet itself, which takes attributes
 (`<EuiSheet style="--euiSheet-selected: #E6F0FF" …>`) or a more specific
@@ -681,6 +763,18 @@ open; CSS for an app's panel editor should not be scoped under
 `.euiSheet`. An editor gets that class as `@themeClass`: one that renders a part of
 itself outside the sheet (a wormholed list) adds it there; without it
 that part uses the light colours.
+
+**Row colours.** `@rowColor={{this.colorOf}}` returns a colour per
+record, drawn as a 4 px bar at the row's left edge: on the row-number
+cell (sticky with it when fields are frozen), or on the first field's
+cell without row numbers. `'primary'`, `'accent'`, `'success'`,
+`'warning'`, `'danger'` and `'neutral'` are the theme's
+(`--euiSheet-row<Name>`), so dark mode follows; any other value is a CSS
+colour used as given (yours to fit dark mode); `undefined` draws none.
+`colorByOption(field)` returns the record's option's `color` of a select
+field (the badge's colour; `'default'` is `'neutral'`). The colour has
+no text: a screen reader does not hear it, so put its meaning in a field
+too. `@rowColor` is called for each rendered row: keep it cheap.
 
 ## Records
 
@@ -710,9 +804,27 @@ show ids. Hovering a row shows its checkbox and an expand icon.
   outside closes it. There is no delete key for rows: Delete and
   Backspace clear cells.
 
+- **Moving** (with `@canMove`): each row number has a grip (shown on
+  hover and focus, always on a touch screen; the column is 12 px wider).
+  Drag it: a line shows where the rows go, the grid scrolls near its
+  edges, Escape cancels, and the release emits one change set. The
+  pressed row moves, or all the checked rows when it is checked, or the
+  rows of a selection of whole rows; they keep their order and are
+  selected after the move. Alt+Shift+ArrowUp / ArrowDown on a row number
+  (or with whole rows selected) moves them one record. A drop that
+  changes nothing emits nothing. With a `@sort` there is no grip: the
+  order is the sort's. With groups, a drop on a header goes to the start
+  of its group (a collapsed one: into it, with no anchor), on a group's
+  add row to its end, and a drop in another group also writes that
+  group's values; it is not allowed (a red line) when one of those
+  fields is read-only for a moved record. A drag stays on the page the
+  sheet has. Not by touch in v0.3 (a touch drag scrolls): on a phone use
+  the keys or `api.moveRecords`.
+
 Each of these is a change set (`insert`: `inserts` with `index` and
-`anchor`; `delete`: `deletes` and `removed`) and one undo step: an undone
-delete puts the same records back where they were.
+`anchor`; `delete`: `deletes` and `removed`; `move`: `moves`) and one
+undo step: an undone delete puts the same records back where they were,
+an undone move puts them back in their old place.
 
 All of this works on the rows the sheet has: with a paging owner, the
 checkboxes and the selection are those of the page shown.
@@ -822,13 +934,16 @@ field's text; the arrows go to the previous and next record.
 | `multiSelect` | an array of option values (`[]` when empty) | labels (any case) or values separated by `,`; a part in double quotes keeps its commas | `options` (an array or a function of the record), `createOnPaste` |
 | `linkedRecord` | an array of `{ id, label }` | resolved by `@onResolve`: the text is split on `,` | `search(query, { record, signal })` (the picker's list, a promise), `multiple` (default `true`) |
 | `user` | `{ id, label, avatarUrl? }` or `null`; an array with `multiple` | with `options`: a label or an `email` (any case); without: resolved by `@onResolve` | `options` or `search`, `multiple` (default `false`) |
-| `attachment` | an array of `{ id, name, url, type?, size?, thumbnailUrl? }` | none: text is rejected; files are uploaded (picker, drop, paste of files) | `upload(files, { record, field, signal })`, `accept`, `maxFiles` |
+| `attachment` | an array of `{ id, name, url, type?, size?, thumbnailUrl? }` | none: text is rejected; files are uploaded (picker, drop, paste of files) | `upload(files, { record, field, signal, onProgress })`, `accept`, `maxFiles` |
 | `currency` | number or `null` | `$1,234.50`, `MXN 12`, `12`: the symbol, the code and spaces are dropped | `currency` (ISO code), `locale`, `precision` (default 2), `min`, `max`, `decimalSeparator` |
 | `percent` | a fraction or `null` (`0.25` is 25%) | `25%` or `25` | `precision` (default 0), `min`, `max` (fractions), `decimalSeparator` |
 | `duration` | seconds or `null` | `1:30`, `1:30:00`, `1h 30m`, `1.5h`, `45s`, `90` (minutes; seconds with `'h:mm:ss'`) | `durationFormat` (`'h:mm'` default, or `'h:mm:ss'`) |
 | `rating` | a whole number from 1 to `max`, or `null` | `0` (none) to `max` | `max` (default 5) |
 | `url`, `email`, `phone` | string | anything (checked by validation: a web address, `x@y.z`, digits and `+ ( ) -`) | `maxLength` |
 | `longText` | string, with line breaks | anything | `maxLength` |
+| `dateTime` | an instant as a UTC ISO string (`2026-11-19T15:30:00.000Z`) or `null` | an ISO string with `Z` or an offset (that instant); an ISO string without one, `19/11/2026 15:30`, `19/11/2026 3:30 pm` (also `-` and `.`, seconds), or a date alone (midnight): in the field's zone | `timeZone` (`'local'` default, `'utc'`, or an IANA name such as `'America/Mexico_City'`), `dateOrder`, `hour12`, `seconds`, `min`, `max` (instants) |
+| `button` | none | none: a text is rejected (paste, fill, clear and cut skip the column) | `buttonLabel` (a string or a function of the record; default the label), `icon`, `color` (`'primary'`, `'success'`, `'warning'`, `'danger'`, `'text'`), `disabled(record)`, `url(record)` |
+| `barcode` | string or `null` | anything, trimmed | `pattern` (a RegExp source, tested as text fields do), `patternMessage`, `formats` (for a scan), `scan({ formats, signal })` |
 
 Dates are shown as `DD/MM/YYYY` (or `MM/DD/YYYY`) and copied as ISO.
 Currencies are shown with `Intl.NumberFormat` and copied as plain numbers;
@@ -853,7 +968,13 @@ back is rejected: text is not a file).
   `upload`; each upload or removal is saved at once and the editor stays
   open. Files dropped on a cell, or pasted on one, are uploaded too: the
   cell shows as pending, then the new files are added to its value as it
-  is then; a failed upload marks the cell "Upload failed". Only `http:`,
+  is then; a failed upload marks the cell "Upload failed". An `upload`
+  that calls `onProgress(fraction)` (0 to 1 for the whole call, for
+  example from `XMLHttpRequest`'s `upload.onprogress`) shows a 2 px bar
+  along the cell's bottom edge and "Uploading… 40%" as its title, and the
+  editor and the expanded record show the same value in a progress bar;
+  calls after the upload settled or was aborted are ignored. One that
+  never calls it shows the cell pending, as before. Only `http:`,
   `https:`, `blob:` and `data:image/` URLs are used as links or images.
 - **Rating**: stars. A click on a star sets it, on the current one clears
   it; on a focused cell the digits 0 to `max` set it. No editor.
@@ -863,6 +984,38 @@ back is rejected: text is not a file).
   the expanded record a button next to the box. Only `http:`, `https:`,
   `mailto:` and `tel:` links are opened, so a `javascript:` value opens
   nothing (and fails validation).
+- **Date and time**: one stored format, an instant in UTC, so it orders
+  as text and any backend reads it; the zone is the field's, not the
+  value's. Shown as `DD/MM/YYYY HH:mm` (or the field's order, a 12-hour
+  clock, seconds) in `timeZone`, and copied as the ISO string, so a copy
+  pasted into another zone's column is the same instant. Typed text is
+  never read with `Date` (it depends on the browser's locale). A wall
+  clock that does not exist in the zone (the hour skipped when DST
+  starts) moves forward by the gap; one that happens twice (when DST
+  ends) is the first. An unknown zone name shows the values in UTC and
+  makes every value invalid. Typing a digit opens a text input; Enter,
+  F2, a double-click or the calendar icon the browser's date-and-time
+  picker, in the field's zone. A fill continues one value by a day (the
+  same time in the zone), two or more by their step. `date` is unchanged.
+- **Button**: a button with the field's text, icon and colour; a click
+  on it, or Enter or Space on the selected cell, calls `@onButtonPress`
+  with the record (route by `fieldId`), or, without it, opens
+  `url(record)` in a new tab. A promise shows a spinner and ignores
+  presses until it settles; a rejection's message is the cell's error
+  until the next press. `disabled(record)` draws it disabled; with
+  neither a handler nor a `url` every button is disabled (and a warning
+  says so once). A press is not a change set and is not undoable. It
+  copies its text, so a copied range lines up. In the expanded record it
+  is a real button.
+- **Barcode**: the text in a monospace font. Typing or pasting writes it;
+  a USB or Bluetooth scanner types it like a keyboard and presses Enter,
+  so a column can be scanned row by row. Where the field can scan (its
+  own `scan`, for example a zxing wrapper, or the browser's
+  `BarcodeDetector`, in Chromium-based browsers on Android, ChromeOS and
+  macOS), the cell has a camera icon: it opens the editor with a scan
+  panel, which reads the rear camera until a code decodes and saves it;
+  Cancel or Escape stop the camera. The camera needs a secure page and
+  the user's permission. The symbology is not stored.
 - **Long text**: the lines, clamped to the row height. The editor is a
   text area that starts at the cell, at least 240 px wide, and grows with
   its lines (up to 240 px, then it scrolls). Shift+Enter or Alt+Enter adds
@@ -941,7 +1094,9 @@ default the whole text is one part and its value is the cell's value.
 | Enter, F2, double-click | Opens the editor on the current value (a date: the browser's date input) | Enter saves and goes down |
 | Tab, Shift+Tab | Tab moves focus out of the grid, to the next element on the page | Save and go right / left |
 | Escape | Ends the dashed mark of a copy; collapses a range to the active cell | Closes without saving |
-| Space | Toggles a checkbox; elsewhere expands the record | Types |
+| Space | Toggles a checkbox; presses a button; elsewhere expands the record | Types |
+| Enter, Space on a button cell | Presses it (no editor) | |
+| Alt+Shift+ArrowUp, Alt+Shift+ArrowDown (on a row number, or with whole rows selected) | With `@canMove`: moves the rows one record up or down | |
 | A digit | Sets a rating | |
 | Shift+Enter | Adds a record below and goes to it (without inserting: as Enter) | Saves and goes down; in long text, adds a line (also Alt+Enter) |
 | Shift+F10, ContextMenu | Opens the row menu | |
@@ -955,7 +1110,8 @@ default the whole text is one part and its value is the cell's value.
 
 Ctrl/Cmd+/ on a cell, a row number or a header opens the shortcut list:
 every key of this table, by section, without the rows of features that
-are off (`@readOnly`, `@canInsert`, row numbers, column drag). Escape
+are off (`@readOnly`, `@canInsert`, row numbers, column drag,
+`@canMove`). Escape
 closes it and focus goes back to the cell. Its texts are messages
 (`euiSheet.shortcuts`, `euiSheet.shortcutFillDown`, key names such as
 `euiSheet.shortcutKeyEnter`), so `@messages` and `eui-i18n` translate it.
@@ -1039,8 +1195,16 @@ fills every selected cell. Otherwise the block is pasted once.
 ## Touch
 
 On a phone or a tablet, a tap selects a cell and a tap on the selected
-cell edits it. A drag scrolls; there is no range selection by touch yet,
-but row numbers, column titles and Ctrl/Cmd+A still select. A long
+cell edits it. A drag scrolls. After a tap the selected cell has two
+round handles, at its top-left and bottom-right corners (as in Google
+Sheets): drag the bottom-right one to extend the range, the top-left one
+to move its other corner; near the grid's edges the drag scrolls. A
+handle hides while its corner is scrolled out of view or under the
+frozen fields, and the handles never show after a mouse press (a hybrid
+device). Row numbers, column titles and Ctrl/Cmd+A still select too. A
+long press on a range opens the menu with Copy and Paste (the
+clipboard's text over the range; the browser may ask for permission).
+A long
 press on a cell or a row number opens the row menu (Android Chrome fires
 its own context menu event; on iOS Safari the sheet's 500 ms timer opens
 it; a press that moves more than 10 px is a scroll). The ▾ and calendar
@@ -1048,7 +1212,9 @@ buttons, the row checkbox and the expand icon are always shown on touch
 screens, with larger touch areas. With `@editIn` at its default, a sheet
 narrower than 600 px on a touch screen edits in the expanded record,
 with the tapped field's editor open. The fill handle is not shown on
-touch screens. None of this was tried on a real phone yet.
+touch screens (the selection handles take its place). None of this was
+tried on a real phone yet: the handles were checked with synthetic touch
+events and Chromium's touch emulation only.
 
 ## IME and dead keys
 
@@ -1088,14 +1254,26 @@ value.
 
 These are not in yet:
 
-- Selecting a range by touch (a drag scrolls).
-- A group-by in EmberSearchUi's own state: today the connector forwards
-  your groups and your handlers write them with `setExtension` (Group
-  by). Sorting, filtering, search, paging and grouping are not "not
-  yet": they are the owner's (above, and the EmberSearchUi connector),
-  and the sheet draws them.
-- Dragging a record into another group (row drag is planned).
-- Upload progress (an uploading cell only shows as pending).
+- Dragging rows and columns by touch (a touch drag scrolls; the keys,
+  the header menu's "Move left/right" and `api.moveRecords` work on a
+  phone).
+- Managing fields inside the expanded record, and reordering a select's
+  options in the field editor.
+- On group headers: checkboxes, collapsing without the owner's
+  `@onGroupToggle`, taller headers, a colour per level.
+- A group-by in EmberSearchUi's own state (its driver and memory
+  backend): today the connector forwards your groups and your handlers
+  write them with `setExtension` (Group by). Sorting, filtering, search,
+  paging and grouping are not "not yet": they are the owner's (above,
+  and the EmberSearchUi connector), and the sheet draws them.
+- Date and time values without a zone ("floating" times).
+- A tint of the whole row (`@rowColor` draws a bar).
+- Undo of field operations (adding, editing or deleting a field).
+- From v0.2: dead keys and IMEs in the expanded record's boxes,
+  re-measuring the fill handle on a window resize, a keyboard way to
+  choose copy over series in a fill, a cell larger than the visible body,
+  one `@onResolve` answer per text, and a message when `maxFiles` drops
+  files; and the checks on a Mac and on real phones.
 
 Out of scope: formulas, rollups and lookups, comments, co-editing, and
 other kinds of views (calendar, kanban, gallery).

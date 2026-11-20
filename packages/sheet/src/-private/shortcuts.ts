@@ -12,6 +12,8 @@ export interface ShortcutContext {
   canInsert: boolean;
   rowNumbers: boolean;
   fieldDrag: boolean;
+  /** Row drag (`@canMove`, V03 10.1). */
+  canMove?: boolean;
 }
 
 /** Messages without parameters: every text of the list. */
@@ -126,6 +128,14 @@ export const SHORTCUT_SECTIONS: readonly ShortcutSection[] = [
         keys: [['Space']],
         message: 'shortcutMoveField',
         when: (context) => context.fieldDrag
+      },
+      {
+        keys: [
+          ['Alt', 'Shift', '↑'],
+          ['Alt', 'Shift', '↓']
+        ],
+        message: 'shortcutMoveRecords',
+        when: (context) => !!context.canMove
       }
     ]
   },

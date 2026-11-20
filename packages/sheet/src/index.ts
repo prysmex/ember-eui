@@ -10,9 +10,13 @@ export { LocalRecords, localRecords } from './local-records.ts';
 export type { LocalRecordsOptions } from './local-records.ts';
 export {
   attachmentType,
+  barcodeType,
   builtInSheetFieldTypes,
+  buttonType,
+  colorByOption,
   checkboxType,
   currencyType,
+  dateTimeType,
   dateType,
   durationType,
   emailType,
@@ -34,6 +38,7 @@ export type {
   EuiSheetSignature,
   SheetApi,
   SheetBlockApi,
+  SheetButtonPress,
   SheetCellSignature,
   SheetEditorRect,
   SheetEditorResult,
@@ -42,6 +47,8 @@ export type {
   SheetFieldEditorType,
   SheetFieldOptionsSignature,
   SheetRowAction,
+  SheetRowColor,
   SheetRowHeight,
+  SheetSelection,
   SheetSort
 } from './types.ts';

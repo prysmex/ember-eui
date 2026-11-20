@@ -207,6 +207,7 @@ li:has([data-test-subj^="euiSheetEditField-"]), li:has([data-test-subj^="euiShee
 .euiSheet__attachments { outline: none; }
 .euiSheet__attachment { display: flex; align-items: center; gap: 8px; padding: 2px 0 6px; }
 .euiSheet__attachmentName { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--euiSheet-link, #0B64DD); }
+.euiSheet__uploadProgress, .euiSheetRecord__uploadProgress { margin: 4px 0; }
 .euiSheet__attachmentError { margin-top: 4px; font-size: 12px; line-height: 16px; color: var(--euiSheet-textDanger, #BD271E); }
 .euiSheetRecord__box--withLink { display: inline-block; width: calc(100% - 36px); vertical-align: top; }
 .euiSheetRecord__openLink { margin-left: 4px; vertical-align: top; }
@@ -242,8 +243,62 @@ li:has([data-test-subj^="euiSheetEditField-"]), li:has([data-test-subj^="euiShee
 .euiSheet__groupTitle[data-eui-sheet-group-toggle] { cursor: pointer; }
 .euiSheet__groupTitle[data-eui-sheet-group-toggle]:hover { text-decoration: underline; }
 .euiSheet__groupSummary { display: block; width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; text-align: end; color: var(--euiSheet-textSubdued, #69707D); }
+/* row colours (V03 10.2): a 4 px bar at the row's left edge, kept with the cell's own inset shadows */
+.euiSheet .euiDataGridRowCell.euiSheet__rowColor { box-shadow: inset 4px 0 0 var(--euiSheetRowColor); }
+.euiSheet .euiDataGridRowCell.euiSheet__rowColor.euiSheet__rowCell--selected, .euiSheet .euiDataGridRow:hover .euiDataGridRowCell.euiSheet__rowColor.euiSheet__rowCell--selected { box-shadow: inset 4px 0 0 var(--euiSheetRowColor), inset -3px 0 0 var(--euiSheet-primary, #0B64DD); }
+.euiSheet .euiDataGridRowCell.euiSheet__rowColor.euiSheet__cell--invalid { box-shadow: inset 4px 0 0 var(--euiSheetRowColor), inset 0 0 0 1px var(--euiSheet-danger, #BD271E); }
+.euiSheet--scrolledX .euiDataGridRowCell.euiSheet__rowColor.euiSheet__frozenEdge { box-shadow: inset 4px 0 0 var(--euiSheetRowColor), 4px 0 4px -2px var(--euiSheet-shadow, rgba(0, 0, 0, 0.2)); }
+.euiSheet__rowColor--primary { --euiSheetRowColor: var(--euiSheet-rowPrimary, #0B64DD); }
+.euiSheet__rowColor--accent { --euiSheetRowColor: var(--euiSheet-rowAccent, #BC1E70); }
+.euiSheet__rowColor--success { --euiSheetRowColor: var(--euiSheet-rowSuccess, #008A5E); }
+.euiSheet__rowColor--warning { --euiSheetRowColor: var(--euiSheet-rowWarning, #FACB3D); }
+.euiSheet__rowColor--danger { --euiSheetRowColor: var(--euiSheet-rowDanger, #BD271E); }
+.euiSheet__rowColor--neutral { --euiSheetRowColor: var(--euiSheet-rowNeutral, #69707D); }
+/* button cells (V03 10.3.1): an EuiButtonEmpty-like span; the sheet presses it */
+.euiSheet__button { display: inline-flex; align-items: center; gap: 4px; max-width: 100%; box-sizing: border-box; padding: 0 6px; border-radius: 4px; color: var(--euiSheet-link, #0B64DD); font-weight: 500; line-height: 22px; cursor: pointer; white-space: nowrap; }
+.euiSheet__button:hover { background-color: var(--euiSheet-selected, rgba(11, 100, 221, 0.12)); text-decoration: underline; }
+.euiSheet__buttonText { overflow: hidden; text-overflow: ellipsis; }
+.euiSheet__button--success { color: var(--euiSheet-textSuccess, #00805B); }
+.euiSheet__button--warning { color: var(--euiSheet-star, #8A6A0A); }
+.euiSheet__button--danger { color: var(--euiSheet-textDanger, #BD271E); }
+.euiSheet__button--text { color: var(--euiSheet-text, #343741); }
+.euiSheet__button.euiSheet__button--disabled { color: var(--euiSheet-textSubdued, #69707D); cursor: default; opacity: 0.6; }
+.euiSheet__button.euiSheet__button--disabled:hover { background-color: transparent; text-decoration: none; }
+.euiSheet__button[aria-busy] { cursor: progress; }
+/* barcode cells and the scan panel (V03 10.3.2) */
+.euiSheet__barcode { display: inline-flex; align-items: center; gap: 6px; max-width: 100%; }
+.euiSheet__barcodeMark { flex: none; width: 12px; height: 12px; opacity: 0.7; background: repeating-linear-gradient(90deg, currentColor 0 1px, transparent 1px 2px, currentColor 2px 4px, transparent 4px 5px); }
+.euiSheet__barcodeText { overflow: hidden; text-overflow: ellipsis; font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
+.euiSheet__barcodeEditor { position: relative; height: 100%; }
+.euiSheet__barcodeEditor .euiSheet__input { padding-right: 28px; }
+.euiSheet__scanButton { position: absolute; top: 50%; right: 4px; transform: translateY(-50%); }
+.euiSheet__scan { position: absolute; top: 100%; left: 0; z-index: 3; box-sizing: border-box; display: flex; flex-direction: column; gap: 6px; width: max(100%, 260px); margin-top: 4px; padding: 8px; border: 1px solid var(--euiSheet-border, #D3DAE6); border-radius: 6px; background: var(--euiSheet-plain, #FFF); color: var(--euiSheet-text, #343741); box-shadow: 0 4px 12px var(--euiSheet-elevation, rgba(0, 0, 0, 0.25)); }
+.euiSheet__scanTitle { font-weight: 600; }
+.euiSheet__scanVideo { width: 100%; max-height: 180px; border-radius: 4px; background: var(--euiSheet-subdued, #F7F8FC); object-fit: cover; }
+.euiSheet__scanVideo.euiSheet__scanVideo--off { display: none; }
+.euiSheet__scanError { color: var(--euiSheet-textDanger, #BD271E); }
+/* row drag (V03 10.1): the grip, the moved rows, the insertion line */
+.euiSheet__rowGrip { display: inline-flex; flex: none; margin-right: 2px; color: var(--euiSheet-textSubdued, #69707D); cursor: grab; visibility: hidden; }
+.euiSheet .euiDataGridRow:hover .euiSheet__rowGrip, .euiSheet__rowCell:focus .euiSheet__rowGrip, .euiSheet--rowDragging .euiSheet__rowCell--moving .euiSheet__rowGrip { visibility: visible; }
+.euiSheet__rowGrip:hover { color: var(--euiSheet-primary, #0B64DD); }
+.euiSheet .euiDataGridRowCell.euiSheet__rowCell--moving [data-datagrid-cellcontent] { opacity: 0.45; }
+.euiSheet--rowDragging, .euiSheet--rowDragging * { cursor: grabbing !important; }
+.euiSheet--rowDragBlocked, .euiSheet--rowDragBlocked * { cursor: not-allowed !important; }
+.euiSheet__dropLine { position: absolute; z-index: 5; box-sizing: border-box; height: 2px; margin-top: -1px; background: var(--euiSheet-primary, #0B64DD); pointer-events: none; }
+.euiSheet__dropLine.euiSheet__dropLine--box { margin-top: 0; background: transparent; border: 2px solid var(--euiSheet-primary, #0B64DD); }
+.euiSheet__dropLine.euiSheet__dropLine--blocked { background: var(--euiSheet-danger, #BD271E); }
+.euiSheet__dropLine.euiSheet__dropLine--box.euiSheet__dropLine--blocked { background: transparent; border-color: var(--euiSheet-danger, #BD271E); }
+/* the current search match (V03 11.1): a 2 px ring inside the cell, over @highlight's marks and the cell's own shadows (not its focus ring's outline) */
+.euiSheet .euiDataGrid .euiDataGridRow .euiDataGridRowCell.euiSheet__cell--match::after { content: ''; position: absolute; inset: 0; z-index: 1; border: 0; box-shadow: inset 0 0 0 2px var(--euiSheet-match, #FACB3D); pointer-events: none; }
+/* an upload's progress (V03 11.4): a 2 px bar along the pending cell's bottom edge */
+.euiSheet .euiDataGrid .euiDataGridRow .euiDataGridRowCell.euiSheet__cellProgress::before { content: ''; position: absolute; left: 0; bottom: 0; z-index: 1; width: var(--euiSheetProgress, 0%); height: 2px; background: var(--euiSheet-primary, #0B64DD); pointer-events: none; }
+/* the touch selection handles (V03 11.3): a 20 px circle in a 44 px hit area, above the fill handle; they let the pointer through while one is dragged (elementFromPoint finds the cell) */
+.euiSheet__selectionHandle { position: absolute; z-index: 5; width: 44px; height: 44px; touch-action: none; -webkit-touch-callout: none; user-select: none; -webkit-user-select: none; }
+.euiSheet__selectionHandle::before { content: ''; position: absolute; top: 12px; left: 12px; box-sizing: border-box; width: 20px; height: 20px; border: 2px solid var(--euiSheet-plain, #FFF); border-radius: 50%; background: var(--euiSheet-primary, #0B64DD); box-shadow: 0 1px 3px var(--euiSheet-shadow, rgba(0, 0, 0, 0.2)); }
+.euiSheet--handleDragging .euiSheet__selectionHandle { pointer-events: none; }
 @media (pointer: coarse) { .euiSheet__fillHandle { display: none; } }
 @media (hover: none) {
+  .euiSheet__rowGrip { visibility: visible; }
   .euiSheet__opener, .euiSheet__rowExpand { visibility: visible; }
   .euiSheet__rowCheck { display: inline-block; }
   .euiSheet__opener::after, .euiSheet__rowExpand::after, .euiSheet__rowCheck::before { content: ''; position: absolute; top: 50%; left: 50%; width: 32px; height: 32px; transform: translate(-50%, -50%); }

@@ -153,31 +153,6 @@ one ("Hide column" hides, "Move" or a header drag moves). The first field
 cannot be hidden or moved. `@fieldDrag={{false}}` turns the header drag
 off; `@headerLines={{2}}` lets long labels wrap.
 
-"Fit to content" in a column's header menu, a double-click on its resize
-edge, `api.fitField(fieldId)` or `api.fitFields()` size columns to their
-header and their widest loaded cell (the first 2,000 records), between 80
-and 480 px; the width goes out as a resize's (`@onFieldWidthChange`, or
-the sheet keeps it). A type whose cell is not text gives
-`contentWidth(value, field, measure, context)`.
-
-Full screen is a toolbar button of yours: the block's `setFullScreen(on)`
-and `isFullScreen`. The sheet (toolbar, grid, footer) fills the window,
-`@height` is ignored, the page does not scroll, a fixed `EuiHeader` goes
-below it (as with the grid's own full screen); menus, editors, the
-expanded record and the shortcut list open above it. Escape on a cell
-ends it once nothing else uses the key (an editor, a menu, the copy mark
-and a range come first). Tab can leave the sheet: add your own focus trap
-if you need one.
-
-```hbs
-<:toolbar as |sheet|>
-  <EuiButtonEmpty
-    @iconType={{if sheet.isFullScreen 'fullScreenExit' 'fullScreen'}}
-    {{on 'click' (fn sheet.setFullScreen (if sheet.isFullScreen false true))}}
-  >{{if sheet.isFullScreen 'Exit full screen' 'Full screen'}}</EuiButtonEmpty>
-</:toolbar>
-```
-
 The summary bar shows `@summary`'s texts. Compute them from your backend,
 or over every record with `summarize(ctx, records, field, kind)` (`count`,
 `filled`, `empty`, `percentFilled`, `unique`, `sum`, `average`, `min`,
@@ -257,6 +232,26 @@ of the group (Shift+Enter, insert, duplicate), gets the group's values and
 build `@groups`; `EuiSheetSearch` forwards the four arguments. Grouping
 keeps column virtualization, so it costs about what an ungrouped sheet
 costs. The docs' "Group by" section has the contract.
+
+## Full screen
+
+Full screen is a toolbar button of yours: the block's `setFullScreen(on)`
+and `isFullScreen`. The sheet (toolbar, grid, footer) fills the window,
+`@height` is ignored, the page does not scroll, a fixed `EuiHeader` goes
+below it (as with the grid's own full screen); menus, editors, the
+expanded record and the shortcut list open above it. Escape on a cell
+ends it once nothing else uses the key (an editor, a menu, the copy mark
+and a range come first). Tab can leave the sheet: add your own focus trap
+if you need one.
+
+```hbs
+<:toolbar as |sheet|>
+  <EuiButtonEmpty
+    @iconType={{if sheet.isFullScreen 'fullScreenExit' 'fullScreen'}}
+    {{on 'click' (fn sheet.setFullScreen (if sheet.isFullScreen false true))}}
+  >{{if sheet.isFullScreen 'Exit full screen' 'Full screen'}}</EuiButtonEmpty>
+</:toolbar>
+```
 
 ## EmberSearchUi
 
@@ -517,6 +512,14 @@ with what could not convert in `rejected` (`localRecords.updateField`
 applies it). Field changes are not on the sheet's undo stack; a deleted or
 retyped field's edits are dropped from it. A type names itself in the
 editor with `label` and adds its options form with `fieldOptions`.
+
+The header menu (also called the column menu) has "Fit to content" on
+every field that has a menu. It, a double-click on a column's resize
+edge, `api.fitField(fieldId)` and `api.fitFields()` size columns to
+their header and their widest loaded cell (the first 2,000 records),
+between 80 and 480 px; the width goes out as a resize's
+(`@onFieldWidthChange`, or the sheet keeps it). A type whose cell is not
+text gives `contentWidth(value, field, measure, context)`.
 
 `@fieldActions` adds your items to every visible field's header menu,
 before "Delete field"; `onSelect(field)` runs once the menu has closed and

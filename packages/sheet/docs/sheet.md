@@ -486,9 +486,9 @@ fills the window, the grid takes the room between the toolbar and the
 footer (`@height` is ignored meanwhile) and the page behind does not
 scroll. It does what the grid's own full screen does: it sits just
 below EUI's header level, so flyouts, modals and toasts stay above it,
-a fixed `EuiHeader` goes below it meanwhile and flyouts start at the
-window's top; the sheet's menus, editors, the expanded record and the
-shortcut list open above it as usual. A fixed header of your own (not
+and a fixed `EuiHeader` goes below it meanwhile; the sheet's menus,
+editors, the expanded record and the shortcut list open above it as
+usual. A fixed header of your own (not
 `EuiHeader`) with a z-index of 998 or more covers it. The
 focused cell, the selection and the scroll stay.
 
@@ -960,7 +960,9 @@ no local fallback: fields are your data model). A bare app passes
   empty: a click there selects the row's last field, and ArrowRight and
   End stop at the last field.
 - **The column menu** has Edit field, Duplicate field, Insert left,
-  Insert right and Delete field (last, in red). Nothing is inserted to
+  Insert right and Delete field (last, in red), after "Fit to content"
+  (Presentation state, above) and with your `@fieldActions` just before
+  Delete. Nothing is inserted to
   the left of the first field and the first field cannot be deleted (it
   stays first). Duplicate calls `@onFieldCreate` at once, with the
   field's draft, the label "Name copy", the next index and `copyOf`: you

@@ -267,7 +267,8 @@ its body class, the `<:recordFooter>` pass-through, one listener).
   measures passed in), `textMeasure(font)` (one canvas), and
   `resizerColumnId(target)`. The width is the larger of the header label
   plus its chrome (padding, border, the sort arrow when shown, and the
-  room of the drag icon and menu button, which collapse until hover) and
+  room of the drag icon and menu button, which collapse until hover or
+  focus, with the 2 px gap each gets when it shows) and
   the widest of the first 2,000 loaded cells plus the cell's padding (and
   28 px for a type with an opener), clamped to 80-480 px; the fonts and
   paddings are read from a rendered header and cell at the moment of the
@@ -356,7 +357,8 @@ the polish tests' RF1-RF2), so the record footer's are **RFT**.
   through enter and exit; **FS7** the header menu, the field editor and
   the shortcut list on top, Escape in the header menu closes only it;
   **FS8** a fixed `EuiHeader` below the sheet, the toolbar on top, the
-  record's flyout at the top, all undone on exit.
+  record's flyout at the top (in the test; on the site it starts 49 px
+  down, below), all undone on exit.
 - `eui-sheet-field-actions-test.gts`: **FA1** on every field (the first
   field gets a menu from it), `onSelect` with that field; **FA2**
   `isDisabled` per field; **FA3** order, before "Delete field", Delete
@@ -375,8 +377,13 @@ the polish tests' RF1-RF2), so the record footer's are **RFT**.
   order; **CN3** a tab, a line break and a quote in labels are quoted;
   **CN4** without the argument the menu is as before.
 
-Suite per commit (each a full run on that commit's tree, the other
-batch A work set aside): 602, 609, 614, 620, 624, 625, all passing. In
+Suite per commit (a full run on a build of that commit's code, the other
+batch A work set aside): 602, 609, 614, 620, 624, 625, 625, all passing.
+For 01, 02 and 04 the full run was on the build before a lint and
+format tidy (01: `grid-columns.ts` reformatted and a `settled()` dropped
+from FW3; 02: a type-only import in the FS test; 04: a `settled()`
+dropped from RFT3); after the tidy only that feature's module was
+rebuilt and rerun (FW 10/10, FS 7/7, RFT 6/6), not the whole suite. In
 the run for 03, FS1 failed once (the grid's body still 200 px one frame
 after the toggle: the grid measures in a resize observer) and passed
 alone; it now waits for the measure (in the 03 commit), and the next
@@ -437,12 +444,17 @@ runs passed.
    `euiDataGridFullScreenStyles`), found with real input: the docs
    site's fixed `EuiHeader` (z-index 1001) covered the toolbar and the
    exit button. The design took that to be the grid's own behaviour; the
-   grid's own lowers a fixed EUI header to 997 and moves flyouts to the
-   top. A separate commit after 05; FS8.
+   grid's own lowers a fixed EUI header to 997 and is meant to move
+   flyouts to the top (on the site a flyout's own inline offset still
+   wins; the docs promise only the header). A separate commit after 05; FS8.
 8. **Escape that ends full screen is the sheet's, on a cell** (`keys.ts`,
    the fall-through after the range collapse), not a bubbling listener
    on the wrapper: a header, the toolbar and app controls keep Escape.
-9. Smaller: `contentWidth` takes a fourth `context` argument (a select
+9. **Escape during a fill-handle drag or a row drag** is unaffected by
+   step 5: both listen on `document` in the capture phase and stop the
+   event, so it never reaches the cell's handler (checked in the code,
+   `filling.ts` and `row-drag.ts`; not tested in full screen).
+10. Smaller: `contentWidth` takes a fourth `context` argument (a select
    needs the record for its options); singleSelect has one too (FW6
    needs the chip's padding); chips count three and "+N" as the cells
    do; the 8 px padding of the full-screen wrapper; `fitAllFields` is
@@ -471,6 +483,15 @@ the header fix. No page errors, no console errors.
   at the resizer's box centre (8 px right of the edge) hit the next
   header and fitted nothing: that is the core's hit area, not the
   feature.
+- **"Fit all fields"** (`api.fitFields()` from d24's toolbar; a second
+  run, on a fresh page): Item 120 → 84, Site 110 → 292, Notes 120 →
+  397, Quantity on hand 90 → 171 (its header was cut before), Unit cost
+  90 → 115, Audited 90 → 107; no rendered cell cut, no chip over its
+  opener, no header label cut, also while hovering Quantity on hand,
+  Unit cost, Audited and Item (Audited's cells were scrolled out of the
+  rendered columns, so only its header was checked). The first version
+  of this run found the hover cut: 3 px on each hovered label (the 2 px
+  gaps, above); fixed in `4cdd90a`, then this run.
 - **`@fieldActions`:** Quantity's menu: Hide column, Move left, Move
   right, Fit to content, Edit field, Duplicate field, Insert left, Insert
   right, Summarize, Delete field. "Summarize" wrote "Quantity on hand:
@@ -516,7 +537,14 @@ the header fix. No page errors, no console errors.
 ### Open items
 
 - **Deviation 2 is the user's decision** (on by default would edit
-  rows-test RW and VP1).
+  rows-test RW and VP1). So are deviations 3 and 4, which change v0.3
+  behaviour: a bare sheet's kept width over a given one, and no
+  `@onFieldWidthChange` for a press that moves nothing.
+- **The EmberSearchUi connector** (`EuiSheetSearch`) forwards none of
+  `@fullScreen`, `@onFullScreenChange`, `@fieldActions`,
+  `@copyWithFieldNames` or `<:recordFooter>` (as `@onVisibleRangeChange`
+  in batch D). Its toolbar block passes the sheet's block API on, so a
+  full-screen button there works with the local state.
 - **Fitting measures loaded records only** (the first 2,000), at the
   moment of the fit; a font that loads later is not re-measured.
 - **The resize edge's hit area is 3 px** (the core's style gives the
@@ -528,7 +556,9 @@ the header fix. No page errors, no console errors.
   still covers the full-screen sheet (the docs say so).
 - **Not verified:** a touch device, Firefox, Safari, dark mode, a screen
   reader; `@fieldActions` with a real app dialog (only a focus move was
-  tested); fitting with `@frozenFields` (the frozen layout follows a new
+  tested); the header's hover state in a test (CSS `:hover` cannot be
+  driven in the runner, so the hover-gap fix below is checked by real
+  input only); fitting with `@frozenFields` (the frozen layout follows a new
   width, as a drag-resize, but no test fits a frozen field); the suite
   ran once per commit (no repeat runs).
 
@@ -563,7 +593,13 @@ the header fix. No page errors, no console errors.
 | `0083c8f` | 04 `<:recordFooter>` | 620 / 620 |
 | `f59491c` | 05 copy with field names | 624 / 624 |
 | `10a0121` | full screen puts a fixed EUI header below it (FS8) | 625 / 625 |
-| the docs commit | docs, d24, d25, these results | (no code; 625 carried over) |
+| `129cfa6` | docs, d24, d25, these results | (no code; 625 carried over) |
+| `4cdd90a` | a fit leaves room for the header's 2 px hover gaps | 625 / 625 |
+| the last docs commit | docs corrections (README "Full screen" section, "Fit to content" in the menu lists, no promise about flyouts' top), these results corrected | (no code) |
 
-`3979f3d` (the readiness plan, `internal/spikes/sheet/READINESS.md`) sits
-between `55f8f4c` and `5ebb56d`: the main session's, not this batch's.
+Two commits in this range are the main session's, not this batch's:
+`fdd07dc` (the import screen's design, `v04/10-import-screen.md`, and
+`v04/README.md`: feature 10, batch E, the user's decisions 5 and 6;
+nothing of batch A changed) before `fa2dc2b`, and `3979f3d` (the
+readiness plan, `internal/spikes/sheet/READINESS.md`) between `55f8f4c`
+and `5ebb56d`.

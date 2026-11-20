@@ -91,7 +91,7 @@ export default class SheetRowMenu<T extends object> {
   onDocumentMouseDown = (event: MouseEvent): void => {
     if (this.sheet.dom.isInMenu(event.target)) return;
     // the mouse events a browser sends after the long press that opened it
-    if (this.sheet.longPressOpened) return;
+    if (this.sheet.touch.longPressOpened) return;
     this.closeMenu(false);
   };
 
@@ -245,11 +245,11 @@ export default class SheetRowMenu<T extends object> {
     const target = event.target as Element;
     // the ContextMenu key's own event, once focus is in the menu: not the
     // browser's menu over it; and a long press that already opened it
-    if (this.sheet.dom.isInMenu(target) || this.sheet.longPressOpened) {
+    if (this.sheet.dom.isInMenu(target) || this.sheet.touch.longPressOpened) {
       event.preventDefault();
       return;
     }
-    this.sheet.cancelLongPress();
+    this.sheet.touch.cancelLongPress();
     // a header's menu is a popover that closes on a press outside it: where
     // the browser fires contextmenu on the press (Linux, macOS), the release
     // that follows would close it at once, so it opens after the release

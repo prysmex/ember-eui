@@ -84,15 +84,15 @@ export default class SheetLayer extends Component<SheetLayerSignature> {
         data-eui-sheet-layer={{@sheet.sheetId}}
         {{copyOverrides @sheet.wrapper}}
         {{on "keydown" @sheet.onKeyDown capture=true}}
-        {{on "mousedown" @sheet.onMouseDown capture=true}}
-        {{on "pointerdown" @sheet.onPointerDown capture=true}}
-        {{on "pointermove" @sheet.onPointerMove}}
-        {{on "pointerup" @sheet.onPointerEnd}}
-        {{on "pointercancel" @sheet.onPointerEnd}}
-        {{on "click" @sheet.onClickCapture capture=true}}
+        {{on "mousedown" @sheet.drag.onMouseDown capture=true}}
+        {{on "pointerdown" @sheet.touch.onPointerDown capture=true}}
+        {{on "pointermove" @sheet.touch.onPointerMove}}
+        {{on "pointerup" @sheet.touch.onPointerEnd}}
+        {{on "pointercancel" @sheet.touch.onPointerEnd}}
+        {{on "click" @sheet.touch.onClickCapture capture=true}}
         {{on "focusin" @sheet.focus.onFocusIn}}
         {{on "focusout" @sheet.focus.onFocusOut}}
-        {{on "click" @sheet.onClick}}
+        {{on "click" @sheet.clicks.onClick}}
         {{on "contextmenu" @sheet.rowMenu.onContextMenu}}
       >
         {{yield}}

@@ -39,7 +39,7 @@ export default class FillHandle extends Component<FillHandleSignature> {
       // after the grid rendered the cells of this render
       schedule('afterRender', () => {
         if (this.isDestroying || this.isDestroyed) return;
-        this.args.sheet.placeFillHandle(element, range);
+        this.args.sheet.filling.placeFillHandle(element, range);
       });
     }
   );

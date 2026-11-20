@@ -9,9 +9,8 @@ import Component from '@glimmer/component';
 import { cached, tracked } from '@glimmer/tracking';
 import { action } from '@ember/object';
 import { on } from '@ember/modifier';
-import { isDestroying } from '@ember/destroyable';
 import { guidFor } from '@ember/object/internals';
-import { cancel, later } from '@ember/runloop';
+import { cancel } from '@ember/runloop';
 import { service } from '@ember/service';
 import { modifier } from 'ember-modifier';
 
@@ -29,9 +28,6 @@ import {
   commitValue,
   createMessages,
   edgeTarget,
-  fillDown,
-  fillRange,
-  fillRight,
   isReadOnly,
   parseTsv,
   pasteMatrix,
@@ -43,7 +39,6 @@ import {
 } from '../core/index.ts';
 import type { PasteInsert } from '../core/index.ts';
 import { builtInSheetFieldTypes } from '../field-types.ts';
-import AutoScroll from '../-private/auto-scroll.ts';
 import FieldEditor from '../-private/field-editor.gts';
 import FillHandle from '../-private/fill-handle.gts';
 import ImeCatcher from '../-private/ime-catcher.gts';
@@ -67,7 +62,6 @@ import {
   clamp,
   nextTempId,
   samePos,
-  sameRange,
   stop
 } from '../-private/sheet/util.ts';
 import SheetFields from '../-private/sheet/fields.ts';
@@ -96,6 +90,10 @@ import SheetExpanded from '../-private/sheet/expanded.ts';
 import SheetFieldEditor from '../-private/sheet/field-editor.ts';
 import SheetRowMenu from '../-private/sheet/row-menu.ts';
 import SheetFollow from '../-private/sheet/follow.ts';
+import SheetDrag from '../-private/sheet/drag.ts';
+import SheetTouch from '../-private/sheet/touch.ts';
+import SheetClicks from '../-private/sheet/clicks.ts';
+import SheetFilling from '../-private/sheet/filling.ts';
 
 import type { Pos, Range, SheetContext, SheetMessages } from '../core/index.ts';
 import type { ShortcutContext } from '../-private/shortcuts.ts';
@@ -142,14 +140,6 @@ function startsComposition(event: KeyboardEvent): boolean {
     event.isComposing
   );
 }
-
-/** A long press on a touch screen opens the row menu (8.5). */
-const LONG_PRESS_MS = 500;
-/** A touch that moves farther than this is a scroll, not a long press. */
-const LONG_PRESS_SLOP = 10;
-
-/** The fill handle's drawn size in px: a 10 px square and its 2 px ring (`styles.ts`). */
-const FILL_HANDLE_SIZE = 14;
 
 /** Ctrl/Cmd+/ (V03 5.5; D11: not `?`). Shift allowed: `/` is Shift+7 on Spanish layouts. */
 function isShortcutListKey(event: KeyboardEvent): boolean {
@@ -231,45 +221,16 @@ export default class EuiSheet<T extends object> extends Component<
   readonly fieldEditor = new SheetFieldEditor<T>(this);
   readonly rowMenu = new SheetRowMenu<T>(this);
   readonly follow = new SheetFollow<T>(this);
-  /** A drag over other cells is selecting a range (no text selection meanwhile). */
-  @tracked dragging = false;
+  readonly drag = new SheetDrag<T>(this);
+  readonly touch = new SheetTouch<T>(this);
+  readonly clicks = new SheetClicks<T>(this);
+  readonly filling = new SheetFilling<T>(this);
   /** The shortcut list is open (V03 5.5). */
   @tracked shortcutsOpen = false;
-
-  /* Batch 6: fill handle, auto-scroll, touch, composition (V02-DESIGN.md 8.4-8.6) */
-  /** A fill drag: the range it fills from, and the range it fills now (the preview). */
-  fillSource: Range | null = null;
-  @tracked fillTarget: Range | null = null;
-  /** The last pointer position of a drag, in viewport px. */
-  dragPointer: { x: number; y: number } | null = null;
-  /** The drags' auto-scroll loop. */
-  autoScroll = new AutoScroll({
-    bounds: () => this.scroll.scrollBounds(),
-    scrollBy: (dx, dy) => this.scroll.scrollGridBy(dx, dy),
-    onFrame: (x, y) => this.dragTo(x, y)
-  });
-  /** `pointerType` of the last press: touch presses do not drag a range. */
-  lastPointerType = 'mouse';
-  /** A touch long press in progress (its timer and where it started). */
-  longPress: {
-    timer: ReturnType<typeof later>;
-    x: number;
-    y: number;
-    target: Element;
-  } | null = null;
-  /** A long press opened the menu: the click (and contextmenu) that follow are its own. */
-  longPressOpened = false;
-  /** What a drag selects: cells, or rows (a press on a row number). */
-  dragKind: 'cells' | 'rows' = 'cells';
 
   /** The grid's API (not the sheet's: that is `sheetApi`). */
   gridApi: EuiDataGridRefProps | null = null;
   wrapper: HTMLElement | null = null;
-
-  /** The cell a left-button press started on, while it may become a drag. */
-  dragFrom: Pos | null = null;
-  /** The press ended a drag: its click is not a click on a cell. */
-  suppressClick = false;
 
   /** Stable object: the grid passes it to every cell renderer. */
   cellContext = { sheet: this as unknown as EuiSheet<object> };
@@ -308,10 +269,10 @@ export default class EuiSheet<T extends object> extends Component<
     if (this.validate.validateTimer) cancel(this.validate.validateTimer);
     this.validate.validateController?.abort();
     this.validate.endValidateWaiter();
-    this.stopWatchingRelease();
-    this.stopFillDrag();
-    this.autoScroll.stop();
-    this.cancelLongPress();
+    this.drag.stopWatchingRelease();
+    this.filling.stopFillDrag();
+    this.drag.autoScroll.stop();
+    this.touch.cancelLongPress();
     document.removeEventListener(
       'mousedown',
       this.rowMenu.onDocumentMouseDown,
@@ -454,687 +415,6 @@ export default class EuiSheet<T extends object> extends Component<
         }
       )
     );
-  }
-
-  /** The press started on the cell that already had focus (a second click edits). */
-  pressOnFocusedCell = false;
-
-  @action
-  onMouseDown(event: MouseEvent): void {
-    // the compatibility mouse events of the long press that opened the menu
-    if (this.longPressOpened) return;
-    this.focus.extending = event.shiftKey;
-    this.frozen.noteScrollLeft();
-    this.frozen.pressing = true;
-    const target = event.target as Element;
-    // before the press moves focus: was this cell the focused one?
-    const cell = this.dom.dataCell(target);
-    this.pressOnFocusedCell = !!cell && cell === document.activeElement;
-    // the active cell stays focused through a range (V03 batch 1): a plain
-    // press on it collapses the range, as a press on another cell would,
-    // and is not a second click that edits
-    if (
-      this.pressOnFocusedCell &&
-      event.button === 0 &&
-      !event.shiftKey &&
-      this.selection.anchor &&
-      this.selection.head &&
-      !samePos(this.selection.anchor, this.selection.head)
-    ) {
-      this.pressOnFocusedCell = false;
-      const pos = this.dom.cursor(cell!);
-      this.selection.anchor = pos;
-      this.selection.head = pos;
-      this.selection.rangeKind = 'cells';
-    }
-    // a click after a drag that released outside the sheet never came
-    this.suppressClick = false;
-    this.endDrag();
-    if (this.rowMenu.menu && !this.dom.isInMenu(target))
-      this.rowMenu.closeMenu(false);
-
-    const rowCell = this.dom.rowNumberCell(target);
-    if (rowCell) {
-      // the range is the press's: focusin must not clear it
-      this.focus.keepRangeOnFocus = true;
-      const row = this.dom.rowIndexOf(rowCell);
-      // a group header keeps no range (V03 8.6), also after a press on
-      // its row number with a range elsewhere: a paste there writes nothing
-      if (this.rows.isGrouped && this.rows.rowKind(row) === 'group') {
-        this.focus.keepRangeOnFocus = false;
-      }
-      if (!this.rows.isRecordRow(row) || event.button !== 0) return;
-      // the checkbox and the expand icon are buttons, not a selection
-      if (
-        target.closest(
-          '[data-eui-sheet-row-check], [data-eui-sheet-row-expand]'
-        )
-      ) {
-        return;
-      }
-      this.selection.selectRows(row, event.shiftKey);
-      if (
-        !event.shiftKey &&
-        !this.edit.editing &&
-        this.lastPointerType !== 'touch'
-      ) {
-        this.dragFrom = { row, col: 0 };
-        this.dragKind = 'rows';
-        this.watchRelease();
-      }
-      return;
-    }
-
-    if (!cell) return;
-    const pos = this.dom.cursor(cell);
-    if (event.button === 2) {
-      // a right-click inside the range keeps it for the menu
-      this.focus.keepRangeOnFocus = this.selection.isSelected(pos.row, pos.col);
-      return;
-    }
-    // Shift+click extends the range; focus stays on the active cell (the
-    // anchor), so the press must not move it (V03 batch 1)
-    if (
-      event.button === 0 &&
-      event.shiftKey &&
-      !this.edit.editing &&
-      this.selection.rangeKind === 'cells' &&
-      this.rows.isRecordRow(pos.row) &&
-      this.dom.dataCell(document.activeElement)
-    ) {
-      event.preventDefault();
-      this.selection.extendHead(pos);
-      return;
-    }
-    // a press that may become a drag (Shift+click extends instead)
-    // (a touch drag scrolls: no range drag by touch, 8.5)
-    if (
-      event.button === 0 &&
-      !event.shiftKey &&
-      !this.edit.editing &&
-      this.lastPointerType !== 'touch' &&
-      this.rows.isRecordRow(pos.row) &&
-      !target.closest('[data-eui-sheet-opener]')
-    ) {
-      this.dragFrom = pos;
-      this.dragKind = 'cells';
-      this.watchRelease();
-    }
-  }
-
-  /** A press that may become a select drag: its release, and the pointer for auto-scroll. */
-  watchRelease(): void {
-    document.addEventListener('mouseup', this.onRelease, true);
-    document.addEventListener('mousemove', this.onDragMove, true);
-  }
-
-  /** The pointer during a select drag: auto-scroll near the grid's edges (8.4). */
-  onDragMove = (event: MouseEvent): void => {
-    if (!this.dragFrom) return;
-    this.dragPointer = { x: event.clientX, y: event.clientY };
-    this.feedAutoScroll(event.clientX, event.clientY, this.dragging);
-  };
-
-  /**
-   * Passes the pointer to the auto-scroll loop once a drag is really
-   * selecting (or filling), or the pointer left the grid's body: a plain
-   * press near an edge, with a pixel of jitter, must not scroll.
-   */
-  feedAutoScroll(x: number, y: number, active: boolean): void {
-    if (active || this.autoScroll.running) {
-      this.autoScroll.update(x, y);
-      return;
-    }
-    const bounds = this.scroll.scrollBounds();
-    if (
-      bounds &&
-      (x < bounds.left ||
-        x > bounds.right ||
-        y < bounds.top ||
-        y > bounds.bottom)
-    ) {
-      this.autoScroll.update(x, y);
-    }
-  }
-
-  /**
-   * An auto-scroll frame (or a fill drag's move): the cell under the
-   * pointer, clamped inside the grid's body, is the drag's head. Rows the
-   * scroll rendered under a pointer that did not move fire no `mouseover`.
-   */
-  dragTo(x: number, y: number): void {
-    const element = document.elementFromPoint(x, y);
-    if (this.fillSource) this.fillTo(element);
-    else if (this.dragFrom) this.dragOver(element);
-  }
-
-  /**
-   * Drag to select: once the pointer is over another data cell, the pressed
-   * cell is the anchor and the hovered one the head. Nothing changes while
-   * the pointer stays on the pressed cell, so a click is only a click. A
-   * press on a row number drags whole rows.
-   */
-  @action
-  onMouseOver(event: MouseEvent): void {
-    this.dragOver(event.target);
-  }
-
-  /** A select drag reached `element` (a `mouseover`, or an auto-scroll frame). */
-  dragOver(element: EventTarget | null): void {
-    const from = this.dragFrom;
-    if (!from) return;
-    if (this.dragKind === 'rows') {
-      const target =
-        this.dom.rowNumberCell(element) ?? this.dom.dataCell(element);
-      if (!target) return;
-      const row = this.dom.rowIndexOf(target);
-      if (!this.rows.isRecordRow(row)) return;
-      if (!this.dragging) {
-        if (row === from.row) return;
-        this.dragging = true;
-      }
-      this.selection.selectRows(row, true);
-      window.getSelection()?.removeAllRanges();
-      return;
-    }
-    const cell = this.dom.dataCell(element);
-    if (!cell) return;
-    const pos = this.dom.cursor(cell);
-    // the add row is never part of a range
-    if (!this.rows.isRecordRow(pos.row)) return;
-    if (!this.dragging) {
-      if (samePos(pos, from)) return;
-      this.dragging = true;
-      this.selection.anchor = from;
-      this.selection.rangeKind = 'cells';
-    }
-    if (!samePos(pos, this.selection.head)) this.selection.head = pos;
-    // text the press may have started to select
-    window.getSelection()?.removeAllRanges();
-  }
-
-  /** The release ends a drag (anywhere on the page): focus stays on the anchor, the active cell (V03 batch 1). */
-  onRelease = (): void => {
-    const dragged = this.dragging;
-    const kind = this.dragKind;
-    const from = this.dragFrom;
-    const before = this.frozen.scrollLeftBeforeFocus;
-    this.endDrag();
-    if (!dragged) return;
-    // the grid scrolled the pressed cell into view on pointerup; a frozen
-    // one is always in view, so the scroll goes back to the press's
-    if (
-      this.frozen.frozenCount &&
-      (kind === 'rows' || (from !== null && from.col < this.frozen.frozenCount))
-    ) {
-      this.frozen.scrollLeftBeforeFocus = before;
-      this.frozen.keepFrozenScroll();
-    }
-    const head = this.selection.head;
-    if (!head || samePos(head, this.selection.anchor)) return;
-    // the click that follows is the end of the drag, not a click on a cell
-    this.suppressClick = true;
-    // the head may not be rendered now (an auto-scroll took it away, or the
-    // grid's pointerup scrolled back to the pressed cell), so its focus can
-    // come after this release and after its click: the focus handlers must
-    // see a cell they already know and keep the range
-    if (kind === 'rows') {
-      const row = this.selection.anchor?.row ?? head.row;
-      this.focus.keepRangeOnFocus = true;
-      this.focus.rowCursor = row;
-      this.dom.focusRowNumberCell(row);
-      return;
-    }
-    // the press focused the anchor and the grid scrolled it back into view
-    // on pointerup; focus it again only if something took focus away.
-    // onFocusIn sees the cell it knows and keeps the range
-    const anchor = this.selection.anchor;
-    if (anchor && anchor.row < this.rows.rowCount) {
-      this.focus.domCursor = anchor;
-      const active = this.dom.dataCell(document.activeElement);
-      if (!active || !samePos(this.dom.cursor(active), anchor)) {
-        this.dom.focusGridCell(anchor);
-      }
-    }
-  };
-
-  endDrag(): void {
-    this.stopWatchingRelease();
-    this.dragFrom = null;
-    if (this.dragging) this.dragging = false;
-  }
-
-  stopWatchingRelease(): void {
-    document.removeEventListener('mouseup', this.onRelease, true);
-    document.removeEventListener('mousemove', this.onDragMove, true);
-    if (!this.fillSource) {
-      this.autoScroll.stop();
-      this.dragPointer = null;
-    }
-  }
-
-  /* -------------------------------------------------------------------- */
-  /* The fill handle (V02-DESIGN.md 8.4)                                   */
-  /* -------------------------------------------------------------------- */
-
-  /** The range the fill handle is drawn for: cells, a writable sheet, no editor. */
-  get fillHandleRange(): Range | null {
-    const range = this.selection.range;
-    if (!range || this.args.readOnly || this.edit.editing) return null;
-    if (this.selection.rangeKind !== 'cells') return null;
-    if (!this.rows.recordRange(range)) return null;
-    return range;
-  }
-
-  /** Puts the handle at the corner of the range's last cell, or hides it while that corner is not in view. */
-  placeFillHandle(element: HTMLElement, range: Range): void {
-    // the range's last record row
-    const records = this.rows.recordRange(range);
-    const corner = {
-      row: records ? this.rows.gridRowOf(records.bottom) : -1,
-      col: range.right
-    };
-    const cell = records ? this.dom.cellElement(corner) : null;
-    const bounds = cell && this.scroll.scrollBounds();
-    const rect = cell && this.dom.rectOf(cell);
-    let shown = false;
-    let box: DOMRect | undefined;
-    if (cell && bounds && rect) {
-      box = cell.getBoundingClientRect();
-      const left =
-        bounds.frozenRight !== undefined &&
-        corner.col >= this.frozen.frozenCount
-          ? bounds.frozenRight
-          : bounds.left;
-      shown =
-        box.right >= left &&
-        box.right <= bounds.right + 1 &&
-        box.bottom >= bounds.top &&
-        box.bottom <= bounds.bottom + 1;
-    }
-    element.style.display = shown ? '' : 'none';
-    if (shown && rect && box && bounds) {
-      // centred on the corner (14 px drawn: `styles.ts`), moved in so it is
-      // whole at the grid body's right and bottom edges
-      const half = FILL_HANDLE_SIZE / 2;
-      const pastRight = Math.max(0, box.right + half - bounds.right);
-      const pastBottom = Math.max(0, box.bottom + half - bounds.bottom);
-      element.style.top = `${rect.top + rect.height - half - pastBottom}px`;
-      element.style.left = `${rect.left + rect.width - half - pastRight}px`;
-    }
-  }
-
-  /** A press on the handle starts a fill drag; focus stays on the cell. */
-  onFillHandlePress = (event: MouseEvent): void => {
-    event.preventDefault();
-    if (event.button !== 0) return;
-    const range = this.fillHandleRange;
-    if (!range) return;
-    this.fillSource = range;
-    this.fillTarget = range;
-    this.dragPointer = { x: event.clientX, y: event.clientY };
-    document.addEventListener('mousemove', this.onFillMove, true);
-    document.addEventListener('mouseup', this.onFillRelease, true);
-    document.addEventListener('keydown', this.onFillKeyDown, true);
-  };
-
-  onFillMove = (event: MouseEvent): void => {
-    const source = this.fillSource;
-    if (!source) return;
-    this.dragPointer = { x: event.clientX, y: event.clientY };
-    this.dragTo(event.clientX, event.clientY);
-    const target = this.fillTarget;
-    this.feedAutoScroll(
-      event.clientX,
-      event.clientY,
-      !!target && !sameRange(target, source)
-    );
-  };
-
-  /** The fill reaches the cell at `element`: the source extended along the dominant axis. */
-  fillTo(element: Element | null): void {
-    const source = this.fillSource;
-    const cell = this.dom.dataCell(element);
-    if (!source || !cell) return;
-    const pos = this.dom.cursor(cell);
-    let row: number;
-    let down: number;
-    let up: number;
-    if (this.rows.isGrouped) {
-      // measured in records (V03 8.5): a header or an add row counts for
-      // nothing, and stands for the record on the source's side of it
-      const records = this.rows.recordRange(source);
-      if (!records) return;
-      row = this.rows.isRecordRow(pos.row)
-        ? pos.row
-        : this.rows.rowModel.nearestRecordRow(
-            pos.row,
-            pos.row > this.rows.gridRowOf(records.bottom) ? -1 : 1
-          );
-      if (row < 0) return;
-      const r = this.rows.recordRowAt(row);
-      down = r - records.bottom;
-      up = records.top - r;
-    } else {
-      // a fill never reaches the add row
-      row = this.rows.clampToRecordRow(pos.row, pos.row);
-      down = row - source.bottom;
-      up = source.top - row;
-    }
-    const right = pos.col - source.right;
-    const left = source.left - pos.col;
-    const dy = Math.max(down, up, 0);
-    const dx = Math.max(right, left, 0);
-    let target = source;
-    if (dy > 0 && dy >= dx) {
-      target = down > 0 ? { ...source, bottom: row } : { ...source, top: row };
-    } else if (dx > 0) {
-      target =
-        right > 0
-          ? { ...source, right: pos.col }
-          : { ...source, left: pos.col };
-    }
-    const current = this.fillTarget;
-    if (!current || !sameRange(current, target)) this.fillTarget = target;
-  }
-
-  /** The cells a fill writes: the target without the source. */
-  fillWritten(source: Range, target: Range): Range {
-    if (target.bottom > source.bottom) {
-      return { ...target, top: source.bottom + 1 };
-    }
-    if (target.top < source.top) return { ...target, bottom: source.top - 1 };
-    if (target.right > source.right) {
-      return { ...target, left: source.right + 1 };
-    }
-    return { ...target, right: source.left - 1 };
-  }
-
-  /** The release fills (Ctrl or Alt held: copies, no series) and selects the union. */
-  onFillRelease = (event: MouseEvent): void => {
-    const source = this.fillSource;
-    const target = this.fillTarget;
-    this.stopFillDrag();
-    this.frozen.pressing = false;
-    // the press's scroll is not one to restore (a fill may auto-scroll)
-    this.frozen.scrollLeftBeforeFocus = null;
-    // the click that may follow is the end of the drag
-    this.suppressClick = true;
-    if (!source || !target || sameRange(source, target)) return;
-    const recordSource = this.rows.recordRange(source);
-    const recordTarget = this.rows.recordRange(target);
-    if (!recordSource || !recordTarget) return;
-    this.changes.emit(
-      fillRange(this.context, recordSource, recordTarget, {
-        copy: event.ctrlKey || event.altKey
-      }),
-      this.selection.touchedIn(this.fillWritten(source, target), true)
-    );
-    // the union is the range; focus stays where it was when that cell is
-    // one of its corners (a single cell filled down), else it moves to the
-    // nearest corner
-    const head = this.selection.head ?? { row: source.top, col: source.left };
-    const corners = [
-      { row: target.top, col: target.left },
-      { row: target.top, col: target.right },
-      { row: target.bottom, col: target.left },
-      { row: target.bottom, col: target.right }
-    ];
-    const distance = (pos: Pos) =>
-      Math.abs(pos.row - head.row) + Math.abs(pos.col - head.col);
-    const next = corners.reduce((best, pos) =>
-      distance(pos) < distance(best) ? pos : best
-    );
-    this.selection.anchor = {
-      row: next.row === target.top ? target.bottom : target.top,
-      col: next.col === target.left ? target.right : target.left
-    };
-    this.selection.head = next;
-    this.selection.rangeKind = 'cells';
-    // focus moves to the new corner, or back to the cell an auto-scroll
-    // unmounted (focus left with it)
-    const active = this.dom.dataCell(document.activeElement);
-    if (!active || !samePos(this.dom.cursor(active), next)) {
-      this.focus.domCursor = next;
-      this.dom.focusGridCell(next);
-    }
-  };
-
-  /** Escape during a fill drag cancels it. */
-  onFillKeyDown = (event: KeyboardEvent): void => {
-    if (event.key !== 'Escape') return;
-    stop(event);
-    this.stopFillDrag();
-  };
-
-  stopFillDrag(): void {
-    document.removeEventListener('mousemove', this.onFillMove, true);
-    document.removeEventListener('mouseup', this.onFillRelease, true);
-    document.removeEventListener('keydown', this.onFillKeyDown, true);
-    if (!this.fillSource) return;
-    this.fillSource = null;
-    this.autoScroll.stop();
-    this.dragPointer = null;
-    if (!isDestroying(this) && this.fillTarget) this.fillTarget = null;
-  }
-
-  /** Whether a cell is in the fill drag's preview (the target, not the source). */
-  isFillPreview(row: number, col: number): boolean {
-    const target = this.fillTarget;
-    const source = this.fillSource;
-    if (!target || !source) return false;
-    // grouped: a header or an add row inside the target is not filled
-    if (this.rows.isGrouped && !this.rows.isRecordRow(row)) return false;
-    const inside = (range: Range) =>
-      row >= range.top &&
-      row <= range.bottom &&
-      col >= range.left &&
-      col <= range.right;
-    return inside(target) && !inside(source);
-  }
-
-  /* -------------------------------------------------------------------- */
-  /* Touch (V02-DESIGN.md 8.5)                                             */
-  /* -------------------------------------------------------------------- */
-
-  /**
-   * A press: its pointer type (touch presses do not drag a range); a touch
-   * on a record's cell or row number starts the long-press timer.
-   */
-  @action
-  onPointerDown(event: PointerEvent): void {
-    this.lastPointerType = event.pointerType || 'mouse';
-    this.longPressOpened = false;
-    this.cancelLongPress();
-    if (
-      event.pointerType !== 'touch' ||
-      !event.isPrimary ||
-      this.edit.editing
-    ) {
-      return;
-    }
-    const target = event.target as Element;
-    if (this.rowMenu.menuRowOf(target) < 0) return;
-    this.longPress = {
-      x: event.clientX,
-      y: event.clientY,
-      target,
-      timer: later(this, this.onLongPress, LONG_PRESS_MS)
-    };
-  }
-
-  /** A touch that moves is a scroll: no long press. */
-  @action
-  onPointerMove(event: PointerEvent): void {
-    const press = this.longPress;
-    if (!press || event.pointerType !== 'touch') return;
-    const moved = Math.hypot(event.clientX - press.x, event.clientY - press.y);
-    if (moved > LONG_PRESS_SLOP) this.cancelLongPress();
-  }
-
-  /** `pointerup` and `pointercancel` (a native pan) end a long press. */
-  @action
-  onPointerEnd(): void {
-    this.cancelLongPress();
-  }
-
-  cancelLongPress(): void {
-    const press = this.longPress;
-    if (!press) return;
-    cancel(press.timer);
-    this.longPress = null;
-  }
-
-  /** The long press opens the row menu there, like a right-click; the click that follows is swallowed. */
-  onLongPress(): void {
-    const press = this.longPress;
-    this.longPress = null;
-    if (!press || this.edit.editing) return;
-    if (this.rowMenu.openContextMenu(press.target, press.x, press.y)) {
-      this.longPressOpened = true;
-    }
-  }
-
-  /** The click (and the compatibility events) after a long press are the press's own: no link, no star, no edit. */
-  @action
-  onClickCapture(event: MouseEvent): void {
-    if (!this.longPressOpened || this.dom.isInMenu(event.target)) return;
-    this.longPressOpened = false;
-    stop(event);
-  }
-
-  /**
-   * Airtable-style clicks: the first click selects (the grid focuses the
-   * cell); a click on the selected cell edits; the type's opener button
-   * opens the editor in one click; a type with `onCellClick` (the checkbox)
-   * saves on any click. Before those: the row-number column (checkbox,
-   * expand icon), a column header (selects the column) and the add row.
-   */
-  @action
-  onClick(event: MouseEvent): void {
-    if (this.frozen.pressing) {
-      this.frozen.pressing = false;
-      const focused = document.activeElement;
-      const frozen =
-        (this.dom.rowNumberCell(focused) && this.frozen.frozenCount) ||
-        (this.dom.dataCell(focused) &&
-          this.dom.cursor(this.dom.dataCell(focused)!).col <
-            this.frozen.frozenCount);
-      if (frozen) this.frozen.keepFrozenScroll();
-      else this.frozen.scrollLeftBeforeFocus = null;
-    }
-    const pressOnFocusedCell = this.pressOnFocusedCell;
-    this.pressOnFocusedCell = false;
-    this.focus.keepRangeOnFocus = false;
-    if (this.suppressClick) {
-      this.suppressClick = false;
-      return;
-    }
-    const target = event.target as Element;
-    if (this.dom.isInMenu(target)) return;
-    // a header's chevron or title (V03 8.3), on a data or row-number cell
-    if (this.rows.isGrouped && this.groupHeaders.onGroupToggleClick(target))
-      return;
-    if (this.onControlClick(event, target)) return;
-    if (event.shiftKey || this.edit.editing) return;
-    const cell = this.dom.dataCell(target);
-    if (!cell) return;
-    const pos = this.dom.cursor(cell);
-    if (this.rows.isAddRow(pos.row)) {
-      this.records.appendRecord(pos.row);
-      return;
-    }
-    const record = this.rows.recordAt(pos.row);
-    const field = this.fields.visibleFields[pos.col];
-    if (record === undefined || !field) return;
-    const type = this.fields.typeOf(field);
-    // a click on the link text opens it (first click, no edit)
-    if (target.closest('[data-eui-sheet-link]')) {
-      if (
-        this.cells.openLink(
-          this.cells.linkOf(type, field, valueOf(record, field.id))
-        )
-      ) {
-        return;
-      }
-    }
-    // a star click is the cell's own (`@onCommit`): no edit
-    if (target.closest('[data-eui-sheet-star]')) return;
-    if (target.closest('[data-eui-sheet-opener]')) {
-      if (this.cells.canEdit(pos) && !this.edit.editInRecord(pos)) {
-        this.edit.startEdit(pos, cell, null);
-      }
-      return;
-    }
-    if (type.onCellClick) {
-      if (isReadOnly(this.context, field, record)) return;
-      const result = type.onCellClick(
-        valueOf(record, field.id) as never,
-        field,
-        record
-      );
-      if (result) this.cells.commitCellValue(pos.row, pos.col, result.value);
-      return;
-    }
-    if (
-      pressOnFocusedCell &&
-      this.cells.canEdit(pos) &&
-      !this.edit.editInRecord(pos)
-    ) {
-      this.edit.startEdit(pos, cell, null);
-    }
-  }
-
-  /** Clicks on the row-number column and the column headers; true when handled. */
-  onControlClick(event: MouseEvent, target: Element): boolean {
-    // the "+" header (V03 6.3)
-    if (this.dom.addFieldHeader(target)) {
-      this.fieldEditor.addField();
-      return true;
-    }
-    if (target.closest('[data-eui-sheet-row-check-all]')) {
-      this.checked.toggleAllChecked();
-      return true;
-    }
-    const rowCell = this.dom.rowNumberCell(target);
-    if (rowCell) {
-      const row = this.dom.rowIndexOf(rowCell);
-      if (this.rows.isAddRow(row)) {
-        this.records.appendRecord(row);
-      } else if (target.closest('[data-eui-sheet-row-check]')) {
-        this.checked.toggleChecked(row, event.shiftKey);
-      } else if (target.closest('[data-eui-sheet-row-expand]')) {
-        const record = this.rows.recordAt(row);
-        if (record !== undefined) {
-          const recordId = this.args.getRecordId(record);
-          this.expanded.expandRecord(recordId, { recordId, fieldId: null });
-        }
-      }
-      return true;
-    }
-    // a header's title (not its actions button or resizer) selects the column
-    const header = this.dom.headerCell(target);
-    if (header && target.closest('.euiDataGridHeaderCell__content')) {
-      const col =
-        Number(header.dataset['gridcellColumnIndex']) - this.colOffset;
-      if (col >= 0 && col < this.fields.visibleFields.length) {
-        this.selection.selectColumns(col, event.shiftKey);
-      }
-      return true;
-    }
-    return false;
-  }
-
-  @action
-  onDoubleClick(event: MouseEvent): void {
-    // the double-click's second click already opened the editor
-    if (this.edit.editing) return;
-    const cell = this.dom.dataCell(event.target);
-    if (!cell) return;
-    const pos = this.dom.cursor(cell);
-    if (this.cells.canEdit(pos) && !this.edit.editInRecord(pos)) {
-      this.edit.startEdit(pos, cell, null);
-    }
   }
 
   /* -------------------------------------------------------------------- */
@@ -1358,13 +638,13 @@ export default class EuiSheet<T extends object> extends Component<
     if (letter === 'd' && !event.shiftKey) {
       // also keeps the browser from bookmarking the page
       stop(event);
-      this.fill();
+      this.filling.fill();
       return true;
     }
     if (letter === 'r' && !event.shiftKey) {
       // C11: also keeps the browser from reloading the page
       stop(event);
-      this.fillRightSelection();
+      this.filling.fillRightSelection();
       return true;
     }
     if (letter === 'a' && !event.shiftKey) {
@@ -1635,33 +915,6 @@ export default class EuiSheet<T extends object> extends Component<
       stop(event);
       this.selection.clearSelection();
     }
-  }
-
-  /** Ctrl/Cmd+R: fill the range right, or the cell from the one to its left. */
-  fillRightSelection(): void {
-    const range =
-      this.selection.range && this.rows.recordRange(this.selection.range);
-    if (!range) return;
-    const targets =
-      range.right > range.left ? { ...range, left: range.left + 1 } : range;
-    this.changes.emit(
-      fillRight(this.context, range),
-      this.selection.touchedInRecords(targets, true)
-    );
-  }
-
-  /** Ctrl/Cmd+D: fill the range down, or the cell from the one above. */
-  fill(): void {
-    const range =
-      this.selection.range && this.rows.recordRange(this.selection.range);
-    if (!range) return;
-    // the cells written: below the top record, or the record itself (from above)
-    const targets =
-      range.bottom > range.top ? { ...range, top: range.top + 1 } : range;
-    this.changes.emit(
-      fillDown(this.context, range),
-      this.selection.touchedInRecords(targets, true)
-    );
   }
 
   onEditKeyDown(event: KeyboardEvent): void {
@@ -1946,8 +1199,8 @@ export default class EuiSheet<T extends object> extends Component<
     <div
       class="euiSheet
         {{this.themeClass}}
-        {{if this.dragging 'euiSheet--dragging'}}
-        {{if this.fillTarget 'euiSheet--dragging euiSheet--filling'}}
+        {{if this.drag.dragging 'euiSheet--dragging'}}
+        {{if this.filling.fillTarget 'euiSheet--dragging euiSheet--filling'}}
         {{if this.scroll.scrolledX 'euiSheet--scrolledX'}}
         {{if this.gridOptions.pinsAddRow 'euiSheet--pinAddRow'}}
         {{this.gridColumns.headerLinesClass}}
@@ -1965,17 +1218,17 @@ export default class EuiSheet<T extends object> extends Component<
       {{on "cut" this.onCut capture=true}}
       {{on "paste" this.onPaste capture=true}}
       {{on "scroll" this.scroll.onScroll capture=true}}
-      {{on "mousedown" this.onMouseDown capture=true}}
-      {{on "pointerdown" this.onPointerDown capture=true}}
-      {{on "pointermove" this.onPointerMove}}
-      {{on "pointerup" this.onPointerEnd}}
-      {{on "pointercancel" this.onPointerEnd}}
-      {{on "click" this.onClickCapture capture=true}}
+      {{on "mousedown" this.drag.onMouseDown capture=true}}
+      {{on "pointerdown" this.touch.onPointerDown capture=true}}
+      {{on "pointermove" this.touch.onPointerMove}}
+      {{on "pointerup" this.touch.onPointerEnd}}
+      {{on "pointercancel" this.touch.onPointerEnd}}
+      {{on "click" this.touch.onClickCapture capture=true}}
       {{on "focusin" this.focus.onFocusIn}}
       {{on "focusout" this.focus.onFocusOut}}
-      {{on "mouseover" this.onMouseOver}}
-      {{on "click" this.onClick}}
-      {{on "dblclick" this.onDoubleClick}}
+      {{on "mouseover" this.drag.onMouseOver}}
+      {{on "click" this.clicks.onClick}}
+      {{on "dblclick" this.clicks.onDoubleClick}}
       {{on "contextmenu" this.rowMenu.onContextMenu}}
       {{on "dragstart" this.edit.onDragStart capture=true}}
       {{on "dragover" this.uploads.onDragOver capture=true}}
@@ -2068,11 +1321,11 @@ export default class EuiSheet<T extends object> extends Component<
           @kind="copied"
         />
       {{/if}}
-      {{#if this.fillTarget}}
+      {{#if this.filling.fillTarget}}
         {{! the fill drag's target area, dashed (V03 batch 1) }}
         <RangeOutline
           @sheet={{this}}
-          @range={{this.fillTarget}}
+          @range={{this.filling.fillTarget}}
           @tick={{this.scroll.layoutTick}}
           @records={{@records}}
           @columns={{this.gridColumns.columns}}
@@ -2112,14 +1365,14 @@ export default class EuiSheet<T extends object> extends Component<
           {{/if}}
         </div>
       {{/if}}
-      {{#if this.fillHandleRange}}
+      {{#if this.filling.fillHandleRange}}
         <FillHandle
           @sheet={{this}}
-          @range={{this.fillHandleRange}}
+          @range={{this.filling.fillHandleRange}}
           @tick={{this.scroll.layoutTick}}
           @records={{@records}}
           @rowHeight={{this.gridOptions.rowHeight}}
-          @onPress={{this.onFillHandlePress}}
+          @onPress={{this.filling.onFillHandlePress}}
         />
       {{/if}}
       <ImeCatcher @sheet={{this}} />

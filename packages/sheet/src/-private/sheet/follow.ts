@@ -188,8 +188,9 @@ export default class SheetFollow<T extends object> {
    * composition catcher or the menu), so the caller focuses the active cell.
    */
   endTransients(): boolean {
-    if (this.sheet.dragging || this.sheet.dragFrom) this.sheet.endDrag();
-    this.sheet.stopFillDrag();
+    if (this.sheet.drag.dragging || this.sheet.drag.dragFrom)
+      this.sheet.drag.endDrag();
+    this.sheet.filling.stopFillDrag();
     const imeFocus =
       !!this.sheet.ime.imePos &&
       document.activeElement === this.sheet.ime.imeInput;
@@ -287,7 +288,8 @@ export default class SheetFollow<T extends object> {
       !!this.sheet.dom.dataCell(active) ||
       (this.sheet.focus.focusDropped && (!active || active === document.body));
     let hadEditorFocus = false;
-    if (this.sheet.dragging || this.sheet.dragFrom) this.sheet.endDrag();
+    if (this.sheet.drag.dragging || this.sheet.drag.dragFrom)
+      this.sheet.drag.endDrag();
 
     const editing = this.sheet.edit.editing;
     if (editing) {

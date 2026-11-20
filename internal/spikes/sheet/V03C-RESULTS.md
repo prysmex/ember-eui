@@ -539,3 +539,76 @@ in `dom.ts` ("Edit lifecycle") and `fields.ts` ("Field management (V03
 verbatim check, and they are comments only. This stage's banners landed
 in their modules ("@editIn", "Editor callbacks, bound once", "The
 expanded record", "The row menu").
+
+## 3c stage 6
+
+What moved, to `src/-private/sheet/`, as the module map assigns it:
+
+| File | Class, property | Members | Lines |
+| --- | --- | --- | --- |
+| `drag.ts` | `SheetDrag`, `drag` | 17 | 301 |
+| `touch.ts` | `SheetTouch`, `touch` | 9 | 102 |
+| `clicks.ts` | `SheetClicks`, `clicks` | 3 | 156 |
+| `filling.ts` | `SheetFilling`, `filling` | 14 | 279 |
+
+Three constants with one user moved above that module's class:
+`LONG_PRESS_MS` and `LONG_PRESS_SLOP` (touch), `FILL_HANDLE_SIZE`
+(filling).
+
+The component goes from 2,210 to 1,463 lines. Its template changes 16
+paths only (the mouse, pointer and click listeners, `drag.dragging`,
+`filling.fillTarget`, `filling.fillHandleRange`,
+`filling.onFillHandlePress`). `willDestroy` has the same statements in
+the same order: `drag.stopWatchingRelease()`, `filling.stopFillDrag()`,
+`drag.autoScroll.stop()`, `touch.cancelLongPress()`. Two earlier modules
+are re-pointed (`follow`, `rowMenu`). Three `-private` files change their
+paths only: `fill-handle.gts` (`filling.placeFillHandle`), `layer.gts`
+(seven handlers: `drag.onMouseDown`, `touch.onPointerDown`,
+`touch.onPointerMove`, `touch.onPointerEnd` twice, `touch.onClickCapture`,
+`clicks.onClick`), `sheet-cell.gts` (`filling.isFillPreview`). Each was
+read by hand.
+
+How: `3c-checks/move.mjs --stage 6 --tops
+LONG_PRESS_MS=touch,LONG_PRESS_SLOP=touch,FILL_HANDLE_SIZE=filling`, the
+imports by hand, the 7 imports ESLint listed as unused in the component
+removed, then Prettier. The missing-import script lists no name in any
+module.
+
+Owner sites: `move.mjs` printed LOOK for the two design 6.1 names for
+these modules. `stopFillDrag`'s `isDestroying(this)` is now
+`isDestroying(this.sheet)` (otherwise the fill target would be written
+during destroy). `onPointerDown`'s `later(this, this.onLongPress,
+LONG_PRESS_MS)` stays as it is: `onLongPress` runs with the module as
+`this`, and `cancelLongPress` cancels the same timer. The OWNER list is
+stage 5's nineteen plus `stopFillDrag`.
+
+The other checks of this stage:
+
+- No moved field is still declared in the component (a grep of the 12
+  field names).
+- The document listeners: `onRelease` and `onDragMove` are added in
+  `drag.watchRelease` and removed in `drag.stopWatchingRelease`;
+  `onFillMove`, `onFillRelease` and `onFillKeyDown` are added in
+  `filling.onFillHandlePress` and removed in `filling.stopFillDrag`. Each
+  pair names the same arrow field of the same module.
+- `autoScroll`'s initialiser only builds closures (the owner gate checks
+  that no initialiser reads `this` at construction).
+- References to a moved plain method that are not calls: only
+  `later(this, this.onLongPress, ...)` (the target is given).
+
+Results:
+
+- Verbatim: 721 members, top-level declarations, templates and `-private`
+  declarations compared, all equal apart from the twenty owners above.
+  Every member is in the file the module map names, and declared once.
+- Gates: OK. `tests/`, `src/core/`, `src/types.ts`, `src/index.ts`,
+  `src/search-ui/` and `packages/core/` are untouched.
+- `pnpm lint:types`: no error. The tests' `ember-tsc`: the baseline's 19
+  errors, the same lines.
+- ESLint and Prettier on the changed files: clean.
+- `node scripts/generate-api-docs.mjs --check`: passes.
+- The suite: 527 tests, 527 pass.
+
+Deviations from the design: none. The banners landed in their modules
+("Touch", "The fill handle"; the batch 6 heading above `fillSource` in
+`filling.ts`).

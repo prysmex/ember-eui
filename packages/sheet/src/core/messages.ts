@@ -43,6 +43,8 @@ export interface SheetMessages {
   copyRow: () => string;
   /** 'Copy 3 rows' */
   copyRows: (count: number) => string;
+  /** 'Copy with field names': the row menu's item with `@copyWithFieldNames` (v0.4 05). */
+  copyWithFieldNames: () => string;
   /** 'Delete record' */
   deleteRecord: () => string;
   /** 'Delete 3 records' */
@@ -491,6 +493,11 @@ export const sheetMessageTokens: Readonly<
     token: 'euiSheet.copyRows',
     defaultMessage: 'Copy {count} rows',
     params: ['count']
+  },
+  copyWithFieldNames: {
+    token: 'euiSheet.copyWithFieldNames',
+    defaultMessage: 'Copy with field names',
+    params: []
   },
   deleteRecord: {
     token: 'euiSheet.deleteRecord',

@@ -46,6 +46,7 @@ const GROUPS: Readonly<Record<string, number>> = {
   expand: 1,
   openLink: 1,
   copy: 2,
+  copyWithNames: 2,
   delete: 4
 };
 

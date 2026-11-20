@@ -3,6 +3,7 @@ import { action } from '@ember/object';
 
 import {
   clearRange,
+  headerLine,
   parseTsv,
   pasteMatrix,
   planPaste,
@@ -56,6 +57,17 @@ export default class SheetClipboard<T extends object> {
     writeClipboard(this.rowsTsv(records));
   }
 
+  /** The row menu's "Copy with field names" (v0.4 05): what `copyRows` copies, after a line of the visible fields' names. */
+  copyRowsWithNames(records: readonly T[]): void {
+    if (!records.length) return;
+    writeClipboard(
+      toTsv([
+        headerLine(this.sheet.fields.visibleFields),
+        ...this.rowsMatrix(records)
+      ])
+    );
+  }
+
   /** The touch menu's Copy (V03 11.3): the range as TSV, with the copy mark, as Ctrl/Cmd+C. */
   copyRange(range: Range): void {
     writeClipboard(this.rangeTsv(range));
@@ -77,16 +89,19 @@ export default class SheetClipboard<T extends object> {
 
   /** The records' visible fields as TSV, in the given order. */
   rowsTsv(records: readonly T[]): string {
-    return toTsv(
-      rangeMatrix(
-        { ...this.sheet.context, records },
-        {
-          top: 0,
-          left: 0,
-          bottom: records.length - 1,
-          right: this.sheet.fields.visibleFields.length - 1
-        }
-      )
+    return toTsv(this.rowsMatrix(records));
+  }
+
+  /** The records' visible fields as copy text, a row per record. */
+  rowsMatrix(records: readonly T[]): string[][] {
+    return rangeMatrix(
+      { ...this.sheet.context, records },
+      {
+        top: 0,
+        left: 0,
+        bottom: records.length - 1,
+        right: this.sheet.fields.visibleFields.length - 1
+      }
     );
   }
 

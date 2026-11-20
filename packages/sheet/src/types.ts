@@ -615,6 +615,12 @@ export interface EuiSheetSignature<T> {
      */
     fieldActions?: SheetFieldAction<T>[];
     /**
+     * Adds "Copy with field names" to the row menu, next to "Copy" (v0.4
+     * 05): the same rows after a line of the visible fields' labels (or
+     * ids), to paste into a report. Default false.
+     */
+    copyWithFieldNames?: boolean;
+    /**
      * Bulk resolve (V02-DESIGN.md 8.2): typed or pasted text a type answers
      * `{ unresolved }` for (linked records, users, an app's own types) is
      * shown as pending and sent here, once per paste or typed commit, one

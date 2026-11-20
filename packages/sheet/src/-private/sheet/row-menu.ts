@@ -198,6 +198,16 @@ export default class SheetRowMenu<T extends object> {
       disabled: !count,
       onSelect: () => this.sheet.clipboard.copyRows(records)
     });
+    // v0.4 05: the same rows after a line of the field names
+    if (this.sheet.args.copyWithFieldNames) {
+      items.push({
+        id: 'copyWithNames',
+        label: messages.copyWithFieldNames(),
+        icon: 'copyClipboard',
+        disabled: !count,
+        onSelect: () => this.sheet.clipboard.copyRowsWithNames(records)
+      });
+    }
     for (const action of this.sheet.args.rowActions ?? []) {
       items.push({
         id: action.id,

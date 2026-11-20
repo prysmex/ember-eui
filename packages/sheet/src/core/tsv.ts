@@ -1,3 +1,5 @@
+import type { EuiSheetField } from './types.ts';
+
 /**
  * TSV as Excel and Google Sheets write it (V02-DESIGN.md 4.2).
  *
@@ -109,4 +111,13 @@ export function toTsv(matrix: readonly (readonly string[])[]): string {
 function quoteCell(cell: string): string {
   if (!/[\t\n\r]/.test(cell) && !cell.startsWith('"')) return cell;
   return `"${cell.replace(/"/g, '""')}"`;
+}
+
+/**
+ * The fields' names as a row of cells (v0.4 05, "Copy with field
+ * names"): each field's `label`, else its id, in the given order. Put it
+ * first in a matrix for `toTsv`.
+ */
+export function headerLine(fields: readonly EuiSheetField[]): string[] {
+  return fields.map((field) => field.label ?? field.id);
 }

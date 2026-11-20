@@ -26,9 +26,11 @@ const GRIP_WIDTH = 12;
 const FROZEN_DEFAULT_WIDTH = 200;
 /** The opener button's room at a cell's end: 20 px, 6 px from the edge, and a gap (v0.4 01). */
 const OPENER_ROOM = 28;
-/** A header's menu button (24 px) and drag icon (12 px), shown on hover. */
+/** A header's menu button (24 px) and drag icon (12 px), shown on hover or focus. */
 const HEADER_BUTTON_ROOM = 24;
 const DRAG_ICON_ROOM = 12;
+/** The gap the header's row of parts gets when they show (Borealis size.xxs). */
+const HEADER_PART_GAP = 2;
 
 export default class SheetGridColumns<T extends object> {
   sheet: EuiSheet<T>;
@@ -446,10 +448,12 @@ function partsOf(
     px(style.borderRightWidth);
   let chrome = element.offsetWidth - content.offsetWidth + inner + 1;
   // a header's drag icon and menu button collapse until it is hovered or
-  // focused (their negative margins): their room when they show
+  // focused (their negative margins): their room, and the gap before
+  // each, when they show; measured as they are when they already show
   const collapsed = (selector: string, room: number) => {
     const part = element.querySelector<HTMLElement>(selector);
-    return part ? Math.max(0, room - part.offsetWidth) : 0;
+    if (!part || part.offsetWidth >= room) return 0;
+    return room - part.offsetWidth + HEADER_PART_GAP;
   };
   chrome += collapsed('.euiDataGridHeaderCell__draggableIcon', DRAG_ICON_ROOM);
   chrome += collapsed(

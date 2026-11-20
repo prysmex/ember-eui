@@ -2711,12 +2711,16 @@ on) predate 3c: the new behaviour lives in modules of
   `selection` re-renders); `SheetApi.getSelection()` returns the same
   object while nothing changed.
 - `@onSelectionChange(selection | null)`: a modifier on the wrapper
-  (`selection.reportChange`, only with the handler) reads `current` and
-  `scheduleOnce('afterRender', report)`; `report` compares a key of the
-  kind, the record ids and the field ids with the last call's and calls
-  the handler only when it changed. So it runs after render, at most once
-  per run loop, once per new rectangle of a drag, and not when `@records`
-  is re-rendered with the same ids.
+  (`selection.reportChange`, only with the handler) reads `current` and,
+  unless a report is already pending, schedules `report` with `next` (the
+  next run loop, after this one's render); `report` clears the pending
+  flag, compares a key of the kind, the record ids and the field ids with
+  the last call's and calls the handler only when it changed. So it runs
+  after render, at most once per run loop (also when the handler itself
+  changes the selection: that change is reported in a later loop), once
+  per new rectangle of a drag, and not when `@records` is re-rendered
+  with the same ids. (Commit `4a764ff` used `scheduleOnce('afterRender')`;
+  commit `5f` below replaced it.)
 - `summarizeCells(ctx, selection, kind)` (`src/core/summary.ts`):
   `count` (records × fields), `filled` (each type's `isEmpty`), `sum`,
   `average`, `min`, `max` over each type's `toNumber` of the non-empty
@@ -2739,7 +2743,8 @@ on) predate 3c: the new behaviour lives in modules of
   a repeated `mouseover` nothing, new record objects with the same ids
   nothing, two `api.focusCell` calls in one run loop one call with the
   last, `null` on the add row, a change of kind over the same cell is a
-  call), SL3 (grouped by city: a drag from a record across the add row
+  call), SL2b (added with 5f: a handler that calls `api.focusCell` on
+  its first call gets two calls, in two run loops), SL3 (grouped by city: a drag from a record across the add row
   and the next header lists `r3, r0` only, 4 cells), SL5
   (`api.getSelection()`, the same object while unchanged; checking a row
   does not change it).
@@ -2881,6 +2886,18 @@ Files field). UP2 (an uploader that never calls it is pending as
 before) is the v0.2 attachment tests A1-A3, unchanged and passing.
 Suite: 583 tests, 583 pass (580 + 3).
 
+### 5f: at most one selection report per run loop
+
+Commit `4a764ff` reported from `afterRender` with `scheduleOnce`, which
+dedupes within one flush of the queue; a selection change made in that
+flush (by the handler itself) could, by reading the code, be reported a
+second time in the same run loop. The report is now deferred with `next`
+behind a pending flag, so the rule holds by construction. SL2b (new)
+checks that a handler that moves the selection gets its two calls in two
+run loops; it also passed against the old code (checked by swapping the
+old line back in and running it), so it documents the behaviour rather
+than catching the old one. Suite: 584 tests, 584 pass (583 + 1).
+
 ### 5e: docs (11.7)
 
 - `docs/sheet-demo/d22-search-navigation.md` (new): 300 people, eight
@@ -2929,12 +2946,13 @@ Suite: 583 tests, 583 pass (580 + 3).
 | `d8858b6` | ranges by touch (`selection-handles.ts`, `selection-handles.gts`, Copy and Paste on a long press, `clipboard.pasteText`), TR1, TR2, TR3b, TR4, TR5 | 580 / 580 |
 | `e52df83` | upload progress (`onProgress`, the cell's bar, the editor's and the expanded record's `EuiProgress`, `@progress`), UP1, UP3, UP4 | 583 / 583 |
 | `36d4436` | a handle drag keeps its scroll on release (found with real touch) | 583 / 583 |
-| this commit | docs, these results | (no code) |
+| `cebc0db` | docs, these results | (no code; 583 carried over from `36d4436`) |
+| this commit (5f) | `@onSelectionChange` deferred with `next` (one report per run loop by construction), SL2b, results | 584 / 584 |
 
 Every commit: `pnpm lint:types` clean; the tests' `ember-tsc` has the
 baseline's 19 errors and no other; `eslint` and `prettier --check` clean
 on the changed code and test files; the owner gate OK (36, 36, 37, 37,
-37 module classes); `node scripts/generate-api-docs.mjs --check` passes
+37, 37 module classes); `node scripts/generate-api-docs.mjs --check` passes
 (the sheet has no generated API page); the full suite green. For
 `d8858b6` the owner gate and the tests' `ember-tsc` were not run before
 the commit (a shell `&&` chain stopped at an eslint error in the test,
@@ -2967,11 +2985,10 @@ One module is new (`selection-handles.ts`; 40 files in
    on its other dependencies (the brief's "without adding unrelated
    dependencies"); a destructured copy of the block API reads the
    selection of that moment.
-7. **`@onSelectionChange` is reported with `scheduleOnce('afterRender')`
-   from a modifier**: "at most once per run loop" is backburner's
-   dedupe of that queue; two changes that each need their own render in
-   one loop (a change made in an earlier `afterRender` callback) can
-   still give two calls, each with a different key.
+7. **`@onSelectionChange` is called in the next run loop** (`next`, one
+   pending report at a time), not inside the render's own `afterRender`:
+   still after the render, and at most once per run loop by
+   construction (5f).
 8. **Messages beyond 4.6**: `copyCells` ("Copy") and `pasteCells`
    ("Paste") for the long-press menu items (11.3 asks for the items, 4.6
    lists only `uploading` and `selectionHandle`).
@@ -3023,6 +3040,12 @@ One module is new (`selection-handles.ts`; 40 files in
 Production docs build of this checkout served with `vite preview`,
 Playwright's own Chromium (headless). No page errors in any run.
 
+- **d22, typing** (a second run): the box cleared and `banana` typed one
+  key at a time; after each key focus was in the input and the ring on
+  an in-view cell: `b` "1 of 244" Alba 1, `ba` "1 of 60", `ban` "1 of 1"
+  and the ring jumped to row 288's Code cell `BANANA-7` (scrollTop 10046,
+  scrollLeft 343, clear of the frozen field), then `bana` to `banana`
+  stayed there.
 - **d22, search** (1300 × 900, real `page.keyboard` and `page.mouse`):
   a click in the box, Ctrl+A and typing `ana`: "1 of 20", Mariana Ruiz
   (row 6, Mentor) ringed (`rgb(250, 203, 61) 0px 0px 0px 2px inset`),

@@ -1,6 +1,6 @@
 /** The selection: the range, its anchor and head, and what it touches (V03C-DESIGN.md 3.2). */
 import { cached, tracked } from '@glimmer/tracking';
-import { scheduleOnce } from '@ember/runloop';
+import { next } from '@ember/runloop';
 import { isDestroyed, isDestroying } from '@ember/destroyable';
 import { modifier } from 'ember-modifier';
 
@@ -71,16 +71,26 @@ export default class SheetSelection<T extends object> {
 
   /** The key of the selection last given to `@onSelectionChange` ('' for null). */
   reportedKey = '';
+  /** A report is scheduled for the next run loop. */
+  reportPending = false;
 
-  /** Re-runs when the selection changes (with `@onSelectionChange`): reports it after the render. */
+  /**
+   * Re-runs when the selection changes (with `@onSelectionChange`):
+   * reports it in the next run loop, after this one's render. At most one
+   * report per run loop: a change the handler itself makes (it calls
+   * `api.focusCell`) is reported in a later one.
+   */
   reportChange = modifier(() => {
     if (!this.sheet.args.onSelectionChange) return;
     void this.current;
-    scheduleOnce('afterRender', this.report);
+    if (this.reportPending) return;
+    this.reportPending = true;
+    next(this.report);
   });
 
   /** Calls `@onSelectionChange` when the kind, record ids or field ids changed since the last call. */
   report = (): void => {
+    this.reportPending = false;
     if (isDestroying(this.sheet) || isDestroyed(this.sheet)) return;
     const selection = this.current;
     const key = selectionKey(selection);

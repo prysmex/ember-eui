@@ -5,6 +5,7 @@
 import { module, test } from 'qunit';
 import { setupRenderingTest } from 'ember-qunit';
 import { tracked } from '@glimmer/tracking';
+import { _getCurrentRunLoop } from '@ember/runloop';
 import { click, render, settled, triggerEvent } from '@ember/test-helpers';
 
 import EuiSheet from '#src/components/eui-sheet.gts';
@@ -155,6 +156,28 @@ module('Integration | Component | EuiSheet selection', function (hooks) {
     await focusCell(0, 0);
     await click(el('.euiDataGridHeaderCell__content', header(0)));
     assert.deepEqual(state.calls, ['cells r0 name 1', 'columns r0 name 1']);
+  });
+
+  test('SL2b a handler that changes the selection gets one call per run loop', async function (assert) {
+    const state = new State();
+    const loops: unknown[] = [];
+    let moved = false;
+    const original = state.onSelectionChange;
+    state.onSelectionChange = (selection) => {
+      loops.push(_getCurrentRunLoop());
+      original(selection);
+      // the owner moves the selection from its handler, once
+      if (!moved) {
+        moved = true;
+        state.api!.focusCell({ recordId: 'r2', fieldId: 'city' });
+      }
+    };
+    await renderSheet(state);
+    // focus() waits for settled(): the second report has arrived
+    await focusCell(0, 0);
+    assert.deepEqual(state.calls, ['cells r0 name 1', 'cells r2 city 1']);
+    assert.strictEqual(loops.length, 2);
+    assert.notStrictEqual(loops[0], loops[1], 'in two run loops');
   });
 
   test('SL3 with groups, a range across a header lists the records on both sides only', async function (assert) {

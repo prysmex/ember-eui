@@ -136,6 +136,7 @@ const CSS = `
 .euiSheet .euiDataGridRow.euiSheet__addRow .euiDataGridRowCell:not(.euiDataGridRowCell--lastColumn) { border-inline-end-color: transparent; }
 .euiSheet .euiDataGridRow.euiSheet__addRow:hover .euiDataGridRowCell { background-color: var(--euiSheet-plain, #FFF); background-image: linear-gradient(var(--euiSheet-hover, rgba(105, 112, 125, 0.06)), var(--euiSheet-hover, rgba(105, 112, 125, 0.06))); }
 .euiSheet .euiDataGridRow.euiSheet__addRow .euiDataGridRowCell::after { content: none; }
+.euiSheet .euiDataGridRow.euiSheet__addRow .euiDataGridRowCell__content { display: flex; align-items: center; }
 .euiSheet .euiDataGridRow.euiSheet__addRow .euiDataGridRowCell:focus { outline: 3px solid var(--euiSheet-primary, #0B64DD); outline-offset: -3px; box-shadow: none; }
 .euiSheet .euiSheet__rowCell--add [data-datagrid-cellcontent] { justify-content: center; height: 100%; }
 /* field management (V03 batch 2): the "+" column's header (a hover tint, the 3 px ring under the keyboard), its inert body cells, the field editor's panel, the header menu's Delete in the danger colour after a line */

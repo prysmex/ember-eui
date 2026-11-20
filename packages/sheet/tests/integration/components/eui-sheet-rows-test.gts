@@ -1008,6 +1008,42 @@ module('Integration | Component | EuiSheet records', function (hooks) {
     assert.strictEqual(store.log[0]!.source, 'insert');
     assert.strictEqual(store.records.length, 3);
   });
+  test('AR9 on a taller row "Add record" is centred like the plus', async function (assert) {
+    const store = localRecords<Row>(rows(2), { getRecordId: getId });
+    const state = new State();
+    await render(
+      <template>
+        <div style="width:800px">
+          <EuiSheet
+            @records={{store.records}}
+            @fields={{state.fields}}
+            @getRecordId={{getId}}
+            @onChange={{store.apply}}
+            @rowHeight="medium"
+          />
+        </div>
+      </template>
+    );
+    const row = el('.euiSheet__addRow');
+    assert
+      .dom('.euiDataGridRowCell__content--lineCountHeight', row)
+      .exists('a two-line row');
+    const middle = (element: Element) => {
+      const box = element.getBoundingClientRect();
+      return box.top + box.height / 2;
+    };
+    const centre = middle(row);
+    const text = el('[data-test-subj=euiSheetAddRecord]', row);
+    const plus = el('.euiSheet__rowAdd', row);
+    assert.true(
+      Math.abs(middle(text) - centre) <= 1,
+      `the text is centred (${middle(text)} vs ${centre})`
+    );
+    assert.true(
+      Math.abs(middle(plus) - centre) <= 1,
+      `the plus is centred (${middle(plus)} vs ${centre})`
+    );
+  });
   /* Selection marks on headers and row numbers, checked rows (V03 batch 1) */
 
   const marked = (element: HTMLElement) =>

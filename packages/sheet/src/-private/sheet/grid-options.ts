@@ -1,14 +1,17 @@
 /** The grid's row height, style, custom properties and virtualization (V03C-DESIGN.md 3.2). */
 import { cached, tracked } from '@glimmer/tracking';
 import { isDestroyed, isDestroying } from '@ember/destroyable';
+import { next } from '@ember/runloop';
 import { htmlSafe } from '@ember/template';
 import { modifier } from 'ember-modifier';
 
+import { changed, toRecordRange } from '../visible-range.ts';
 import { ADD_FIELD_WIDTH } from './util.ts';
 
 import type EuiSheet from '../../components/eui-sheet.gts';
-import type { SheetRowHeight } from '../../types.ts';
+import type { SheetRowHeight, SheetVisibleRange } from '../../types.ts';
 import type {
+  EuiDataGridItemsRendered,
   EuiDataGridRowHeightsOptions,
   EuiDataGridStyle,
   EuiDataGridVirtualizationOptions
@@ -145,17 +148,61 @@ export default class SheetGridOptions<T extends object> {
     return () => observer.disconnect();
   });
 
-  /** While a field is frozen every column of a rendered row is rendered (9.1): a frozen cell must not unmount. */
+  /**
+   * While a field is frozen every column of a rendered row is rendered
+   * (9.1): a frozen cell must not unmount. With `@onVisibleRangeChange`
+   * the grid reports its visible rows (`onItemsRendered`, v0.4 09).
+   * Cached: the grid sees a new object only when one of these changes.
+   */
   @cached
   get virtualizationOptions(): EuiDataGridVirtualizationOptions | undefined {
-    if (!this.sheet.frozen.frozenCount) return undefined;
-    return {
-      overscanColumnCount:
+    const reports = !!this.sheet.args.onVisibleRangeChange;
+    const options: EuiDataGridVirtualizationOptions = {};
+    if (this.sheet.frozen.frozenCount)
+      options.overscanColumnCount =
         this.sheet.fields.visibleFields.length +
         this.sheet.colOffset +
-        (this.sheet.gridColumns.hasAddFieldColumn ? 1 : 0)
-    };
+        (this.sheet.gridColumns.hasAddFieldColumn ? 1 : 0);
+    if (reports) options.onItemsRendered = this.onItemsRendered;
+    return Object.keys(options).length ? options : undefined;
   }
+
+  /* The records on screen (v0.4 09) */
+
+  /** The range last given to `@onVisibleRangeChange`. */
+  reportedRange: SheetVisibleRange | null = null;
+  /** The range of the grid's latest report, waiting for `reportRange`. */
+  renderedRange: SheetVisibleRange | null = null;
+  /** A report is scheduled for the next run loop. */
+  rangePending = false;
+
+  /**
+   * The grid rendered its window (after render): its visible rows as
+   * records, through the row model of that render; reported in the next
+   * run loop, so an owner that appends records does not change state the
+   * render read. At most one report per run loop.
+   */
+  onItemsRendered = (items: EuiDataGridItemsRendered): void => {
+    if (isDestroying(this.sheet) || isDestroyed(this.sheet)) return;
+    this.renderedRange = toRecordRange(
+      { start: items.visibleRowStartIndex, stop: items.visibleRowStopIndex },
+      this.sheet.rows.rowModel,
+      this.sheet.args.records.length
+    );
+    if (this.rangePending) return;
+    this.rangePending = true;
+    next(this.reportRange);
+  };
+
+  /** Calls `@onVisibleRangeChange` when `first`, `last` or `count` changed; not with only headers on screen. */
+  reportRange = (): void => {
+    this.rangePending = false;
+    if (isDestroying(this.sheet) || isDestroyed(this.sheet)) return;
+    const range = this.renderedRange;
+    if (!range || !changed(this.reportedRange, range)) return;
+    this.reportedRange = range;
+    this.sheet.args.onVisibleRangeChange?.(range);
+  };
 
   /** The add row's class, and each group header row's (V03 9.1). */
   @cached

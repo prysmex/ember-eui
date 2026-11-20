@@ -50,5 +50,6 @@ export type {
   SheetRowColor,
   SheetRowHeight,
   SheetSelection,
-  SheetSort
+  SheetSort,
+  SheetVisibleRange
 } from './types.ts';

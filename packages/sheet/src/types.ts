@@ -305,6 +305,19 @@ export interface SheetSelection<T = any> {
   cellCount: number;
 }
 
+/**
+ * The records on screen (v0.4 09), for `@onVisibleRangeChange`: positions
+ * in `@records`, not grid rows (group headers and add rows are skipped).
+ */
+export interface SheetVisibleRange {
+  /** The first record on screen. */
+  first: number;
+  /** The last record on screen. */
+  last: number;
+  /** `@records.length`, so "near the end" is one comparison: `last >= count - 20`. */
+  count: number;
+}
+
 /** One sort key. The same shape as EmberSearchUi's `SortItem`. */
 export interface SheetSort {
   field: string;
@@ -466,6 +479,15 @@ export interface EuiSheetSignature<T> {
      * It runs during a drag: keep it cheap, or debounce.
      */
     onSelectionChange?: (selection: SheetSelection<T> | null) => void;
+    /**
+     * The records on screen changed (v0.4 09): called after render, at
+     * most once per run loop, when `first`, `last` or `count` changed (a
+     * scroll, a resize, `@records` growing); not while only group headers
+     * are on screen. For loading more as the user scrolls: the owner
+     * checks `last` against `count` and appends to `@records`, with
+     * `@isLoading` while it loads.
+     */
+    onVisibleRangeChange?: (range: SheetVisibleRange) => void;
     /** Shows a thin progress bar over the grid; the grid stays usable. */
     isLoading?: boolean;
     /** Text per field id for the summary bar (`''`: the row-number column). Passing it, even `{}`, shows the bar. */

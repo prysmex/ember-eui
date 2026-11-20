@@ -40,8 +40,11 @@ export const sheetThemeVars = ({
     '--euiSheet-hover': colors.backgroundBaseInteractiveHover,
     '--euiSheet-plain': colors.backgroundBasePlain,
     '--euiSheet-subdued': colors.backgroundBaseSubdued,
-    // V03 batch 3b: group header rows (opaque)
-    '--euiSheet-group': colors.backgroundBaseSubdued,
+    // V03 batch 3b: group header rows (opaque). Not backgroundBaseSubdued:
+    // that is the row-number column's colour (light) and darker than the
+    // records in dark, so a header did not stand out; FormsPrepend is one
+    // step from the records in both modes
+    '--euiSheet-group': colors.backgroundBaseFormsPrepend,
     '--euiSheet-text': colors.textParagraph,
     '--euiSheet-textSubdued': colors.textSubdued,
     '--euiSheet-danger': colors.danger,

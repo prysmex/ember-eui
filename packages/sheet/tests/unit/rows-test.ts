@@ -265,4 +265,38 @@ module('Unit | Sheet | row model', function () {
     assert.strictEqual(model.recordRowAt(99_999), 99_999);
     assert.strictEqual(model.gridRowOf(99_999), 99_999);
   });
+
+  test('RM13 headerRowOf: each header row, -1 outside @groups and without groups', function (assert) {
+    const model = buildRowModel({
+      recordCount: 4,
+      addRow: true,
+      groups: [
+        { depth: 0 },
+        { depth: 1, loaded: 2 },
+        { depth: 1, loaded: 0, collapsed: true },
+        { depth: 0, loaded: 2 }
+      ]
+    });
+    assert.deepEqual(rows(model), [
+      'g0',
+      'g1',
+      'r0',
+      'r1',
+      'a1',
+      'g2',
+      'g3',
+      'r2',
+      'r3',
+      'a3'
+    ]);
+    assert.deepEqual(
+      [0, 1, 2, 3].map((group) => model.headerRowOf(group)),
+      [0, 1, 5, 6]
+    );
+    assert.strictEqual(model.headerRowOf(-1), -1);
+    assert.strictEqual(model.headerRowOf(4), -1);
+    const identity = buildRowModel({ recordCount: 4, addRow: true });
+    assert.strictEqual(identity.headerRowOf(0), -1);
+    assert.strictEqual(identity.headerRowOf(-1), -1);
+  });
 });

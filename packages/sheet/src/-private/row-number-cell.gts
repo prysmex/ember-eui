@@ -67,9 +67,12 @@ export class RowNumberCell extends Component<RowNumberCellSignature> {
     const classes = ['euiSheet__rowCell'];
     // a group header: not frozen (its first rendered cell is made sticky
     // by the row's CSS, V03 9.1), no number
-    if (this.group) {
-      props['className'] = classes.join(' ');
-      this.args.setCellProps(props);
+    const group = this.group;
+    if (group) {
+      this.args.setCellProps({
+        ...this.sheet.groupCellProps(group),
+        className: classes.join(' ')
+      });
       return '';
     }
     // frozen with the first field (V02-DESIGN.md 6.7)
@@ -104,7 +107,7 @@ export class RowNumberCell extends Component<RowNumberCellSignature> {
   <template>
     {{this.cellProps}}
     {{#if this.group}}
-      <GroupLabel @group={{this.group}} />
+      <GroupLabel @sheet={{this.sheet}} @group={{this.group}} />
     {{else if this.isAddRow}}
       <span
         class="euiSheet__rowAdd"

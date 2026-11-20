@@ -1371,3 +1371,190 @@ baseline's 19 errors, in the same files. `docs:api:check` passes.
   counts them in the right group.
 - `EuiSheetSearch` already passes `@groupBy`, `@onGroupByChange` and
   `@onGroupToggle` to `EuiSheet`; the component only has to read them.
+
+## Batch 3b, stage 3.1: drawing groups
+
+Built 2026-11-20 on `46cdde76`, in the repository (tested in a Linux
+copy). Scope: 8.4 and the drawing parts of 8.2, 8.3 and 8.6, the changing
+`@groups` of 4.2 and 7.4, and stage 1's open items. Not committed.
+
+### What was built
+
+- **Header rows.**
+  - The label is `group.label`, else the group field's
+    `type.format(value)`, else `groupEmpty` ("(Empty)") for an empty
+    value. The field is `@groupBy[depth].field`, looked up in the visible
+    and hidden fields. Without `@groupBy` the value is shown as it is.
+  - After the label: the count (`groupCount`, "Count 12") and, with
+    `continued`, `groupContinued` ("(continued)").
+  - Indent `depth × 16px`; any depth.
+  - Every cell of a header row gets an `aria-label` ("Status: Open,
+    Count 12") and, with a toggle, `aria-expanded`.
+- **The toggle.** Only with `@onGroupToggle`. A chevron (`arrowDown` /
+  `arrowRight`, title `collapseGroup` / `expandGroup`) before the label.
+  A click on the chevron or the title, or plain Enter or Space on a
+  focused header cell (row-number or data cell), calls
+  `@onGroupToggle(key, !collapsed)`. Focus stays on the header: the sheet
+  remembers the focused header's key and grid column, and after a render
+  that moves the header it focuses the header again at its new row.
+- **Messages.** The eight 4.6 keys, `euiSheet.*` tokens through
+  `eui-i18n`: `groupByField`, `removeGrouping`, `groupLabel`,
+  `groupEmpty`, `groupCount`, `groupContinued`, `expandGroup`,
+  `collapseGroup`. The two menu ones are for 3.2.
+- **Group add rows.** `isAddRow` is true for every add row while
+  grouped. Each group's add row gets `euiSheet__addRow`, so it has the
+  sheet's add-row look, the plus in the row-number cell and "Add record".
+  A click or Enter calls `appendToGroup`: one insert with
+  `@newRecordValues({ above: the group's last loaded record })` under the
+  group's values (the group and each ancestor:
+  `{ [@groupBy[depth].field]: value }`), `groupKey`, `index` after that
+  record and an `anchor` after it. An empty group has no anchor; its
+  index is the record row after the records above it.
+  `insertRecords` (sheet core) takes `groupKey`.
+- **Row numbers.** `numberOf` reads `rowNumbers`, an `Int32Array` built
+  only when some group has `rowNumberStart`: one more than the previous
+  record's number, from `@rowNumberOffset + 1`; a group's first record
+  takes its `rowNumberStart`, or its nearest ancestor's. Without any
+  `rowNumberStart` it is v0.2's `rowNumberOffset + index + 1`. `@rowLabel`
+  gets that number.
+- **Summaries.** Stage 1 already drew `summary[fieldId]` in the header
+  cells; GR19 checks it next to the footer `@summary`.
+- **The "+" column.** No code was needed. Its body cell in a header row
+  takes the group background (the row's CSS covers every cell); in a
+  group add row it takes the add-row look. A focus on it still moves to
+  the row's last field, which on a header row is a header cell.
+- **A changing `@groups`.**
+  - `{{this.watchRecords @records @groups}}`; `@validate` is scheduled
+    only when `@records` changes.
+  - `recordsRendered` keeps `lastGroups` beside `lastRowModel`. When only
+    `@groups` changed, `groupsRendered` runs. It acts only when the
+    layout changed (group keys, header rows, add rows or row count).
+  - Then: a select drag, a fill drag, an IME composition, the file-drop
+    target and the row menu end (`endTransients`); `followRecords` maps
+    the active cell by record id, and an add row by its group's key
+    (`refindRow`); `editing.pos` follows its record as before.
+  - `lastToggledRow` and `rowCursor` are re-found by record id or group
+    key whenever grouped rows move (`followRows`), also after the sheet's
+    own insert or delete.
+  - The same endings happen when `@records` and the layout change
+    together while grouped. Without groups none of this runs.
+  - The `ember-eui.sheet.groups-loaded-mismatch` debug warning, from the
+    row model, when Σ `loaded` is less than `@records.length`. It names
+    both numbers.
+- **Stage 1's open items.**
+  - The notch: header cells no longer get `border-inline: 0`. Inner
+    dividers are transparent; the first column keeps the frame's left
+    edge and the last column its right edge, as on the add row.
+  - `--euiSheetGroupMin`: the first column's width is now what the grid
+    gives it: a resize, else `initialWidth`, else the grid's
+    `defaultColumnWidth` (visible width minus control and sized columns,
+    shared by the unsized ones, at least 100).
+  - RM13 tests `headerRowOf`.
+- **Demo.** `docs/sheet-demo/d19-groups.md`: a `localRecords` store
+  grouped by Status, a toolbar with the field (None, Status, City), a
+  second level, Collapse all and Expand all; per-group sum of Hours; the
+  chevron collapses. Two short paragraphs; the "Group by" prose is 3.2's.
+
+### Tests
+
+- `tests/integration/components/eui-sheet-groups-test.gts` (new): GR1,
+  GR2, GR3, GR4, GR9, GR12, GR19, GR20, GR21, GR23. 10 tests.
+- `tests/unit/rows-test.ts`: RM13 (new test; the others unchanged).
+- `eui-sheet-group-header-test.gts`: GH6's border assertion now checks
+  inner dividers only, and that the first column keeps its left edge.
+  Its background checks are unchanged.
+- GR3 and GR23 also cover a header that moves (focus follows its key),
+  new `@groups` with the same `@records` (focus and range follow the
+  record, the row menu closes), and an add row followed by its group key.
+
+Full suite: **472/472** (458 + 14), run by the main session after the
+agent was cut off by a sandbox restart. Lint, `pnpm lint:types` and
+`docs:api:check` clean; `packages/core/src` unchanged.
+
+The main session fixed two things on the way:
+
+- **GR23 looked for the row menu in the render root.** The menu is in a
+  layer at the end of `<body>` (batch 2), so "menu open" failed and "menu
+  closed" could not fail. Both now pass `document.body` as the root.
+- **A groups change with the row menu open lost focus.** `endTransients`
+  set `this.menu = null` (the document listener stayed) and focus fell to
+  the page, because the new groups re-render the menu's items and drop the
+  focused one before the sheet sees the change. It now closes the menu
+  with `closeMenu(false)` and reports focus in the menu, or focus fallen
+  to the page while the menu was open, so the caller focuses the active
+  cell. The same `closeMenu(false)` replaces `this.menu = null` where
+  `@records` changed under an open menu.
+
+### Deviations from 8.x
+
+1. **The visible label is the bare value text.** 8.1 and the task say
+   `type.format(value)` or "(Empty)"; 8.3 builds "Status: Open" with
+   `groupLabel`. `groupLabel` is used for the cells' `aria-label` only.
+2. **A click on the title toggles too**, as 8.3 and 8.6 say, not only
+   the chevron.
+3. **Enter and Space on a header are always taken.** Without
+   `@onGroupToggle` they do nothing (8.2), and the grid does not see them.
+4. **`lastToggledRow` and `rowCursor` stay grid rows**, re-found by
+   record id or group key when grouped rows move, instead of being stored
+   as ids (7.4). The result is the same while grouped, and the code
+   without groups is unchanged.
+5. **`groupCount` is "Count {count}"**: the messages have no plurals, so
+   "1 records" is avoided.
+6. **`--euiSheet-group` is `backgroundBaseFormsPrepend`**, not
+   `backgroundBaseSubdued` (4.6). See below.
+7. **`aria-label` and `aria-expanded` (8.6) are set now**, ahead of
+   3.2, because the toggle needs `aria-expanded`.
+8. **`SheetBlockApi` has no `groups`, `groupBy` or `toggleGroup` yet**
+   (4.5). The component has `toggleGroup(index)`.
+
+### Visibility changes
+
+- **Header background.** `backgroundBaseSubdued` was the row-number
+  column's colour in light (shade10 against white) and darker than the
+  records in dark (shade145 against shade140). Now
+  `backgroundBaseFormsPrepend`: shade15 in light, shade125 in dark, a
+  step away from both the records and the row-number column. The title is
+  600 weight in the text colour; count and "(continued)" are subdued.
+- **Chevron.** A 20 px box. Hover: the selection tint
+  (`--euiSheet-selected`) and the primary colour. While the row has focus
+  (its 2 px ring), the chevron is primary too. With a toggle the title
+  shows a pointer and underlines on hover.
+- **Dividers.** Inner dividers transparent, the frame's outer edges kept
+  (the notch is gone).
+- **Group add rows.** The add row's own CSS: opaque plain background,
+  no inner dividers, hover tint, pointer, subdued "Add record", the plus
+  centred in the row-number cell.
+- Not looked at with a real pointer or in a screenshot: hover, and the
+  chevron in dark. The checks are computed styles in headless Chromium.
+
+### Guards (3.2 must replace them)
+
+- **Paste on a group's add row does nothing** (the event is taken).
+  Before, `coreRowOf` sent it to the next group's first record and wrote
+  over it. 3.2: `buildPaste`'s `insert` option with the group's values,
+  `groupKey` and the anchor (GR8).
+- **Enter and Space on a header row are stopped.** 3.2 keeps it.
+
+Already inert since stage 1, unchanged: typing, Delete, F2, copy, cut,
+the row menu and the editor on a header row (no `anchor` or `head`
+there).
+
+### For stage 3.2
+
+- `insertNear` (Shift+Enter, the menu's insert above and below) and
+  `duplicate` insert without the group's values or `groupKey` (8.4). Not
+  a crash: a regrouping owner moves the record to the group of its
+  values. Use `groupValuesOf(groupAt(row))` and pass `groupKey` to
+  `insertOne`.
+- A paste from a record that runs past the last record inserts at the
+  end without group values (8.5, D14).
+- `focusedGroup` is set in `onFocusIn` for any header cell and cleared
+  when focus leaves the sheet. `followGroupFocus` runs after every
+  records or groups render while grouped. A header still keeps no
+  `anchor` or `head`.
+- `groupsRendered` runs `followRecords` with the same ids. That collapses
+  a range to its active cell when the layout changes, as v0.2 does on a
+  re-query.
+- PageUp, PageDown, Ctrl+End and the move after commit can still land on
+  a header (stage 1's list).
+- The demo page is not built in the docs site in this stage.

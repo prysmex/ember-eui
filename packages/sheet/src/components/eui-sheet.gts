@@ -42,6 +42,7 @@ import {
   fillRange,
   fillRight,
   insertRecords,
+  isEmptyValue,
   isReadOnly,
   mergeChangeSets,
   mergeErrors,
@@ -375,6 +376,8 @@ const ROW_COLUMN_WIDTH = 64;
 /** Id of the "+" add-field column: a trailing control column (V03 6.3, W8). */
 const ADD_FIELD_COLUMN_ID = 'euiSheet-addField';
 const ADD_FIELD_WIDTH = 40;
+/** The grid's width for a column without `initialWidth`, at least (`DEFAULT_COLUMN_WIDTH`, `body-base.ts`). */
+const GRID_DEFAULT_COLUMN_WIDTH = 100;
 
 /** The types the field editor offers without `@creatableFieldTypes`: the built-ins a draft can fully describe (V03 6.4). */
 const CREATABLE_FIELD_TYPES = [
@@ -617,6 +620,26 @@ function sameIds(a: readonly string[], b: readonly string[]): boolean {
   return true;
 }
 
+/** Whether two renders' rows are laid out the same: the same groups, at the same header and add rows. */
+function sameLayout(
+  a: RowModel,
+  aGroups: readonly SheetGroup[],
+  b: RowModel,
+  bGroups: readonly SheetGroup[]
+): boolean {
+  if (a.length !== b.length || aGroups.length !== bGroups.length) return false;
+  for (let i = 0; i < aGroups.length; i++) {
+    if (
+      aGroups[i]!.key !== bGroups[i]!.key ||
+      a.headerRowOf(i) !== b.headerRowOf(i) ||
+      a.addRowOf(i) !== b.addRowOf(i)
+    ) {
+      return false;
+    }
+  }
+  return true;
+}
+
 /**
  * Whether `next` is `previous` with only what this sheet emitted applied:
  * the ids kept in the same order, the pending deletes gone, and no more
@@ -807,6 +830,9 @@ export default class EuiSheet<T extends object> extends Component<
   lastIds: string[] = [];
   /** The row model of that render: the stored positions are its grid rows. */
   lastRowModel: RowModel | null = null;
+  /** `@groups` of that render (V03 4.2): what a stored add row or header row belongs to. */
+  lastGroups: readonly SheetGroup[] = [];
+  lastGroupsArg: readonly SheetGroup[] | undefined = undefined;
   /** What emitted change sets insert and delete, until `@records` changes. */
   pendingOwn: PendingOwn = { deletes: new Set(), inserts: 0 };
   /** Every id `remapIds` was told about, old (as a string) → new. */
@@ -1368,16 +1394,48 @@ export default class EuiSheet<T extends object> extends Component<
   get gridVars(): ReturnType<typeof htmlSafe> | undefined {
     const frozen = this.frozenStyle;
     if (!this.isGrouped) return frozen;
-    const first = this.visibleFields[0];
     const min =
-      (this.colOffset ? this.rowColumnWidth : 0) +
-      (first ? this.frozenWidth(first) : 0);
+      (this.colOffset ? this.rowColumnWidth : 0) + this.firstColumnWidth;
     const max = this.groupMaxWidth;
     const vars = [
       `--euiSheetGroupMin:${min}px`,
       `--euiSheetGroupMax:${max ? `${max}px` : 'none'}`
     ].join(';');
     return htmlSafe(frozen ? `${String(frozen)};${vars}` : vars);
+  }
+
+  /**
+   * The width the grid gives the first field's column: a resize, else its
+   * `initialWidth`, else the grid's default for a column without one
+   * (`defaultColumnWidth` in the grid's `body-base.ts`: the visible width
+   * left by the sized columns, shared, at least 100).
+   */
+  get firstColumnWidth(): number {
+    const field = this.visibleFields[0];
+    const column = this.columns[0];
+    if (!field || !column) return 0;
+    const resized = this.resizedWidths;
+    const kept =
+      resized && resized.columns === this.columns
+        ? resized.widths[field.id]
+        : undefined;
+    if (kept !== undefined) return kept;
+    if (column.initialWidth !== undefined) return column.initialWidth;
+    const visible = this.groupMaxWidth;
+    if (!visible) return GRID_DEFAULT_COLUMN_WIDTH;
+    const controls =
+      (this.colOffset ? this.rowColumnWidth : 0) +
+      (this.hasAddFieldColumn ? ADD_FIELD_WIDTH : 0);
+    let sized = 0;
+    let unsized = 0;
+    for (const each of this.columns) {
+      if (each.initialWidth === undefined) unsized++;
+      else sized += each.initialWidth;
+    }
+    return Math.max(
+      (visible - controls - sized) / Math.max(unsized, 1),
+      GRID_DEFAULT_COLUMN_WIDTH
+    );
   }
 
   /** The grid's visible width while grouped (`measureGroupWidth`); 0 before it is measured. */
@@ -1641,8 +1699,18 @@ export default class EuiSheet<T extends object> extends Component<
     return this.canInsert;
   }
 
+  /** The sheet's add row, or (grouped) any group's add row (V03 8.4). */
   isAddRow(row: number): boolean {
-    return row >= 0 && row === this.rowModel.addRowOf(-1);
+    if (row < 0) return false;
+    if (this.isGrouped) return this.rowModel.at(row)?.kind === 'add';
+    return row === this.rowModel.addRowOf(-1);
+  }
+
+  /** The group whose add row this is (its index in `@groups`); -1 for any other row. */
+  addRowGroupAt(row: number): number {
+    if (!this.isGrouped) return -1;
+    const at = this.rowModel.at(row);
+    return at?.kind === 'add' ? at.group : -1;
   }
 
   /** The visible fields, then the hidden ones: the expanded record, duplicate, undo. */
@@ -1705,6 +1773,9 @@ export default class EuiSheet<T extends object> extends Component<
     const addRow = model.addRowOf(-1);
     if (addRow >= 0) rowClasses[addRow] = 'euiSheet__addRow';
     this.groups.forEach((group, i) => {
+      // each expanded leaf's add row looks like the sheet's (V03 8.4)
+      const add = model.addRowOf(i);
+      if (add >= 0) rowClasses[add] = 'euiSheet__addRow';
       const row = model.headerRowOf(i);
       if (row < 0) return;
       const depth = Math.max(0, Math.floor(group.depth));
@@ -1718,9 +1789,54 @@ export default class EuiSheet<T extends object> extends Component<
     return this.args.rowNumberOffset ?? 0;
   }
 
-  /** The number a record row shows: `@rowNumberOffset + recordRow + 1`. */
+  /**
+   * The number a record row shows: `@rowNumberOffset + recordRow + 1`; with
+   * groups that set `rowNumberStart`, the numbers of `rowNumbers` (V03 8.4).
+   */
   numberOf(recordRow: number): number {
+    const numbers = this.rowNumbers;
+    if (numbers && recordRow >= 0 && recordRow < numbers.length) {
+      return numbers[recordRow]!;
+    }
     return this.rowNumberOffset + recordRow + 1;
+  }
+
+  /**
+   * Each record's number while some group has `rowNumberStart` (V03 8.4),
+   * else null: one more than the previous record's, from
+   * `@rowNumberOffset + 1`; a group's first record takes its
+   * `rowNumberStart`, or the nearest ancestor's when it has none.
+   */
+  @cached
+  get rowNumbers(): Int32Array | null {
+    const groups = this.groups;
+    if (!groups.some((group) => group.rowNumberStart !== undefined)) {
+      return null;
+    }
+    const model = this.rowModel;
+    const count = this.args.records.length;
+    const numbers = new Int32Array(count);
+    let previous = this.rowNumberOffset;
+    // the groups up to the last numbered record's: their starts are used
+    let done = -1;
+    for (let r = 0; r < count; r++) {
+      const group = model.groupAt(model.gridRowOf(r));
+      let start: number | undefined;
+      if (group > done) {
+        // the group itself, then its ancestors among the groups since then
+        let depth = Infinity;
+        for (let i = group; i > done && start === undefined; i--) {
+          const candidate = groups[i]!;
+          if (candidate.depth >= depth) continue;
+          depth = candidate.depth;
+          start = candidate.rowNumberStart;
+        }
+        done = group;
+      }
+      previous = start ?? previous + 1;
+      numbers[r] = previous;
+    }
+    return numbers;
   }
 
   /** The position a grid row shows: its record's number. */
@@ -1890,10 +2006,24 @@ export default class EuiSheet<T extends object> extends Component<
   /** Which grid row is a record, an add row or a group header. */
   @cached
   get rowModel(): RowModel {
+    const count = this.args.records.length;
+    const groups = this.args.groups;
+    if (groups?.length) {
+      // the records past Σ loaded are drawn in the last group (V03 8.2)
+      const loaded = groups.reduce(
+        (sum, group) => sum + Math.max(0, Math.floor(group.loaded ?? 0)),
+        0
+      );
+      warn(
+        `EuiSheet: the groups' \`loaded\` add up to ${loaded}, but @records has ${count} records: the last ${count - loaded} are drawn in the last group.`,
+        loaded >= count,
+        { id: 'ember-eui.sheet.groups-loaded-mismatch' }
+      );
+    }
     return buildRowModel({
-      recordCount: this.args.records.length,
+      recordCount: count,
       addRow: this.hasAddRow,
-      groups: this.args.groups
+      groups
     });
   }
 
@@ -1902,6 +2032,171 @@ export default class EuiSheet<T extends object> extends Component<
     if (!this.isGrouped) return undefined;
     const at = this.rowModel.at(row);
     return at?.kind === 'group' ? this.groups[at.group] : undefined;
+  }
+
+  /* Group headers (V03 8.3, 8.4) */
+
+  /** The headers have a toggle: only with `@onGroupToggle` (D2). */
+  get canToggleGroups(): boolean {
+    return !!this.args.onGroupToggle;
+  }
+
+  /** The field of a group's level, `@groupBy[depth].field`, among every field (a hidden one too). */
+  groupFieldOf(group: SheetGroup): EuiSheetField<T> | undefined {
+    const by = this.args.groupBy?.[group.depth];
+    return by
+      ? this.allFields.find((field) => field.id === by.field)
+      : undefined;
+  }
+
+  /** A header's text: its `label`, else the field type's `format(value)`, or "(Empty)". */
+  groupTitleOf(group: SheetGroup): string {
+    if (group.label !== undefined) return group.label;
+    const value = group.value;
+    const field = this.groupFieldOf(group);
+    if (field) {
+      const type = this.typeOf(field);
+      if (isEmptyValue(type, value)) return this.messages.groupEmpty();
+      return String(
+        type.format(value, field, {
+          record: undefined,
+          messages: this.messages
+        })
+      );
+    }
+    // no `@groupBy` for this level: the value as it is
+    if (value === null || value === undefined || value === '') {
+      return this.messages.groupEmpty();
+    }
+    return typeof value === 'string' ||
+      typeof value === 'number' ||
+      typeof value === 'boolean'
+      ? String(value)
+      : '';
+  }
+
+  /**
+   * The props of every cell of a header row (V03 8.6): what a screen reader
+   * announces on whichever cell has focus ("Status: Open, 3") and,
+   * with a toggle, `aria-expanded`.
+   */
+  groupCellProps(group: SheetGroup): Record<string, unknown> {
+    const messages = this.messages;
+    const field = this.groupFieldOf(group);
+    const title = this.groupTitleOf(group);
+    const parts = [
+      field ? messages.groupLabel(field.label ?? field.id, title) : title,
+      messages.groupCount(group.count)
+    ];
+    if (group.continued) parts.push(messages.groupContinued());
+    const props: Record<string, unknown> = { 'aria-label': parts.join(', ') };
+    if (this.canToggleGroups) {
+      props['aria-expanded'] = group.collapsed ? 'false' : 'true';
+    }
+    return props;
+  }
+
+  /** Asks the owner to collapse or expand a group (`@onGroupToggle(key, collapsed)`). */
+  toggleGroup(index: number): void {
+    const group = this.groups[index];
+    const handler = this.args.onGroupToggle;
+    if (!group || !handler) return;
+    handler(group.key, !group.collapsed);
+  }
+
+  /**
+   * The header cell that had focus last, by group key and grid column: a
+   * header has no `anchor` or `head`, so this is how focus stays on it when
+   * the owner's new `@groups` move it (V03 8.3, 4.2).
+   */
+  focusedGroup: { key: string; colIndex: number } | null = null;
+
+  /** A header cell lost focus to nowhere in this run loop (a render removed its row). */
+  groupFocusDropped = false;
+
+  /** Notes (or forgets) the header a focused cell belongs to. */
+  noteGroupFocus(cell: HTMLElement | null): void {
+    if (!this.isGrouped || !cell) {
+      this.focusedGroup = null;
+      return;
+    }
+    const group = this.groupHeaderAt(this.rowIndexOf(cell));
+    this.focusedGroup = group
+      ? {
+          key: group.key,
+          colIndex: Number(cell.dataset['gridcellColumnIndex'])
+        }
+      : null;
+  }
+
+  /** After a render with new `@groups` or `@records`: focus follows the header it was on. */
+  followGroupFocus(): void {
+    const focused = this.focusedGroup;
+    if (!focused) return;
+    const index = this.groups.findIndex((group) => group.key === focused.key);
+    if (index < 0) {
+      this.focusedGroup = null;
+      return;
+    }
+    const row = this.rowModel.headerRowOf(index);
+    const active = document.activeElement;
+    const cell = this.rowNumberCell(active) ?? this.dataCell(active);
+    if (cell) {
+      if (this.rowIndexOf(cell) === row) return;
+    } else if (
+      !this.groupFocusDropped ||
+      (active && active !== document.body)
+    ) {
+      // focus went elsewhere (a click on the page), not away with the row
+      return;
+    }
+    this.noteScrollLeft();
+    this.gridApi?.setFocusedCell({ rowIndex: row, colIndex: focused.colIndex });
+  }
+
+  /** Enter or Space on a header cell: the toggle; nothing without `@onGroupToggle` (V03 8.6). */
+  onGroupKeyDown(event: KeyboardEvent, target: EventTarget | null): boolean {
+    const cell = this.rowNumberCell(target) ?? this.dataCell(target);
+    if (!cell || target !== cell) return false;
+    const at = this.rowModel.at(this.rowIndexOf(cell));
+    if (at?.kind !== 'group') return false;
+    const plain =
+      !event.ctrlKey && !event.metaKey && !event.altKey && !event.shiftKey;
+    if (!plain || (event.key !== 'Enter' && event.key !== ' ')) return false;
+    stop(event);
+    this.toggleGroup(at.group);
+    return true;
+  }
+
+  /** A click on a header's chevron or title: the toggle; true when handled. */
+  onGroupToggleClick(target: Element): boolean {
+    const toggle = target.closest('[data-eui-sheet-group-toggle]');
+    if (!toggle || !this.wrapper?.contains(toggle)) return false;
+    const cell = this.rowNumberCell(toggle) ?? this.dataCell(toggle);
+    const at = cell ? this.rowModel.at(this.rowIndexOf(cell)) : undefined;
+    if (at?.kind !== 'group') return false;
+    this.toggleGroup(at.group);
+    return true;
+  }
+
+  /**
+   * The values a record inserted into a group gets (V03 8.4): for the group
+   * and each ancestor, `{ [@groupBy[depth].field]: group.value }`.
+   */
+  groupValuesOf(index: number): Record<string, unknown> {
+    const groups = this.groups;
+    const groupBy = this.args.groupBy ?? [];
+    const values: Record<string, unknown> = {};
+    let depth = Infinity;
+    for (let i = index; i >= 0; i--) {
+      const group = groups[i]!;
+      if (group.depth >= depth) continue;
+      depth = group.depth;
+      const by = groupBy[group.depth];
+      if (by && !(by.field in values)) values[by.field] = group.value;
+      if (depth <= 0) break;
+    }
+    return values;
   }
 
   get rowCount(): number {
@@ -2159,11 +2454,14 @@ export default class EuiSheet<T extends object> extends Component<
    * Whenever `@records` is a new array: schedules a `@validate` run and,
    * after the render, follows the records (`recordsRendered`).
    */
-  watchRecords = modifier((_element: HTMLElement, [records]: [unknown]) => {
-    void records;
-    this.scheduleValidate();
-    afterRender(this, () => this.recordsRendered());
-  });
+  watchRecords = modifier(
+    (_element: HTMLElement, [records, groups]: [unknown, unknown]) => {
+      void groups;
+      // V03 4.2: `@groups` can change while `@records` stays the same array
+      if (records !== this.lastRecords) this.scheduleValidate();
+      afterRender(this, () => this.recordsRendered());
+    }
+  );
 
   /**
    * After a render with a new `@records` (V02-DESIGN.md 3.2, 3.3). A change
@@ -2173,16 +2471,28 @@ export default class EuiSheet<T extends object> extends Component<
    */
   recordsRendered(): void {
     const records = this.args.records;
-    if (records === this.lastRecords) return;
+    if (records === this.lastRecords) {
+      if (this.args.groups !== this.lastGroupsArg) this.groupsRendered();
+      return;
+    }
     const previous = this.lastRecords;
     const previousIds = this.lastIds;
     const previousModel = this.lastRowModel;
+    const previousGroups = this.lastGroups;
     const ids = records.map((record) => String(this.args.getRecordId(record)));
     const pending = this.pendingOwn;
     this.lastRecords = records;
     this.lastIds = ids;
     this.lastRowModel = this.rowModel;
+    this.lastGroups = this.groups;
+    this.lastGroupsArg = this.args.groups;
     this.pendingOwn = { deletes: new Set(), inserts: 0 };
+    // grouped, the rows moved: what holds grid rows across renders ends (V03 7.4)
+    const regrouped =
+      !!previousModel &&
+      (previousGroups.length > 0 || this.isGrouped) &&
+      !sameLayout(previousModel, previousGroups, this.rowModel, this.groups);
+    const imeFocus = regrouped && this.endTransients();
     // a pending cell whose record left `@records` (an owner's re-query) is
     // dropped; one on a row not inserted yet (an async owner) is kept
     if (previous && this.pendingCells.size) {
@@ -2195,8 +2505,23 @@ export default class EuiSheet<T extends object> extends Component<
       !sameIds(previousIds, ids) &&
       !isOwnChange(previousIds, ids, pending)
     ) {
-      this.followRecords(previousIds, ids, previousModel ?? this.rowModel);
+      this.followRecords(
+        previousIds,
+        ids,
+        previousModel ?? this.rowModel,
+        previousGroups
+      );
+    } else if (regrouped && previousModel) {
+      if (sameIds(previousIds, ids)) {
+        // a new array of the same records under new groups (a re-query
+        // with new headers): the stored positions follow, as on new @groups
+        this.followRecords(previousIds, ids, previousModel, previousGroups);
+      } else {
+        // the sheet's own insert or delete in a group: the rows after it moved
+        this.followRows(previousIds, ids, previousModel, previousGroups);
+      }
     }
+    if (imeFocus && this.head) this.focusGridCell(this.head);
     // the expanded record left `@records` (deleted, or the owner re-queried)
     const expanded = this.expandedId;
     if (expanded !== null && !ids.includes(String(expanded))) {
@@ -2204,8 +2529,118 @@ export default class EuiSheet<T extends object> extends Component<
       this.setExpanded(null);
     }
     // a menu opened on rows that changed
-    if (this.menu && previous && !sameIds(previousIds, ids)) this.menu = null;
+    if (this.menu && previous && !sameIds(previousIds, ids)) {
+      this.closeMenu(false);
+    }
     this.applyPendingFocus();
+    if (this.isGrouped || previousGroups.length) this.followGroupFocus();
+  }
+
+  /**
+   * After a render with new `@groups` and the same `@records` (V03 4.2, 7.4
+   * "Stored positions"): when the rows moved, the stored positions are
+   * found again by record id or group key, and a drag, a fill, a
+   * composition, a drop target and an open menu end; focus on a header
+   * follows its key.
+   */
+  groupsRendered(): void {
+    const previousModel = this.lastRowModel;
+    const previousGroups = this.lastGroups;
+    this.lastRowModel = this.rowModel;
+    this.lastGroups = this.groups;
+    this.lastGroupsArg = this.args.groups;
+    if (
+      !previousModel ||
+      sameLayout(previousModel, previousGroups, this.rowModel, this.groups)
+    ) {
+      return;
+    }
+    const imeFocus = this.endTransients();
+    this.followRecords(
+      this.lastIds,
+      this.lastIds,
+      previousModel,
+      previousGroups
+    );
+    if (imeFocus && this.head && !this.editing) this.focusGridCell(this.head);
+    this.applyPendingFocus();
+    this.followGroupFocus();
+  }
+
+  /**
+   * Ends what holds grid rows across renders when grouped rows move
+   * (V03 7.4, GR23): a select drag, a fill drag, a composition, a file-drop
+   * target and the row menu. True when focus was in what ended (the
+   * composition catcher or the menu), so the caller focuses the active cell.
+   */
+  endTransients(): boolean {
+    if (this.dragging || this.dragFrom) this.endDrag();
+    this.stopFillDrag();
+    const imeFocus = !!this.imePos && document.activeElement === this.imeInput;
+    if (this.imePos || this.imeActive) this.endIme();
+    if (this.dropPos) this.dropPos = null;
+    // the menu's items can re-render first and drop the focused one: focus
+    // then fell to the page
+    const active = document.activeElement;
+    const menuFocus =
+      !!this.menu &&
+      (this.isInMenu(active) || !active || active === document.body);
+    if (this.menu) this.closeMenu(false);
+    return imeFocus || menuFocus;
+  }
+
+  /**
+   * A grid row of the previous render in this one (V03 4.2): a record's
+   * row by its id, an add row or a header by its group's key; -1 when it
+   * is gone.
+   */
+  refindRow(
+    row: number,
+    previousIds: readonly string[],
+    indexOf: ReadonlyMap<string, number>,
+    previousModel: RowModel,
+    previousGroups: readonly SheetGroup[]
+  ): number {
+    const at = previousModel.at(row);
+    if (!at) return -1;
+    if (at.kind === 'record') {
+      const id = previousIds[at.record];
+      const found = id === undefined ? undefined : indexOf.get(id);
+      return found === undefined ? -1 : this.gridRowOf(found);
+    }
+    if (at.group < 0) return this.rowModel.addRowOf(-1);
+    const key = previousGroups[at.group]?.key;
+    const index = this.groups.findIndex((group) => group.key === key);
+    if (index < 0) return -1;
+    return at.kind === 'add'
+      ? this.rowModel.addRowOf(index)
+      : this.rowModel.headerRowOf(index);
+  }
+
+  /**
+   * Grouped: the rows the checkbox Shift range and the row-number focus
+   * remember (`lastToggledRow`, `rowCursor`) follow their record (V03 7.4).
+   */
+  followRows(
+    previousIds: readonly string[],
+    ids: readonly string[],
+    previousModel: RowModel,
+    previousGroups: readonly SheetGroup[]
+  ): void {
+    const indexOf = new Map(ids.map((id, i) => [id, i]));
+    const refind = (row: number | null): number | null => {
+      if (row === null) return null;
+      const found = this.refindRow(
+        row,
+        previousIds,
+        indexOf,
+        previousModel,
+        previousGroups
+      );
+      return found < 0 ? null : found;
+    };
+    this.lastToggledRow = refind(this.lastToggledRow);
+    this.rowCursor = refind(this.rowCursor);
   }
 
   /**
@@ -2218,9 +2653,13 @@ export default class EuiSheet<T extends object> extends Component<
   followRecords(
     previousIds: readonly string[],
     ids: readonly string[],
-    previousModel: RowModel
+    previousModel: RowModel,
+    previousGroups: readonly SheetGroup[] = []
   ): void {
     const indexOf = new Map(ids.map((id, i) => [id, i]));
+    const grouped = previousGroups.length > 0 || this.isGrouped;
+    if (grouped)
+      this.followRows(previousIds, ids, previousModel, previousGroups);
     const active = document.activeElement;
     // a data cell has focus, or had it until this render removed its row
     const hadCellFocus =
@@ -2255,7 +2694,19 @@ export default class EuiSheet<T extends object> extends Component<
     if (this.copied) this.copied = null;
     if (head) {
       const id = previousIds[previousModel.recordRowAt(head.row)];
-      const found = id === undefined ? undefined : indexOf.get(id);
+      let found = id === undefined ? undefined : indexOf.get(id);
+      // grouped: an add row by its group's key (V03 4.2)
+      let foundRow = -1;
+      if (found === undefined && grouped) {
+        foundRow = this.refindRow(
+          head.row,
+          previousIds,
+          indexOf,
+          previousModel,
+          previousGroups
+        );
+        if (foundRow >= 0) found = this.recordRowAt(foundRow);
+      }
       // the last record, or the add row when there is none
       const model = this.rowModel;
       const lastRow =
@@ -2266,9 +2717,11 @@ export default class EuiSheet<T extends object> extends Component<
       } else {
         const pos = {
           row:
-            found === undefined
-              ? clamp(head.row, 0, lastRow)
-              : this.gridRowOf(found),
+            foundRow >= 0
+              ? foundRow
+              : found === undefined
+                ? clamp(head.row, 0, lastRow)
+                : this.gridRowOf(found),
           col: head.col
         };
         this.anchor = pos;
@@ -2486,13 +2939,15 @@ export default class EuiSheet<T extends object> extends Component<
     index: number,
     anchor: RecordInsert['anchor'] | undefined,
     values: Record<string, unknown>,
-    focusFieldId: string | null
+    focusFieldId: string | null,
+    groupKey?: string
   ): void {
     const changeSet = insertRecords(this.context, {
       at: index,
       anchor,
       values: [values],
-      nextTempId
+      nextTempId,
+      groupKey
     });
     if (this.editing) this.commit({ refocus: false });
     this.emit(changeSet, []);
@@ -2529,9 +2984,18 @@ export default class EuiSheet<T extends object> extends Component<
     );
   }
 
-  /** The add row: a record at the end; focus goes to its first editable field. */
-  appendRecord(): void {
+  /**
+   * An add row (grid row `row`): the sheet's inserts a record at the end, a
+   * group's one into that group (`appendToGroup`); focus goes to its first
+   * editable field.
+   */
+  appendRecord(row: number): void {
     if (!this.canInsert) return;
+    const group = this.addRowGroupAt(row);
+    if (group >= 0) {
+      this.appendToGroup(row, group);
+      return;
+    }
     const records = this.args.records;
     const last = records[records.length - 1];
     const values = this.newValues(last, undefined);
@@ -2542,6 +3006,32 @@ export default class EuiSheet<T extends object> extends Component<
         : { recordId: this.args.getRecordId(last), position: 'after' },
       values,
       this.firstEditableField(values)
+    );
+  }
+
+  /**
+   * A group's add row (V03 8.4, GR9): one record after the group's last
+   * loaded record, with `@newRecordValues` under the group's values (which
+   * win), its `groupKey`, and an anchor when the group has a record.
+   */
+  appendToGroup(row: number, group: number): void {
+    const records = this.args.records;
+    const key = this.groups[group]?.key;
+    // the group's last loaded record is the row above its add row
+    const last = this.recordRowAt(row - 1);
+    const above = last >= 0 ? records[last] : undefined;
+    const values = {
+      ...this.newValues(above, undefined),
+      ...this.groupValuesOf(group)
+    };
+    this.insertOne(
+      last >= 0 ? last + 1 : this.coreRowOf(row),
+      above === undefined
+        ? undefined
+        : { recordId: this.args.getRecordId(above), position: 'after' },
+      values,
+      this.firstEditableField(values),
+      key
     );
   }
 
@@ -3119,6 +3609,8 @@ export default class EuiSheet<T extends object> extends Component<
       return;
     }
     const rowCell = this.rowNumberCell(event.target);
+    // a header keeps no position: its key is what focus follows (V03 8.3)
+    this.noteGroupFocus(rowCell ?? this.dataCell(event.target));
     if (rowCell) {
       this.focused = null;
       if (this.frozenCount) this.onFrozenFocus(0);
@@ -3216,6 +3708,7 @@ export default class EuiSheet<T extends object> extends Component<
     const target = event.target;
     if (to instanceof Node && !this.ownsNode(to)) {
       this.gridHadFocus = false;
+      this.focusedGroup = null;
     } else if (!to && target instanceof Node) {
       // the grid re-inserting the focused cell's row (a scroll) blurs it
       // too, and the cell is connected again by then: without a press, with
@@ -3236,6 +3729,15 @@ export default class EuiSheet<T extends object> extends Component<
     if (!to && this.dataCell(event.target)) {
       this.focusDropped = true;
       next(() => (this.focusDropped = false));
+    }
+    // a header cell (data or row number) whose row a render removed
+    if (
+      !to &&
+      this.focusedGroup &&
+      (this.dataCell(target) ?? this.rowNumberCell(target))
+    ) {
+      this.groupFocusDropped = true;
+      next(() => (this.groupFocusDropped = false));
     }
   }
 
@@ -4099,13 +4601,15 @@ export default class EuiSheet<T extends object> extends Component<
     }
     const target = event.target as Element;
     if (this.isInMenu(target)) return;
+    // a header's chevron or title (V03 8.3), on a data or row-number cell
+    if (this.isGrouped && this.onGroupToggleClick(target)) return;
     if (this.onControlClick(event, target)) return;
     if (event.shiftKey || this.editing) return;
     const cell = this.dataCell(target);
     if (!cell) return;
     const pos = this.cursor(cell);
     if (this.isAddRow(pos.row)) {
-      this.appendRecord();
+      this.appendRecord(pos.row);
       return;
     }
     const record = this.recordAt(pos.row);
@@ -4156,7 +4660,7 @@ export default class EuiSheet<T extends object> extends Component<
     if (rowCell) {
       const row = this.rowIndexOf(rowCell);
       if (this.isAddRow(row)) {
-        this.appendRecord();
+        this.appendRecord(row);
       } else if (target.closest('[data-eui-sheet-row-check]')) {
         this.toggleChecked(row, event.shiftKey);
       } else if (target.closest('[data-eui-sheet-row-expand]')) {
@@ -4327,6 +4831,8 @@ export default class EuiSheet<T extends object> extends Component<
       this.showShortcuts();
       return;
     }
+    // Enter or Space on a group header's cell, row number or data (V03 8.6)
+    if (this.isGrouped && this.onGroupKeyDown(event, target)) return;
     const rowCell = this.rowNumberCell(target);
     if (rowCell && target === rowCell) {
       this.onRowNumberKeyDown(event, this.rowIndexOf(rowCell));
@@ -4383,7 +4889,7 @@ export default class EuiSheet<T extends object> extends Component<
       return;
     }
     if (this.isAddRow(pos.row)) {
-      this.onAddRowKeyDown(event);
+      this.onAddRowKeyDown(event, pos.row);
       return;
     }
     const record = this.recordAt(pos.row);
@@ -4792,11 +5298,11 @@ export default class EuiSheet<T extends object> extends Component<
   }
 
   /** The add row: Enter inserts; Space, typing and Delete do nothing (V02-DESIGN.md 5.5). */
-  onAddRowKeyDown(event: KeyboardEvent): void {
+  onAddRowKeyDown(event: KeyboardEvent, row: number): void {
     const plain = !event.ctrlKey && !event.metaKey && !event.altKey;
     if (event.key === 'Enter' && plain) {
       stop(event);
-      this.appendRecord();
+      this.appendRecord(row);
       return;
     }
     if (event.key === ' ' && plain) stop(event);
@@ -4807,7 +5313,7 @@ export default class EuiSheet<T extends object> extends Component<
     if (this.handleCommandKey(event)) return;
     if (this.handleLastFieldKey(event, row, null)) return;
     if (this.isAddRow(row)) {
-      this.onAddRowKeyDown(event);
+      this.onAddRowKeyDown(event, row);
       return;
     }
     const record = this.recordAt(row);
@@ -5314,6 +5820,9 @@ export default class EuiSheet<T extends object> extends Component<
     if (!range) return;
     stop(event);
     const anchor = { row: range.top, col: range.left };
+    // a group's add row: its inserts need the group's values (stage 3.2);
+    // `coreRowOf` would write over the next group's first records
+    if (this.addRowGroupAt(anchor.row) >= 0) return;
     // the core's anchor: its record row, or `records.length` on the add row
     const at = { row: this.coreRowOf(anchor.row), col: anchor.col };
     // a block that fits the selection a whole number of times fills it
@@ -6727,7 +7236,7 @@ export default class EuiSheet<T extends object> extends Component<
       data-eui-sheet-id={{this.sheetId}}
       ...attributes
       {{this.setupWrapper}}
-      {{this.watchRecords @records}}
+      {{this.watchRecords @records @groups}}
       {{this.watchFields @fields @hiddenFields}}
       {{this.registerSheetApi}}
       {{on "keydown" this.onKeyDown capture=true}}

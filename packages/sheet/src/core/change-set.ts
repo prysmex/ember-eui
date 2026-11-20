@@ -294,6 +294,8 @@ export function insertRecords<T>(
     anchor?: RecordInsert['anchor'];
     values?: Record<string, unknown>[];
     nextTempId?: () => string;
+    /** The group every insert goes into (V03 8.4): set on each `RecordInsert`. */
+    groupKey?: string;
   }
 ): ChangeSet {
   const values = options.values?.length ? options.values : [{}];
@@ -304,6 +306,7 @@ export function insertRecords<T>(
       index: options.at + i,
       values: { ...entry }
     };
+    if (options.groupKey !== undefined) insert.groupKey = options.groupKey;
     const previous = inserts[i - 1];
     const anchor = previous
       ? { recordId: previous.tempId, position: 'after' as const }

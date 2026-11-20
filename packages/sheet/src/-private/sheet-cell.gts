@@ -53,8 +53,9 @@ export default class SheetCell extends Component<{
   get cellProps(): string {
     // a group header's cell: no frozen, selection or error props; the
     // header row's CSS places the label (V03 9.1)
-    if (this.group) {
-      this.args.setCellProps({});
+    const group = this.group;
+    if (group) {
+      this.args.setCellProps(this.sheet.groupCellProps(group));
       return '';
     }
     const view = this.view;
@@ -129,7 +130,11 @@ export default class SheetCell extends Component<{
   <template>
     {{this.cellProps}}
     {{#if this.group}}
-      <GroupLabel @group={{this.group}} @fieldId={{@columnId}} />
+      <GroupLabel
+        @sheet={{this.sheet}}
+        @group={{this.group}}
+        @fieldId={{@columnId}}
+      />
     {{else if this.addRecordLabel}}
       <span class="euiSheet__addRecord" data-test-subj="euiSheetAddRecord">
         {{#if this.addRecordIcon}}<EuiIcon @type="plus" @size="s" />{{/if}}

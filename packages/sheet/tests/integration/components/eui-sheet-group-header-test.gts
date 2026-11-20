@@ -618,14 +618,29 @@ module('Integration | Component | EuiSheet group headers', function (hooks) {
         assert,
         `GH6 ${theme}: ${cells.length} cells, background ${first}; cell 1 border-left ${style.borderLeftWidth} ${style.borderLeftStyle}, border-right ${style.borderRightWidth} ${style.borderRightStyle} ${style.borderRightColor}`
       );
+      // stage 3.1: the inner dividers are gone; the grid frame's outer
+      // edges (the first column's left, the last column's right) stay, as
+      // on the add row
+      const outerLeft = (c: HTMLElement) =>
+        c.classList.contains('euiDataGridRowCell--firstColumn');
+      const outerRight = (c: HTMLElement) =>
+        c.classList.contains('euiDataGridRowCell--lastColumn');
       const bordered = cells.filter((c) => {
         const style = getComputedStyle(c);
-        return visibleBorder(style, 'left') || visibleBorder(style, 'right');
+        return (
+          (visibleBorder(style, 'left') && !outerLeft(c)) ||
+          (visibleBorder(style, 'right') && !outerRight(c))
+        );
       });
       assert.deepEqual(
         bordered.map((c) => c.dataset['gridcellColumnIndex']),
         [],
-        `${theme}: no cell has a visible inline border`
+        `${theme}: no cell has a visible inner divider`
+      );
+      const edge = cells.find(outerLeft);
+      assert.true(
+        !!edge && visibleBorder(getComputedStyle(edge), 'left'),
+        `${theme}: the first column keeps the frame's left edge`
       );
       return first;
     };

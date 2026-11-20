@@ -315,6 +315,22 @@ export interface SheetMessages {
   fieldType_user: () => string;
   /** 'Attachment' */
   fieldType_attachment: () => string;
+  /** 'Group by this field': the header menu's item with `@onGroupByChange` (V03 8.3) */
+  groupByField: () => string;
+  /** 'Remove grouping': the grouped field's header menu item */
+  removeGrouping: () => string;
+  /** '{field}: {value}': 'Status: Open', a group header's name for screen readers (V03 8.4) */
+  groupLabel: (field: string, value: string) => string;
+  /** '(Empty)': the label of the group of records with an empty value */
+  groupEmpty: () => string;
+  /** '{count}': a group header's record count, after its label (an app may translate it to 'Count {count}') */
+  groupCount: (count: number) => string;
+  /** '(continued)': a group that began on an earlier page */
+  groupContinued: () => string;
+  /** 'Expand group': a collapsed header's toggle */
+  expandGroup: () => string;
+  /** 'Collapse group': an expanded header's toggle */
+  collapseGroup: () => string;
 }
 
 export interface SheetMessageToken {
@@ -1100,6 +1116,46 @@ export const sheetMessageTokens: Readonly<
   fieldType_attachment: {
     token: 'euiSheet.fieldType_attachment',
     defaultMessage: 'Attachment',
+    params: []
+  },
+  groupByField: {
+    token: 'euiSheet.groupByField',
+    defaultMessage: 'Group by this field',
+    params: []
+  },
+  removeGrouping: {
+    token: 'euiSheet.removeGrouping',
+    defaultMessage: 'Remove grouping',
+    params: []
+  },
+  groupLabel: {
+    token: 'euiSheet.groupLabel',
+    defaultMessage: '{field}: {value}',
+    params: ['field', 'value']
+  },
+  groupEmpty: {
+    token: 'euiSheet.groupEmpty',
+    defaultMessage: '(Empty)',
+    params: []
+  },
+  groupCount: {
+    token: 'euiSheet.groupCount',
+    defaultMessage: '{count}',
+    params: ['count']
+  },
+  groupContinued: {
+    token: 'euiSheet.groupContinued',
+    defaultMessage: '(continued)',
+    params: []
+  },
+  expandGroup: {
+    token: 'euiSheet.expandGroup',
+    defaultMessage: 'Expand group',
+    params: []
+  },
+  collapseGroup: {
+    token: 'euiSheet.collapseGroup',
+    defaultMessage: 'Collapse group',
     params: []
   }
 };

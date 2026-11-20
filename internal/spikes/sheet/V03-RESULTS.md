@@ -3141,3 +3141,33 @@ Playwright's own Chromium (headless). No page errors in any run.
   `src/search-ui/eui-sheet-search.gts`; `src/types.ts`, `src/index.ts`;
   `docs/sheet.md`, `docs/sheet-demo/d13-summary.md`,
   `d17-attachments.md`, `README.md`.
+
+## Batches 4 and 5: verified by the main session (2026-11-20)
+
+Both batches were built in a claude.ai cloud session, which could not
+push; the user handed them over as a git bundle (13 commits on
+`431558fe`), merged into `feat/sheet` as `66863127` (the only other
+change on that side was the 3c verification note).
+
+Checked in the sandbox on the merge: `pnpm lint:types` clean; the tests'
+`ember-tsc` has the baseline's 19 errors and no other; ESLint and
+Prettier clean on every changed `.ts`/`.gts` file; the API docs check
+passes; no `package.json` or lockfile change; `packages/core` unchanged.
+The suite: 584 tests, 584 pass.
+
+Real input in Chromium (`playwright-core`, production docs build):
+
+- d21 row order: the grip shows on hover; a mouse drag of row 1 below
+  row 3 draws the insertion line and moves t1 after t3 (store order
+  t2 t3 t1 ...), one change set; Ctrl+Z restores t1 t2 t3.
+- d22 search: "ruiz" gives 13 matches; Enter steps 1, 2, 3 of 13 and the
+  current-match ring moves with it, scrolling to row 48 for the third.
+- d15: "19/11/2026 15:30" typed in the UTC Ships cell shows there and as
+  "19/11/2026 9:30 am" in Ships (Monterrey); "Send reminder" shows its
+  spinner while pending and ends without an error. The failing press
+  (Goggles) was not reached in this run; BT2 covers it.
+
+No page errors. Not checked here: touch ranges and the camera scan
+(no touch or camera in headless Chromium), Firefox, Safari.
+
+v0.3 is complete: batches 1, 2, 3a, 3b, 3c, 4 and 5.

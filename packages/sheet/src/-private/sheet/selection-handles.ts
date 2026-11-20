@@ -26,8 +26,13 @@ export default class SheetSelectionHandles<T extends object> {
   /** The last press was a touch: the handles show (a mouse on a hybrid device never sees them). */
   @tracked byTouch = false;
   /** A handle drag: which corner moves, the corner that stays, and its pointer. */
-  handleDrag: { corner: HandleCorner; fixed: Pos; pointerId: number } | null =
-    null;
+  handleDrag: {
+    corner: HandleCorner;
+    fixed: Pos;
+    pointerId: number;
+    /** The anchor (the active cell) when the drag started. */
+    anchorBefore: Pos | null;
+  } | null = null;
   /** A handle is being dragged: the handles let the pointer through to the cells under them. */
   @tracked dragging = false;
   /** The drag's auto-scroll loop near the grid's edges. */
@@ -107,7 +112,8 @@ export default class SheetSelectionHandles<T extends object> {
     this.handleDrag = {
       corner,
       fixed: corner === 'end' ? start : end,
-      pointerId: event.pointerId
+      pointerId: event.pointerId,
+      anchorBefore: this.sheet.selection.anchor
     };
     this.dragging = true;
     this.sheet.selection.anchor = start;
@@ -151,13 +157,18 @@ export default class SheetSelectionHandles<T extends object> {
     }
   }
 
-  /** The release (or a cancel) ends the drag; the anchor, the active cell, gets focus if it moved. */
+  /**
+   * The release (or a cancel) ends the drag. The anchor, the active cell,
+   * gets focus only if the drag moved it: an auto-scroll may have taken
+   * the old one out of view (focus is parked on the grid meanwhile), and
+   * focusing it would scroll back.
+   */
   onHandleUp = (event: PointerEvent): void => {
     const drag = this.handleDrag;
     if (!drag || event.pointerId !== drag.pointerId) return;
     this.end();
     const anchor = this.sheet.selection.anchor;
-    if (!anchor) return;
+    if (!anchor || samePos(anchor, drag.anchorBefore)) return;
     const active = this.sheet.dom.dataCell(document.activeElement);
     if (active && samePos(this.sheet.dom.cursor(active), anchor)) return;
     // onFocusIn sees the cell it knows and keeps the range

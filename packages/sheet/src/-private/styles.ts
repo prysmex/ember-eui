@@ -289,6 +289,10 @@ li:has([data-test-subj^="euiSheetEditField-"]), li:has([data-test-subj^="euiShee
 .euiSheet__dropLine.euiSheet__dropLine--box.euiSheet__dropLine--blocked { background: transparent; border-color: var(--euiSheet-danger, #BD271E); }
 /* the current search match (V03 11.1): a 2 px ring inside the cell, over @highlight's marks and the cell's own shadows (not its focus ring's outline) */
 .euiSheet .euiDataGrid .euiDataGridRow .euiDataGridRowCell.euiSheet__cell--match::after { content: ''; position: absolute; inset: 0; z-index: 1; border: 0; box-shadow: inset 0 0 0 2px var(--euiSheet-match, #FACB3D); pointer-events: none; }
+/* the touch selection handles (V03 11.3): a 20 px circle in a 44 px hit area, above the fill handle; they let the pointer through while one is dragged (elementFromPoint finds the cell) */
+.euiSheet__selectionHandle { position: absolute; z-index: 5; width: 44px; height: 44px; touch-action: none; -webkit-touch-callout: none; user-select: none; -webkit-user-select: none; }
+.euiSheet__selectionHandle::before { content: ''; position: absolute; top: 12px; left: 12px; box-sizing: border-box; width: 20px; height: 20px; border: 2px solid var(--euiSheet-plain, #FFF); border-radius: 50%; background: var(--euiSheet-primary, #0B64DD); box-shadow: 0 1px 3px var(--euiSheet-shadow, rgba(0, 0, 0, 0.2)); }
+.euiSheet--handleDragging .euiSheet__selectionHandle { pointer-events: none; }
 @media (pointer: coarse) { .euiSheet__fillHandle { display: none; } }
 @media (hover: none) {
   .euiSheet__rowGrip { visibility: visible; }

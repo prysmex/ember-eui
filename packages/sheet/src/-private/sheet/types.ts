@@ -130,6 +130,8 @@ export interface MenuState {
   anchor: WrapperBox;
   /** The records it acts on, fixed when it opened. */
   records: unknown[];
+  /** Opened by a long press (V03 11.3): it also has Copy and Paste for a cell range. */
+  byTouch?: boolean;
 }
 
 /** Where the expanded record was opened from, to focus it again on close. */

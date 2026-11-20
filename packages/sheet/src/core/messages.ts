@@ -371,6 +371,12 @@ export interface SheetMessages {
   scanBarcode: () => string;
   /** 'The camera is not available or was not allowed': the scan panel */
   cameraDenied: () => string;
+  /** 'Drag to change the selection': a touch selection handle (V03 11.3) */
+  selectionHandle: () => string;
+  /** 'Copy': the touch menu's item that copies the selected cells (V03 11.3) */
+  copyCells: () => string;
+  /** 'Paste': the touch menu's item that pastes over the selected cells (V03 11.3) */
+  pasteCells: () => string;
 }
 
 export interface SheetMessageToken {
@@ -1296,6 +1302,21 @@ export const sheetMessageTokens: Readonly<
   cameraDenied: {
     token: 'euiSheet.cameraDenied',
     defaultMessage: 'The camera is not available or was not allowed',
+    params: []
+  },
+  selectionHandle: {
+    token: 'euiSheet.selectionHandle',
+    defaultMessage: 'Drag to change the selection',
+    params: []
+  },
+  copyCells: {
+    token: 'euiSheet.copyCells',
+    defaultMessage: 'Copy',
+    params: []
+  },
+  pasteCells: {
+    token: 'euiSheet.pasteCells',
+    defaultMessage: 'Paste',
     params: []
   }
 };

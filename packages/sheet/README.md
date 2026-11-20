@@ -7,8 +7,12 @@ a change set (what the user typed, cleared or pasted); you apply it to your
 own store. It edits with the keyboard, selects ranges, copies and pastes
 blocks as TSV (to and from spreadsheets), and shows cell errors. It has
 built-in field types for text, numbers, checkboxes, selects, dates,
-linked records, users, attachments, currency, percent, duration, rating,
-links and long text, and you can add your own cells and editors. Fields
+dates with a time in a zone, linked records, users, attachments,
+currency, percent, duration, rating, links, long text, buttons that run
+your action and barcodes (typed, pasted or scanned), and you can add
+your own cells and editors. Rows can be dragged to a new order (a change
+set with `moves`, opt-in with `@canMove`) and coloured by record
+(`@rowColor`). Fields
 can be added, edited, duplicated and deleted from the grid (the "+" column
 and the column menu), through your handlers. Records can be drawn in
 groups, with collapsible headers, counts and per-group summaries, from the
@@ -370,8 +374,12 @@ come from the EUI theme, so the sheet follows light and dark: put it in an
 `--euiSheet-textDanger`, `--euiSheet-dangerFilled`,
 `--euiSheet-textInverse`, `--euiSheet-shadow`, `--euiSheet-subdued`,
 `--euiSheet-border`, `--euiSheet-link`, `--euiSheet-star`,
-`--euiSheet-highlight`) set by a class on the sheet's
-wrapper. To change one, set it on the sheet itself (`<EuiSheet
+`--euiSheet-textSuccess`, the row colours `--euiSheet-rowPrimary`,
+`-rowAccent`, `-rowSuccess`, `-rowWarning`, `-rowDanger`, `-rowNeutral`,
+and `--euiSheet-highlight`) set by a class on the sheet's wrapper.
+`@rowColor={{this.colorOf}}` draws a 4 px bar at a row's left edge: a
+named colour (`'danger'`, …) is the theme's, any other a CSS colour as
+given; `colorByOption(field)` colours by a select's option colours. To change one, set it on the sheet itself (`<EuiSheet
 style="--euiSheet-selected: #E6F0FF" …>`) or with a more specific
 selector: set on a parent element it loses to the sheet's class. The row
 menu, the field editor and the panel editors render at the end of
@@ -393,6 +401,16 @@ there adds its lines); Shift+Enter adds one below the cell. Right-click,
 Shift+F10 or the ContextMenu key open the row menu: insert above/below,
 duplicate, expand, copy the rows, your `@rowActions`, delete. Each is one
 change set and one undo step. Delete and Backspace never delete rows.
+
+With `@canMove` each row number has a grip: drag it (a line shows where
+the rows go; checked rows, or selected whole rows, move together; Escape
+cancels), or press Alt+Shift+ArrowUp/Down on a row number. The change
+set has `source: 'move'` and `moves` (`{ recordId, anchor?, groupKey?,
+from }`, in order: put each record next to its anchor); grouped, a drop in
+another group also patches its group fields. `applyChangeSet` and
+`localRecords` apply moves; your backend keeps the order (an order
+column). Undo moves them back. Off with a `@sort` or `@readOnly`;
+`api.moveRecords(ids, { recordId, position })` does the same.
 
 ## Fields
 
@@ -440,23 +458,26 @@ focus trap is off, so a wormholed calendar works.
 
 ## Field types
 
-| Type                    | Value                                                            | Accepted text                                                                           | Options                                                           |
-| ----------------------- | ---------------------------------------------------------------- | --------------------------------------------------------------------------------------- | ----------------------------------------------------------------- |
-| `text` (default)        | string                                                           | anything                                                                                | `maxLength`, `pattern`, `patternMessage`                          |
-| `number`                | number or `null`                                                 | `12`, `-1.5`, `1,234.5` (no exponent, currency or `%`)                                  | `min`, `max`, `decimalSeparator` (`'.'` or `','`)                 |
-| `checkbox`              | boolean                                                          | `true 1 yes y x ✓ si sí`, `false 0 no n` and empty                                      |                                                                   |
-| `singleSelect`          | an option's `value` or `null`                                    | an option's label (any case) or value                                                   | `options` (an array or a function of the record), `createOnPaste` |
-| `date`                  | ISO `YYYY-MM-DD` or `null`                                       | `2026-11-19` (also with a time), `2026/11/19`, `19/11/2026`, `19-11-2026`, `19.11.2026` | `dateOrder` (`'dmy'` default, or `'mdy'`), `min`, `max` (ISO)     |
-| `multiSelect`           | an array of option values                                        | labels or values separated by `,` (a quoted part keeps its commas)                      | `options`, `createOnPaste`                                        |
-| `linkedRecord`          | an array of `{ id, label }`                                      | resolved by `@onResolve`                                                                | `search(query, { record, signal })`, `multiple` (default `true`)  |
-| `user`                  | `{ id, label, avatarUrl? }` or `null` (an array with `multiple`) | with `options`: a label or an `email`; else resolved by `@onResolve`                    | `options` or `search`, `multiple`                                 |
-| `attachment`            | an array of `{ id, name, url, type?, size?, thumbnailUrl? }`     | none (files are uploaded: picker, drop, pasted files)                                   | `upload(files, { record, field, signal })`, `accept`, `maxFiles`  |
-| `currency`              | number or `null`                                                 | `$1,234.50`, `MXN 12`, `12`                                                             | `currency`, `locale`, `precision`, `min`, `max`                   |
-| `percent`               | a fraction or `null`                                             | `25%` or `25` (both `0.25`)                                                             | `precision`, `min`, `max`                                         |
-| `duration`              | seconds or `null`                                                | `1:30`, `1:30:00`, `1h 30m`, `90` (minutes; seconds with `'h:mm:ss'`)                   | `durationFormat` (`'h:mm'` or `'h:mm:ss'`)                        |
-| `rating`                | 1 to `max`, or `null`                                            | `0` to `max`                                                                            | `max` (default 5)                                                 |
-| `url`, `email`, `phone` | string                                                           | anything (validated: a web address, `x@y.z`, digits and `+ ( ) -`)                      | `maxLength`                                                       |
-| `longText`              | string with line breaks                                          | anything                                                                                | `maxLength`                                                       |
+| Type                    | Value                                                            | Accepted text                                                                           | Options                                                                               |
+| ----------------------- | ---------------------------------------------------------------- | --------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------- |
+| `text` (default)        | string                                                           | anything                                                                                | `maxLength`, `pattern`, `patternMessage`                                              |
+| `number`                | number or `null`                                                 | `12`, `-1.5`, `1,234.5` (no exponent, currency or `%`)                                  | `min`, `max`, `decimalSeparator` (`'.'` or `','`)                                     |
+| `checkbox`              | boolean                                                          | `true 1 yes y x ✓ si sí`, `false 0 no n` and empty                                      |                                                                                       |
+| `singleSelect`          | an option's `value` or `null`                                    | an option's label (any case) or value                                                   | `options` (an array or a function of the record), `createOnPaste`                     |
+| `date`                  | ISO `YYYY-MM-DD` or `null`                                       | `2026-11-19` (also with a time), `2026/11/19`, `19/11/2026`, `19-11-2026`, `19.11.2026` | `dateOrder` (`'dmy'` default, or `'mdy'`), `min`, `max` (ISO)                         |
+| `multiSelect`           | an array of option values                                        | labels or values separated by `,` (a quoted part keeps its commas)                      | `options`, `createOnPaste`                                                            |
+| `linkedRecord`          | an array of `{ id, label }`                                      | resolved by `@onResolve`                                                                | `search(query, { record, signal })`, `multiple` (default `true`)                      |
+| `user`                  | `{ id, label, avatarUrl? }` or `null` (an array with `multiple`) | with `options`: a label or an `email`; else resolved by `@onResolve`                    | `options` or `search`, `multiple`                                                     |
+| `attachment`            | an array of `{ id, name, url, type?, size?, thumbnailUrl? }`     | none (files are uploaded: picker, drop, pasted files)                                   | `upload(files, { record, field, signal })`, `accept`, `maxFiles`                      |
+| `currency`              | number or `null`                                                 | `$1,234.50`, `MXN 12`, `12`                                                             | `currency`, `locale`, `precision`, `min`, `max`                                       |
+| `percent`               | a fraction or `null`                                             | `25%` or `25` (both `0.25`)                                                             | `precision`, `min`, `max`                                                             |
+| `duration`              | seconds or `null`                                                | `1:30`, `1:30:00`, `1h 30m`, `90` (minutes; seconds with `'h:mm:ss'`)                   | `durationFormat` (`'h:mm'` or `'h:mm:ss'`)                                            |
+| `rating`                | 1 to `max`, or `null`                                            | `0` to `max`                                                                            | `max` (default 5)                                                                     |
+| `url`, `email`, `phone` | string                                                           | anything (validated: a web address, `x@y.z`, digits and `+ ( ) -`)                      | `maxLength`                                                                           |
+| `longText`              | string with line breaks                                          | anything                                                                                | `maxLength`                                                                           |
+| `dateTime`              | a UTC ISO instant (`2026-11-19T15:30:00.000Z`) or `null`         | ISO with `Z` or an offset; ISO without, `19/11/2026 15:30`, `3:30 pm`: in the zone      | `timeZone` (`'local'`, `'utc'`, IANA), `dateOrder`, `hour12`, `seconds`, `min`, `max` |
+| `button`                | none                                                             | none (paste, fill, clear and cut skip it)                                               | `buttonLabel`, `icon`, `color`, `disabled(record)`, `url(record)`                     |
+| `barcode`               | string or `null`                                                 | anything, trimmed                                                                       | `pattern`, `patternMessage`, `formats`, `scan({ formats, signal })`                   |
 
 Dates are shown as `DD/MM/YYYY` (or `MM/DD/YYYY`) and copied as ISO.
 
@@ -469,6 +490,17 @@ it. URL, email, phone: link-styled text; a click on it opens the link in a
 new tab (only `http:`, `https:`, `mailto:`, `tel:`), the row menu has "Open
 link". Long text: a text area that grows from the cell; Shift+Enter or
 Alt+Enter adds a line, Enter saves.
+
+Date and time: shown in `timeZone` as `DD/MM/YYYY HH:mm` (or 12-hour,
+seconds), copied as the ISO instant; typing opens a text input, Enter the
+browser's date-and-time picker in the field's zone; a wall clock in a DST
+gap moves forward, one in an overlap is the first. Button: a click on it,
+or Enter or Space on the selected cell, calls `@onButtonPress({ recordId,
+fieldId, record }, { signal })` (or opens `url(record)` without it); a
+promise shows it pending, a rejection is the cell's error until the next
+press; not a change set. Barcode: monospace text; a USB scanner types it;
+with `field.scan` or the browser's `BarcodeDetector` the camera icon opens
+a scan panel.
 
 Array values are compared by content (`equals`); the sheet never changes a
 value in place, and your store should not either.
@@ -504,7 +536,8 @@ onResolve = async (requests, { signal }) => {
 | Enter, F2, double-click                        | Opens the editor on the current value (a date: the browser's date input)                                                                                 | Enter saves and goes down                                       |
 | Tab, Shift+Tab                                 | The grid's                                                                                                                                               | Saves and goes right / left                                     |
 | Escape                                         | The grid's                                                                                                                                               | Closes without saving                                           |
-| Space                                          | Toggles a checkbox; elsewhere expands the record                                                                                                         | Types                                                           |
+| Space                                          | Toggles a checkbox; presses a button; elsewhere expands the record                                                                                       | Types                                                           |
+| Alt+Shift+ArrowUp/Down                         | With `@canMove`, on a row number (or with whole rows selected): moves the rows one record                                                                |                                                                 |
 | A digit                                        | Sets a rating (0 clears)                                                                                                                                 |                                                                 |
 | Shift+Enter                                    | Adds a record below (as Enter when inserting is off)                                                                                                     | Saves and goes down; in long text, adds a line (also Alt+Enter) |
 | Shift+F10, ContextMenu                         | Opens the row menu                                                                                                                                       |                                                                 |
@@ -779,6 +812,6 @@ devices or real IMEs yet.
 
 ## Limits
 
-No range selection by touch, dragging a record into another group or fullscreen yet. Sorting, filtering, search and paging
+No range selection by touch, row drag by touch, floating (zoneless) date-times or fullscreen yet. Sorting, filtering, search and paging
 are the owner's (see above, and the EmberSearchUi connector). Uploads show
 no progress (the cell is pending).

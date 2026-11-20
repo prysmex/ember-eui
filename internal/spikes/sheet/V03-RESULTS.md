@@ -2371,3 +2371,257 @@ Suite: 559 tests, 559 pass (554 + 5).
   CI has no camera, and headless Chromium on Linux has no
   `BarcodeDetector`. It is checked only by reading (10.7).
 - Suite: 563 tests, 563 pass (559 + 4).
+
+### 4f: docs (10.6)
+
+- `docs/sheet-demo/d21-row-order.md` (new): a `localRecords` task list
+  with `@canMove`, `@rowColor={{colorByOption STATUS}}` (four status
+  colours), `@frozenFields={{1}}` (so the bar and the task stay while a
+  narrow screen scrolls), a "Group by status" switch, and a line with
+  the number of move change sets and the store's order; then what an
+  owner with its own store does with `moves`.
+- `docs/sheet-demo/d15-more-field-types.md`: Ships (`dateTime`, UTC) and
+  Ships (Monterrey) (`America/Monterrey`, 12-hour) over the same values;
+  Remind (`button`, "Send reminder", a fake 800 ms action through
+  `@onButtonPress` that fails for Goggles and stops on its signal); SKU
+  (`barcode`, `pattern: '^\d{8,13}$'`, one value that fails it); and
+  what to try.
+- `docs/sheet.md`: the change-set section (`moves`, how to apply them,
+  keeping an order), Undo (moves), Arguments (`@canMove`, `@rowColor`,
+  `@onButtonPress`, and the editor options of the new types under
+  `@creatableFieldTypes`), the owner's table (a row drag, a button
+  press), the API (`moveRecords`), Theme (row colours and the new
+  tokens), Records (moving), Field types (three rows and a paragraph
+  each: the stored format, the zone, DST; the press; the scan), Keyboard
+  (Space and Enter on a button, Alt+Shift+arrows), "Not yet" (the old
+  "dragging a record into another group" item replaced by row drag by
+  touch, floating date-times and a whole-row tint).
+- `README.md`: the summary, Theme (row colours), Records (moving), the
+  field-type table and a paragraph, Keyboard, Limits. `prettier
+  --write` re-padded its tables.
+- `docs/*.md` are not prettier-clean at HEAD (d15, d19, `sheet.md`), so
+  they are left in the existing style; `README.md` is clean.
+- Docs site: built from this checkout (turbo could not spawn its tasks
+  here, "Exec format error", so each package was built with its own
+  `pnpm build` and then `site`'s `pnpm build`: `sync-injected`,
+  `generate-llms-txt` and `vite build` all ran); the generated files are
+  ignored, `site/` is unchanged in git. `node --test site/lib/*.test.mjs`
+  passes (8). The site's testem suite was not run.
+
+## Batch 4: summary
+
+| Commit | Holds | Suite |
+| --- | --- | --- |
+| `035e5f5` | row drag with `moves` (core, `row-drag.ts`, `drop-line.gts`, keys, history), RD1-RD12 | 543 / 543 |
+| `f3fde7d` | row colours (`row-colors.ts`, theme tokens, `colorByOption`), RC1-RC4 | 547 / 547 |
+| `fe05b9f` | `dateTime` (type, editor, field options), DT1-DT6 | 554 / 554 |
+| `b33a1bc` | `button` (`FieldType.readOnly`, `buttons.ts`, cell, expanded record), BT1-BT5 | 559 / 559 |
+| `cd207c9` | `barcode` (type, cell, editor, scan panel), BC1-BC3 | 563 / 563 |
+| this commit | docs, these results | (no code) |
+
+Every commit: `pnpm lint:types` clean; the tests' `ember-tsc` has the
+baseline's 19 errors and no other; `eslint` and `prettier --check` clean
+on the changed code files; the owner gate OK (34, 35, 35, 36, 36 module
+classes); `node scripts/generate-api-docs.mjs --check` passes; the full
+suite green. `packages/core/src` is unchanged; no existing test was
+edited; no dependency was added. The component is 547 lines (532 before:
+three module fields and imports, a `willDestroy` line each for the row
+drag and the buttons, two wrapper classes, the drop line, and
+`@openedByOpener`). Three modules are new: `row-drag.ts`,
+`row-colors.ts`, `buttons.ts` (39 files in `src/-private/sheet/` now,
+with `types.ts`, `util.ts` and `header-display.gts`).
+
+### Deviations
+
+1. **X3 was already in.** `ChangeSet.moves`, `RecordMove`, source
+   `'move'` and `RecordInsert.groupKey` were added in 3b (types only, for
+   `applyChangeSetToGroups`); this batch made them work. Nothing else in
+   4.7 changes.
+2. **`invertChangeSet` gains a third, optional parameter `order`** (the
+   record ids now): "before the current first record" (4.3) needs the
+   records, which `invertChangeSet` did not take. `undoChangeSet` passes
+   them. Without `order`, the move back of a record that was first has
+   no anchor (it is skipped by `applyChangeSet`).
+3. **`moveRecords(ctx, ids, target, options)`** takes the target as an
+   anchor (`{ recordId, position }`, or absent for the end of
+   `options.group`) and the group as `{ key, start, end, values }` plus
+   `groupKeyOf(index)`: the sheet knows the row model, the core does not.
+   The design gave the signature only.
+4. **A press on the grip without a drag selects the row** (as a press on
+   its row number), and after every move (drop, key, undo, redo) the
+   moved rows are selected as a `'rows'` range with focus on a row
+   number. The design does not say what is selected after a move.
+5. **The insertion line is clamped to the grid's body**, so it stays in
+   view over a row cut by the body's edge (RD10 found it drawn below the
+   body during auto-scroll).
+6. **Grouped keyboard moves past a group's edge** land at the next
+   group's start (or the previous group's end), with that group's patch,
+   rather than after its first record: one press is one step.
+7. **Row colours: a named colour is a class, not an inline shadow.** The
+   bar is `box-shadow: inset 4px 0 0 var(--euiSheetRowColor)` from a
+   class, with the custom property set by the class (named colours) or
+   inline (a CSS colour), and combined in CSS with the shadows a cell
+   already has (selected row number, invalid cell, frozen edge). An
+   inline `box-shadow` (10.2) would have hidden those, and they would
+   have hidden it. A colour with `;`, `{`, `}`, `<` or `>` is dropped.
+8. **`colorByOption` maps EuiBadge's `'default'` and `'hollow'` to
+   `'neutral'`** and reads a multi-select's first value.
+9. **dateTime messages beyond 4.6**: `unknownTimeZone(zone)` (10.3 asks
+   for "a validate error on every value" without naming the message) and
+   the field-editor texts `fieldType_dateTime`, `fieldTimeZone`,
+   `fieldTimeZoneHelp`, `fieldClock`, `clock24`, `clock12`,
+   `fieldSeconds`. An unknown zone shows and reads values in UTC.
+10. **dateTime `series` with one value continues by a calendar day in
+    the field's zone** (the same wall-clock time across a DST change),
+    not by 24 hours; two or more values use their step in ms as 10.3
+    says.
+11. **Button: no paste summary exists**, so "report it" (BT4) is what a
+    read-only cell gets: the cells are skipped (no rejection), and a key
+    typed on a button cell shows the "Read only" cue. `parse` returns
+    `{ error: buttonNoValue() }` (`ParseResult` has no `rejected`
+    variant); it is reached only by code that bypasses `isReadOnly`.
+12. **Button: a new `FieldType.readOnly`** and `isReadOnly` reading
+    `ctx.types` (the sheet core, not `packages/core`): the smallest way
+    to make every write path skip the column. The column also has no
+    sort items (10.3.1: "compare none").
+13. **Button: the span has no `tabindex`** (10.3.1 says `tabindex="-1"`):
+    a span with `tabindex="-1"` takes focus on a click, away from the
+    cell, which broke selection and the keys. It is still not tabbable
+    (P9), as the link cells.
+14. **Button: `SheetCellSignature` gains `pending` and `disabled`**, and
+    `CellView` `pressable` and `disabled`: the cell has to draw the
+    spinner and the disabled state, and only the sheet knows the
+    handler. The press's pending state is the buttons module's own map,
+    not `resolve.pendingCells` (that one also replaces the cell's text).
+15. **Button: one more theme token**, `--euiSheet-textSuccess`, for a
+    success button's text (4.6 lists none for buttons).
+16. **Barcode: the opener opens the editor scanning; Enter does not.**
+    The editor gets a new optional `@openedByOpener` (and `startEdit` an
+    `opener` option) so a click on the camera opens the scan panel while
+    Enter, F2 and typing open the text input (a camera prompt on Enter
+    would surprise a keyboard user). The editor also has its own camera
+    button. `EuiSheetFieldType.opener` may be a function of the field, so
+    the camera is drawn only where the field can scan (BC3).
+17. **Barcode: icons.** EUI has no camera or barcode icon: the opener
+    and the camera button use `videoPlayer`, and the cell's mark is a
+    CSS gradient.
+18. **Barcode: `pattern` is tested as text fields test theirs**
+    (`RegExp.test`, not a whole match; an invalid pattern is ignored),
+    and `patternMessage` was added. A scanned code is committed as typed
+    text, so it is trimmed and validated like one.
+19. **d21 has `@frozenFields={{1}}`** (10.6 does not ask for it), to
+    show the bar staying while a narrow screen scrolls (RC3's case with
+    real input).
+20. **Test IDs with suffixes** (as GR14a… in 3b): RD11a-e, DT5b, BC2b,
+    and BT5 (the expanded record's button, which 10.5 does not list).
+
+### Visibility changes
+
+- Only with the new arguments or field types: `@canMove` widens the
+  row-number column by 12 px and draws a grip at its start (on hover,
+  focus, always on touch screens); `@rowColor` draws the 4 px bars. No
+  existing argument draws anything new. Not looked at in dark mode with
+  real input (RC2 checks the computed colours).
+
+### Real input in Chromium
+
+Production docs build of this checkout served with `vite preview`,
+Playwright's own Chromium (headless), real `page.mouse` and
+`page.keyboard`, 1300-1400 × 900. No page errors in any run.
+
+- **d21, row drag**: hovering row 2's number shows the grip (title "Drag
+  to move the record"). A real press on it and a ten-step move to the
+  lower quarter of row 5 drew the insertion line at row 5's bottom edge
+  (470.2 px, the same as the row's bottom) across the grid (971 px), and
+  row 2's cells had the moving class. The release: "Moves: 1", store
+  order `t1 t3 t4 t5 t2 …`, the line gone, focus on row 5's number.
+  Ctrl+Z put it back.
+- **Alt+Shift+ArrowDown** on row 1's number (after a click on it): `t2
+  t1 t3 …`, and again `t2 t3 t1 …` (focus follows the record).
+- **Escape** during a second drag removed the line; the release changed
+  nothing.
+- **Groups**: with the switch on, a real drag of "Write the brief" (To
+  do) below "Book the venue" (Doing) moved it into Doing, its Status
+  cell reading Doing, the headers 2 and 4; Ctrl+Z restored both. After
+  collapsing To do with its chevron, a drag onto its header drew a box
+  around the header, and the drop moved the record into To do (To do 4,
+  Doing 2).
+- **Row colours**: the row-number cells' computed shadows were
+  `rgb(11, 100, 221) 4px 0 0 0 inset` (Doing), `rgb(198, 30, 37)`
+  (Blocked), `rgb(81, 99, 129)` (To do, neutral), `rgb(0, 138, 94)`
+  (Done); a selected row number had its bar and the selection's edge.
+  **Frozen and scrolled**: at 420 px wide, a real sideways wheel
+  (`scrollLeft` 220): the row-number cell stayed at the left edge, the
+  pixel 1 px inside it hit the row-number cell, and its bar was there.
+- **d15, dateTime**: typing `19/11/2026 15:30` with the keyboard and
+  Enter in Vests' empty Ships cell showed "19/11/2026 15:30". Enter on a
+  Ships (Monterrey) cell opened the native `datetime-local` input with
+  `2026-12-01T03:00` for `2026-12-01T09:00Z` (Monterrey's wall clock).
+  A real Ctrl+C put nothing on the clipboard and fired no `copy` event
+  in headless Chromium, so copy and paste with real keys were not
+  checked (DT5 checks them with clipboard events).
+- **Button**: a real click on "Send reminder" made the cell `aria-busy`
+  with the spinner; a second click during it called nothing new; after
+  1 s it was idle with no error. Goggles' button failed after 1 s: the
+  cell `aria-invalid`, title and error box "No contact for Goggles";
+  Enter on the selected cell pressed it again (pending, error cleared).
+- **Barcode**: no `BarcodeDetector` in headless Linux Chromium, so no
+  camera opener (as BC3); typing `4006381333931` and Enter saved it; the
+  `ABC` value fails the field's pattern.
+- Screenshots (not in the repo):
+  `/tmp/claude-0/-home-user-ember-eui/87cd9e5a-212c-54c3-9d47-30ac398aebd2/scratchpad/b4/`
+  `d21-drag.png`, `d21-drag-grouped.png`, `d21-collapsed-drop.png`,
+  `d21-frozen-scrolled.png`, `d15-button-pending.png`,
+  `d15-button-error.png`. Not looked at by a person.
+
+### Open items
+
+- **The camera path of barcode is not run anywhere**: `BarcodeDetector`
+  on a live `getUserMedia` stream needs a real phone (Chrome on Android)
+  or macOS Chromium; BC2 stubs `field.scan`, BC2b a detector and a
+  refusing camera. "Without a camera" cannot be known before asking for
+  it, so the camera icon shows whenever the API exists, and a missing
+  camera shows its error in the panel.
+- **Row drag by touch** is not in v0.3 (10.1); a touch on the grip does
+  not start a drag.
+- **Undo of a move that crossed groups**, grouped by `localRecords`: the
+  record goes back after the record that was before it in `@records`,
+  which is the previous group's last record when it was first in its
+  group; the group patch puts it back in its group, at its start. With
+  an owner whose store order is not grouped, "its start" depends on the
+  store's order.
+- **A move in a paged owner** anchors to records of the page; a record
+  dragged past the page's edge cannot leave the page (10.1).
+- **`applyChangeSet` skips a move without an anchor**: a record dropped
+  into an empty or collapsed group stays where it was in the store; only
+  its group patch moves it (`localRecords` regroups by value).
+- **dateTime `'local'`** follows `Date`'s rules and is not tested (DT
+  tests use `'utc'` and named zones only, as 10.5 asks).
+- Not checked: Firefox, Safari, a screen reader on the grip and the
+  button cells, a real phone (`datetime-local` picker, camera, the
+  grip's `(hover: none)` rule), dark mode with real input.
+- The site's own testem suite was not run after adding d21.
+
+### Files
+
+- New: `src/-private/sheet/row-drag.ts`, `row-colors.ts`, `buttons.ts`;
+  `src/-private/drop-line.gts`; `src/core/field-types/date-time.ts`,
+  `button.ts`, `barcode.ts`; `src/-private/editors/date-time-editor.gts`,
+  `barcode-editor.gts`, `barcode-scan.gts`;
+  `src/-private/cells/button-cell.gts`, `barcode-cell.gts`;
+  `docs/sheet-demo/d21-row-order.md`; tests
+  `tests/unit/move-records-test.ts`, `date-time-test.ts`,
+  `barcode-test.ts`, `tests/integration/components/eui-sheet-row-drag-test.gts`,
+  `eui-sheet-row-color-test.gts`, `eui-sheet-date-time-test.gts`,
+  `eui-sheet-button-test.gts`, `eui-sheet-barcode-test.gts`.
+- Changed: `src/components/eui-sheet.gts`; `src/core/change-set.ts`,
+  `history.ts`, `types.ts`, `fields.ts`, `messages.ts`,
+  `field-types/index.ts`; `src/-private/remap.ts`, `styles.ts`,
+  `theme.ts`, `shortcuts.ts`, `row-number-cell.gts`, `sheet-cell.gts`,
+  `record-form.gts`, `record-form-field.gts`,
+  `field-options/simple-options.gts`; `src/-private/sheet/api.ts`,
+  `cells.ts`, `clicks.ts`, `drag.ts`, `edit.ts`, `follow.ts`,
+  `grid-columns.ts`, `history.ts`, `keys.ts`, `types.ts`;
+  `src/types.ts`, `src/field-types.ts`, `src/index.ts`;
+  `docs/sheet.md`, `docs/sheet-demo/d15-more-field-types.md`,
+  `README.md`.

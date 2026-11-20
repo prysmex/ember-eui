@@ -26,8 +26,15 @@ interface RecordShellSignature {
   Args: {
     sheet: EuiSheet<any>;
     record: unknown;
+    /** The sheet has a `<:recordFooter>` block (v0.4 04): the shell draws the `footer` block below the fields. */
+    hasFooter?: boolean;
   };
+  Blocks: { footer: [] };
 }
+
+/** Elements where Escape is the element's own (a text box clears or cancels). */
+const TEXT_ENTRY =
+  'input:not([type=checkbox]):not([type=radio]):not([type=button]):not([type=submit]):not([type=reset]), textarea, select, [contenteditable]:not([contenteditable=false])';
 
 class RecordShell extends Component<RecordShellSignature> {
   titleId = `${guidFor(this)}-title`;
@@ -88,6 +95,19 @@ class RecordShell extends Component<RecordShellSignature> {
     return this.sheet.messages.nextRecord();
   }
 
+  /**
+   * Keys in the app's footer block are the block's (v0.4 04): Escape in
+   * its text box does not reach the flyout or modal, which would close.
+   * The record form's own keys are on its boxes, so nothing else is taken.
+   */
+  onFooterKeyDown = (event: KeyboardEvent): void => {
+    if (event.key !== 'Escape') return;
+    const target = event.target;
+    if (target instanceof Element && target.closest(TEXT_ENTRY)) {
+      event.stopPropagation();
+    }
+  };
+
   previous = (): void => this.sheet.expanded.stepExpanded(-1);
   next = (): void => this.sheet.expanded.stepExpanded(1);
   close = (): void => this.sheet.expanded.closeExpanded();
@@ -135,6 +155,15 @@ export class RecordFlyout extends RecordShell {
       </EuiFlyoutHeader>
       <EuiFlyoutBody>
         <RecordForm @sheet={{@sheet}} @record={{@record}} />
+        {{#if @hasFooter}}
+          <div
+            class="euiSheetRecord__footer"
+            data-test-subj="euiSheetRecordFooter"
+            {{on "keydown" this.onFooterKeyDown}}
+          >
+            {{yield to="footer"}}
+          </div>
+        {{/if}}
       </EuiFlyoutBody>
     </EuiFlyout>
   </template>
@@ -178,6 +207,15 @@ export class RecordModal extends RecordShell {
       </EuiModalHeader>
       <EuiModalBody>
         <RecordForm @sheet={{@sheet}} @record={{@record}} />
+        {{#if @hasFooter}}
+          <div
+            class="euiSheetRecord__footer"
+            data-test-subj="euiSheetRecordFooter"
+            {{on "keydown" this.onFooterKeyDown}}
+          >
+            {{yield to="footer"}}
+          </div>
+        {{/if}}
       </EuiModalBody>
     </EuiModal>
   </template>

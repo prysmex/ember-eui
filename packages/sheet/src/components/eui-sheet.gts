@@ -507,12 +507,26 @@ export default class EuiSheet<T extends object> extends Component<
           <RecordModal
             @sheet={{this}}
             @record={{this.expanded.expandedRecordValue}}
-          />
+            @hasFooter={{has-block "recordFooter"}}
+          >
+            <:footer>{{yield
+                this.expanded.expandedRecordValue
+                this.api.blockApi
+                to="recordFooter"
+              }}</:footer>
+          </RecordModal>
         {{else}}
           <RecordFlyout
             @sheet={{this}}
             @record={{this.expanded.expandedRecordValue}}
-          />
+            @hasFooter={{has-block "recordFooter"}}
+          >
+            <:footer>{{yield
+                this.expanded.expandedRecordValue
+                this.api.blockApi
+                to="recordFooter"
+              }}</:footer>
+          </RecordFlyout>
         {{/if}}
       {{/if}}
       {{#each this.edit.editingList key="@identity" as |editing|}}

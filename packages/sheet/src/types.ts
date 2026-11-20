@@ -643,5 +643,12 @@ export interface EuiSheetSignature<T> {
     footer: [SheetBlockApi<T>];
     /** Replaces the "No records" message shown under the grid when `@records` is empty and not loading. */
     empty: [SheetBlockApi<T>];
+    /**
+     * Below the expanded record's fields, with a divider (v0.4 04), in the
+     * flyout and in the modal: your comments, history or actions for the
+     * record. Re-rendered with the next record by the arrows. The sheet
+     * stores none of it.
+     */
+    recordFooter: [T, SheetBlockApi<T>];
   };
 }

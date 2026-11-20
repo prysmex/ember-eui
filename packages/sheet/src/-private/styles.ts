@@ -90,6 +90,8 @@ const CSS = `
 .euiSheetRecord__header { display: flex; align-items: center; gap: 4px; padding-right: 32px; }
 .euiSheetRecord__title { flex: 1; min-width: 0; margin: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 20px; line-height: 28px; font-weight: 600; color: var(--euiSheet-text, #343741); }
 .euiSheetRecord__field { margin-bottom: 16px; }
+/* the app's block below the fields (v0.4 04): a divider */
+.euiSheetRecord__footer { margin-top: 8px; padding-top: 16px; border-top: 1px solid var(--euiSheet-border, #D3DAE6); }
 .euiSheetRecord__label { margin-bottom: 4px; font-size: 12px; line-height: 16px; font-weight: 600; color: var(--euiSheet-text, #343741); }
 .euiSheetRecord__box { position: relative; box-sizing: border-box; min-height: 32px; padding: 6px 8px; border: 1px solid var(--euiSheet-border, #D3DAE6); border-radius: 4px; background: var(--euiSheet-plain, #FFF); color: var(--euiSheet-text, #343741); line-height: 18px; overflow-wrap: anywhere; }
 .euiSheetRecord__box[role=button] { cursor: pointer; }

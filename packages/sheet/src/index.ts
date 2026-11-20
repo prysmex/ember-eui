@@ -49,5 +49,6 @@ export type {
   SheetRowAction,
   SheetRowColor,
   SheetRowHeight,
+  SheetSelection,
   SheetSort
 } from './types.ts';

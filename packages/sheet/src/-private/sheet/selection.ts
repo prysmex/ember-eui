@@ -1,12 +1,26 @@
 /** The selection: the range, its anchor and head, and what it touches (V03C-DESIGN.md 3.2). */
-import { tracked } from '@glimmer/tracking';
+import { cached, tracked } from '@glimmer/tracking';
+import { scheduleOnce } from '@ember/runloop';
+import { isDestroyed, isDestroying } from '@ember/destroyable';
+import { modifier } from 'ember-modifier';
 
 import { clearRange, isReadOnly, toRange } from '../../core/index.ts';
 import { headerMarkRules } from '../styles.ts';
 
 import type EuiSheet from '../../components/eui-sheet.gts';
 import type { Pos, Range, RecordId } from '../../core/index.ts';
+import type { SheetSelection as Selection } from '../../types.ts';
 import type { RangeKind, Touched } from './types.ts';
+
+/** What `@onSelectionChange` compares: the kind, the record ids and the field ids. */
+function selectionKey(selection: Selection | null): string {
+  if (!selection) return '';
+  return JSON.stringify([
+    selection.kind,
+    selection.recordIds.map(String),
+    selection.fields.map((field) => field.id)
+  ]);
+}
 
 export default class SheetSelection<T extends object> {
   sheet: EuiSheet<T>;
@@ -24,6 +38,56 @@ export default class SheetSelection<T extends object> {
   get range(): Range | null {
     return this.anchor && this.head ? toRange(this.anchor, this.head) : null;
   }
+
+  /* The selection, exposed (V03 11.2) */
+
+  /**
+   * The range's records (group headers and add rows left out) and visible
+   * fields; null without a range or with no record in it. A new object
+   * only when the range, `@records` or the fields change.
+   */
+  @cached
+  get current(): Selection<T> | null {
+    const range = this.range;
+    const records = range && this.sheet.rows.recordRange(range);
+    if (!range || !records) return null;
+    const fields = this.sheet.fields.visibleFields.slice(
+      Math.max(range.left, 0),
+      range.right + 1
+    );
+    if (!fields.length) return null;
+    const chosen = this.sheet.args.records.slice(
+      records.top,
+      records.bottom + 1
+    );
+    return {
+      kind: this.rangeKind,
+      records: chosen,
+      recordIds: chosen.map((record) => this.sheet.args.getRecordId(record)),
+      fields,
+      cellCount: chosen.length * fields.length
+    };
+  }
+
+  /** The key of the selection last given to `@onSelectionChange` ('' for null). */
+  reportedKey = '';
+
+  /** Re-runs when the selection changes (with `@onSelectionChange`): reports it after the render. */
+  reportChange = modifier(() => {
+    if (!this.sheet.args.onSelectionChange) return;
+    void this.current;
+    scheduleOnce('afterRender', this.report);
+  });
+
+  /** Calls `@onSelectionChange` when the kind, record ids or field ids changed since the last call. */
+  report = (): void => {
+    if (isDestroying(this.sheet) || isDestroyed(this.sheet)) return;
+    const selection = this.current;
+    const key = selectionKey(selection);
+    if (key === this.reportedKey) return;
+    this.reportedKey = key;
+    this.sheet.args.onSelectionChange?.(selection);
+  };
 
   /** A row of a `'rows'` range (its row number is drawn selected). */
   /** A cell range covers the row: its row number gets the light mark (V03 batch 1). */

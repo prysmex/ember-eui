@@ -218,6 +218,8 @@ export interface SheetApi {
    * No-op when the record is not in `@records` or the field is not shown.
    */
   scrollToCell(cell: { recordId: RecordId; fieldId: string }): void;
+  /** The selection now, or null (V03 11.2): the block's `selection`. */
+  getSelection(): SheetSelection | null;
   /**
    * Tells the sheet the ids the owner gave to inserted (or restored)
    * records: `{ [tempId or old id]: newId }`. The undo history, the
@@ -283,6 +285,24 @@ export type SheetRowColor =
   | 'neutral'
   | (string & {});
 
+/**
+ * The selection (V03 11.2): the range's records and visible fields. A
+ * focused cell is a selection of one cell. Group headers and add rows
+ * inside a range are not in it; checked rows are separate
+ * (`checkedRecords`). Only loaded records: a summary of it is exact,
+ * a summary of "all" is the owner's (`@summary`).
+ */
+export interface SheetSelection<T = any> {
+  kind: 'cells' | 'rows' | 'columns';
+  /** The selection's records, in the order shown. */
+  records: T[];
+  recordIds: RecordId[];
+  /** Its visible fields, in display order. */
+  fields: EuiSheetField<T>[];
+  /** records.length × fields.length. */
+  cellCount: number;
+}
+
 /** One sort key. The same shape as EmberSearchUi's `SortItem`. */
 export interface SheetSort {
   field: string;
@@ -304,6 +324,8 @@ export interface SheetBlockApi<T = any> {
   rowHeight: SheetRowHeight;
   /** The checked records of `@records`, in their order. */
   checkedRecords: T[];
+  /** The selection (the range's records and fields), or null; `summarizeCells` summarizes it. */
+  selection: SheetSelection<T> | null;
   /** Each calls the matching handler, or changes the sheet's own state without one. */
   hideField(fieldId: string): void;
   showField(fieldId: string): void;
@@ -362,7 +384,7 @@ export interface EuiSheetSignature<T> {
     validate?: (
       context: ValidateContext<T>
     ) => CellErrors | Promise<CellErrors>;
-    /** Receives the sheet's API (`undo`, `redo`, `focusCell`, `scrollToCell`, `remapIds`, `clearHistory`, `expandRecord`, `insertRecord`, `deleteRecords`, `showShortcuts`, `editField`, `addField`, `moveRecords`) once, after the first render. */
+    /** Receives the sheet's API (`undo`, `redo`, `focusCell`, `scrollToCell`, `getSelection`, `remapIds`, `clearHistory`, `expandRecord`, `insertRecord`, `deleteRecords`, `showShortcuts`, `editField`, `addField`, `moveRecords`) once, after the first render. */
     registerApi?: (api: SheetApi) => void;
     /**
      * Fields that exist but are not shown in the grid: listed in the
@@ -434,6 +456,14 @@ export interface EuiSheetSignature<T> {
      * every record.
      */
     currentMatch?: { recordId: RecordId; fieldId: string } | null;
+    /**
+     * The selection changed (V03 11.2): called after render, at most once
+     * per run loop, when its record ids, field ids or kind changed (so a
+     * drag reports each new rectangle once); `null` when there is none.
+     * The sheet aggregates nothing: `summarizeCells(ctx, selection, kind)`.
+     * It runs during a drag: keep it cheap, or debounce.
+     */
+    onSelectionChange?: (selection: SheetSelection<T> | null) => void;
     /** Shows a thin progress bar over the grid; the grid stays usable. */
     isLoading?: boolean;
     /** Text per field id for the summary bar (`''`: the row-number column). Passing it, even `{}`, shows the bar. */

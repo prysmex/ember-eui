@@ -155,7 +155,10 @@ module('Integration | Component | EuiSheet full screen', function (hooks) {
     assert.false(isFull());
     const pageHeight = wrapper().offsetHeight;
     await click('[data-test-toggle]');
-    await frame();
+    // the grid measures its new box in a resize observer: a frame or more
+    await waitUntil(() => el('.euiDataGrid__virtualized').offsetHeight > 300, {
+      timeout: 2000
+    });
     assert.true(isFull());
     assert.dom('[data-test-toggle]').hasAttribute('aria-pressed', 'true');
     const box = wrapper().getBoundingClientRect();

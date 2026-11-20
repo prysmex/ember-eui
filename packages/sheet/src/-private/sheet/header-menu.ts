@@ -1,4 +1,5 @@
 /** The header menu's group and field items (V03C-DESIGN.md 3.2). */
+import { isDestroyed, isDestroying } from '@ember/destroyable';
 import { next } from '@ember/runloop';
 
 import type EuiSheet from '../../components/eui-sheet.gts';
@@ -48,6 +49,32 @@ export default class SheetHeaderMenu<T extends object> {
   }
 
   /**
+   * Runs `fn` after the header menu has closed, with focus back on the
+   * field's menu button (v0.4 03): the popover leaves focus on its panel,
+   * and on the page once the panel is gone, so it is put back first
+   * (unless something else has it by then).
+   */
+  afterClose(fieldId: string, fn: () => void): void {
+    next(() => {
+      if (isDestroying(this.sheet) || isDestroyed(this.sheet)) return;
+      const active = document.activeElement;
+      if (
+        !active ||
+        active === document.body ||
+        active.closest('.euiPopover__panel')
+      ) {
+        this.sheet.dom
+          .headerElement(fieldId)
+          ?.querySelector<HTMLElement>(
+            '[data-test-subj^=dataGridHeaderCellActionButton-]'
+          )
+          ?.focus({ preventScroll: true });
+      }
+      fn();
+    });
+  }
+
+  /**
    * "Fit to content" (v0.4 01): the column takes its content's width, as
    * a resize would. `columns` adds it only to a menu that has other items.
    */
@@ -58,15 +85,18 @@ export default class SheetHeaderMenu<T extends object> {
       label: this.sheet.messages.fitToContent(),
       iconType: 'editorDistributeHorizontal',
       color: 'text',
-      // after the popover has closed: the header has its final width
-      onClick: () => next(() => this.sheet.gridColumns.fitField(field.id)),
+      onClick: () =>
+        this.afterClose(field.id, () =>
+          this.sheet.gridColumns.fitField(field.id)
+        ),
       'data-test-subj': `euiSheetFitField-${field.id}`
     };
   }
 
   /**
    * The header menu's field items (V03 6.3): Edit, Duplicate, Insert
-   * left, Insert right, Delete last, each only with its handler. Not on a
+   * left, Insert right, the app's `@fieldActions` (v0.4 03), Delete last,
+   * each only with its handler. Not on a
    * field with `manageable: false` (Edit, Duplicate, Delete); the first
    * field cannot be deleted and nothing goes to its left.
    */
@@ -116,6 +146,17 @@ export default class SheetHeaderMenu<T extends object> {
       item('InsertFieldRight', messages.insertFieldRight(), 'arrowRight', () =>
         this.sheet.fieldEditor.addField(index + 1, field.id, field.id)
       );
+    }
+    // the app's items (v0.4 03): before Delete, in the order given
+    for (const action of this.sheet.args.fieldActions ?? []) {
+      items.push({
+        label: action.label,
+        iconType: action.icon,
+        color: action.color ?? 'text',
+        isDisabled: action.isDisabled?.(field) ?? false,
+        onClick: () => this.afterClose(field.id, () => action.onSelect(field)),
+        'data-test-subj': `euiSheetFieldAction-${action.id}-${field.id}`
+      });
     }
     if (onFieldDelete && manageable && index > 0) {
       item('DeleteField', messages.deleteField(), 'trash', () =>

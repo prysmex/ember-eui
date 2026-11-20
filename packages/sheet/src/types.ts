@@ -285,6 +285,22 @@ export interface SheetRowAction<T = any> {
 }
 
 /**
+ * An app item of the header (column) menu (`@fieldActions`, v0.4 03): the
+ * same shape as `SheetRowAction`, with the field instead of records.
+ */
+export interface SheetFieldAction<T = any> {
+  id: string;
+  label: string;
+  /** An EUI icon type. */
+  icon?: string;
+  color?: 'danger';
+  /** Disables the item on this field. */
+  isDisabled?: (field: EuiSheetField<T>) => boolean;
+  /** Called after the menu has closed and focus is back on the header's menu button. */
+  onSelect: (field: EuiSheetField<T>) => void;
+}
+
+/**
  * A row's colour (V03 10.2): a named colour of the theme
  * (`--euiSheet-row<Name>`, so dark mode follows), or any CSS colour, used
  * as given.
@@ -591,6 +607,13 @@ export interface EuiSheetSignature<T> {
     expandedRecord?: 'flyout' | 'modal';
     /** Extra items of the row menu, before "Delete". */
     rowActions?: SheetRowAction<T>[];
+    /**
+     * Extra items of every visible field's header menu (v0.4 03), after
+     * the sheet's own and before "Delete field", in this order. Keep the
+     * array stable (not created in a template): the columns are built
+     * from it, and `isDisabled` is called when they are.
+     */
+    fieldActions?: SheetFieldAction<T>[];
     /**
      * Bulk resolve (V02-DESIGN.md 8.2): typed or pasted text a type answers
      * `{ unresolved }` for (linked records, users, an app's own types) is

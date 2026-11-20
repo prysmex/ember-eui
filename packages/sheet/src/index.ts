@@ -43,6 +43,7 @@ export type {
   SheetEditorRect,
   SheetEditorResult,
   SheetEditorSignature,
+  SheetFieldAction,
   SheetFieldEditorSignature,
   SheetFieldEditorType,
   SheetFieldOptionsSignature,

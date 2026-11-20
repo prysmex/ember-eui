@@ -85,11 +85,11 @@ export default class RecordForm extends Component<RecordFormSignature> {
   }
 
   get fields(): EuiSheetField[] {
-    return this.sheet.allFields;
+    return this.sheet.fields.allFields;
   }
 
   typeOf(field: EuiSheetField): EuiSheetFieldType {
-    return this.sheet.typeOf(field);
+    return this.sheet.fields.typeOf(field);
   }
 
   canEdit(field: EuiSheetField): boolean {

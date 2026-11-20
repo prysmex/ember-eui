@@ -73,6 +73,6 @@ function footerProps(
   sheet: EuiSheet<any>,
   colIndex: number
 ): EuiDataGridSetCellProps {
-  const frozen = sheet.frozenCellProps(colIndex, true);
+  const frozen = sheet.frozen.frozenCellProps(colIndex, true);
   return frozen ? { className: frozen.className, style: frozen.style } : {};
 }

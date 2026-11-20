@@ -109,3 +109,108 @@ Deviations from the design:
   have one user module (`sameRange`: filling, `sameLayout`: follow,
   `isPromise`: validate, `EMPTY_CHANGE_SET`: history). The design puts
   them there; moving them later is harmless either way.
+
+## 3c stage 1
+
+What moved, to `src/-private/sheet/`, as the module map assigns it:
+
+| File | Class, property | Members | Lines |
+| --- | --- | --- | --- |
+| `fields.ts` | `SheetFields`, `fields` | 21 | 267 |
+| `grid-columns.ts` | `SheetGridColumns`, `gridColumns` | 19 | 274 |
+| `header-menu.ts` | `SheetHeaderMenu`, `headerMenu` | 2 | 106 |
+| `frozen.ts` | `SheetFrozen`, `frozen` | 11 | 158 |
+| `grid-options.ts` | `SheetGridOptions`, `gridOptions` | 11 | 179 |
+| `dom.ts` | `SheetDom`, `dom` | 22 | 254 |
+
+Five constants with one user moved above that module's class:
+`ROW_COLUMN_WIDTH` and `FROZEN_DEFAULT_WIDTH` (grid-columns),
+`GRID_DEFAULT_COLUMN_WIDTH` and `ROW_HEIGHTS` (grid-options),
+`FROZEN_MAX_COLUMNS` (frozen). A module cannot import a value from the
+component (that would be a run-time cycle), so these could not wait.
+
+The component goes from 7,699 to 6,649 lines. It creates the six modules
+as `readonly` fields. Its template changes 25 paths only
+(`this.columns` is now `this.gridColumns.columns`, and so on). Six
+`-private` files change their paths only: `editor-frame.gts`
+(`dom.toViewport`), `field-editor.gts` (`dom.toViewport`,
+`fields.fieldById`), `footer-cell.gts` (`frozen.frozenCellProps`),
+`sheet-cell.gts` and `row-number-cell.gts` (`frozen.frozenCellProps`,
+`gridOptions.pinsAddRow`), `record-form.gts` (`fields.allFields`,
+`fields.typeOf`).
+
+How: `3c-checks/move.mjs --stage 1` cut each member with its comment and
+rewrote the paths; the imports were added by hand; then Prettier. The
+four owners were changed by hand to `this.sheet`: `checkOrderShown` and
+`expectUpdate` (`isDestroying`, `isDestroyed`), `measureGroupWidth`
+(the same, inside the `ResizeObserver` callback), `onFrozenFocus`
+(`afterRender`). The verbatim check lists exactly these four as OWNER,
+which is what design 6.1 lists for these modules.
+
+Results:
+
+- Verbatim: 648 members, top-level declarations, templates and `-private`
+  declarations compared, all equal apart from the four owners above.
+  Every member is in the file the module map names, and declared once.
+- Gates: OK. No `this` as a value in a module, no field initialiser that
+  reads `this`, every import of the component is `import type`.
+  `tests/`, `src/core/`, `src/types.ts`, `src/index.ts`, `src/search-ui/`
+  and `packages/core/` are untouched.
+- `pnpm lint:types`: no error. The tests' `ember-tsc`: the baseline's 19
+  errors, the same lines.
+- ESLint and Prettier on the changed files: clean.
+- `node scripts/generate-api-docs.mjs --check`: passes.
+- The suite: 527 tests, 527 pass (2 min 11 s).
+
+The checks were tested again on the module code: a `@cached` dropped in
+a module, a field left on the component as well, a changed template path,
+a changed argument in a `-private` file, a member in a class the map does
+not name, and `afterRender(this, ...)` in a module each fail.
+
+Two fixes to the checks in this stage: the verbatim check now also
+counts the component's own `this.<module>.` as the same path as `this.`
+(it failed on every member that stays and reads a moved one), and the
+module-map check compares file and class names, not whole paths. It also
+fails if a module property has the name of an old member, which would
+make the paths ambiguous; none does.
+
+Deviations from the design: none in the code. One in the comments: a
+section banner travels with the member right below it (the verbatim
+check compares each member's comments, banner included). Two banners
+landed in a module whose section mostly stayed: "Edit lifecycle" is now
+in `dom.ts` above `rectOf`, and "Field management (V03 6)" in `fields.ts`
+above `fieldById`. Comment-only; left as is, so that the check stays
+strict. Stage 5, which moves the edit and field-editor code, can put
+them back with an allowance in the check. The module map's table
+says "about 1,050 lines" for this stage; the six files have 1,238, of
+which about 170 are imports, class headers and Prettier's re-wrapping of
+the longer paths.
+
+For stage 2:
+
+- Run `move.mjs --src packages/sheet/src --stage 2` (no `--tops`: the
+  stage 2 modules use only `util.ts` and `types.ts` constants). It also
+  re-points the stage 1 modules' `this.sheet.rowModel`,
+  `this.sheet.isGrouped`, `this.sheet.hasAddRow`, `this.sheet.recordAt`
+  and the others to `this.sheet.rows.x`.
+- Review the `-private` re-pointing by hand: `sheet.groups` becomes
+  `sheet.rows.groups`, and the regex matches any `sheet.<name>`.
+- Then the imports by hand, the bare `this` lines it prints (LOOK), the
+  unused imports ESLint lists in the component, Prettier, `sync.sh`,
+  `check.sh <repo> <linux copy> 43d3279c <baseline tests-tsc log>`, with
+  `CHECKS_NODE_MODULES` set to the Linux copy's root `node_modules`.
+- Design 6.1 lists no owner site in `rows`, `groupHeaders`, `checked` or
+  `cells`: `move.mjs` should print no LOOK line and the OWNER list should
+  stay the four of this stage. Anything else needs reading.
+- OWNER is lenient: any `this` changed to `this.sheet` as a value is
+  listed, not failed. In stages 4 and 6, a `later(this, ...)` or
+  `debounce(this, ...)` changed by mistake shows only there.
+- A banner moves with the member below it (see above): check where each
+  banner of the stage lands.
+- The design's one-off `cellView` call count (one scroll step of the
+  large-data demo, before and after) is stage 2's.
+- The `@action` probe ran on the test (vite) build only; the publish
+  Babel config is first exercised by stage 7's `pnpm build`.
+- The baseline files (`3c0-declarations`, `3c0-base-types-tests.log`) are
+  in the Linux copy's scratch folder. If it is cleaned, rebuild them from
+  `43d3279c`.

@@ -77,7 +77,7 @@ export class RowNumberCell extends Component<RowNumberCellSignature> {
       return '';
     }
     // frozen with the first field (V02-DESIGN.md 6.7)
-    const frozen = this.sheet.frozenCellProps(0);
+    const frozen = this.sheet.frozen.frozenCellProps(0);
     if (frozen) {
       classes.push(frozen.className);
       props['style'] = frozen.style;
@@ -119,7 +119,7 @@ export class RowNumberCell extends Component<RowNumberCellSignature> {
         data-test-subj="euiSheetRowAdd"
         aria-hidden="true"
       ><EuiIcon @type="plus" @size="s" /></span>
-      {{#if this.sheet.pinsAddRow}}
+      {{#if this.sheet.gridOptions.pinsAddRow}}
         <AddPinned @label={{this.addRecordText}} @inline={{false}} />
       {{/if}}
     {{else if this.hasRecord}}

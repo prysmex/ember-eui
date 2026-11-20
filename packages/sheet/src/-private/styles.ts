@@ -137,6 +137,15 @@ const CSS = `
 .euiSheet .euiDataGridRow.euiSheet__addRow:hover .euiDataGridRowCell { background-color: var(--euiSheet-plain, #FFF); background-image: linear-gradient(var(--euiSheet-hover, rgba(105, 112, 125, 0.06)), var(--euiSheet-hover, rgba(105, 112, 125, 0.06))); }
 .euiSheet .euiDataGridRow.euiSheet__addRow .euiDataGridRowCell::after { content: none; }
 .euiSheet .euiDataGridRow.euiSheet__addRow .euiDataGridRowCell__content { display: flex; align-items: center; }
+.euiSheet__addPinned { display: none; position: absolute; inset: 0; align-items: center; white-space: nowrap; pointer-events: none; }
+.euiSheet__addPinnedPlus { display: inline-flex; flex: none; justify-content: center; width: var(--euiSheetAddPlus, 0px); }
+.euiSheet__addPinnedText { margin-inline-start: 6px; }
+.euiSheet__addPinned--inline { gap: 4px; padding-inline-start: 6px; }
+.euiSheet__addPinned--inline .euiSheet__addPinnedPlus { width: auto; }
+.euiSheet__addPinned--inline .euiSheet__addPinnedText { margin-inline-start: 0; }
+.euiSheet--pinAddRow .euiDataGridRow.euiSheet__addRow > .euiDataGridRowCell:first-child { position: sticky !important; left: 0 !important; float: left; width: max-content !important; min-width: var(--euiSheetGroupMin, 0px); z-index: 2; }
+.euiSheet--pinAddRow .euiDataGridRow.euiSheet__addRow > .euiDataGridRowCell:first-child .euiSheet__addPinned { display: flex; }
+.euiSheet--pinAddRow .euiDataGridRow.euiSheet__addRow .euiSheet__rowAdd, .euiSheet--pinAddRow .euiDataGridRow.euiSheet__addRow .euiSheet__addRecord { visibility: hidden; }
 .euiSheet .euiDataGridRow.euiSheet__addRow .euiDataGridRowCell:focus { outline: 3px solid var(--euiSheet-primary, #0B64DD); outline-offset: -3px; box-shadow: none; }
 .euiSheet .euiSheet__rowCell--add [data-datagrid-cellcontent] { justify-content: center; height: 100%; }
 /* field management (V03 batch 2): the "+" column's header (a hover tint, the 3 px ring under the keyboard), its inert body cells, the field editor's panel, the header menu's Delete in the danger colour after a line */

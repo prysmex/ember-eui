@@ -718,6 +718,15 @@ export default class EuiSheet<T extends object> extends Component<
   @tracked localRowHeight: SheetRowHeight | null = null;
   /** The grid is scrolled horizontally (the frozen edge's shadow). */
   @tracked scrolledX = false;
+
+  /**
+   * Scrolled sideways without frozen fields: the add rows' "+ Add record"
+   * is pinned to the left edge (`AddPinned`), as a group header's label is.
+   * With frozen fields the row numbers and the first field stay anyway.
+   */
+  get pinsAddRow(): boolean {
+    return this.scrolledX && this.frozenCount === 0 && this.hasAddRow;
+  }
   /** The last applied `@validate` result. */
   @tracked validation: Validation | null = null;
   /** A drag over other cells is selecting a range (no text selection meanwhile). */
@@ -1435,13 +1444,14 @@ export default class EuiSheet<T extends object> extends Component<
   @cached
   get gridVars(): ReturnType<typeof htmlSafe> | undefined {
     const frozen = this.frozenStyle;
-    if (!this.isGrouped) return frozen;
-    const min =
-      (this.colOffset ? this.rowColumnWidth : 0) + this.firstColumnWidth;
+    if (!this.isGrouped && !this.pinsAddRow) return frozen;
+    const plus = this.colOffset ? this.rowColumnWidth : 0;
+    const min = plus + this.firstColumnWidth;
     const max = this.groupMaxWidth;
     const vars = [
       `--euiSheetGroupMin:${min}px`,
-      `--euiSheetGroupMax:${max ? `${max}px` : 'none'}`
+      `--euiSheetGroupMax:${max ? `${max}px` : 'none'}`,
+      `--euiSheetAddPlus:${plus}px`
     ].join(';');
     return htmlSafe(frozen ? `${String(frozen)};${vars}` : vars);
   }
@@ -7630,6 +7640,7 @@ export default class EuiSheet<T extends object> extends Component<
         {{if this.dragging 'euiSheet--dragging'}}
         {{if this.fillTarget 'euiSheet--dragging euiSheet--filling'}}
         {{if this.scrolledX 'euiSheet--scrolledX'}}
+        {{if this.pinsAddRow 'euiSheet--pinAddRow'}}
         {{this.headerLinesClass}}
         {{if this.rangeOutline 'euiSheet--ranged'}}
         {{if this.addingField 'euiSheet--addingField'}}"

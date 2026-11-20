@@ -9,6 +9,7 @@ import Component from '@glimmer/component';
 
 import EuiIcon from '@ember-eui/core/components/eui-icon';
 
+import AddPinned from './add-pinned.gts';
 import GroupLabel from './group-label.gts';
 
 import type EuiSheet from '../components/eui-sheet.gts';
@@ -104,6 +105,10 @@ export class RowNumberCell extends Component<RowNumberCellSignature> {
     return '';
   }
 
+  get addRecordText(): string {
+    return this.sheet.messages.addRecord();
+  }
+
   <template>
     {{this.cellProps}}
     {{#if this.group}}
@@ -114,6 +119,9 @@ export class RowNumberCell extends Component<RowNumberCellSignature> {
         data-test-subj="euiSheetRowAdd"
         aria-hidden="true"
       ><EuiIcon @type="plus" @size="s" /></span>
+      {{#if this.sheet.pinsAddRow}}
+        <AddPinned @label={{this.addRecordText}} @inline={{false}} />
+      {{/if}}
     {{else if this.hasRecord}}
       <span class="euiSheet__rowStart">
         <span

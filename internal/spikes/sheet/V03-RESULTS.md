@@ -2014,3 +2014,25 @@ scrolls away too.
 The first attempts were blocked by an overloaded sandbox (load 24, about
 120 MB free): pages timed out before the demo rendered. After a sandbox
 restart the same checks ran in seconds.
+
+### The add row pinned while scrolled sideways (user's request, 2026-11-20)
+
+Without frozen fields, "+ Add record" scrolled away with the row-number
+cell and the first field (cut to "ecord" at `scrollLeft` 108). Now, while
+`scrolledX` and no field is frozen (`pinsAddRow`, wrapper class
+`euiSheet--pinAddRow`), every add-row cell renders a pinned copy
+(`src/-private/add-pinned.gts`) and the row's first rendered cell is made
+sticky and wide, as a group header's is (9.1); only that cell's copy is
+shown and the cells' own plus and text are hidden. The plus sits in a box
+as wide as the row-number column (`--euiSheetAddPlus`, set in `gridVars`),
+the text 6 px after it, so at a small scroll it is where the add row drew
+it at rest (within 1 px). At rest nothing is rendered or changed, so
+AR1-AR9 hold as written. With frozen fields nothing is pinned: those
+columns stay anyway.
+
+Tests AP1-AP5 (`eui-sheet-add-pinned-test.gts`): at rest unchanged; past
+column 0 one copy at the left edge, hit-testable; a small scroll keeps
+the plus and the text in place; a click on it inserts; frozen fields
+pin nothing. Full suite 527/527. Real wheel in Chromium at 420 px on the
+d19 demo: one pinned copy at the left edge, no page errors
+(`internal` screenshot not kept).

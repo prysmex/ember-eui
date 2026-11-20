@@ -9,6 +9,7 @@ import { cached } from '@glimmer/tracking';
 import EuiHighlight from '@ember-eui/core/components/eui-highlight';
 import EuiIcon from '@ember-eui/core/components/eui-icon';
 
+import AddPinned from './add-pinned.gts';
 import GroupLabel from './group-label.gts';
 
 import type EuiSheet from '../components/eui-sheet.gts';
@@ -101,6 +102,15 @@ export default class SheetCell extends Component<{
     return this.sheet.messages.addRecord();
   }
 
+  /** Any data cell of an add row: it carries the pinned "+ Add record". */
+  get isAddRowCell(): boolean {
+    return this.sheet.isAddRow(this.args.rowIndex);
+  }
+
+  get addPinnedLabel(): string {
+    return this.sheet.messages.addRecord();
+  }
+
   /** One plus on the add row (V03 5.2): the row-number cell's, else this one. */
   get addRecordIcon(): boolean {
     return this.sheet.colOffset === 0;
@@ -140,6 +150,19 @@ export default class SheetCell extends Component<{
         {{#if this.addRecordIcon}}<EuiIcon @type="plus" @size="s" />{{/if}}
         {{this.addRecordLabel}}
       </span>
+      {{#if this.sheet.pinsAddRow}}
+        <AddPinned
+          @label={{this.addPinnedLabel}}
+          @inline={{this.addRecordIcon}}
+        />
+      {{/if}}
+    {{else if this.isAddRowCell}}
+      {{#if this.sheet.pinsAddRow}}
+        <AddPinned
+          @label={{this.addPinnedLabel}}
+          @inline={{this.addRecordIcon}}
+        />
+      {{/if}}
     {{else if this.view}}
       {{#if this.cellComponent}}
         <this.cellComponent

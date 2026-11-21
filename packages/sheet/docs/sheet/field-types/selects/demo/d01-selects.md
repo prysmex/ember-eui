@@ -98,7 +98,7 @@ export default class Selects extends Component {
       @records={{this.store.records}}
       @getRecordId={{this.getId}}
       @onChange={{this.store.apply}}
-      @height={{270}}
+      @height={{300}}
       @ariaLabel='Inspections'
     />
   </template>

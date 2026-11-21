@@ -81,17 +81,7 @@ const isStub = (page) => frontMatter(read(page)).nav === 'false';
  * Pages with no example of their own. Only the API reference (and the old
  * URLs' pages) should stay here.
  */
-const WITHOUT_EXAMPLES = new Set([
-  'more/api-reference',
-  // their examples come with the next commits
-  'fields/field-actions',
-  'selection',
-  'selection/touch',
-  'rows/row-height',
-  'data/sorting',
-  'import-export/csv-import',
-  'more/theme',
-]);
+const WITHOUT_EXAMPLES = new Set(['more/api-reference']);
 
 test('the sheet docs: every file is a page or a demo of a page', () => {
   assert.deepEqual(

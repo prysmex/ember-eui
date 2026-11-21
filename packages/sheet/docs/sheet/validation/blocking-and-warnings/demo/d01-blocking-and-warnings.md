@@ -126,8 +126,8 @@ export default class BlockingAndWarnings extends Component {
     />
     <EuiSpacer @size='s' />
     <EuiText @size='s'>
-      <p><strong>{{this.errors.length}} errors</strong>
-        (Submit is blocked while there are any):</p>
+      <p><strong>Errors: {{this.errors.length}}</strong>
+        (Submit is blocked while there are any)</p>
       <ul>
         {{#each this.errors as |error|}}
           <li>{{error.record.area}},
@@ -135,8 +135,8 @@ export default class BlockingAndWarnings extends Component {
             {{error.message}}</li>
         {{/each}}
       </ul>
-      <p><strong>{{this.warnings.length}} warnings</strong>
-        (they do not block):</p>
+      <p><strong>Warnings: {{this.warnings.length}}</strong>
+        (they do not block)</p>
       <ul>
         {{#each this.warnings as |record|}}
           <li>{{record.area}}: {{record.hours}} hours is more than a shift</li>

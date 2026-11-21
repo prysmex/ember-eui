@@ -5,7 +5,7 @@
  */
 import { module, test } from 'qunit';
 import { setupRenderingTest } from 'ember-qunit';
-import { fillIn, render, waitUntil } from '@ember/test-helpers';
+import { fillIn, render, settled, waitUntil } from '@ember/test-helpers';
 
 import EuiSheet from '#src/components/eui-sheet.gts';
 import { localRecords } from '#src/local-records.ts';
@@ -22,6 +22,7 @@ import {
 } from '../../helpers/sheet.ts';
 
 import type { EuiSheetField } from '#src/core/index.ts';
+import type { SheetApi } from '#src/index.ts';
 
 interface Item {
   id: string;
@@ -244,5 +245,38 @@ module('Integration | Component | EuiSheet accessibility', function (hooks) {
     assert.strictEqual(said(), '1 celda pegada');
     await pressed('z', { ctrlKey: true });
     assert.strictEqual(said(), 'Deshecho');
+  });
+
+  test('A7 a paste past the last record counts its own cells, not @newRecordValues; appendRows announces no paste', async function (assert) {
+    const store = localRecords<Item>(ITEMS(), { getRecordId: getId });
+    const state: { api: SheetApi | null } = { api: null };
+    const register = (api: SheetApi) => (state.api = api);
+    const newValues = () => ({ code: 'NEW', done: false });
+    await render(
+      <template>
+        <div style="width:700px">
+          <EuiSheet
+            @records={{store.records}}
+            @fields={{FIELDS}}
+            @getRecordId={{getId}}
+            @onChange={{store.apply}}
+            @newRecordValues={{newValues}}
+            @registerApi={{register}}
+          />
+        </div>
+      </template>
+    );
+    const region = el('[data-test-subj=euiSheetAnnouncer]');
+    const said = () => region.textContent!.replace(/\u00a0/g, '').trim();
+    await focusCell(1, 0);
+    await clipboard('paste', 'a\nb\nc');
+    assert.strictEqual(store.records.length, 4, 'two new records');
+    assert.strictEqual(store.records[3]!.code, 'NEW', 'with @newRecordValues');
+    assert.strictEqual(said(), '3 cells pasted', 'the three pasted cells');
+    const before = region.textContent;
+    state.api!.appendRows([['d'], ['e']], ['name']);
+    await settled();
+    assert.strictEqual(store.records.length, 6, 'appended');
+    assert.strictEqual(region.textContent, before, 'not announced as a paste');
   });
 });

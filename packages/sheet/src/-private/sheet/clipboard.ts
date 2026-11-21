@@ -269,6 +269,13 @@ export default class SheetClipboard<T extends object> {
     // record from a record row): `@newRecordValues` for the fields the text
     // has no column for, as `appendRows` (decision 10; READINESS.md, the
     // user's decision 1 for the lines past the end)
+    // the fields the text has a column for: they get `@newRecordValues`
+    // only where it has none, and the announcement counts only theirs
+    const columns: ReadonlySet<string> = new Set(
+      this.sheet.fields.visibleFields
+        .slice(anchor.col, right + 1)
+        .map((field) => field.id)
+    );
     const fill = (changeSet: ChangeSet | null) => {
       if (!changeSet?.inserts.length) return;
       // above the add row: the last record, or a group's last loaded one;
@@ -277,26 +284,20 @@ export default class SheetClipboard<T extends object> {
         addGroup >= 0
           ? records[this.sheet.rows.recordRowAt(anchor.row - 1)]
           : records[records.length - 1];
-      this.sheet.records.fillNewValues(
-        changeSet.inserts,
-        new Set(
-          this.sheet.fields.visibleFields
-            .slice(anchor.col, right + 1)
-            .map((field) => field.id)
-        ),
-        above
-      );
+      this.sheet.records.fillNewValues(changeSet.inserts, columns, above);
     };
     if (this.sheet.args.onResolve) {
       // V9: the synchronous part at once, the resolved part later
       const plan = planPaste(this.sheet.context, at, matrix, options);
       fill(plan.changeSet);
-      const entry = this.sheet.changes.emit(plan.changeSet, touched);
+      const entry = this.sheet.changes.emit(plan.changeSet, touched, {
+        pasted: columns
+      });
       this.sheet.resolve.startResolve(plan, entry);
     } else {
       const changeSet = pasteMatrix(this.sheet.context, at, matrix, options);
       fill(changeSet);
-      this.sheet.changes.emit(changeSet, touched);
+      this.sheet.changes.emit(changeSet, touched, { pasted: columns });
     }
     // no setFocusedCell: inserted rows exist only after the next render
     this.sheet.selection.anchor = anchor;

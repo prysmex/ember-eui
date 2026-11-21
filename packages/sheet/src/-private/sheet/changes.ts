@@ -47,17 +47,24 @@ export default class SheetChanges<T extends object> {
     this.announcement = this.announceFlip ? text : `${text}\u00a0`;
   }
 
-  /** What a screen reader hears after a change set (`emit`). */
-  announceChangeSet(changeSet: ChangeSet): void {
+  /**
+   * What a screen reader hears after a change set (`emit`). `pasted`: a
+   * paste's columns (the clipboard's paste only, not `appendRows`): the
+   * cells written are its patches and its new records' values in those
+   * columns (not `@newRecordValues` or a group's values).
+   */
+  announceChangeSet(changeSet: ChangeSet, pasted?: ReadonlySet<string>): void {
     const messages = this.sheet.messages;
     const parts: string[] = [];
     if (changeSet.source === 'undo') parts.push(messages.announceUndone());
     else if (changeSet.source === 'redo') parts.push(messages.announceRedone());
-    else if (changeSet.source === 'paste') {
+    else if (changeSet.source === 'paste' && pasted) {
       const cells =
         changeSet.patches.length +
         changeSet.inserts.reduce(
-          (count, insert) => count + Object.keys(insert.values).length,
+          (count, insert) =>
+            count +
+            Object.keys(insert.values).filter((id) => pasted.has(id)).length,
           0
         );
       if (cells) {
@@ -140,7 +147,11 @@ export default class SheetChanges<T extends object> {
   emit(
     changeSet: ChangeSet | null,
     touched: Touched,
-    options: { mergeInto?: HistoryEntry | null } = {}
+    options: {
+      mergeInto?: HistoryEntry | null;
+      /** A paste's columns, for its announcement (`announceChangeSet`). */
+      pasted?: ReadonlySet<string>;
+    } = {}
   ): HistoryEntry | null {
     const next = new Map(this.sheet.cells.rejections);
     let changed = false;
@@ -241,7 +252,7 @@ export default class SheetChanges<T extends object> {
       }
     }
     this.sheet.args.onChange(changeSet);
-    this.announceChangeSet(changeSet);
+    this.announceChangeSet(changeSet, options.pasted);
     this.sheet.validate.scheduleValidate();
     // a change ends the copy mark; a paste, fill, undo or redo flashes its cells
     if (this.sheet.outline.copied) this.sheet.outline.copied = null;

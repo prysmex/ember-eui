@@ -74,7 +74,7 @@ function generate(count) {
 
 class GridCell extends Component {
   get value() {
-    return this.args.cellContext.records[this.args.rowIndex]?.[this.args.columnId];
+    return this.args.cellContext.store.records[this.args.rowIndex]?.[this.args.columnId];
   }
   <template><TrivialCell @value={{this.value}} /></template>
 }
@@ -95,11 +95,11 @@ export default class SheetPerfLarge extends Component {
     t = performance.now();
     this.store = localRecords(records, { getRecordId: this.getId });
     perf.storeMs = performance.now() - t;
+    this.cellContext = { store: this.store };
   }
 
-  get cellContext() {
-    return { records: this.store.records };
-  }
+  // one object for the grid's whole life (a new one each render would re-render every cell)
+  cellContext;
 
   mount = () => {
     perf.mountAt = performance.now();

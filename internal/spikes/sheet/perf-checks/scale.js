@@ -168,13 +168,14 @@ async function main() {
 
   // 1. first render: the click on "Mount" to the first frame with the rows
   if (ONLY.includes('mount')) {
-    const box = await page.evaluate(() => {
-      const b = document.querySelector('[data-test-subj=perfMount]');
-      b.scrollIntoView({ block: 'start' });
-      const r = b.getBoundingClientRect();
-      return { x: r.x + r.width / 2, y: r.y + r.height / 2 };
-    });
     result.mount = await scenario('mount', async () => {
+      // the button's place just before the click (a late layout shift moves it)
+      const box = await page.evaluate(() => {
+        const b = document.querySelector('[data-test-subj=perfMount]');
+        b.scrollIntoView({ block: 'start' });
+        const r = b.getBoundingClientRect();
+        return { x: r.x + r.width / 2, y: r.y + r.height / 2 };
+      });
       const n = await countOf('click');
       await page.mouse.click(box.x, box.y);
       return page.evaluate(
@@ -186,6 +187,8 @@ async function main() {
             end = await frameEnd();
             if (document.querySelector('[role=grid] [role=gridcell]')) break;
           }
+          if (!document.querySelector('[role=grid] [role=gridcell]'))
+            throw new Error('"Mount" rendered no grid');
           return +(end - t0).toFixed(1);
         },
         { FRAME_END, n }

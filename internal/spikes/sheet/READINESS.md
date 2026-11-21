@@ -28,6 +28,28 @@ fixes coming back as commits.
    - The per-cell call count (`cellView`), as stage 2 of 3c measured it.
    - What is slow is either fixed in the batch or written down with its
      numbers.
+   - **Scroll profile (2026-11-21, main session):** production build,
+     d08 (10,000 × 31), real wheel in Chromium: frame median 16.7 ms but
+     p90 100-117 ms, about a third of frames over 50 ms, frozen or not.
+     About 35 % of CPU is Glimmer's tag compute. Per 120 px wheel step:
+     about 2.2 million tag computes, 945,000 full re-walks, about 22
+     tracked writes. The writes come from `EuiInnerText` inside
+     `EuiBadge` (select chips: `innerText` after render, `ref` on
+     destroy), the core grid cell's `setCellProps` (`cellPropsState`
+     written in `afterRender`), Glimmer's `{{#each}}` sync, the sheet's
+     `layoutTick++` in `onScroll` and the grid's `scrollVersion`. A write
+     after a render forces another render pass, and each pass
+     re-validates every cell's tags.
+   - **The plan, in order, measured before and after each step** (the
+     same counters and profile): (1) chips in cells without `EuiBadge`
+     (sheet only); (2) `layoutTick` only when an outline or the fill
+     handle is shown, or placed without tracked state (sheet only);
+     (3) `setCellProps` in `packages/core/src` without a tracked write
+     after render; (4) fewer tracked reads per cell view.
+   - **The user's rule for (3), 2026-11-21:** a change to
+     `packages/core/src` is allowed "only and only if" the numbers
+     justify it: measured after (1) and (2), with the before/after
+     numbers recorded, and core's own tests green.
 3. **Accessibility, automated part.**
    - axe-core over every demo page in light and dark (contrast included).
    - A review of the grid's roles and labels: the row-number, group

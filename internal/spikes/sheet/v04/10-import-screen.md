@@ -88,6 +88,12 @@ interface SheetImportResult<T = any> {
   rows: string[][];
   /** The field each column goes to (fields created on the way included). */
   fieldIds: string[];
+  /**
+   * The field each column is read with (decision 14): the target, a
+   * per-column copy (`{ ...field, dateOrder: 'mdy' }`) or a created
+   * field. Pass them as `appendRows`' `fields`.
+   */
+  fields: EuiSheetField<T>[];
   /** The fields created on the way, as `@onCreateFields` returned them. */
   createdFields: EuiSheetField<T>[];
   /** Lines left out because the user chose "skip lines with errors". */
@@ -106,7 +112,7 @@ does:
 import = (result: SheetImportResult) => {
   this.savedMappings[result.mapping.signature] = result.mapping;
   this.api.appendRows(result.rows, result.fieldIds, {
-    fields: result.createdFields
+    fields: result.fields
   });
 };
 ```
@@ -363,7 +369,7 @@ used today.
 - **IW7:** a rejected `@onCreateFields` or `@onImport` shows its message
   and imports nothing.
 - **IW8:** end to end with a sheet: `@onImport` → `api.appendRows(rows,
-  fieldIds, { fields: createdFields })` inserts one record per line in one
+  fieldIds, { fields })` inserts one record per line in one
   change set, the new field's values included, before `@fields` has
   re-rendered; Ctrl/Cmd+Z removes them.
 - **IW9:** keyboard: every control is reachable with Tab, the selects

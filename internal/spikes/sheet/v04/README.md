@@ -166,3 +166,17 @@ measurement or a user decision first:
 12. A header whose best field is already taken stays unmatched (no
     fallback to another field); `normalizeHeader` is public.
 13. Header matching ignores accents, so `ñ` matches `n`.
+
+## Decided (batch E stage 2, 2026-11-21: recommended by the main session; the user may overrule)
+
+14. `SheetImportResult` has `fields`: `runImport`'s per-column fields
+    (created fields, and per-column copies such as an M/D/Y reading of a
+    D/M/Y field). The documented call is
+    `api.appendRows(result.rows, result.fieldIds, { fields: result.fields })`;
+    `createdFields` stays in the result for the owner.
+15. A cell whose transform threw writes `''`, never the untransformed
+    text (as stage 1 does).
+16. Short lines give full-width rows, with `''` for the missing cells (as
+    stage 1 does).
+17. "Empty is no value" keeps storing `''` for a text field in a sheet
+    (as stage 1 does): the option decides `values` only.

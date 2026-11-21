@@ -103,6 +103,9 @@ const waiter = buildWaiter('@ember-eui/sheet:import');
 /** The dry run waits this long after the last change of the plan (v0.4 10, "Large files"). */
 export const IMPORT_DRY_RUN_DEBOUNCE = 250;
 
+/** No `@transforms` (one array, so the dry run sees no change). */
+const NO_TRANSFORMS: SheetImportTransform[] = [];
+
 /** Sample texts shown under a column's header. */
 const SAMPLES = 3;
 
@@ -138,6 +141,7 @@ interface RunState {
   headers: boolean;
   columns: SheetImportColumn[];
   fields: EuiSheetField[];
+  transforms: SheetImportTransform[];
   run: SheetImportRun;
 }
 
@@ -256,7 +260,7 @@ export default class EuiSheetImport<T = any> extends Component<
   }
 
   get transforms(): SheetImportTransform[] {
-    return this.args.transforms ?? [];
+    return this.args.transforms ?? NO_TRANSFORMS;
   }
 
   get sampleSize(): number {
@@ -521,7 +525,9 @@ export default class EuiSheetImport<T = any> extends Component<
         target === 'skip' &&
         !fromSaved &&
         column.taken === undefined &&
-        this.canCreate
+        this.canCreate &&
+        // a column with no text (a trailing delimiter) creates no field
+        Boolean(this.columnData[column.index]?.samples.length)
       ) {
         next = { ...column, target: { newField: this.draftFor(column.index) } };
       }
@@ -590,7 +596,8 @@ export default class EuiSheetImport<T = any> extends Component<
       state.parsed === parsed &&
       state.headers === this.headers &&
       state.columns === columns &&
-      state.fields === fields
+      state.fields === fields &&
+      state.transforms === this.transforms
     ) {
       return state.run;
     }
@@ -608,6 +615,7 @@ export default class EuiSheetImport<T = any> extends Component<
       headers: this.headers,
       columns: this.columns,
       fields: this.allFields,
+      transforms: this.transforms,
       run: runImport(this.ctx, this.parsed!.matrix, this.plan, this.transforms)
     };
     this.runState = state;

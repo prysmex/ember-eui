@@ -1,9 +1,10 @@
 /**
- * The import screen `<EuiSheetImport>` (v0.4 10, stage 2), IW1-IW11: the
+ * The import screen `<EuiSheetImport>` (v0.4 10, stage 2), IW1-IW12: the
  * columns proposed and guessed, the preview and the dry run, new fields,
  * errors, saved mappings, rejections, the end-to-end path with a sheet,
  * keyboard reachability, per-column field copies (decision 14), and a
- * windows-1252 file. The prefix IW was unused (`grep -rnoE '\bIW[0-9]+'`).
+ * windows-1252 file, a blank column and a change of `@transforms`
+ * (IW12). The prefix IW was unused (`grep -rnoE '\bIW[0-9]+'`).
  */
 import { module, test } from 'qunit';
 import { setupRenderingTest } from 'ember-qunit';
@@ -919,6 +920,46 @@ module('Integration | Component | EuiSheetImport', function (hooks) {
       ]
     );
     assert.deepEqual(owner.log[1]!.rejected, []);
+  });
+
+  test('IW12 a column with no text creates no field; a change of @transforms alone re-runs the dry run', async function (assert) {
+    const screen = new Screen();
+    screen.creates = true;
+    screen.transforms = [UPPER];
+    // a trailing delimiter on every line: a fifth column with no text
+    screen.text = csv(4)
+      .split('\r\n')
+      .map((line) => `${line},`)
+      .join('\r\n');
+    await renderScreen(screen);
+    assert.deepEqual(all('euiSheetImportHeader').map(textOf), [
+      'Nombre',
+      'Precio',
+      'Fecha',
+      'Activo',
+      'Column 5'
+    ]);
+    assert.deepEqual(
+      targets(),
+      ['f:name', 'f:price', 'f:due', 'new', 'skip'],
+      'Activo goes to a new field; the empty column is skipped'
+    );
+    await select(q('euiSheetImportTransform', row(0)), 'upper');
+    assert.strictEqual(totals(), '4 lines ready, 0 with errors');
+    // the same id, now throwing: the dry run follows the new @transforms
+    screen.transforms = [{ ...UPPER, apply: BOOM.apply }];
+    await settled();
+    assert.strictEqual(totals(), '0 lines ready, 4 with errors');
+    assert.strictEqual(
+      textOf(q('euiSheetImportCantRead', row(0))),
+      '4 can’t be read'
+    );
+    await click(SEL('euiSheetImportSubmit'));
+    assert.deepEqual(
+      screen.drafts,
+      [[{ label: 'Activo', type: 'checkbox' }]],
+      'one new field only'
+    );
   });
 
   test('IW11 a windows-1252 file: the encoding found, accents right; the delimiter and the header switch re-read it', async function (assert) {

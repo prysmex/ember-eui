@@ -287,6 +287,18 @@ with a per-column copy (`{ ...field, dateOrder: 'mdy' }`), never stored.
 (each chunk is one undo step), and import with no group by (the last
 group's values would win).
 
+`<EuiSheetImport>` is an import screen for the step in between (it
+renders inline; place it in your modal): it maps the file's columns to
+fields (a saved mapping, then aliases, label, id), guesses each
+column's type, lets the user pick a field, a new field or nothing, a
+transform you define, the date order, decimal separator and a value
+map, and shows a preview and the totals of a dry run over every line,
+with a download of the lines with errors. `@onCreateFields(drafts)`
+creates new fields on Import; `@onImport(result)` gets the lines:
+`api.appendRows(result.rows, result.fieldIds, { fields: result.fields })`.
+It takes no sheet, so any target described by fields works
+(`result.values`). See the docs, "Import from CSV".
+
 ## EmberSearchUi
 
 `@ember-eui/sheet/search-ui` shows an

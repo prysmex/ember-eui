@@ -1735,3 +1735,447 @@ messages, fields: @fields }`):
 
 One commit in this range is the main session's: `c5ca46f` (readiness
 loose ends from batch C) before `a365483`.
+
+## Batch E, stage 2: the import screen (10)
+
+Built 2026-11-21 on `02f8585` (stage 1 and the main session's readiness
+notes), in this checkout. Design: `v04/10-import-screen.md` ("API",
+"Behaviour", "Code", "Tests", "Docs"), stage 1's "Notes for stage 2"
+above, and decisions 14-17 of `v04/README.md` (recorded there by this
+stage as the main session's recommendations; the user may overrule).
+`packages/core/src` did not change; no dependency was added; nothing in
+`src/-private/sheet/` or `eui-sheet.gts` changed.
+
+### What was built
+
+- **`<EuiSheetImport>`** (`src/components/eui-sheet-import.gts`,
+  published as an app component: `package.json`'s `app-js` gets
+  `./components/eui-sheet-import.js`, which is what the publish build's
+  `appReexports` produces; the build left `package.json` unchanged), and
+  its private parts in `src/-private/import/`: `column-row.gts` (one row
+  of the columns table and its detail rows), `value-map.gts`,
+  `new-field-form.gts`, `preview-table.gts`, `model.ts` (type labels,
+  the draft from a guess, the value map's choices), `styles.ts` (its own
+  `<style data-eui-sheet-import>`). Exported from `@ember-eui/sheet`
+  (`EuiSheetImport`, `EuiSheetImportSignature`, `SheetImportResult`).
+- **Arguments** as the design, with `@fieldTypes` for the design's
+  `@types` (deviation 1). The source is `@file` (bytes →
+  `decodeText` → `parseCsv`), `@text` or `@matrix`.
+- **The screen**, as the design's three parts:
+  1. The file: name, "Encoding: UTF-8 / Windows-1252", the delimiter
+     select (`,` `;` tab; the detected one selected, `detectDelimiter`,
+     now exported from `core/csv.ts`; a change re-reads the text), "First
+     line is the header" (an `EuiSwitch`), the line count (data lines,
+     without blank ones). The delimiter select is absent for `@matrix`.
+  2. Columns: a table, one row per file column (the widest line's
+     width): the header (`th scope=row`) and three non-blank samples; a
+     badge: for a new or skipped column the first guess and its share
+     ("Date, D/M/Y · 100%", hollow), for a column going to a field that
+     field's type and the dry run's `1 - errors / lines` (green at 100 %,
+     else yellow); the target select (writable fields, "New field…" with
+     `@onCreateFields`, "Skip"); the transform select (with
+     `@transforms`, "None" first); the options (Trim, Empty is no value,
+     the date order for date/date-time, the decimal separator for
+     number/currency/percent, a "Values (N mapped)" button for
+     select/checkbox targets); the status ("8 of 8 read" or a "N can't
+     be read" link that filters the preview to those lines). Under the
+     row, when opened: the new-field form, or the value-map table.
+  3. Preview: `previewImport` of `@sampleSize` lines (default 20), the
+     line number (the file's, the header being 1), each cell's value or
+     state (error with the message under the text, "linked on import",
+     "new option"), new fields' headers marked "new"; then the totals
+     from the dry run, "Download the lines with errors", and "Import all
+     (errors stay as rejections)" / "Skip lines with errors" (an
+     `EuiRadioGroup`, shown when there are errors). Buttons: Cancel (with
+     `@onCancel`) and "Import N lines".
+- **The calls are stage 1's notes, in order**: `matchColumns(headers,
+  writable fields, @savedMapping (only with a header line), { headers })`;
+  `guessColumn` per column over its data texts, with
+  `@creatableFieldTypes`; an unmatched, untaken column becomes
+  `{ newField: draftFromGuess }` with `@onCreateFields` (a column with
+  no text, such as a trailing delimiter's, stays skipped, deviation 10); the value map is
+  prefilled with `suggestValueMap` when a column's target is a select or
+  checkbox; `previewImport` for the preview; `runImport` for the dry run
+  (immediately for a new source, then 250 ms after the last change of the
+  plan or of `@transforms`, a runloop timer under a test waiter); `errorsCsv(matrix, errors,
+  { headers, delimiter: the file's })` for the download (a Blob with a
+  UTF-8 BOM, `<name>-errors.csv`). On Import: the `newField` drafts in
+  column order → `@onCreateFields(drafts)` once → each of those columns'
+  target becomes `{ field: created[k].id }` at once (so a retry after a
+  rejected `@onImport` creates nothing again) → `runImport({ ...ctx,
+  fields: [...@fields, ...created] }, …, { skipLinesWithErrors })` →
+  `@onImport({ rows, fieldIds, fields, createdFields, skippedLines,
+  lines, values, mapping })`. A rejection of either shows its message in
+  a danger call-out (`role=alert`); `aria-busy` and disabled controls
+  while busy. A result of `@onCreateFields` whose length is not the
+  drafts' is an error (`importCreateMismatch`).
+- **The plan's state** is the proposal (recomputed from the source, the
+  header choice, `@fields` and `@savedMapping`) with the user's changes
+  per column on top, keyed to the parsed source and the header choice:
+  a change of `@fields` (the owner adding the created fields) keeps the
+  user's choices. A delimiter or header change starts from a new
+  proposal.
+- **Two columns on one field**: a field another column goes to is shown
+  as "Item (in use by "Nombre")" and **disabled** in the other columns'
+  selects (deviation 3); `setTarget` also frees a field from another
+  column if a call ever names a taken one.
+- **The new-field form is the sheet's field editor content**
+  (`FieldEditorForm` from `field-editor.gts`: name, type, the type's
+  `fieldOptions`, description, required). It needs no sheet, so the
+  approved fallback (label and type only) was not needed. Its styles
+  come from the sheet's `ensureStyles()` (called by the screen; the
+  rules are not scoped to `.euiSheet`), its colours from the sheet's
+  `sheetThemeVars` class on the screen's root. The name gets focus,
+  Save changes the draft only, Escape and Cancel close it and give focus
+  back to "Edit the new field". **Currency**: a currency guess's draft
+  gets `currency: 'USD'` (the field editor's default) and the form shows
+  the code to change.
+- **Mapping**: `mappingOf` keeps `index`, `header`, `target` (created
+  fields by id) and the options that are set; without a header line
+  `mapping` is `null` and `@savedMapping` is not used (stage 1 note 9).
+  Without a header line the columns are named `Column N` (the plan's
+  headers too, so a transform's `row` has a key per column).
+- **The preview shows the field's own format** (deviation 4).
+- **Messages**: 60 keys `euiSheet.import*` in `core/messages.ts`
+  (through `eui-i18n` as the sheet's, `@messages` over them; the first
+  commit's message says 62, which is wrong); the screen also uses the
+  existing `cancel`, `fieldDateOrder`, `dateOrderDmy`, `dateOrderMdy`,
+  `fieldType_*`. No plural forms ("1 lines"), as the other messages.
+- **Size**: the screen is its own module. Nothing reachable from
+  `eui-sheet.gts` imports `eui-sheet-import.gts` or `-private/import/*`
+  (checked by walking its relative imports: 134 files, none of them;
+  `core/import.ts`, stage 1's pure helpers, is reachable through the
+  core's barrel as before). In the publish build, `dist/components/
+  eui-sheet.js` names none of the screen's modules; `dist/index.js`
+  re-exports it (the package's `sideEffects` lets a bundler drop it).
+
+### Tests
+
+New file `tests/integration/components/eui-sheet-import-test.gts`, IW1-
+IW12 (IW was unused). No existing test changed.
+
+- **IW1** `Nombre,Precio,Fecha,Activo` × 25: Nombre by alias, Precio and
+  Fecha by label, Activo skipped (no `@onCreateFields`); the badges
+  (including the guess of the skipped column); three samples; "25 of 25
+  read"; "25 lines"; preview headers and 20 rows; totals; "Import 25
+  lines"; no download link; delimiter `,`; Cancel calls `@onCancel`.
+- **IW2** a target (Activo → the checkbox field, value map prefilled
+  "2 mapped"), two transforms, and the date order: the preview changes
+  at once and the totals only after the debounce (checked with a
+  dispatched change and `rerender()` before `settled()`), then "12 lines
+  ready, 13 with errors", "13 can't be read", the badge "Date, M/D/Y ·
+  48%"; the filter link shows the 13 lines (file lines 14-26) and "Show
+  the first lines" back; a taken field is disabled in another column's
+  select and not in its own; skipping a column frees it.
+- **IW3** with `@onCreateFields`: the unmatched column is a new field
+  ("New field: Activo (Checkbox)", "new" in the preview); its form (the
+  field editor's name and type, focus on the name), a renamed draft,
+  focus back; nothing created before Import; then one call with
+  `[{ label, type: 'checkbox' }]`, and `@onImport` with the new id in
+  `fieldIds`, `createdFields`, `fields[3]` the created field, rows,
+  values, lines; the column now targets the created id.
+- **IW4** without `@onCreateFields`: no "new" option in any select; a
+  saved mapping's new-field column becomes Skip.
+- **IW5** two bad prices: totals, the error cell's text and message; the
+  download (`URL.createObjectURL` and the link's `click` stubbed): one
+  Blob, `import-errors.csv`, a UTF-8 BOM, the header line and the two
+  lines; "Skip lines with errors": 23 rows, `skippedLines` `[3, 7]`;
+  "Import all": 25 rows, the bad text kept; a throwing transform writes
+  `''` (decision 15).
+- **IW6** a saved mapping with the same signature wins over the alias
+  (target, transform, `trim: false` shown); `result.mapping` as saved,
+  and passed back gives the same mapping and rows; another header line
+  ignores it; without a header line: `Column 1-4`, by position, "4
+  lines", `mapping` `null`.
+- **IW7** a rejected `@onCreateFields` (message, no `@onImport`), a
+  wrong count (`importCreateMismatch`), created then a rejected
+  `@onImport` (message; the column on the created id; not busy), the
+  retry creates nothing and reports the created field, a pending
+  `@onImport` (`aria-busy`, disabled selects), then `createdFields` `[]`
+  once reported.
+- **IW8** end to end: a sheet and the screen on the same `@fields`;
+  `@onImport` → `appendRows(rows, fieldIds, { fields })`: one change
+  set, source `paste`, five inserts with `activo` true/false (a field
+  `@fields` never has), no rejections; Ctrl+Z on a focused cell removes
+  them.
+- **IW9** every control in the screen (with the value map open) is a
+  native button/select/input, tabbable, enabled and named
+  (`aria-label`, `aria-labelledby`, `label[for]` or text); Import is the
+  last; the target selects' names; Escape in the new-field form closes
+  it and focuses its button. Tab itself and opening a select with the
+  keyboard are not something a test can do; the real-input run did the
+  Tab walk and keyboard selection.
+- **IW10** (decision 14) `11/19/2026` into the D/M/Y field: 0 ready
+  until the column's date order is M/D/Y, then 2; the preview shows
+  `19/11/2026`; `result.fields[1]` is the M/D/Y copy, the field object
+  unchanged; `appendRows` with `{ fields: result.createdFields }`
+  rejects both dates, with `{ fields: result.fields }` inserts
+  `2026-11-19` and `2026-12-31`.
+- **IW11** a windows-1252 `File` (`Año;Precio;Señal`, `Peña;1,5;Sí`):
+  "precios.csv", "Encoding: Windows-1252", delimiter `;`, the headers
+  and preview with accents, `Año` matching the label `Ano`, the guesses
+  "Number, Comma (1,5)" and "Checkbox"; the comma delimiter re-reads it
+  (two columns: the header is one cell); the header switch gives
+  `Column 1-3` and "3 lines".
+- **IW12** (the last commit) a trailing delimiter on every line: the
+  fifth column `Column 5` stays skipped while Activo goes to a new
+  field, and Import creates only Activo's; a change of `@transforms`
+  alone (the same id, now throwing) re-runs the dry run: "0 lines ready,
+  4 with errors".
+
+Suite: **681 tests, 681 pass** (baseline 670; +11 IW) on each of
+`d6d978c` and `01e6e15`, and **682 tests, 682 pass** (+12 IW) on the
+last commit's tree; one full run per tree, no retries. (A run on the
+docs alone, before IW12, finished 681 / 681 but was stopped as its tree
+was not the one committed.)
+
+### Checks (before each commit, on its tree)
+
+On `d6d978c`'s tree and again on `01e6e15`'s:
+
+- `pnpm lint:types`: no error. The tests' `ember-tsc`: the baseline
+  errors and no other (`diff` empty; a first draft had two TS errors in
+  the new test, fixed before the commit).
+- `eslint` and `prettier --check` on the changed `.ts`/`.gts` files:
+  clean. (A first draft did not parse in ESLint: a `…` in a doc comment
+  before a `<template>` shifts `ember-eslint-parser`'s offsets; the
+  comments use `...` now.)
+- Owner gate: OK (38 module classes; no module class changed).
+- `node scripts/generate-api-docs.mjs --check`: exit 0.
+- On `01e6e15`'s tree also: `pnpm lint:js`, `pnpm lint:css` (exit 0),
+  `pnpm eui:check` at the root (exit 0), `pnpm build` in
+  `packages/sheet` (exit 0; `dist/components/eui-sheet-import.js` and
+  `dist/_app_/components/eui-sheet-import.js` built; not committed).
+- On the last commit's tree, all of the above again: `lint:types`, the
+  tests' `ember-tsc` (baseline only), `eslint`/`prettier --check` on the
+  changed files, the owner gate, `lint:js`, `lint:css`, `eui:check`,
+  `pnpm build`, `generate-api-docs.mjs --check`, and
+  `generate-api-docs.mjs` itself (it regenerated nothing: `git status`
+  unchanged; it reads no sheet source); README `prettier --check`
+  clean.
+
+### Deviations
+
+1. **`@fieldTypes`, not `@types`**: the design says "`@types` … as
+   `@types` of the sheet", but the sheet's argument is `@fieldTypes`;
+   the screen uses the sheet's name. **The user's decision** if `@types`
+   was meant.
+2. **The result has more than the design's**: `fields` (decision 14),
+   `lines` and `values` (for a target that is not a sheet: `runImport`'s),
+   and `mapping` is `null` without a header line (stage 1 note 9).
+3. **A taken field is disabled, not moved.** The first build moved the
+   field from the other column when chosen. The real-input run showed
+   why that is wrong with a native select: the arrow keys on a closed
+   select fire `change` at every option, so stepping through the list
+   took fields from other columns one by one (Precio lost its field
+   while the keyboard went down Proveedor's list). Disabled options are
+   skipped by the arrows. Fixed in the follow-up commit, IW2 changed
+   with it.
+4. **The preview formats with the target field**, not the per-column
+   copy `previewImport` reads with: a column read as M/D/Y into a D/M/Y
+   field shows `19/11/2026`, a decimal-comma column into a `.` field
+   shows `0.25`, as the sheet will show them (the design: "the value as
+   the target type formats it"). `previewImport` itself is unchanged (it
+   formats with the copy, IP3 asserts it); the screen re-formats the
+   cells (`asStored`). Found in the real-input run (the first run's
+   preview showed `0,25` and the sheet `0.25`), fixed in the follow-up
+   commit, IW2 and IW10 assert it.
+5. **`detectDelimiter` is exported** from `core/csv.ts` (it was private):
+   the screen shows the delimiter found. A new public helper.
+6. **`readOnly: true` fields and buttons are not offered** as targets
+   (stage 1 deviation 11), and they are left out of `matchColumns`, so
+   a header naming one is unmatched (a new field with
+   `@onCreateFields`).
+7. **The column options for a new field are column options** (a copy of
+   the draft), as for an existing field; the new field's own date order
+   and options are the form's.
+8. **The new-field form includes description and required** (it is the
+   field editor's content as is); they go into the draft.
+9. **Size**: the component is about 1,420 lines (the design estimated 350)
+   and the private parts 845 (estimated 200): the template (about 260
+   lines), the column view model, the doc comments, Prettier's
+   formatting of the long argument lists.
+10. **A column with no text is not a new field**: with
+   `@onCreateFields`, an unmatched column whose data texts are all blank
+   (a trailing delimiter, an empty spreadsheet column) stays Skip;
+   otherwise one click on Import created an empty field that Ctrl+Z
+   cannot remove. Found by the advisor review; the last commit, IW12.
+11. **The 300 ms preview target is missed** on 10,000 × 20 (below, real
+   input), and the design's clause "If not, the dry run moves to idle
+   callbacks" was not applied: the profile shows the first dry run is
+   about 110 ms of the ~430 ms, the rest is rendering the columns
+   table's EUI controls, so the clause alone would not meet the target.
+   The dry run's target (1 s) is met. **The user's decision.**
+
+### Real input in Chromium
+
+Production build of this checkout (the sheet's `pnpm build`, then
+`site`'s `pnpm build`), served with `vite preview` (port 4185),
+Playwright's Chromium (headless, 1300 × 900, `deviceScaleFactor` 2),
+real `page.mouse` and `page.keyboard`, on the new demo d28 ("Import
+screen", `localRecords`) on `/docs/sheet/docs/sheet`. The final run is
+on the code of `01e6e15` and the demo as committed. **No page errors, no
+console errors.** Selects were changed by the keyboard (focus, Home,
+ArrowDown on the closed select), buttons and links by mouse clicks.
+
+- **Sample file**: a mouse click on "Download sample file":
+  `inventario.csv`, a UTF-8 BOM, the 8 Spanish lines (`;`).
+- **Import…**: a mouse click opens the file chooser (Playwright's
+  `filechooser` event), the sample set on it; the modal shows the
+  screen: "inventario.csv · Encoding: UTF-8 · Delimiter Semicolon (;) ·
+  First line is the header · 8 lines". Nombre → Item (alias), Precio →
+  Unit price ("Number · 0%", "8 can't be read": a decimal comma into a
+  `.` field), Fecha → Next count ("Date, D/M/Y · 87%", `31/02/2026`),
+  Activo → Active ("Checkbox · 100%", "Values (2 mapped)"), Estado →
+  Status ("Single select · 0%": Spanish texts, English options),
+  Proveedor → "New field: Proveedor (Single select)" (the guess, its
+  options the three suppliers), "new" in the preview's header.
+- **Proveedor** by the keyboard: Skip (the badge stays, no status),
+  then "New field…" back. "Edit the new field" (mouse): the field
+  editor's form, name `Proveedor`, type `singleSelect`, the three
+  options, focus on the name; Escape closes it, focus back on the
+  button, the modal stays open.
+- **Precio's decimal separator → Comma** (keyboard): "Number, Comma
+  (1,5) · 87%", "1 can't be read" (`doce`); the preview shows `0.25`,
+  `18.5`, `1250` (the field's own format).
+- **Estado's values** (the Values button by mouse, each select by
+  keyboard): Disponible → Available, Agotado → Out of stock, Poco
+  stock → Low stock; "Single select · 100%", "8 of 8 read".
+- **Fecha's date order → Month/Day/Year**: the totals at once still
+  "6 lines ready, 2 with errors", 600 ms later "0 lines ready, 8 with
+  errors", "Date, M/D/Y · 0%", "8 can't be read", the preview's dates
+  marked `"15/11/2026" is not a date`; back to Day/Month/Year.
+- **A transform**: Nombre → Upper case: `TORNILLO M6`, …,
+  `MARTILLO DE UÑA` in the preview; totals "6 lines ready, 2 with
+  errors", "Import 8 lines".
+- **"1 can't be read"** on Precio (mouse): the preview shows line 6
+  only (`doce`); "Show the first lines" back.
+- **Download the lines with errors** (mouse; the download saved and
+  read): `inventario-errors.csv`, a UTF-8 BOM, then
+  `Nombre;Precio;Fecha;Activo;Estado;Proveedor` /
+  `Taquete 1/4;doce;22/11/2026;Sí;Disponible;Ferretería Lupita` /
+  `Llave Allen 5 mm;35,00;31/02/2026;No;Agotado;Herramientas Peña` (the
+  file's own delimiter and texts).
+- **Tab** from the delimiter select to Import, real Tab presses: 41
+  stops in reading order: delimiter, header switch, then per column
+  target, transform, trim, empty, the type's option, the Values button
+  or "can't be read" link, the three value-map selects under Estado,
+  "Edit the new field" under Proveedor, the download link, the radio
+  group (one stop), Cancel, Import. Nothing skipped, no trap.
+- **Skip lines with errors** (mouse on its label): "Import 6 lines";
+  Import (mouse): the modal closes, the footer "inventario.csv: 6 lines
+  imported, 2 skipped; new fields: Proveedor"; the sheet has a
+  Proveedor column, rows 3-8 TORNILLO M6 / 0.25 / 15/11/2026 /
+  Available / Aceros del Norte … MARTILLO DE UÑA / 1250 / 28/11/2026 /
+  Available / Herramientas Peña.
+- **Ctrl+Z** after a mouse click on row 1's Item: the six records gone
+  (2 records left); the Proveedor field stays (field creation is not
+  undoable, as `@onFieldCreate`).
+- **The windows-1252 copy** (the script wrote the sample's text as
+  latin1 bytes, no BOM; no UTF-8 sequences in it): "Encoding:
+  Windows-1252", samples and preview `Ferretería Lupita`, `Herramientas
+  Peña`, `CINTA MÉTRICA 5 M`, `MARTILLO DE UÑA`; the last mapping applied
+  (Upper case, Comma, the value map, Proveedor → the created field);
+  Cancel closes the modal. On a fresh page (no mapping),
+  `light-9-preview-1252.png` shows the accents in the preview too.
+- **Dark** (the header's theme switch): the same screen; text
+  `rgb(180, 193, 213)`, table header `rgb(11, 22, 40)`, error text
+  `rgb(246, 114, 106)`, the modal `rgb(17, 28, 44)`; the new-field form
+  and the value map in dark.
+- **First run, before `01e6e15`**: the keyboard steps down Proveedor's
+  target list (Home, ArrowDown…) moved Item, Unit price, … from their
+  columns one by one (each arrow fires `change`), and the preview
+  showed `0,25` where the sheet shows `0.25`: deviations 3 and 4,
+  fixed. (A first script also counted disabled options; fixed in the
+  script.)
+- **10,000 lines × 20 columns** (5 of the demo's columns and 15 extras
+  that go to new fields; a temporary script on the same build, not
+  committed): from the input's `change` event to the preview's first
+  row 718 ms (first file), then 446 and 377 ms; a column's date order
+  changed: the next frame 120-165 ms, its "can't be read" updated
+  452-473 ms after the change (250 ms of it the debounce). The design's
+  target for the preview (300 ms) **is missed**; the dry run's (1 s) is
+  met. A CPU profile of one open (warm): about 430 ms in Glimmer's
+  render, 109 ms of it the first dry run (`storeRun`), most of the rest
+  rendering 20 rows of EUI controls (selects, switches, badges). The
+  design's remedy (the dry run in an idle callback) would take the
+  109 ms out of the first frame, not the rest: **the user's decision**
+  (open items).
+- Screenshots (not in the repo):
+  `/tmp/claude-0/-home-user-ember-eui/87cd9e5a-212c-54c3-9d47-30ac398aebd2/scratchpad/v04e/`
+  `light-1-opened.png`, `light-1-opened-screen.png`,
+  `light-2-new-field-form.png`, `light-3-value-map.png`,
+  `light-4-mdy.png`, `light-5-ready.png`, `light-6-imported.png`,
+  `light-7-undone.png`, `light-8-windows-1252.png`,
+  `light-9-preview-1252.png`, `dark-1-opened.png`,
+  `dark-2-new-field-form.png`, `dark-9-preview-1252.png`; the downloads
+  in `../v04e-files/`; the script's output in `results.json`,
+  `real-input.log`. The agent looked at `light-1-opened-screen.png`,
+  `light-5-ready.png`, `dark-2-new-field-form.png`,
+  `light-9-preview-1252.png` and `dark-9-preview-1252.png`, not a
+  person: readable in both themes; the error cells framed red with the
+  message under the text; the value map and the form under their
+  rows.
+- **The bundle**: in the site's production build only the d28 demo's
+  chunk (`docfy-demo-docs-sheet-d28-import-screen-*.js`) contains the
+  screen (`euiSheetImport__`); the chunks of the other sheet demos do
+  not.
+
+### Open items
+
+- **The 300 ms preview target is missed** on 10,000 × 20 (377-446 ms
+  warm, 718 ms first): the user's decision whether to defer the first
+  dry run (about 110 ms) and/or render fewer controls per row (e.g. the
+  options behind a button).
+- **The user's decisions**: `@fieldTypes` vs `@types` (deviation 1);
+  the result's extra keys (deviation 2); disabled vs moved for a taken
+  field (deviation 3, recommended: disabled); the preview's format
+  (deviation 4); whether `importAliases` should also match a value-map
+  option (today only labels and the yes/no words prefill).
+- A guessed currency is always `USD` until the user edits the form; the
+  sample's symbols (`€`, `MXN`) are not used to pick the code.
+- Field creation is not undoable from the sheet (as `@onFieldCreate`):
+  Ctrl+Z after an import removes the records, not the new field.
+- No plural forms in the messages ("Import 1 lines").
+- The value map lists the file's texts, but is applied after the
+  transform: with a transform on a select or checkbox column, the
+  listed texts may no longer be the ones mapped (it shows as errors,
+  not silently).
+- A new `@file` on the same instance keeps the last error message, the
+  preview filter's column, the skip choice and the created fields (the
+  plan itself starts afresh); apps that open the screen per file (a
+  modal, as in d28) do not see it.
+- The currency guess's `USD` default has no test and was not in the
+  real-input run (the sample has no currency column).
+- **Not verified**: Firefox, Safari, a screen reader (only the names
+  and roles were checked), touch, a real Excel-made file (the
+  windows-1252 copy was made by the script), UTF-16 files, `@matrix`
+  from SheetJS (tested only as text and files), the EmberSearchUi
+  connector (the screen is separate from it).
+
+### Files
+
+- New: `packages/sheet/src/components/eui-sheet-import.gts`,
+  `packages/sheet/src/-private/import/{column-row,new-field-form,preview-table,value-map}.gts`,
+  `packages/sheet/src/-private/import/{model,styles}.ts`,
+  `packages/sheet/tests/integration/components/eui-sheet-import-test.gts`,
+  `packages/sheet/docs/sheet-demo/d28-import-screen.md`.
+- Changed: `src/core/csv.ts` (`detectDelimiter` exported),
+  `src/core/messages.ts` (60 keys), `src/types.ts`
+  (`SheetImportResult`, `EuiSheetImportSignature`), `src/index.ts`,
+  `package.json` (`app-js`); `docs/sheet.md` ("The import screen" in
+  "Import from CSV"), `README.md` (a paragraph);
+  `internal/spikes/sheet/v04/README.md` (decisions 14-17),
+  `v04/10-import-screen.md` (the result's `fields`, the example and
+  IW8 pass `result.fields`).
+
+### Commits
+
+| Commit | Holds | Suite |
+| --- | --- | --- |
+| `d6d978c` | `<EuiSheetImport>`, `src/-private/import/*`, messages, types, exports, `detectDelimiter`, `app-js`; IW1-IW11 | 681 / 681 |
+| `01e6e15` | a taken field disabled (not moved); the preview in the field's format; IW2, IW10 | 681 / 681 |
+| the last commit | a column with no text stays skipped; `@transforms` re-runs the dry run (IW12); `docs/sheet.md`, README, d28, `v04/README.md` 14-17, the design's `fields`, these results | 682 / 682 |
+
+One commit in this range is the main session's: `02f8585` (readiness
+loose ends from stage 1) before `d6d978c`.

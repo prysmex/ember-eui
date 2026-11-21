@@ -118,7 +118,7 @@ names both numbers; no record is lost or hidden.
   paste on a group's add row inserts every line into that group (with
   `@newRecordValues`, above: the group's last loaded record); a paste
   from a record that runs past the last record inserts the rest into the
-  last record's group.
+  last record's group (with `@newRecordValues`, above: the last record).
 - **Row numbers.** One more than the previous record's, from
   `@rowNumberOffset + 1`; a group's `rowNumberStart` restarts the count
   (`groupRecords` sets it, counting the records of collapsed groups, so

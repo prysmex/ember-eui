@@ -35,7 +35,9 @@ show ids. Hovering a row shows its checkbox and an expand icon.
   adds its lines as records; the fields the pasted text has no column for
   get `@newRecordValues` (once per line, the record above the add row as
   `above`), as `api.appendRows` does. Lines of a paste from a record that
-  run past the last record get only the pasted values.
+  run past the last record are new records too, and get
+  `@newRecordValues` the same way (once per new record, the last record
+  as `above`); the records pasted over get only the pasted values.
 - **The row menu**: right-click a cell or a row number, or press
   Shift+F10 or the ContextMenu key. It has Insert record above and below,
   Duplicate, Expand record (for one record), Copy (the rows as

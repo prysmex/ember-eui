@@ -265,11 +265,14 @@ export default class SheetClipboard<T extends object> {
     };
     const touched = this.sheet.selection.touchedInRecords(pasted, false);
     const options = insert ? { nextTempId, insert } : { nextTempId };
-    // on an add row, every line is an insert: `@newRecordValues` for the
-    // fields the text has no column for, as `appendRows` (decision 10)
+    // every insert (each line on an add row, the lines past the last
+    // record from a record row): `@newRecordValues` for the fields the text
+    // has no column for, as `appendRows` (decision 10; READINESS.md, the
+    // user's decision 1 for the lines past the end)
     const fill = (changeSet: ChangeSet | null) => {
-      if (!changeSet || !this.sheet.rows.isAddRow(anchor.row)) return;
-      // above the add row: the last record, or a group's last loaded one
+      if (!changeSet?.inserts.length) return;
+      // above the add row: the last record, or a group's last loaded one;
+      // past the end: the last record (the inserts go into its group)
       const above =
         addGroup >= 0
           ? records[this.sheet.rows.recordRowAt(anchor.row - 1)]

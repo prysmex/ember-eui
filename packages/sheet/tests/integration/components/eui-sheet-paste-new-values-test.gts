@@ -278,7 +278,7 @@ module(
       );
     });
 
-    test('PNV5 a paste on a record row does not call @newRecordValues, also for its lines past the end', async function (assert) {
+    test('PNV5 a paste on a record row: its lines past the end get @newRecordValues, the record pasted over does not', async function (assert) {
       const owner = new Owner().defaults({ code: 'NEW' });
       await renderSheet(owner);
       await focusCell(1, 0);
@@ -290,10 +290,10 @@ module(
       );
       assert.deepEqual(
         set!.inserts.map((insert) => insert.values),
-        [{ name: 'Caro' }],
-        'the line past the end: the pasted values only (unchanged)'
+        [{ name: 'Caro', code: 'NEW' }],
+        'the line past the end: the defaults under the pasted values'
       );
-      assert.deepEqual(owner.seen, [], 'no call');
+      assert.deepEqual(owner.seen, [['r1', undefined]], 'one call');
     });
   }
 );

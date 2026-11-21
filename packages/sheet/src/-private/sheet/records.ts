@@ -58,11 +58,12 @@ export default class SheetRecords<T extends object> {
   }
 
   /**
-   * `@newRecordValues` under the values of the records a paste on the add
-   * row or `appendRows` inserts (v0.4 07, decision 10): called once per
-   * insert, with `above` and no `below`, for the fields the pasted text has
-   * no column for; the text's columns (read, rejected or pending) and a
-   * group's values (already in `values`) win.
+   * `@newRecordValues` under the values of the records a paste (on the add
+   * row, or its lines past the last record) or `appendRows` inserts (v0.4
+   * 07, decision 10): called once per insert, with `above` and no `below`,
+   * for the fields the pasted text has no column for; the text's columns
+   * (read, rejected or pending) and a group's values (already in `values`)
+   * win.
    */
   fillNewValues(
     inserts: readonly RecordInsert[],

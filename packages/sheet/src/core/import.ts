@@ -334,6 +334,22 @@ const PERCENT = /%\s*$/;
 const CURRENCY =
   /^(?:[+-]?\s*(?:\p{Sc}|[A-Z]{3})\s*[+-]?[\d.,\s]*\d[\d.,\s]*|[+-]?[\d.,\s]*\d[\d.,\s]*(?:\p{Sc}|[A-Z]{3}))$/u;
 
+/** A time of day after a date (`2026-11-19T10:30`, `19/11/2026 10:30`). */
+const TIME = /\d[T\s]+\d{1,2}:\d{2}/;
+
+/**
+ * Digits written as a phone number: only digits, spaces, `-`, `( )` and
+ * a `+` first, 7 digits or more, and a `+` first, parentheses, or groups
+ * split by spaces or dashes; not thousands split by spaces (`1 234 567`).
+ */
+function phoneFormatted(text: string): boolean {
+  const t = text.trim();
+  if (!/^\+?[\d\s()-]+$/.test(t)) return false;
+  if ((t.match(/\d/g)?.length ?? 0) < 7) return false;
+  if (/^\d{1,3}(?: \d{3})+$/.test(t)) return false;
+  return t.startsWith('+') || /[()]/.test(t) || /\d[\s-]+\d/.test(t);
+}
+
 /** Whether `field`'s type reads `text`: `parse` gives a value and the type's `validate` passes on it. */
 function reads(
   ctx: SheetImportTypeContext,
@@ -386,6 +402,10 @@ function distinctTexts(
  * `date`, `dateTime`, `percent`, `currency`, `number` (`.`, then `,`),
  * `email`, `url`, `phone`, `singleSelect`, `longText`, `text`; only those
  * in `candidates` (default `CREATABLE_FIELD_TYPES`) and in `ctx.types`.
+ * When a text has a time of day, `dateTime` comes before `date` (whose
+ * `parse` drops the time); when 95% are written as phone numbers (a `+`
+ * first, parentheses, or digit groups split by spaces or dashes, 7
+ * digits or more, not `1 234 567`), `phone` comes before `number`.
  * Dates are D/M/Y unless a text proves M/D/Y (it reads only as M/D/Y)
  * and none proves D/M/Y. `singleSelect` is a candidate with at most 20
  * distinct texts each used twice or more (its options are those texts);
@@ -444,17 +464,27 @@ export function guessColumn(
   const decimals = [{ decimalSeparator: '.' }, { decimalSeparator: ',' }];
 
   tryType('checkbox', [{}]);
-  if (allowed.has('date')) tryType('date', [{ dateOrder: orderOf('date') }]);
-  if (allowed.has('dateTime')) {
-    tryType('dateTime', [{ dateOrder: orderOf('dateTime') }]);
+  // a time in a text: `dateTime` first (`date` reads `2026-11-19T10:30`
+  // too, and drops the time)
+  const dateTypes = sample.some((text) => TIME.test(text))
+    ? ['dateTime', 'date']
+    : ['date', 'dateTime'];
+  for (const type of dateTypes) {
+    if (allowed.has(type)) tryType(type, [{ dateOrder: orderOf(type) }]);
   }
   tryType('percent', decimals, (text) => PERCENT.test(text));
   tryType('currency', decimals, (text) => CURRENCY.test(text.trim()));
+  // written as phone numbers: `phone` before `number` (which reads
+  // `81 1234 5678` by dropping the spaces); plain digits stay numbers
+  const phoneFirst =
+    allowed.has('phone') &&
+    sample.filter(phoneFormatted).length / sample.length >= SHARE;
+  if (phoneFirst) tryType('phone', [{}]);
   tryType('number', decimals);
   tryType('email', [{}]);
   // `url`'s own rule wants a site's host (a date or a number is not one)
   tryType('url', [{}]);
-  tryType('phone', [{}]);
+  if (!phoneFirst) tryType('phone', [{}]);
   if (allowed.has('singleSelect')) {
     const distinct = distinctTexts(sample);
     if (

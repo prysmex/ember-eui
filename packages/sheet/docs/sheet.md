@@ -855,7 +855,10 @@ and no mapping is returned.
 over up to 200 texts (the first type that reads 95 % of them, most
 specific first: checkbox, date, date and time, percent, currency,
 number, email, url, phone, single select, long text, text), only among
-`@creatableFieldTypes`. The guess proposes a new field's type and
+`@creatableFieldTypes`. A column with a time of day (`2026-11-19T10:30`)
+guesses date and time before date, when date and time is among them;
+one written as phone numbers (`+52 81 1234 5678`, `(81) 1234-5678`)
+guesses phone before number (plain digits stay numbers). The guess proposes a new field's type and
 options (a select's options from the texts, the date order, the decimal
 separator); it never changes a column going to an existing field. A
 guessed currency gets the code `USD`; change it in the new field's

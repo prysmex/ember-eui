@@ -145,3 +145,13 @@ measurement or a user decision first:
    additions 10 lists.
 6. Guessing field types on import is in, as a suggestion for a new
    field's type (10, "Guessing a type").
+
+## Decided (the user, 2026-11-21, after batch A)
+
+7. "Copy with field names" (05) is opt-in, with `@copyWithFieldNames`
+   (default false), so the row menu of v0.3 is unchanged.
+8. Without `@onFieldWidthChange`, a width the user set (a resize or a
+   fit) wins over `field.width` and `@fieldWidths`, and survives a
+   rebuild of the columns. A change from v0.3, kept.
+9. A press on the resize edge that moves nothing does not call
+   `@onFieldWidthChange`. A change from v0.3, kept.

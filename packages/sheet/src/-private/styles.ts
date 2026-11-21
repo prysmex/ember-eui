@@ -60,12 +60,12 @@ const CSS = `
 .euiSheet .euiDataGridRowCell.euiSheet__rowCell--checked, .euiSheet .euiDataGridRow:hover .euiDataGridRowCell.euiSheet__rowCell--checked { background-color: var(--euiSheet-selected, rgba(11, 100, 221, 0.12)); }
 .euiSheet .euiDataGridRowCell.euiSheet__rowCell--marked { background-image: linear-gradient(var(--euiSheet-hover, rgba(105, 112, 125, 0.06)), var(--euiSheet-hover, rgba(105, 112, 125, 0.06))); color: var(--euiSheet-primary, #0B64DD); }
 .euiSheet .euiDataGridRowCell.euiSheet__rowCell--selected, .euiSheet .euiDataGridRow:hover .euiDataGridRowCell.euiSheet__rowCell--selected { background-color: var(--euiSheet-selected, rgba(11, 100, 221, 0.12)); box-shadow: inset -3px 0 0 var(--euiSheet-primary, #0B64DD); color: var(--euiSheet-primary, #0B64DD); }
-.euiSheet__rowStart { display: inline-flex; align-items: center; min-width: 0; overflow: hidden; }
+.euiSheet__rowStart { display: inline-flex; align-items: center; gap: 4px; min-width: 0; overflow: hidden; }
 .euiSheet__rowLabel { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-variant-numeric: tabular-nums; }
-.euiSheet__rowCheck { display: none; }
+.euiSheet__rowCheck { display: none; flex: none; }
 .euiSheet .euiDataGridRow:hover .euiSheet__rowCheck, .euiSheet__rowCell--checked .euiSheet__rowCheck, .euiSheet__rowCell:focus .euiSheet__rowCheck { display: inline-block; }
 .euiSheet .euiDataGridRow:hover .euiSheet__rowLabel, .euiSheet__rowCell--checked .euiSheet__rowLabel, .euiSheet__rowCell:focus .euiSheet__rowLabel { display: none; }
-.euiSheet__rowExpand { display: inline-flex; padding: 2px; border-radius: 4px; color: var(--euiSheet-text, #343741); cursor: pointer; visibility: hidden; }
+.euiSheet__rowExpand { display: inline-flex; flex: none; padding: 2px; border-radius: 4px; color: var(--euiSheet-text, #343741); cursor: pointer; visibility: hidden; }
 .euiSheet__rowExpand:hover { background: var(--euiSheet-hover, rgba(105, 112, 125, 0.16)); color: var(--euiSheet-primary, #0B64DD); }
 .euiSheet__rowCheck:hover { border-color: var(--euiSheet-primary, #0B64DD); }
 .euiSheet .euiDataGridRow:hover .euiSheet__rowExpand, .euiSheet__rowCell:focus .euiSheet__rowExpand { visibility: visible; }
@@ -286,7 +286,7 @@ li:has([data-test-subj^="euiSheetEditField-"]), li:has([data-test-subj^="euiShee
 .euiSheet__scanVideo.euiSheet__scanVideo--off { display: none; }
 .euiSheet__scanError { color: var(--euiSheet-textDanger, #BD271E); }
 /* row drag (V03 10.1): the grip, the moved rows, the insertion line */
-.euiSheet__rowGrip { display: inline-flex; flex: none; margin-right: 2px; color: var(--euiSheet-textSubdued, #69707D); cursor: grab; visibility: hidden; }
+.euiSheet__rowGrip { display: inline-flex; flex: none; color: var(--euiSheet-textSubdued, #69707D); cursor: grab; visibility: hidden; }
 .euiSheet .euiDataGridRow:hover .euiSheet__rowGrip, .euiSheet__rowCell:focus .euiSheet__rowGrip, .euiSheet--rowDragging .euiSheet__rowCell--moving .euiSheet__rowGrip { visibility: visible; }
 .euiSheet__rowGrip:hover { color: var(--euiSheet-primary, #0B64DD); }
 .euiSheet .euiDataGridRowCell.euiSheet__rowCell--moving [data-datagrid-cellcontent] { opacity: 0.45; }

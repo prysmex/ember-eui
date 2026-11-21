@@ -18,10 +18,24 @@ import type {
 } from '@ember-eui/core/utils/data-grid/types';
 import type { ComponentLike } from '@glint/template';
 
-/** Its width without `@rowLabel`. */
+/** The row-number column's least width. */
 const ROW_COLUMN_WIDTH = 64;
-/** The row drag grip's room in the row-number column (V03 10.7). */
-const GRIP_WIDTH = 12;
+/**
+ * The row-number cell's room around its label, in px: the cell's borders
+ * (2) and padding (12), the checkbox (14) after a 4 px gap, the expand
+ * icon (16) after the content's 4 px gap, and 2 to spare. On a touch
+ * screen (`hover: none`) the label, the checkbox and the expand icon all
+ * show; with a mouse the checkbox takes the label's place on hover, so
+ * the room fits both.
+ */
+const ROW_CELL_ROOM = 54;
+/**
+ * A label character's width, in px: the grid's 14 px text, tabular digits
+ * (Inter's are about 8.7 px, a fallback font's 9.1).
+ */
+const ROW_LABEL_CHAR_WIDTH = 9.5;
+/** The row drag grip's room in the row-number column (V03 10.7): 12 px and a 4 px gap. */
+const GRIP_WIDTH = 16;
 /** A frozen field's width without `@fieldWidths` or `field.width`. */
 const FROZEN_DEFAULT_WIDTH = 200;
 /** The opener button's room at a cell's end: 20 px, 6 px from the edge, and a gap (v0.4 01). */
@@ -363,22 +377,47 @@ export default class SheetGridColumns<T extends object> {
     });
   }
 
-  /** The row-number column: wider only for `@rowLabel` labels. */
+  /**
+   * The row-number column: room for the longest label (the last record's
+   * number, or `@rowLabel`'s longest) beside the checkbox and the expand
+   * icon, at least `ROW_COLUMN_WIDTH`.
+   */
   @cached
   get rowColumnWidth(): number {
-    // the row drag's grip (V03 10.7): 12 px more
+    // the row drag's grip (V03 10.7)
     const grip = this.sheet.rowDrag.showsGrip ? GRIP_WIDTH : 0;
-    const label = this.sheet.args.rowLabel;
-    if (!label) return ROW_COLUMN_WIDTH + grip;
-    let longest = 0;
-    this.sheet.args.records.forEach((record, i) => {
-      longest = Math.max(
-        longest,
-        label(record, this.sheet.rows.numberOf(i)).length
-      );
-    });
-    return Math.max(ROW_COLUMN_WIDTH, 24 + 8 * longest) + grip;
+    const longest = this.longestRowLabel;
+    const fit = Math.ceil(ROW_CELL_ROOM + ROW_LABEL_CHAR_WIDTH * longest);
+    return Math.max(ROW_COLUMN_WIDTH, fit) + grip;
   }
+
+  /** The longest row-number label's length in characters. */
+  get longestRowLabel(): number {
+    const records = this.sheet.args.records;
+    const label = this.sheet.args.rowLabel;
+    const rows = this.sheet.rows;
+    if (label) {
+      let longest = 0;
+      records.forEach((record, i) => {
+        longest = Math.max(longest, label(record, rows.numberOf(i)).length);
+      });
+      return longest;
+    }
+    if (!records.length) return 0;
+    const numbers = rows.rowNumbers;
+    if (!numbers) return String(rows.numberOf(records.length - 1)).length;
+    // group starts (V03 8.4) may number a later record lower
+    let max = numbers[0]!;
+    let min = max;
+    for (const number of numbers) {
+      if (number > max) max = number;
+      else if (number < min) min = number;
+    }
+    return Math.max(String(max).length, String(min).length);
+  }
+
+  /** The control columns last given to the grid, kept while they are the same. */
+  #rowColumns: EuiDataGridControlColumn[] | undefined;
 
   @cached
   get leadingControlColumns(): EuiDataGridControlColumn[] | undefined {
@@ -392,7 +431,18 @@ export default class SheetGridColumns<T extends object> {
         className: this.sheet.frozen.frozenHeaderClass(0)
       };
     }
-    return [column];
+    // the width follows the records: the same array for an edit that
+    // keeps it, so the grid gets no new control columns
+    const previous = this.#rowColumns?.[0];
+    if (
+      previous &&
+      previous.width === column.width &&
+      previous.headerCellProps?.className === column.headerCellProps?.className
+    ) {
+      return this.#rowColumns;
+    }
+    this.#rowColumns = [column];
+    return this.#rowColumns;
   }
 
   /** The "+" add-field column (V03 6.3, W8): only with `@onFieldCreate`. */

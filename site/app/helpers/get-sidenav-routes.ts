@@ -29,6 +29,7 @@ export type Page = {
   frontmatter: {
     disabled: boolean;
     disabled_demos: string[];
+    order?: number;
   };
 };
 
@@ -52,6 +53,13 @@ export type Item = {
   onClick: boolean | ((id: NodeId) => void);
   forceOpen?: boolean;
   disabled?: boolean;
+  // the page's `order` front matter, used with `byOrder`
+  order?: number;
+};
+
+export type SidenavOptions = {
+  // pages with an `order` front matter first, by it; the rest by name
+  byOrder?: boolean;
 };
 
 function compareFunction(a: Item, b: Item) {
@@ -67,17 +75,34 @@ function compareFunction(a: Item, b: Item) {
   return 0;
 }
 
-export function getSidenavRoutes([docfyNode, clickHandler]: [
+function compareByOrder(a: Item, b: Item) {
+  const hasA = typeof a.order === 'number';
+  const hasB = typeof b.order === 'number';
+
+  if (hasA && hasB && a.order !== b.order) {
+    return (a.order as number) - (b.order as number);
+  }
+
+  if (hasA !== hasB) return hasA ? -1 : 1;
+
+  return compareFunction(a, b);
+}
+
+export function getSidenavRoutes([docfyNode, clickHandler, options]: [
   DocfyNode | undefined,
   (id: NodeId) => void,
+  SidenavOptions?,
 ]): Item[] {
-  return docfyNode ? [getItems(docfyNode, clickHandler, docfyNode.name)] : [];
+  return docfyNode
+    ? [getItems(docfyNode, clickHandler, docfyNode.name, options ?? {})]
+    : [];
 }
 
 function getItems(
   docfyNode: DocfyNode,
   clickHandler: (id: NodeId) => void,
   parent: string,
+  options: SidenavOptions,
 ): Item {
   let items: Item[] = [];
 
@@ -85,16 +110,21 @@ function getItems(
     const children = docfyNode.children;
 
     items = children.map((child) => {
-      return getItems(child, clickHandler, `${parent}-${docfyNode.name}`);
+      return getItems(
+        child,
+        clickHandler,
+        `${parent}-${docfyNode.name}`,
+        options,
+      );
     });
   }
 
   items = [
     ...items,
     ...(docfyNode.pages?.map((page) => {
-      return getItemFromPage(page, clickHandler);
+      return getItemFromPage(page, clickHandler, options);
     }) ?? []),
-  ].sort(compareFunction);
+  ].sort(options.byOrder ? compareByOrder : compareFunction);
 
   return {
     name: humanize(docfyNode.label),
@@ -106,12 +136,19 @@ function getItems(
   };
 }
 
-function getItemFromPage(page: Page, clickHandler: (id: NodeId) => void): Item {
+function getItemFromPage(
+  page: Page,
+  clickHandler: (id: NodeId) => void,
+  options: SidenavOptions,
+): Item {
+  const order = Number(page.frontmatter?.order);
+
   return {
     id: `${page.url}`,
     name: humanize(page.title),
     onClick: clickHandler.bind(clickHandler, page.url),
     items: [],
+    ...(options.byOrder && Number.isFinite(order) ? { order } : {}),
   };
 }
 

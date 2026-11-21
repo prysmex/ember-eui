@@ -62,7 +62,19 @@ export default class ApplicationController extends Controller {
 
   // the side nav item ids are page paths
   get currentPath(): string {
-    return (this.router.currentURL ?? '').split(/[?#]/)[0] ?? '';
+    const path = (this.router.currentURL ?? '').split(/[?#]/)[0] ?? '';
+
+    // an index page with sub-pages has a trailing slash (`…/sheet/`); its
+    // URL without it shows the same page
+    if (
+      path &&
+      !path.endsWith('/') &&
+      this.docfy.flat.some((page) => page.url === `${path}/`)
+    ) {
+      return `${path}/`;
+    }
+
+    return path;
   }
 
   get currentUrlFor() {
@@ -80,8 +92,13 @@ export default class ApplicationController extends Controller {
 
     const handlerFn = (id: NodeId) => {
       this.selectedItem = id;
+
+      // a group's id (e.g. `Addons-Addons-sheet`) is no route: selecting it
+      // only opens the group
+      if (typeof id !== 'string' || !id.startsWith('/')) return;
+
       this.router.transitionTo(id);
-      scrollToHash(id as string);
+      scrollToHash(id);
     };
 
     // -- Documentation section
@@ -175,7 +192,12 @@ export default class ApplicationController extends Controller {
       fakeNode.pages.push(...(innerDocsNode?.pages || []));
     });
 
-    const addonsRoutes = getSidenavRoutes([fakeNode, handlerFn]);
+    // an addon with several pages (the sheet) lists them by their `order`
+    const addonsRoutes = getSidenavRoutes([
+      fakeNode,
+      handlerFn,
+      { byOrder: true },
+    ]);
 
     // -- Package section
 

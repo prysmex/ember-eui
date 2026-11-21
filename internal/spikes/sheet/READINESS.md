@@ -126,3 +126,21 @@ run in a sitting:
 
 The sandbox items are committed with their numbers. The user has run the
 checklists, and every problem they found is fixed or listed as known.
+
+## The user's decisions, 2026-11-21 (after the loose ends and tree shaking)
+
+1. **PNV5:** yes. A paste from a record row whose lines run past the last
+   record calls `@newRecordValues` for the new records, like a paste on
+   the add row and `appendRows`; PNV5's expectation changes accordingly.
+2. **Import screen open time:** improve it if possible (the deferred first
+   dry run, `readiness-import-first-run.patch`, and each column's options
+   on demand); if 300 ms is not reachable, relax the target.
+3. **Import size budget:** raise it rather than trim (16.2 KB gzip over
+   `sheet` against the proposed 15.5 KB; set to 17 KB).
+4. **Frozen focus:** keep the frozen grid's focus behaviour the same as
+   the unfrozen grid's (`e5a90b1`).
+5. **The sheet's `app-js`:** stays removed (`3f753c5`), as recommended.
+6. **Core:** yes to leaving the four non-component modules out of core's
+   `app-js` (they re-export a default that does not exist and break a
+   `staticInvokables: false` build); no to replacing lodash's `merge` in
+   `eui-config` ("not really needed").

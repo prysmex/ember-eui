@@ -869,3 +869,435 @@ and screen readers.
 - Item 1's observer is checked for the late column sizing and a
   container resize; a toolbar that changes height while a part is shown
   (the grid moves without resizing) is not covered by it.
+
+## Performance: the frozen grid and more
+
+Done 2026-11-21, on `feat/sheet` after `46c5448`, READINESS.md item 2's
+continuation ("keep working in performance"): (1) the frozen grid
+renders only the frozen columns and the columns in view (the user
+approved changing FZ8, FZ9, VR5 and the freezing field-type tests);
+(2) the parts' `ResizeObserver` of the loose-ends stage re-measured; a
+re-check of the core `setCellProps` change on a single-sheet page; (3)
+further gains, kept only when measured.
+
+Harness: `perf-checks/` (`1fa26ea` adds `validate`, `pasteAt=end`, the
+`edit` scenario, the frozen check by class, `shots-d08.js edge` and
+`compare.js --common`). Production builds, `vite preview`, Playwright's
+Chromium headless (1400 × 900, scale 2), real input; builds served side
+by side and run interleaved (run 1 of each, then run 2, …), medians of
+3; re-walk counts from the instrumented template chunk, deterministic.
+This session's absolute times run 10-25 % above the earlier stages'
+(plain d08 p90 117 against 100 ms, the same counts): compare within a
+table, not across sections.
+
+Commits: `1fa26ea` (harness), `05dd3b0`, `a5490ee`, `8ad506a` (item 3),
+and this section with the two patch files. **Item 1 is not committed**
+(below).
+
+### 1. The frozen grid renders the frozen columns and the columns in view: built and measured, **not committed** (blocked)
+
+**Status:** implemented and measured; not committed, because five existing
+tests outside the user's approval (FZ1, FZ4, FZ12, IM7, ED1) fail with it,
+and the coordinator's rule (b) says to stop and report then. The change is
+kept, for the user's decision, as
+`internal/spikes/sheet/frozen-window.patch` (core, sheet, docs and
+tests, the approved test edits included; it applies to this section's
+commit with `git apply`), and the proposed edits of the five as
+`internal/spikes/sheet/frozen-window-proposed-tests.patch`.
+
+**The change.**
+
+- Core (`packages/core/src/components/eui-data-grid/body.gts`,
+  `utils/data-grid/types.ts`): an opt-in
+  `virtualizationOptions.leadingColumnCount` (an Ember addition, default
+  0): the first N columns (leading control columns counted) are always
+  rendered besides the window; `renderedColumns` lists them first, then
+  the window's, ascending, each once (clamped to the column count; 0,
+  negative or missing: exactly as before). `columnWindow`, `syncWindow`
+  and `onItemsRendered` are unchanged (it still reports the window only).
+  Core docs (container constraints) mention it. Three new core tests:
+  on (leading cells first, kept and not re-created while scrolling, the
+  columns between not rendered, `onItemsRendered` the window only, the
+  last row too), 0 / negative / more than the columns, and the arrows
+  from a leading column into the window and back.
+- Sheet: `grid-options.ts` passes `leadingColumnCount: colOffset +
+frozenCount` instead of the full `overscanColumnCount` while frozen.
+  `outline.ts`: a range that starts in the frozen columns, scrolled so its
+  other columns are left of the column window (not rendered now), drew its
+  right side past the clip (to the grid's right edge); its right side is
+  now its frozen cells' (the first rendered non-frozen column is checked,
+  so a window entirely inside the frozen columns still extends right). The
+  50-field cap is kept; its comment and warning no longer give the old
+  reason. d08's text ("the row numbers and Code, then the dozen or so
+  columns in view of 31") and docs/sheet.md's Frozen field / Performance
+  section (the FZ9 numbers below; the grouping section's "freezing
+  multiplies the work" corrected) describe the new rendering.
+- A bug found by the new core test and fixed in the patch: with
+  `leadingColumnCount` beyond the window's end (more leading columns than
+  fit), the first version rendered the leading columns only up to the
+  window's start. The measurements above and below were taken before
+  the fix; it does not touch them (the sheet's leading count is always
+  inside the window or before it).
+- Sticky placement: frozen cells are `position: sticky; float: left` in
+  the absolutely positioned row; the leading cells come first in the DOM
+  (as before), so the floats stack the same when middle columns are
+  skipped (FV1, FV2 check the lefts side by side, with one and two frozen
+  fields, with and without row numbers, and freezing or going from one to
+  two while scrolled right).
+
+**Measured, the real implementation** (`build-large.sh` page, `46c5448`
+"base" against the change "new", interleaved, medians of 3; counts from
+the instrumented chunk, one run each, deterministic):
+
+| Case                                   | metric                           | base                        | new                         | change                       |
+| -------------------------------------- | -------------------------------- | --------------------------- | --------------------------- | ---------------------------- |
+| frozen 10,000 ×1                       | re-walks / 10 steps              | 1,188,459                   | 646,609                     | **-45.6 %**                  |
+|                                        | drag re-walks                    | 589,484                     | 323,094                     | -45.2 %                      |
+|                                        | first render                     | 645.7 ms                    | 297.9 ms                    | -54 %                        |
+|                                        | scroll step                      | 136.5 ms                    | 78.9 ms                     | -42 %                        |
+|                                        | frame p90                        | 100.0 ms                    | 50.0 ms                     | **-50 %**                    |
+|                                        | frames > 50 ms                   | 38                          | 5                           |                              |
+|                                        | drag move                        | 64.3 ms                     | 45.8 ms                     | -29 %                        |
+| frozen 100,000 ×1                      | re-walks                         | 1,188,459                   | 646,609                     | -45.6 %                      |
+|                                        | first render                     | 602.0 ms                    | 404.3 ms                    | -33 %                        |
+|                                        | scroll step                      | 135.9 ms                    | 90.1 ms                     | -34 %                        |
+|                                        | frame p90                        | 100.0 ms                    | 50.0 ms                     | -50 %                        |
+|                                        | drag move                        | 62.2 ms                     | 44.8 ms                     | -28 %                        |
+| frozen 10,000 ×4                       | first render                     | 3,067 ms                    | 2,031 ms                    | -34 %                        |
+|                                        | scroll step                      | 580.1 ms                    | 363.8 ms                    | -37 %                        |
+|                                        | frame p90                        | 500.0 ms                    | 249.9 ms                    | -50 %                        |
+|                                        | drag move                        | 185.3 ms                    | 135.1 ms                    | -27 %                        |
+| frozen 100,000 ×4                      | first render                     | 2,837 ms                    | 1,785 ms                    | -37 %                        |
+|                                        | scroll step                      | 495.2 ms                    | 285.0 ms                    | -42 %                        |
+|                                        | frame p90                        | 466.7 ms                    | 233.4 ms                    | -50 %                        |
+|                                        | drag move                        | 209.1 ms                    | 149.8 ms                    | -28 %                        |
+| plain 10,000 ×1                        | re-walks                         | 673,633                     | 673,663                     | +0.004 %                     |
+|                                        | first render / step / p90 / drag | 365.9 / 81.1 / 49.9 / 45.5  | 337.3 / 87.9 / 33.4 / 45.8  | noise                        |
+| plain 100,000 ×1                       | first render / step / p90 / drag | 359.9 / 88.2 / 50 / 45.7    | 328.9 / 82.1 / 50 / 46.1    | noise                        |
+| plain 100,000 ×4                       | first render / step / p90 / drag | 1,813 / 349.8 / 250 / 143.3 | 1,788 / 327.4 / 250 / 169.1 | noise (drag runs 130-192 ms) |
+| plain `EuiDataGrid` (grid mode) 10,000 | re-walks                         | 1,492,837                   | 1,492,837                   | 0                            |
+
+The frozen ×4 "frames > 50 ms" stay about 40 (every frame is slow at ×4,
+as the at-scale stage found). The real implementation matches the
+patched best case (646,579 re-walks then, 646,609 now). On the docs page
+(d08 among 28 demos) a frozen step re-walks 528,995 -> 473,850 (-10.4 %:
+the other demos dominate there); plain 476,547 -> 476,604.
+
+**The core rule:** -45.6 % re-walks per step (against 25 %), -50 % frame
+p90 (against 20 %), and every frozen scenario's time -27 % to -54 %. The
+plain grid and the unfrozen sheet do not change (counts equal to 0.004 %).
+
+**Screenshots and DOM** (`shots-d08.js` on the docs build, `46c5448`
+against the change; `compare.js --common` compares the cells both builds
+render):
+
+- frozen, a range on Name-Department, 3 wheel steps down, 3 right, 3 up:
+  "selected", "scrolled down" and "scrolled right" pixel-identical, and
+  every cell both render identical (classes, styles, `aria-*`); the new
+  build renders 132-195 cells where the old rendered 372-403.
+  "Scrolled back" differs (230,209 pixels): the old build, scrolling back
+  up to the focused Name cell while scrolled right, re-mounted it (it was
+  rendered, under the frozen column), and its re-focus made the sheet
+  scroll the grid back to the left edge (`clearFrozenOverlap`); the new
+  build does not render the scrolled-out Name column, so nothing is
+  re-focused and the grid stays scrolled right, as the unfrozen grid does
+  (its "scrolled back" is pixel-identical between the builds).
+- `edge` (new): the range from the frozen Code to Department, steps right
+  to the far right: identical but "scrolled back", 1,932 pixels: the old
+  build drew the outline's left side over the row numbers (its scrolled-
+  out Name and Department cells, rendered at negative x, widened the
+  box); the new one draws it at Code's left edge, which is the range's
+  visible part.
+- unfrozen: all four pixel-identical, all cells identical.
+
+**Tests** (new file `eui-sheet-frozen-window-test.gts`, FV1-FV14, in the
+patch): FV1 one or two frozen fields, row numbers on and off, scrolled far
+right (the frozen cells' lefts kept and side by side, painted over the
+scrolled ones, every column whose header is in view rendered at its
+header's left, a scrolled-out column not rendered, and back); FV2 freezing
+while scrolled right and 1 -> 2 -> 0; FV3 groups (the header row's label in
+view and painted, its first cell the row numbers; a record row); FV4 the
+summary footer and the add row; FV5 a range across the frozen edge,
+scrolled far right (outline right side at the frozen edge, its other
+sides, the frozen cells drawn selected, back again, copy of every cell);
+FV6 the focused cell scrolled out sideways: where focus is, a copy,
+typing and the return of focus are the same frozen and unfrozen; FV7
+focus comes back to the cell and typing edits it (frozen 0 and 1); FV8 an
+open editor and a sideways scroll (saved and closed, frozen 0 and 1); FV9
+ArrowRight from the frozen field into the first scrolled column while
+scrolled far right (focus, right of the frozen edge), ArrowLeft back, End;
+FV10 resizing the frozen field and moving a field while scrolled right;
+FV11 full screen while scrolled right; FV12 the expanded record while
+scrolled far right; FV13 the fill handle on a scrolled cell, the frozen
+cell, hidden out of view and placed again; FV14 the touch handles. In the
+first full run with the change FV7, FV10 and FV12 failed on the tests'
+own mechanics (a DOM-based selection check on an unrendered cell, a
+resize driven by pointer events the resizer does not listen to,
+`@expandedRecordId` without its handler); fixed, all of FV1-FV14 pass
+with the change (the last full run below). On the unchanged code
+(`46c5448`) FV2-FV4 and FV7-FV14 pass too (the same behaviour before and
+after: freezing while scrolled, groups, footer and add row, focus and
+editor, the arrows across the edge, resize and move, full screen, the
+expanded record, fill and touch handles); FV1 fails only on "a column
+scrolled out to the left is not rendered", FV5 on the outline's left
+side (the old bug above) and FV6 on the frozen grid's old focus
+behaviour (below), as expected.
+
+**Behaviour that changes** (all the frozen grid's, from not rendering
+offscreen columns; each the unfrozen grid's behaviour already):
+
+- A focused cell scrolled out sideways unmounts: focus leaves it (to the
+  body), typing does nothing and Ctrl+C copies nothing until it is back,
+  then the grid focuses it again (FV6 compares with the unfrozen grid and
+  finds them equal; before, the frozen grid kept it mounted and focused).
+- Scrolling vertically back to a focused cell while scrolled right no
+  longer jumps the grid back to it (the old frozen grid re-mounted it,
+  and the re-focus scrolled; the unfrozen grid never did).
+- The outline of a range from a frozen cell no longer extends over the row
+  numbers when its other columns are scrolled out (a fix).
+
+**Existing tests.**
+
+Approved and changed (in the patch), each kept to what it checks:
+
+- FZ8: `.exists('frozen: every column of a rendered row is rendered')` ->
+  `.doesNotExist('frozen: the last column is not rendered either (column
+window)')`, then after `scrollGrid(outer().scrollWidth)`
+  `.exists('frozen, scrolled to the end: the last column is rendered')`.
+- FZ9: `assert.ok(on.cells > off.cells, 'frozen renders every column')` ->
+  `assert.strictEqual(on.cells, off.cells, 'at the left edge the frozen
+columns are in the column window anyway: the same cells')`.
+- VR5: title "…and every column of a rendered row is still rendered" ->
+  "…and a rendered row has the same cells as without it";
+  `assert.true(frozenCells >= 13, 'every column rendered')` ->
+  `assert.true(frozenCells < 14, 'the frozen columns and the ones in
+view, not every column')`.
+- A4 (types2): `renderSheet(allFields(), [fullRow()], 1)` ->
+  `renderSheet(allFields(), [fullRow()], 1, 3000)` (a 3000 px container:
+  every field in view, so rendered; `renderSheet` takes the width, 1100 by
+  default, as before).
+- LT1 (types2): the same, `…, 1)` -> `…, 1, 3000)`.
+
+- VR5, a second edit after the first full run with the edits:
+  `assert.strictEqual(cellsOfRow(), frozenCells, 'after a scroll right')`
+  -> `assert.true(scrolled < 14, 'after a scroll right: still not every
+column')`, and the last check `cellsOfRow() < frozenCells` ->
+  `cellsOfRow() < scrolled` (scrolled right, a row renders the two
+  leading cells besides the window, so its count is not the one at the
+  left edge).
+
+Runs with the change: FZ8, FZ9, A4 and LT1 pass with their edits in the
+full run; VR5 with its second edit run alone (1/1). FZ9 reported
+(`?report`): "frozen on 103.6 ms per scroll step, 72 cells rendered; off
+105.7 ms, 72 cells"; FZ13: frozen off 78.4 / 98.9 ms (ungrouped /
+grouped), frozen on 101.3 / 108.6 ms, 72 cells each (a loaded run).
+
+Not approved, failing (stopped here, reported to the coordinator), each at
+its first reach for a cell outside the column window:
+
+- FZ1 (`eui-sheet-frozen-test.gts`): at scrollLeft 700 reads `cell(3, 1)`
+  (the second field, scrolled out). Proposed: `cell(3, 1)` -> `cell(3, 6)`
+  in "the second field is not [sticky]".
+- FZ4: `focusCell(3, 11)` at scrollLeft 0. Proposed: scroll to the end
+  first (`await scrollGrid(outer().scrollWidth); await frame();`).
+- FZ12: `focus(at(3, 11))` at scrollLeft 700. Proposed: the same.
+- IM7 (`eui-sheet-ime-test.gts`): `focusCell(0, 12)`, a far cell focused
+  before the grid scrolled to it; that premise no longer exists frozen.
+  Proposed: `focusCell(0, 0)` + `press('End')` (the focus's late scroll
+  event is kept, as ED1b does unfrozen).
+- ED1 (`eui-sheet-polish-test.gts`): the same premise ("frozen: the far
+  cell is in the DOM before it is scrolled into view"). Proposed: the
+  same, and `cell(0, 12)` -> `cell(0, 13)` in the "editor over its cell"
+  check (End lands on the last field).
+
+Scratch copies of those five with exactly these edits (untracked; the
+edits are in `internal/spikes/sheet/frozen-window-proposed-tests.patch`) passed
+on the new code in a full run, so they are test assumptions, not
+regressions. No other existing test failed. The last full run with the
+change (and without the proposed edits): 750 tests, 744 pass, 6 fail: the
+five above and VR5 before its second edit. Applying the proposed edits
+in the working tree for a run was refused by this session's permission
+check (they are not approved), so the full suite with them has not run;
+the scratch copies are the evidence.
+
+Core checks with the change: core `lint:types` passes; core's full suite
+(before the leading-columns fix): 2150 tests, 2147 pass, 2 todo, 1 fail
+(the new test that found the bug); after the fix the virtualization
+module passes (9/9), the full core suite was not run again; eslint on the
+changed core files passes.
+
+### 2. The parts' ResizeObserver (`587c2e0`): no measurable cost
+
+The loose-ends stage observes the grid's content box while a part over
+the grid (fill handle, outline, touch handles, …) is shown. Measured on
+the production docs build of `46c5448` (d08, the harness of "Performance:
+scrolling"):
+
+- **Callbacks:** a wrapper of `ResizeObserver` installed before the page
+  (`INIT_SCRIPT`) counted its callbacks during 12 wheel steps down and 6
+  right: **0** in every case (plain, selected, frozen, frozen + selected).
+  With a cell selected one more element is observed (183 against 182 on
+  the page), as designed; scrolling never resizes it.
+- **Counts** (medians of 3, all three runs identical): plain 476,547
+  re-walks per step, selected 476,597, frozen 528,995; writes 11 in each.
+  The scrolling stage's numbers were 476,539 / 476,589 / 528,987: +8 in
+  each case, the plain case included, where no part is shown and the
+  observer is off. A copy of the same build with `watchLayout` stubbed
+  (`return` first, so nothing is ever observed) gives exactly the same
+  476,547 / 476,597 / 528,995: the +8 come from the docs page's other
+  changes since then, not from the observer.
+- **Profile**, the build against the stubbed copy, interleaved, medians of
+  3 (`profile-scroll.js`; frame median 16.7 ms everywhere):
+
+  | Case     | build p90 / busy     | stubbed p90 / busy   |
+  | -------- | -------------------- | -------------------- |
+  | plain    | 116.7 ms / 9,661 ms  | 100.1 ms / 9,182 ms  |
+  | selected | 116.7 ms / 9,836 ms  | 116.7 ms / 9,484 ms  |
+  | frozen   | 183.3 ms / 11,166 ms | 199.9 ms / 11,767 ms |
+
+  The differences go both ways by about 5 % and are as large in the plain
+  case, where the observer is not running in either build: noise. (All
+  these runs are slower than the scrolling stage's, plain p90 100 ms and
+  busy 7,912 ms then: another session of this sandbox, as that section
+  warns; the counts did not move.)
+
+Nothing to fix.
+
+### (a) The core `setCellProps` change on a single-sheet page
+
+The scrolling stage justified `74e4771` + `5adfb2c` on the docs page,
+where about 86 % of a step's re-walks are the other demos. Re-checked on
+the harness page (`build-large.sh`, one sheet, 10,000 records), the core
+built with `cell.gts` from `74e4771~1` ("old cell") against `46c5448`
+("new cell"), both with steps 1 and 2 in place (the sheet's dist the same,
+built from `46c5448`). Counts from the instrumented chunk (deterministic,
+one run each); times interleaved, medians of 3:
+
+| 10,000 records                            | old cell  | new cell  | change      |
+| ----------------------------------------- | --------- | --------- | ----------- |
+| plain: re-walks, 10 steps                 | 1,001,978 | 673,633   | **-32.8 %** |
+| plain: writes, 10 steps                   | 143       | 110       |             |
+| plain: drag re-walks                      | 588,019   | 336,384   | -42.8 %     |
+| plain: frame p90                          | 50.0 ms   | 49.9 ms   | 0 %         |
+| plain: scroll step                        | 91.6 ms   | 81.1 ms   | -11 %       |
+| plain: drag move                          | 46.2 ms   | 45.5 ms   | -2 %        |
+| frozen: re-walks, 10 steps                | 1,759,751 | 1,188,459 | **-32.5 %** |
+| frozen: writes, 10 steps                  | 176       | 110       |             |
+| frozen: drag re-walks                     | 1,018,975 | 589,484   | -42.1 %     |
+| frozen: frame p90                         | 116.7 ms  | 100.0 ms  | -14 %       |
+| frozen: scroll step                       | 154.3 ms  | 136.5 ms  | -12 %       |
+| frozen: drag move                         | 62.8 ms   | 64.3 ms   | +2 %        |
+| plain `EuiDataGrid` (grid mode): re-walks | 1,476,737 | 1,492,837 | +1.1 %      |
+
+So on a page with one sheet it still clears the rule's re-walk criterion
+(-32.8 % and -32.5 %, against 25 %) by the same margin as on the docs
+page, and still not the p90 one (0 % and -14 %, against 20 %). The plain
+`EuiDataGrid` with a trivial cell (no `setCellProps`) moves by +1.1 %
+re-walks (its 5 passes per step with the mouse over it). Not reverted:
+the user decides.
+
+### 3. Further gains
+
+Measured on the harness page (`build-large.sh`, now with `&validate=1`,
+`pasteAt=end` and the `edit` scenario, `1fa26ea`), interleaved against
+`46c5448` + the harness ("base"), medians of 3. Kept, one commit each:
+
+**`@validate` (`05dd3b0`).** Every run put every record in a `Map` by
+`String(id)` (the snapshot that hides an error of a changed record). The
+run now copies the array and looks up only the records with errors when
+its result comes (`findRecords`). `runValidate`'s inclusive time (CPU
+profile), 100,000 records, an error on 3 % of them:
+
+| after              | base    | kept    | change |
+| ------------------ | ------- | ------- | ------ |
+| a 1,000-line paste | 43.6 ms | 10.4 ms | -76 %  |
+| its undo           | 40.0 ms | 9.1 ms  | -77 %  |
+| a cell edit        | 33.9 ms | 6.6 ms  | -81 %  |
+
+(The owner's function itself: 2-11 ms. The run is debounced 50 ms, so
+this is a task after the change's frame, not in it; the paste's own time
+moved 202 -> 110 ms in this matrix but 128-281 ms between base runs:
+noise.) Still a pass over the records per run (the copy and the lookup):
+a run "only over the changed records" would need the owner's function to
+be incremental too, which `changed` already allows; not done.
+
+**A paste past the last record (`a5490ee`, `8ad506a`).** A paste of 1,000
+lines on the last record (5 patches, 999 inserts) at 100,000 records:
+the profile showed `isOwnChange` (follow.ts) at 63-70 ms (a set of every
+previous id and 100,000 string comparisons), and its undo spent 20-25 ms
+in `applyChangeSet`'s `String()` of every record (localRecords' apply).
+Now the follower compares the raw ids first (`8ad506a`) and
+`applyChangeSet` matches deletes by raw id (`a5490ee`):
+
+| 100,000 records     | base            | kept          | change                                        |
+| ------------------- | --------------- | ------------- | --------------------------------------------- |
+| paste ×1            | 206.0 ms        | 105.2 ms      | -49 %                                         |
+| paste ×4            | 693.8 ms        | 489.8 ms      | -29 %                                         |
+| undo ×1             | 173.4 ms        | 119.0 ms      | -31 %                                         |
+| undo ×4             | 576.7 ms        | 514.4 ms      | -11 % (runs 500-1,050 / 384-587: noise-heavy) |
+| undo apply ×1 / ×4  | 23.5 / 105.4 ms | 5.7 / 28.9 ms | -76 % / -73 %                                 |
+| to onChange (paste) | 14.4 ms         | 10.1 ms       |                                               |
+
+At 10,000 records nothing moves beyond noise (paste 109.6 / 116.0 ms,
+undo 88.8 / 89.7 ms). Tried and replaced: the same walk over the strings
+without a set (self time 63-70 -> 42-53 ms, the paste's total not moved:
+187.8 -> 201.6 ms).
+
+**Measured, not changed:**
+
+- A single cell edit at 100,000 (Hours of row 2, "12", Enter): the
+  keystroke to `onChange` 1 ms; to the frame with the value 64-87 ms ×1,
+  about 330 ms ×4 (10,000: 55 ms). The first key to the editor on screen
+  20-30 ms. What remains per edit at 100,000 is the render, plus about
+  5 ms building each render's id strings (`follow.recordsRendered`); not
+  chased.
+- A paste of patches at 100,000 (the at-scale stage's scenario): 122.1 ->
+  116.1 ms, undo 85.8 -> 69.0 ms (runs overlap; not changed on purpose).
+- Sort, filter and group toggles at 100,000: the d08 demo and the harness
+  page have none (d19 has groups over a small list); not measured.
+- Step 4 (fewer tracked reads per `cellView`): not tried. On the harness
+  page a plain `EuiDataGrid` with a trivial cell re-walks about 250 tags
+  per cell per pass, the sheet about 470; for step 4 alone to reach -25 %
+  of the sheet's re-walks, the sheet's own ~220 per cell would have to
+  lose more than half, and no quick experiment was found that shows such
+  a path (the scrolling stage reached the same conclusion).
+- Plain `EuiDataGrid` with the mouse over it (5 render passes per scroll
+  step, 1,492,837 re-walks / 10 steps and 171 writes, from the hovered
+  cell's state and its actions' popover and tooltip): a core matter, not
+  quick to change safely; not investigated further.
+
+### Checks
+
+- Each item 3 commit: sheet `lint:types`; the tests' `ember-tsc` at the 19
+  baseline errors (`diff` empty); eslint and Prettier on the changed
+  files; `generate-api-docs --check` exits 0; the tests matching
+  "validate" (12/12, `05dd3b0`) and "record lookup" (8/8, `a5490ee`) on
+  their trees; the full sheet suite once, on `8ad506a`'s tree (the three
+  together): 735/735, no flaky failure.
+- Final (on `8ad506a`): sheet `lint:js` and `lint:css` pass; root
+  `pnpm eui:check` passes (357 node tests); `site`'s `pnpm lint` passes
+  and its `pnpm test` passes (node 8, testem 14). Every package rebuilt
+  from `HEAD` (core, sheet; the others unchanged since the last stage),
+  then `site`'s `pnpm build`: `site/dist` is that production build, no
+  instrumented chunk. Preview servers stopped.
+- Bundle size (`pnpm size`, gzip over Ember): `sheet` 395.1 KB (was
+  394.8; budget 400), `sheet-import` 16.2 KB more than `sheet` (as before;
+  over the proposed 15.5, unchanged by this stage), `sheet-core` 24.5 KB
+  in all (was 24.4: `namedBy`; budget 25).
+
+### Not verified
+
+- Only Chromium, headless, in this sandbox. Timings move 10-30 % between
+  sessions and the per-run values overlap in the rows marked noise; frame
+  times come in 16.7 ms quanta.
+- Item 1: the full sheet suite with the five proposed test edits has not
+  run (see above); the full core suite was not re-run after the
+  leading-columns fix (its module was); FV1-FV14 ran on the change only
+  in its last form; the patch was checked to apply (`git apply --check`)
+  to this section's commit, not built from it.
+- Item 1's docs text (d08, sheet.md) is in the patch, not published.
+- The item 3 numbers at ×4 for undo are noise-heavy (single runs of
+  500-1,050 ms); `validateTask` comes from CPU profiles (the profiler's
+  overhead is in both builds alike).
+- The cell edit at 100,000 and the 100,000-record first render were not
+  changed and not profiled in depth.

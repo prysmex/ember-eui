@@ -1,0 +1,72 @@
+--- a/packages/sheet/tests/integration/components/eui-sheet-frozen-test.gts
++++ b/packages/sheet/tests/integration/components/eui-sheet-frozen-test.gts
+@@ -183,8 +183,8 @@
+       'the first field is sticky'
+     );
+     assert.notOk(
+-      cell(3, 1).style.position === 'sticky',
+-      'the second field is not'
++      cell(3, 6).style.position === 'sticky',
++      'a scrolled field is not'
+     );
+   });
+ 
+@@ -288,6 +288,8 @@
+   test('FZ4 ArrowLeft never leaves the focused cell under the frozen columns', async function (assert) {
+     const state = new State();
+     await renderSheet(state);
++    await scrollGrid(outer().scrollWidth);
++    await frame();
+     await focusCell(3, 11);
+     await frame();
+     for (let col = 10; col >= 1; col--) {
+@@ -690,6 +692,8 @@
+     );
+ 
+     // ArrowLeft from the last field to the third: never under the frozen two
++    await scrollGrid(outer().scrollWidth);
++    await frame();
+     await focus(at(3, 11));
+     await frame();
+     for (let col = 10; col >= 2; col--) {
+--- a/packages/sheet/tests/integration/components/eui-sheet-ime-test.gts
++++ b/packages/sheet/tests/integration/components/eui-sheet-ime-test.gts
+@@ -220,7 +220,8 @@
+         </template>
+       );
+       const outer = el('.euiDataGrid__virtualized');
+-      await focusCell(0, 12);
++      await focusCell(0, 0);
++      await press('End');
+       assert.true(outer.scrollLeft > 0, 'scrolled to the column');
+       await keydown({ key: 'Dead' });
+       assert.strictEqual(document.activeElement, catcher());
+--- a/packages/sheet/tests/integration/components/eui-sheet-polish-test.gts
++++ b/packages/sheet/tests/integration/components/eui-sheet-polish-test.gts
+@@ -627,13 +627,15 @@
+   });
+ 
+   test('ED1 an editor opened on a far column right after its focus stays open', async function (assert) {
+-    // frozen: the far cell is in the DOM before it is scrolled into view
++    // frozen: the far cell is reached with End (the frozen grid renders
++    // the columns in view only); the focus's scroll event comes late
+     await renderSheet(wideFields(14), wideRows(5, 14), {
+       width: 600,
+       frozenFields: 1
+     });
+     const outer = el('.euiDataGrid__virtualized');
+-    await focusCell(0, 12);
++    await focusCell(0, 0);
++    await press('End');
+     assert.true(outer.scrollLeft > 0, 'the grid scrolled to the column');
+     // no frame waited: the focus's scroll event has not come yet
+     await press('Enter');
+@@ -644,7 +646,7 @@
+     await triggerEvent(outer, 'scroll');
+     assert.dom(editorFrame()).exists('a scroll that keeps the cell in view');
+     const frame = editorFrame()!.getBoundingClientRect();
+-    const box = cell(0, 12).getBoundingClientRect();
++    const box = cell(0, 13).getBoundingClientRect();
+     assert.true(
+       Math.abs(frame.left - box.left) < 2 && Math.abs(frame.top - box.top) < 2,
+       'the editor is over its cell'

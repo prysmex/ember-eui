@@ -73,7 +73,7 @@
     "ember-modifier": "^4.2.0"
   },
   "peerDependencies": {
-    "@ember-eui/core": "^16.0.0",
+    "@ember-eui/core": "workspace:^",
     "@glimmer/component": "^2.0.0",
     "ember-source": ">= 7.1.0"
   },

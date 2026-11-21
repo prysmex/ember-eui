@@ -61,6 +61,15 @@ fixes coming back as commits.
      the sheet shows a rejection only while the value is the one it saw
      when emitting it. Seen in v0.4 batch B, for `appendRows` and a paste
      on the add row alike; `localRecords`' default is not affected.
+   - `url`'s `validate` accepts `19/11/2026` and `12` (the URL parser
+     reads them as IPv4 hosts); the import guess works around it, the
+     type itself does not (v0.4 batch E stage 1).
+   - The import guess: ISO timestamps guess `date` (its `parse` drops a
+     time part) and spaced phone numbers guess `number`; decide whether
+     `dateTime` and `phone` should win there.
+   - A paste from a record row whose lines run past the last record: the
+     new records get no `@newRecordValues` (only a paste on an add row
+     and `appendRows` do; PNV5 pins it). One call to change.
    - Any open item the v0.4 batches leave.
 
 ## On the user's devices (checklists in the batch's results)

@@ -600,6 +600,18 @@ export interface EuiSheetSignature<T> {
      */
     rowColor?: (record: T) => SheetRowColor | undefined;
     /**
+     * A colour per cell (v0.4 08), drawn as a 3 px bar along the cell's
+     * bottom edge: the same colours as `@rowColor`. `undefined`: none.
+     * Called for each rendered cell of a record, on each render: keep it
+     * cheap, with no lookups across rows. The cell's `aria-label` does not
+     * change: put a meaning that must be read out in a field or in
+     * `@cellErrors`.
+     */
+    cellColor?: (
+      record: T,
+      field: EuiSheetField<T>
+    ) => SheetRowColor | undefined;
+    /**
      * A button field's press (V03 10.3.1, D17), one handler for every
      * button field: route by `fieldId`. A returned promise makes the cell
      * pending (a second press is ignored until it settles); a rejection's

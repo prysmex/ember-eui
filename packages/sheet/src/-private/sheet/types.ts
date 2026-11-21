@@ -40,6 +40,8 @@ export interface CellView {
   match?: boolean;
   /** A pending upload's progress, 0 to 1, once its uploader reported one (V03 11.4). */
   progress?: number;
+  /** `@cellColor`'s bar (v0.4 08): the colour's modifier class and its inline style. */
+  mark?: { className: string; style: string };
 }
 
 /**

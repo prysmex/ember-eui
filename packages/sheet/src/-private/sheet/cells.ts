@@ -11,6 +11,8 @@ import {
   valueOf
 } from '../../core/index.ts';
 
+import { colorProps } from './row-colors.ts';
+
 import type EuiSheet from '../../components/eui-sheet.gts';
 import type { EuiSheetField, Pos, RecordId } from '../../core/index.ts';
 import type { EuiSheetFieldType } from '../../types.ts';
@@ -71,7 +73,28 @@ export default class SheetCells<T extends object> {
     // `@currentMatch` (V03 11.1)
     const match = this.sheet.scroll.matchPos;
     if (match && match.row === row && match.col === col) view.match = true;
+    // `@cellColor` (v0.4 08): here only, behind the cell's cached view, so
+    // it runs once per rendered cell and render (the measured path)
+    const mark = this.markOf(record, field);
+    if (mark) view.mark = mark;
     return view;
+  }
+
+  /** `@cellColor(record, field)` as the bottom bar's class and style; null for none. */
+  markOf(
+    record: T,
+    field: EuiSheetField<T>
+  ): { className: string; style: string } | null {
+    const cellColor = this.sheet.args.cellColor;
+    if (!cellColor) return null;
+    const props = colorProps(cellColor(record, field));
+    if (!props) return null;
+    return {
+      className: props.className,
+      style: Object.entries(props.style)
+        .map(([name, value]) => `${name}: ${value}`)
+        .join('; ')
+    };
   }
 
   /** A record's field as a cell shows it: the grid's cells and the expanded record's boxes. */

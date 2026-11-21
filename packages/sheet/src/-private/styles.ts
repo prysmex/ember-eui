@@ -298,6 +298,15 @@ li:has([data-test-subj^="euiSheetEditField-"]), li:has([data-test-subj^="euiShee
 .euiSheet .euiDataGrid .euiDataGridRow .euiDataGridRowCell.euiSheet__cell--match::after { content: ''; position: absolute; inset: 0; z-index: 1; border: 0; box-shadow: inset 0 0 0 2px var(--euiSheet-match, #FACB3D); pointer-events: none; }
 /* an upload's progress (V03 11.4): a 2 px bar along the pending cell's bottom edge */
 .euiSheet .euiDataGrid .euiDataGridRow .euiDataGridRowCell.euiSheet__cellProgress::before { content: ''; position: absolute; left: 0; bottom: 0; z-index: 1; width: var(--euiSheetProgress, 0%); height: 2px; background: var(--euiSheet-primary, #0B64DD); pointer-events: none; }
+/* cell colour (v0.4 08): a 3 px bar along the bottom edge, an element of its own (both pseudo-elements and the box-shadows are taken); the colour is the row colours' (an euiSheet__rowColor--<name> class or an inline --euiSheetRowColor). It sits inside the cell's inner frames, so none of them covers it and it covers none: the error border (1 px), the match ring (2 px), the upload bar (2 px, the mark above it), a range's edge (3 px), the focus ring (3 px), focused and invalid (5 px); and right of the row bar (4 px) */
+.euiSheet__cellMark { position: absolute; left: var(--euiSheetMarkInset, 0px); right: var(--euiSheetMarkInset, 0px); bottom: var(--euiSheetMarkBottom, var(--euiSheetMarkInset, 0px)); height: 3px; background: var(--euiSheetRowColor); pointer-events: none; }
+.euiSheet .euiDataGridRowCell.euiSheet__cell--invalid .euiSheet__cellMark { --euiSheetMarkInset: 1px; }
+.euiSheet .euiDataGridRowCell.euiSheet__cell--match .euiSheet__cellMark { --euiSheetMarkInset: 2px; }
+.euiSheet .euiDataGridRowCell.euiSheet__cellProgress .euiSheet__cellMark { --euiSheetMarkBottom: 2px; }
+.euiSheet .euiDataGridRowCell.euiSheet__cell--selected .euiSheet__cellMark { --euiSheetMarkBottom: 3px; }
+.euiSheet .euiDataGridRowCell:focus .euiSheet__cellMark { --euiSheetMarkInset: 3px; --euiSheetMarkBottom: 3px; }
+.euiSheet .euiDataGridRowCell.euiSheet__cell--invalid:focus .euiSheet__cellMark { --euiSheetMarkInset: 5px; --euiSheetMarkBottom: 5px; }
+.euiSheet .euiDataGridRowCell.euiSheet__rowColor .euiSheet__cellMark { left: max(4px, var(--euiSheetMarkInset, 0px)); }
 /* the touch selection handles (V03 11.3): a 20 px circle in a 44 px hit area, above the fill handle; they let the pointer through while one is dragged (elementFromPoint finds the cell) */
 .euiSheet__selectionHandle { position: absolute; z-index: 5; width: 44px; height: 44px; touch-action: none; -webkit-touch-callout: none; user-select: none; -webkit-user-select: none; }
 .euiSheet__selectionHandle::before { content: ''; position: absolute; top: 12px; left: 12px; box-sizing: border-box; width: 20px; height: 20px; border: 2px solid var(--euiSheet-plain, #FFF); border-radius: 50%; background: var(--euiSheet-primary, #0B64DD); box-shadow: 0 1px 3px var(--euiSheet-shadow, rgba(0, 0, 0, 0.2)); }

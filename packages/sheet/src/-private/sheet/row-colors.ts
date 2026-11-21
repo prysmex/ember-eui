@@ -17,6 +17,24 @@ function cssColor(color: string): string | null {
   return /[;{}<>]/.test(color) ? null : color;
 }
 
+/**
+ * A colour as a modifier class and custom property: a named colour is a
+ * class (`euiSheet__rowColor--danger`, which sets `--euiSheetRowColor` from
+ * the theme's token); any other colour is the property, set as given. Null
+ * for no colour or a dropped one. The row bar and the cell mark (v0.4 08)
+ * both use it.
+ */
+export function colorProps(
+  color: SheetRowColor | undefined
+): { className: string; style: Record<string, string> } | null {
+  if (!color) return null;
+  if (NAMED.has(color)) {
+    return { className: `euiSheet__rowColor--${color}`, style: {} };
+  }
+  const css = cssColor(color);
+  return css ? { className: '', style: { '--euiSheetRowColor': css } } : null;
+}
+
 export default class SheetRowColors<T extends object> {
   sheet: EuiSheet<T>;
 
@@ -41,19 +59,13 @@ export default class SheetRowColors<T extends object> {
   barProps(
     row: number
   ): { className: string; style: Record<string, string> } | null {
-    const color = this.colorOf(row);
-    if (!color) return null;
-    if (NAMED.has(color)) {
-      return {
-        className: `euiSheet__rowColor euiSheet__rowColor--${color}`,
-        style: {}
-      };
-    }
-    const css = cssColor(color);
-    if (!css) return null;
+    const props = colorProps(this.colorOf(row));
+    if (!props) return null;
     return {
-      className: 'euiSheet__rowColor',
-      style: { '--euiSheetRowColor': css }
+      className: props.className
+        ? `euiSheet__rowColor ${props.className}`
+        : 'euiSheet__rowColor',
+      style: props.style
     };
   }
 }

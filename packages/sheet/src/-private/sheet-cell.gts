@@ -5,6 +5,7 @@
  */
 import Component from '@glimmer/component';
 import { cached } from '@glimmer/tracking';
+import { htmlSafe } from '@ember/template';
 
 import EuiHighlight from '@ember-eui/core/components/eui-highlight';
 import EuiIcon from '@ember-eui/core/components/eui-icon';
@@ -154,6 +155,12 @@ export default class SheetCell extends Component<{
     return typeof opener === 'function' ? opener(view.field) : opener;
   }
 
+  /** `@cellColor`'s CSS colour (v0.4 08); a named colour is the class alone. */
+  get markStyle(): ReturnType<typeof htmlSafe> | undefined {
+    const style = this.view?.mark?.style;
+    return style ? htmlSafe(style) : undefined;
+  }
+
   /** `@highlight`, when there is something to mark. */
   get highlight(): string | undefined {
     return this.sheet.args.highlight || undefined;
@@ -221,6 +228,15 @@ export default class SheetCell extends Component<{
           data-test-subj="euiSheetOpener"
           aria-hidden="true"
         ><EuiIcon @type={{this.opener}} @size="s" /></span>
+      {{/if}}
+      {{#if this.view.mark}}
+        {{! @cellColor (v0.4 08): a bar along the bottom edge; an element of
+          its own, as both pseudo-elements and the box-shadows are taken }}
+        <span
+          class="euiSheet__cellMark {{this.view.mark.className}}"
+          style={{this.markStyle}}
+          aria-hidden="true"
+        ></span>
       {{/if}}
     {{/if}}
   </template>

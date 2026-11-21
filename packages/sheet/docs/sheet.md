@@ -814,7 +814,8 @@ names both numbers; no record is lost or hidden.
   group's values (the group's and each ancestor's field: the group's
   win) and the insert's `groupKey`. Shift+Enter, the row menu's insert
   above and below, and Duplicate do the same for the record's group. A
-  paste on a group's add row inserts every line into that group; a paste
+  paste on a group's add row inserts every line into that group (with
+  `@newRecordValues`, above: the group's last loaded record); a paste
   from a record that runs past the last record inserts the rest into the
   last record's group.
 - **Row numbers.** One more than the previous record's, from
@@ -1073,7 +1074,10 @@ show ids. Hovering a row shows its checkbox and an expand icon.
 - **Adding**: the last row of the grid is an "Add record" row: a click,
   or Enter on it, adds a record at the end and focuses its first editable
   cell. Shift+Enter on a cell adds one below it. A paste on the add row
-  adds its lines as records.
+  adds its lines as records; the fields the pasted text has no column for
+  get `@newRecordValues` (once per line, the record above the add row as
+  `above`), as `api.appendRows` does. Lines of a paste from a record that
+  run past the last record get only the pasted values.
 - **The row menu**: right-click a cell or a row number, or press
   Shift+F10 or the ContextMenu key. It has Insert record above and below,
   Duplicate, Expand record (for one record), Copy (the rows as

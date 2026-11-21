@@ -58,6 +58,28 @@ export default class SheetRecords<T extends object> {
   }
 
   /**
+   * `@newRecordValues` under the values of the records a paste on the add
+   * row or `appendRows` inserts (v0.4 07, decision 10): called once per
+   * insert, with `above` and no `below`, for the fields the pasted text has
+   * no column for; the text's columns (read, rejected or pending) and a
+   * group's values (already in `values`) win.
+   */
+  fillNewValues(
+    inserts: readonly RecordInsert[],
+    columns: ReadonlySet<string>,
+    above: T | undefined
+  ): void {
+    if (!this.sheet.args.newRecordValues) return;
+    for (const insert of inserts) {
+      const defaults = this.newValues(above, undefined);
+      const extra = Object.fromEntries(
+        Object.entries(defaults).filter(([id]) => !columns.has(id))
+      );
+      insert.values = { ...extra, ...insert.values };
+    }
+  }
+
+  /**
    * Emits the insert of one record at `index`, next to `anchor`; then, when
    * `focusFieldId` is given, focuses that field of the new row once it is
    * rendered.

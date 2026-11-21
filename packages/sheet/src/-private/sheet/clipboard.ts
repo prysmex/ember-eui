@@ -14,7 +14,12 @@ import {
 import { nextTempId, stop } from './util.ts';
 
 import type EuiSheet from '../../components/eui-sheet.gts';
-import type { EuiSheetField, PasteInsert, Range } from '../../core/index.ts';
+import type {
+  ChangeSet,
+  EuiSheetField,
+  PasteInsert,
+  Range
+} from '../../core/index.ts';
 
 /**
  * Writes text to the clipboard: `navigator.clipboard.writeText`, else (or
@@ -260,16 +265,35 @@ export default class SheetClipboard<T extends object> {
     };
     const touched = this.sheet.selection.touchedInRecords(pasted, false);
     const options = insert ? { nextTempId, insert } : { nextTempId };
+    // on an add row, every line is an insert: `@newRecordValues` for the
+    // fields the text has no column for, as `appendRows` (decision 10)
+    const fill = (changeSet: ChangeSet | null) => {
+      if (!changeSet || !this.sheet.rows.isAddRow(anchor.row)) return;
+      // above the add row: the last record, or a group's last loaded one
+      const above =
+        addGroup >= 0
+          ? records[this.sheet.rows.recordRowAt(anchor.row - 1)]
+          : records[records.length - 1];
+      this.sheet.records.fillNewValues(
+        changeSet.inserts,
+        new Set(
+          this.sheet.fields.visibleFields
+            .slice(anchor.col, right + 1)
+            .map((field) => field.id)
+        ),
+        above
+      );
+    };
     if (this.sheet.args.onResolve) {
       // V9: the synchronous part at once, the resolved part later
       const plan = planPaste(this.sheet.context, at, matrix, options);
+      fill(plan.changeSet);
       const entry = this.sheet.changes.emit(plan.changeSet, touched);
       this.sheet.resolve.startResolve(plan, entry);
     } else {
-      this.sheet.changes.emit(
-        pasteMatrix(this.sheet.context, at, matrix, options),
-        touched
-      );
+      const changeSet = pasteMatrix(this.sheet.context, at, matrix, options);
+      fill(changeSet);
+      this.sheet.changes.emit(changeSet, touched);
     }
     // no setFocusedCell: inserted rows exist only after the next render
     this.sheet.selection.anchor = anchor;
@@ -331,15 +355,11 @@ export default class SheetClipboard<T extends object> {
     if (!changeSet?.inserts.length) return false;
     // `@newRecordValues` for the fields with no column; the file's columns
     // (read, rejected or pending) and a group's values win
-    const inFile = new Set(fields.map((field) => field.id));
-    const last = records[records.length - 1];
-    for (const row of changeSet.inserts) {
-      const defaults = this.sheet.records.newValues(last, undefined);
-      const extra = Object.fromEntries(
-        Object.entries(defaults).filter(([id]) => !inFile.has(id))
-      );
-      row.values = { ...extra, ...row.values };
-    }
+    this.sheet.records.fillNewValues(
+      changeSet.inserts,
+      new Set(fields.map((field) => field.id)),
+      records[records.length - 1]
+    );
     if (this.sheet.edit.editing) this.sheet.edit.commit({ refocus: false });
     const entry = this.sheet.changes.emit(changeSet, []);
     if (plan) this.sheet.resolve.startResolve(plan, entry, fields);

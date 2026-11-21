@@ -1277,3 +1277,91 @@ against the cell's `client*`); "on screen" is the rendered rect.
 
 One commit in this range is the main session's: `4d35560` (the user's
 decisions 10-13 after batch B in `v04/README.md`) before `32cfe62`.
+
+## The paste fix (decision 10)
+
+Built 2026-11-21 on `f360376` (batches D, A, B, C done), in this
+checkout. Decision 10 of `v04/README.md`: "A paste on the add row also
+fills the fields the pasted text has no column for from
+`@newRecordValues`, as `appendRows` does" (batch B's deviation 4).
+
+### What was built
+
+- **One helper, `records.fillNewValues(inserts, columns, above)`**
+  (`src/-private/sheet/records.ts`): for each insert, `@newRecordValues`
+  is called once with `{ above, below: undefined }`, and its values for
+  the fields not in `columns` go under the insert's values. The insert's
+  own values win (the text's read cells; a group's values, which
+  `buildPaste` already put in them); a column whose text was rejected or
+  is pending keeps no value, so the default does not hide the rejection.
+  Without `@newRecordValues` it does nothing.
+- **`appendRows`** now calls it (the loop it had moved there; same
+  behaviour: APR7 unchanged and passing).
+- **`pasteText`** calls it when the paste's anchor is an add row
+  (`rows.isAddRow`: the sheet's, or a group's), on both paths
+  (`pasteMatrix`, and `planPaste` with `@onResolve`), before the emit.
+  The columns are the visible fields the pasted block covers
+  (`visibleFields[anchor.col .. right]`), so a field left of the anchor,
+  right of the block, or hidden gets the default. `above` is the record
+  above the add row: the last record, or on a group's add row the
+  group's last loaded record (what Enter on that add row passes,
+  `appendToGroup`).
+
+### Tests
+
+New file `tests/integration/components/eui-sheet-paste-new-values-test.gts`
+(prefix PNV, unused before: checked with `grep -rnoE`); no existing test
+changed.
+
+- **PNV1** a paste at the add row's second column, two lines, a rejected
+  `abc` for `qty`: `name` (left of the block) and `code` (hidden) from the
+  defaults, `qty` absent on the rejected row (not the default `0`), an
+  empty `due` stays empty; one call per line with `above` the last
+  record; the rejection shown; one undo step.
+- **PNV2** without `@newRecordValues`: only the pasted values.
+- **PNV3** `@onResolve` with a user column: the pending column is not
+  filled from the defaults (the owner's default user is not used), the
+  resolve patches it after.
+- **PNV4** a group's add row: the group's `status` wins over the pasted
+  `Later` and the default `Elsewhere`; a column the block covers (`qty`)
+  is not filled from the defaults on a line too short for it (as
+  `appendRows` with a short row); `above` is the group's last record.
+- **PNV5** a paste on a record row running past the end: no call; the
+  line past the end has only its pasted values (unchanged behaviour,
+  pinned).
+
+Suite: **662 tests, 662 pass** (baseline 657, +5 PNV), one full run on the
+commit's tree. An earlier run, before PNV3 used `pasteNow`, had PNV3
+time out (deviation 3); nothing else failed in it.
+
+### Checks (on the commit's tree)
+
+- `pnpm lint:types`: no error. The tests' `ember-tsc`: the baseline
+  errors and no other (`diff` empty).
+- `eslint` and `prettier --check` on the three changed files: clean.
+- Owner gate: OK (38 module classes).
+- `node scripts/generate-api-docs.mjs --check`: exit 0.
+
+### Deviations
+
+1. **`above` on a group's add row** is the group's last loaded record,
+   not "the last record" as `appendRows` says (`appendRows` inserts after
+   the last record; a group's add row inserts after the group's last
+   one). The same `above` as Enter on that add row.
+2. **A field the block covers is never filled from the defaults**, also
+   on a line too short to reach it (PNV4): "the text has a column for
+   it", as `appendRows` treats a short row.
+3. **PNV3 pastes without `settled()`** (a pending resolve holds the test
+   waiter), as `eui-sheet-resolve-test.gts`' `pasteNow`; the first run
+   with the shared `clipboard` helper timed out (60 s) on that, not on
+   the code.
+
+### Open items
+
+- **Decision for the user:** a paste from a record row whose lines run
+  past the last record inserts those lines too. They still get only the
+  pasted values (decision 10 names the add row only); PNV5 pins that. If
+  they should get `@newRecordValues` as well, it is the same call with
+  `above` the last record.
+- `docs/sheet.md` says it in "Adding" and in the groups section; README
+  unchanged (it describes `@newRecordValues` in one line).

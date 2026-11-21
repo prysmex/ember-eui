@@ -12,7 +12,7 @@ currency, percent, duration, rating, links, long text, buttons that run
 your action and barcodes (typed, pasted or scanned), and you can add
 your own cells and editors. Rows can be dragged to a new order (a change
 set with `moves`, opt-in with `@canMove`) and coloured by record
-(`@rowColor`). It shows your current search match (`@currentMatch`),
+(`@rowColor`), and cells by your rule (`@cellColor`). It shows your current search match (`@currentMatch`),
 gives you the selection to summarize (`@onSelectionChange`,
 `summarizeCells`), selects ranges by touch with two handles, and shows
 upload progress. Fields
@@ -120,6 +120,7 @@ Arguments of `EuiSheet`:
 | `@summary`                                                        | `{ [fieldId]: text }` (`''`: the row-number column): the summary bar.                                                                                                                                                                  |
 | `@frozenFields`                                                   | Leading fields kept in view on horizontal scroll, with the row numbers. Default `0` (off); `1` freezes the first field.                                                                                                                |
 | `@rowNumbers`, `@rowLabel`, `@rowNumberOffset`                    | The row-number column (default on); `(record, position) => text` to show something else than the position; the first record's position on a page.                                                                                      |
+| `@rowColor`, `@cellColor`                                         | `(record) => colour` and `(record, field) => colour` (or `undefined`): a 4 px bar at a row's left edge; a 3 px bar along a cell's bottom edge. Keep them cheap, no lookups across rows.                                                |
 | `@canInsert`, `@canDelete`                                        | Adding (add row, Shift+Enter, menu) and deleting (menu) records. Default `!@readOnly`.                                                                                                                                                 |
 | `@newRecordValues`                                                | `({ above, below }) => values` of a new record.                                                                                                                                                                                        |
 | `@checkedRecordIds`, `@onCheckedChange`                           | Checked rows; controlled with the handler, local without it.                                                                                                                                                                           |
@@ -480,7 +481,7 @@ come from the EUI theme, so the sheet follows light and dark: put it in an
 and `--euiSheet-highlight`) set by a class on the sheet's wrapper.
 `@rowColor={{this.colorOf}}` draws a 4 px bar at a row's left edge: a
 named colour (`'danger'`, …) is the theme's, any other a CSS colour as
-given; `colorByOption(field)` colours by a select's option colours. To change one, set it on the sheet itself (`<EuiSheet
+given; `colorByOption(field)` colours by a select's option colours. `@cellColor={{this.cellColor}}`, called with the record and the field, draws a 3 px bar along a cell's bottom edge in the same colours (an overdue date in `'danger'`); it is called for each rendered cell, so keep it cheap, with no lookups across rows. To change one, set it on the sheet itself (`<EuiSheet
 style="--euiSheet-selected: #E6F0FF" …>`) or with a more specific
 selector: set on a parent element it loses to the sheet's class. The row
 menu, the field editor and the panel editors render at the end of

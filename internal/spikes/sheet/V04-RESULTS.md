@@ -928,3 +928,335 @@ page errors, no console errors.
 
 One commit in this range is the main session's: `c773cae` (the user's
 decisions 7-9 after batch A in `v04/README.md`) before `9610c0f`.
+
+## Batch C: cell colour (08)
+
+Built 2026-11-21 on `6f0f7da` (batches D, A, B done), in this checkout.
+Design: `v04/08-cell-color.md`, with decision 1 of `v04/README.md` (a bar
+along the cell's bottom edge, not coloured text). The component did not
+change (605 lines); the feature is in the cells module, the cell
+renderer, the row-colour module and `styles.ts`.
+
+### What was built
+
+- **`@cellColor?: (record, field) => SheetRowColor | undefined`**
+  (`src/types.ts`, next to `@rowColor`). The same colours as
+  `@rowColor`: a theme name or any CSS colour; `undefined` draws nothing.
+- **Where it runs.** `cells.cellView(row, col, fieldId)` (the grid's cell
+  view, behind `SheetCell`'s `@cached view`) calls `cells.markOf(record,
+  field)` after the view is built, and sets `view.mark = { className,
+  style }` (`CellView.mark`, `src/-private/sheet/types.ts`). Only the
+  grid's cells: `cellViewFor` (shared with the expanded record's boxes)
+  does not call it, so the expanded record shows no colour. Rows that are
+  not records (group headers, the add row) get no view, so no call.
+- **Colours.** `colorProps(color)` (new, exported from `row-colors.ts`)
+  is batch 4's logic taken out of `barProps`, which now calls it: a named
+  colour is the class `euiSheet__rowColor--<name>` (which sets
+  `--euiSheetRowColor` from `--euiSheet-row<Name>`, so dark mode
+  follows), any other colour is the inline `--euiSheetRowColor: <colour>`;
+  a colour with `;`, `{`, `}`, `<` or `>` is dropped, as for rows. The row
+  bar's output is unchanged (RC1-RC4 pass).
+- **Drawing (the mechanism, below).** `sheet-cell.gts` renders, in a data
+  cell's content and only when `view.mark` is set,
+  `<span class="euiSheet__cellMark euiSheet__rowColor--<name>"
+  style="--euiSheetRowColor: …" aria-hidden="true">` (the style only for
+  a CSS colour, through `htmlSafe`). `styles.ts` (9 lines): the span is
+  absolute, 3 px high, along the bottom of the cell's padding box,
+  `background: var(--euiSheetRowColor)`, `pointer-events: none`, and
+  placed inside the cell's inner frames by two custom properties
+  (`--euiSheetMarkInset` for the sides and bottom, `--euiSheetMarkBottom`
+  for the bottom alone):
+
+  | The cell also has | Drawn as | The bar |
+  | --- | --- | --- |
+  | nothing | | left 0, right 0, bottom 0 |
+  | an error (`--invalid`) | 1 px inset `box-shadow` | 1 px in on the sides and bottom |
+  | the current match (`--match`) | `::after`, 2 px inset ring, z-index 1 | 2 px in |
+  | an upload's progress (`__cellProgress`) | `::before`, 2 px bar at the bottom, z-index 1 | bottom 2 px: just above the progress bar, never under it |
+  | the selection (`--selected`) | a background; on a range, the 3 px range outline (an overlay) on its edges | bottom 3 px (on every selected cell, so a range's bottom row is clear of the outline) |
+  | focus (`:focus`) | 3 px outline at -3 px | 3 px in |
+  | focus and an error | 5 px inset band | 5 px in |
+  | the row bar (first field, no row numbers) | 4 px inset `box-shadow` at the left | left 4 px |
+  | frozen (sticky), the frozen edge | position sticky; an outer shadow on the right | unchanged: the span moves with the cell |
+
+  So the bar and each frame occupy different pixels: no frame covers it
+  and it covers none, whatever the paint order. With several, the larger
+  inset wins (rules in increasing order, the focused-and-invalid one more
+  specific).
+- **Label.** The cell's `aria-label`, `title`, text and classes do not
+  change; the span is empty and `aria-hidden`.
+
+### The mechanism, and why
+
+The design draws the bar with the cell's `::after`. On the current code
+both pseudo-elements of a data cell are taken (batch 5: `::after` is the
+current-match ring, `::before` the upload progress bar) and so are its
+`box-shadow`s (error border, row bar, frozen edge). The two candidates:
+
+1. **A small element of its own** (chosen). It collides with nothing that
+   exists: no pseudo-element, no shadow, no background. It costs one
+   empty `span` per coloured cell, only while the cell has a colour.
+2. **A bottom gradient as the cell's `background-image`.** Ruled out:
+   `styles.ts` sets `background-image` on data cells in several rules that
+   are more specific than a mark rule would be: `none` on selected cells
+   (line 19) and on the active cell of a range (139), the hover tint on
+   checked cells (18), and the opaque base plus tint on frozen cells
+   (131-135). The bar would vanish on selection and be replaced on frozen
+   and hovered checked cells; each would need its own combined rule.
+
+The containing block is the grid cell itself (`offsetParent` is the cell
+in every test; the content `div` is `overflow: hidden` but not
+positioned, as the opener's icon already relies on).
+
+### The performance gate
+
+**1. Call counts** (a temporary counter in `cellView` and in the
+callback, and a scratch test, both removed before the commit; `git diff`
+of `cells.ts` checked). The large-data case: 10,000 records, d08's 30
+fields, `@height={{420}}`, 1,000 px wide; `@cellColor` colours every
+third cell (`(id + fieldIndex) % 3 === 0`, a `Map` lookup). Two runs,
+the same numbers:
+
+| Step | `cellView` without | `cellView` with | `@cellColor` calls | Bars rendered |
+| --- | --- | --- | --- | --- |
+| First render | 130 | 130 | 130 | 36 |
+| Scroll down to 100 px | 30 | 30 | 30 | 43 |
+| Scroll down to 200 px | 20 | 20 | 20 | 40 |
+| Scroll down to 300 px | 30 | 30 | 30 | 43 |
+| Scroll right to 300 px | 39 | 39 | 39 | 52 |
+| Focus a cell (`focus()`) | 171 | 171 | 171 | 43 |
+| ArrowDown | 131 | 131 | 131 | 43 |
+
+The "without" column is V03C stage 2's (130 / 30 / 20 / 30 / 39).
+`@cellColor` is called exactly once per `cellView` call and nowhere else.
+The last two rows (not in V03C's table) show that a selection move
+re-runs `cellView`, and so `@cellColor`, on every rendered cell (171 and
+131): that is the existing per-cell path, not new, and it is why the docs
+say to keep the callback cheap.
+
+**2. CC-perf** (`eui-sheet-cell-color-test.gts`, logged with `?report`
+like FZ9, not asserted). FZ9's case (600 px wide, 30 fields of 150 px,
+10,000 rows, 20 scroll steps of 600 px, a frame after each), every third
+cell coloured, run with frozen fields on (FZ9's case: every column of a
+rendered row, 372 cells) and off (72 cells). FZ13's method: the four
+variants interleaved over 3 rounds, the fastest round of each. Headless
+Chrome 153 under testem, ms per scroll step, seven runs with
+`filter=CC-perf` alone:
+
+| Run | Frozen on: without | with | ratio | Frozen off: without | with | ratio |
+| --- | --- | --- | --- | --- | --- | --- |
+| 1 | 366.2 | 373.3 | 1.02 | 76.8 | 78.4 | 1.02 |
+| 2 | 400.4 | 382.1 | 0.95 | 73.5 | 75.5 | 1.03 |
+| 3 | 374.7 | 390.4 | 1.04 | 67.6 | 75.8 | 1.12 |
+| 4 | 371.1 | 384.0 | 1.03 | 74.1 | 69.0 | 0.93 |
+| 5 | 385.7 | 385.5 | 1.00 | 74.1 | 69.5 | 0.94 |
+| 6 | 358.7 | 386.2 | 1.08 | 80.4 | 79.4 | 0.99 |
+| 7 | 402.0 | 403.1 | 1.00 | 79.0 | 79.1 | 1.00 |
+
+Median ratio 1.02 (frozen on) and 1.00 (frozen off); 13 of 14 within
+10 %. The one above (run 3, frozen off, 1.12) is within the noise of the
+baseline itself: the "without" runs alone spread from 67.6 to 80.4 ms
+(±9 %) and run 4 went 0.93 the other way. FZ9 in the same session:
+frozen on 393.4 ms, off 80.0 ms (372 and 72 cells). **The gate passes;
+no cache was built.** A per-record-and-field cache would save only the
+callback (called as often as `cellView`, which already runs only for
+re-rendered cells); the rest of the cost is the bar elements themselves.
+
+### Tests
+
+`tests/integration/components/eui-sheet-cell-color-test.gts` (new). The
+prefix `CC` was free (`grep -rnE "\bCC[0-9]" tests`: nothing). Geometry
+is read in layout px (`offsetLeft/Top/Width/Height` against the cell's
+`clientWidth/Height`, and `offsetParent === cell`), as the test container
+is scaled.
+
+- **CC1** a named colour (the design's overdue rule): the span with
+  `euiSheet__rowColor--danger`, `aria-hidden`, no inline style, the
+  token's computed colour, absolute, `pointer-events: none`, 3 px high
+  with gaps 0/0/0, on screen at the cell's bottom; only the two overdue
+  cells have one; the cell's text, `aria-label` and `title` as without.
+- **CC2** CSS colours as given (`rgb(1, 2, 3)`, `#123456`, `oklch(…)`),
+  the inline property, no named class; `red; background: blue` dropped.
+- **CC3** no `@cellColor`, then a rule: cells whose colour is
+  `undefined` keep exactly their classes, style, title, label and content
+  HTML; a coloured cell's classes are unchanged too.
+- **CC4** called with the record and its field; a new `@records` with
+  changed dates moves the bars; a new `@cellColor` replaces the rule.
+- **CC5** dark theme: the token changes and the bar follows; a CSS colour
+  stays.
+- **CC6** (error border) `@cellErrors` on a coloured cell: the 1 px red
+  inset shadow and the title, the bar 1 px in; focused: the 5 px band and
+  the 3 px outline, the bar 5 px in.
+- **CC7** (row bar) `@rowColor` `success`, `@rowNumbers={{false}}`, the
+  cell `danger`: the cell's 4 px inset shadow in the row's colour, the
+  bar in the cell's own colour (not inherited), 4 px from the left, at
+  the bottom; with a CSS row colour the cell keeps its named colour;
+  without a row bar, from the left edge.
+- **CC8** (match ring) `@currentMatch` on a coloured cell: the 2 px
+  `::after` ring, the bar 2 px in.
+- **CC9** (frozen) `@frozenFields={{1}}`, scrolled 700 px: the sticky
+  cell's bar at 0/0/0, moving with it on screen, in the token's colour,
+  and the frozen cell is what is painted on the bar's row.
+- **CC10** (selected, focused) a click: selected and focused, the 3 px
+  outline at -3 px, the bar 3 px in; Shift+click to a 2 × 2 range: the
+  range outline, the selected background, every selected bar 3 px up;
+  the active cell 3 px in; a click elsewhere: back to the edge.
+- **CC11** (upload progress) an attachment cell coloured `accent`, a
+  pasted file at 50 %: the `::before` progress bar at the bottom (2 px),
+  the bar 2 px up (focus moved away, so only the upload frames it); the
+  other row's cell at the edge; resolved: back to the edge.
+- **CC-perf** above.
+
+Suite: **657 tests, 657 pass** (645 + 12) for the feature commit, one
+full run, no retries. The docs commit's tree (no source or test change):
+**657 tests, 657 pass**, one full run.
+
+### Checks (before each commit, on its tree)
+
+- `pnpm lint:types`: no error. The tests' `ember-tsc --noEmit -p
+  tsconfig.eslint.json`: the baseline errors and no other (`diff` with
+  `3c-checks/baseline-tests-tsc.log` empty; a first draft had two TS1206
+  errors for decorators on a class expression in CC-perf, fixed by a
+  named class before the commit).
+- `eslint` and `prettier --check` on the changed `.ts`/`.gts` files:
+  clean (after `prettier --write` on the new test file).
+- Owner gate: OK (38 module classes; `colorProps` is a module-level
+  function, `markOf` a member of `SheetCells`).
+- `node scripts/generate-api-docs.mjs --check`: exit 0 (it updated 0 of
+  117 pages: it reads no sheet source).
+- The scratch counter and test: removed before the commit (`grep -rn
+  "SCRATCH\|__cv" src tests`: nothing; `git diff` of `cells.ts` read).
+- Before the docs commit, on its tree: `pnpm lint:js` and `pnpm lint:css`
+  in `packages/sheet` (exit 0), `pnpm eui:check` at the root (exit 0),
+  and the checks above again (same results); README `prettier --check`
+  clean.
+- `packages/core/src` unchanged; no dependency added; the component
+  unchanged.
+
+### Deviations
+
+1. **The bar is an element, not the cell's `::after`** (the design): both
+   pseudo-elements and the box-shadows are taken since batch 5 (above).
+   `span.euiSheet__cellMark`, `aria-hidden`, `pointer-events: none`,
+   rendered only for a coloured cell.
+2. **The bar is placed inside the cell's frames**, not always at the
+   very edge: 1 px in with an error, 2 px with the match ring, 3 px when
+   focused, 5 px focused and invalid; 2 px up while an upload's progress
+   shows (above it rather than under it), 3 px up on selected cells (clear
+   of a range's outline), 4 px from the left with the row bar. The design
+   expected an `::after` with nothing to share the bottom edge with; on
+   this code six things draw there, so each would otherwise hide part of
+   the bar or be hidden by it.
+3. **The colour property is the row colours' `--euiSheetRowColor`**, set
+   by the same `euiSheet__rowColor--<name>` classes (on the span, not the
+   cell), not a new `--euiSheet-cellMark`: no second set of six token
+   rules. The span always sets it itself (class or inline), so a row's
+   colour on the first field's cell is never inherited (CC7 checks it).
+4. **`colorProps` taken out of `barProps`** in `row-colors.ts` (the same
+   output for rows), so the cell mark shares the named colours and the
+   dropped-value filter.
+5. **The design's CC7 is kept; CC8-CC11 are added** for the pairs the
+   brief lists (match ring, frozen, selected/focused, upload progress).
+   CC6's "computed styles of the cell and of its `::after`" are the cell's
+   shadow and the span's geometry (there is no `::after` bar).
+6. **Not in the expanded record.** `@cellColor` is called from
+   `cellView` only (the measured path); the expanded record's boxes use
+   `cellViewFor` and show no colour. The design does not say.
+7. **The docs demo is new (d27 "Cell colours")**, not added to d21:
+   d21 is about row order, and the checks need an error, a frozen field
+   and every row height next to the colours.
+
+### Real input in Chromium
+
+Production build of this checkout (the sheet's `pnpm build`, then
+`site`'s `pnpm build`), served with `vite preview` (port 4183: 4173 was
+held by an older preview server, left alone), Playwright's Chromium
+(headless, 1300 × 900, `deviceScaleFactor` 2), real `page.mouse` clicks
+and wheel, `page.keyboard`, on the new demo d27 ("Cell colours",
+`localRecords`) on `/docs/sheet/docs/sheet`, in light and then dark (the
+header's theme switch). The tree was the feature commit plus the docs
+and demo of the docs commit. **No page errors, no console errors.**
+Today on the page: 2026-11-21. Geometry below is layout px (`offset*`
+against the cell's `client*`); "on screen" is the rendered rect.
+
+- **First render** (short rows): bars on Task of the two done tasks
+  (`success`, `rgb(0, 138, 94)`), on Due of the four overdue open tasks
+  (`danger`, `rgb(198, 30, 37)`) and on Spent where it exceeds the
+  estimate (`warning`, `rgb(250, 203, 61)`); each 3 px high, gaps 0/0/0,
+  its `offsetParent` the cell, the bar's bottom 1 px (CSS) above the
+  cell's rect bottom (the cell's bottom border).
+- **Error border:** the two overdue tasks with no owner (rows 3 and 8)
+  have the 1 px red inset shadow and the bar 1 px in (gaps 1/1/1);
+  clicked (focused, invalid): the 5 px band, the 3 px outline, the bar
+  5 px in.
+- **Focused / selected:** a click on an overdue Due (row 2): selected
+  and focused, the 3 px outline, the bar 3 px in. Shift+click (real
+  Shift held) to row 4 Spent: a 3 × 4 range with its outline; the
+  selected coloured cells' bars 3 px up (row 2 Spent: 0/0/3; row 3 Due,
+  invalid: 1/1/3), the active cell's 3/3/3.
+- **Frozen, scrolled sideways:** six real wheel steps of 120 px
+  (horizontal) over the grid: `scrollLeft` 113 (its maximum at this
+  width); the frozen Task cells stay at the same screen x (353) with
+  their bars (0/0/0) and the frozen edge's shadow; a click on a frozen
+  coloured cell: the outline and the bar 3 px in.
+- **Every row height** (a click on each of the toolbar's four buttons):
+  Medium, Tall, Extra tall, Short: every bar 3 px high at the cell's
+  bottom (gaps unchanged), also on the tall cells.
+- **Data:** a click on row 2's Done checkbox: Due's bar goes and Task's
+  `success` bar appears; Ctrl+Z: back.
+- **Dark:** the same steps; `danger` is `rgb(246, 114, 106)` (the dark
+  token), `warning` unchanged, the same geometry.
+- Screenshots (not in the repo):
+  `/tmp/claude-0/-home-user-ember-eui/87cd9e5a-212c-54c3-9d47-30ac398aebd2/scratchpad/v04c/`
+  `light-1-initial.png` to `light-5-frozen-scrolled.png`,
+  `light-6-height-{Medium,Tall,Extratall,Short}.png`,
+  `light-7-done-ticked.png`, `dark-1-initial.png` to
+  `dark-5-frozen-scrolled.png`; the measurements in `results.json`. The
+  agent looked at `light-3-range.png`, `dark-4-invalid.png`,
+  `light-5-frozen-scrolled.png` and `light-6-height-Extratall.png`, not a
+  person: the bars read clearly at the bottom of each coloured cell, next
+  to the red border, inside the focus ring and the range, on the frozen
+  cell.
+- **Seen, not this batch's:** in `light-6-height-Extratall.png` the fill
+  handle of the selected Task cell is drawn about 90 CSS px above the
+  cell's bottom corner, 600 ms after the row-height change. Possibly the
+  handle not re-placed after a row-height change, possibly a screenshot
+  taken too early; not investigated.
+
+### Open items
+
+- **Decision for the user:** whether the expanded record should show the
+  cell colour too (deviation 6), and whether a selected cell's bar should
+  rise 3 px only on a range's bottom row (today every selected cell's
+  does, which is simpler; the difference is visible only inside a range).
+- A selection move re-runs `@cellColor` on every rendered cell (the
+  existing `cellView` path: 171 calls for one focus, 131 for one
+  ArrowDown in the large case). Not new, and not measured in ms here.
+- **Not verified:** Firefox, Safari, a screen reader, high-contrast
+  mode, touch; the bar at a 125 % or 150 % zoom (a 3 px bar may round to
+  2 or 4 device px); a cell with a long text wrapping at "tall" heights
+  over the bar (text is above it in the content box, not measured).
+
+### Files
+
+- New: `packages/sheet/tests/integration/components/eui-sheet-cell-color-test.gts`,
+  `packages/sheet/docs/sheet-demo/d27-cell-color.md`.
+- Changed: `src/types.ts` (`cellColor`), `src/-private/sheet/cells.ts`
+  (`markOf`, the call in `cellView`), `src/-private/sheet/row-colors.ts`
+  (`colorProps`), `src/-private/sheet/types.ts` (`CellView.mark`),
+  `src/-private/sheet-cell.gts` (the span, `markStyle`),
+  `src/-private/styles.ts` (9 lines); `docs/sheet.md` (the Arguments row
+  after `@rowColor`, "Cell colours" in Theme); `README.md` (the summary,
+  an Arguments row `@rowColor`, `@cellColor`, a sentence in Theme;
+  prettier-clean). `node scripts/generate-api-docs.mjs` updated nothing:
+  it reads no sheet source (as in batches A and B).
+
+### Commits
+
+| Commit | Holds | Suite |
+| --- | --- | --- |
+| `32cfe62` | `@cellColor`: `types.ts`, `cells.ts` (`markOf`), `row-colors.ts` (`colorProps`), `CellView.mark`, the span in `sheet-cell.gts`, 9 lines of `styles.ts`; CC1-CC11, CC-perf | 657 / 657 |
+| the docs commit | `docs/sheet.md`, README, d27, these results | 657 / 657 |
+
+One commit in this range is the main session's: `4d35560` (the user's
+decisions 10-13 after batch B in `v04/README.md`) before `32cfe62`.

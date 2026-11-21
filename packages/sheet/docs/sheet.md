@@ -215,6 +215,7 @@ your own store, remove those records.
 | `@canInsert`, `@canDelete` | The add row (grouped: the groups' add rows), Shift+Enter and the menu's insert and duplicate; the menu's delete. Default: `!@readOnly`. Without inserting, a paste stops at the last record. |
 | `@canMove` | Row drag (Records, below): a grip in each row number, and Alt+Shift+ArrowUp/Down, emit change sets with `moves`. Off with `@readOnly`, a non-empty `@sort` or `@rowNumbers={{false}}` (the keys and `api.moveRecords` need no row numbers). Default `false`. |
 | `@rowColor` | `(record) => colour or undefined`: a 4 px bar at the row's left edge (Theme, below). `colorByOption(field)` colours by a select's options. |
+| `@cellColor` | `(record, field) => colour or undefined`: a 3 px bar along the cell's bottom edge, the same colours as `@rowColor` (Theme, below). Called for each rendered cell: keep it cheap, no lookups across rows. |
 | `@onButtonPress` | `({ recordId, fieldId, record }, { signal }) => void or Promise`: a button field's press (Field types, below), for every button field. |
 | `@newRecordValues` | `({ above, below }) => values`: the values of a new record, from its neighbours. Default `{}`. |
 | `@checkedRecordIds`, `@onCheckedChange` | The checked rows. With the handler, the sheet shows exactly `@checkedRecordIds` and calls the handler with the new list; without it, it keeps its own. |
@@ -1025,6 +1026,32 @@ colour used as given (yours to fit dark mode); `undefined` draws none.
 field (the badge's colour; `'default'` is `'neutral'`). The colour has
 no text: a screen reader does not hear it, so put its meaning in a field
 too. `@rowColor` is called for each rendered row: keep it cheap.
+
+**Cell colours.** `@cellColor={{this.cellColor}}` returns a colour per
+cell, from the record and the field, drawn as a 3 px bar along the
+cell's bottom edge. It takes the same colours as `@rowColor` (the named
+ones are the same tokens, so dark mode follows; any other value is a CSS
+colour as given) and `undefined` draws none. The rule is yours; the
+sheet only draws it:
+
+```js
+cellColor = (task, field) =>
+  field.id === 'due' && !task.done && task.due && task.due < today ? 'danger' : undefined;
+```
+
+The bar shows with everything else a cell can have: the error border, the
+row's bar on the first field, the search match ring, an upload's progress
+(the bar sits just above it), a frozen cell, the selection and the focus
+ring (it sits inside them). Group headers and the add row have none. The
+cell's label does not change: a screen reader does not hear the colour,
+so put its meaning in a field or in `@cellErrors` too.
+
+`@cellColor` is called for each rendered cell of a record, each time the
+cell renders (scrolling, the selection moving, a new `@records`): keep
+it cheap, with no lookups across rows. Read only the record and the
+field it is given; precompute anything that needs the other records (a
+duplicate check, a total) once when `@records` changes, and read the
+result by id.
 
 ## Records
 

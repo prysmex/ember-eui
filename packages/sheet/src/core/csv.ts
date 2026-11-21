@@ -109,8 +109,13 @@ export function parseCsv(
 
 const DELIMITERS = [',', ';', '\t'];
 
-/** The delimiter of the first line: the most frequent of `,` `;` tab outside quotes; `,` on a tie or none. */
-function detectDelimiter(text: string): string {
+/**
+ * The delimiter `parseCsv` uses when none is given: the most frequent of
+ * `,` `;` and a tab in the first line, outside quotes; `,` on a tie or
+ * none. A leading byte-order mark is ignored. The import screen shows it
+ * (v0.4 10).
+ */
+export function detectDelimiter(text: string): string {
   const counts = new Map(DELIMITERS.map((d) => [d, 0]));
   let quoted = false;
   for (let i = 0; i < text.length; i++) {

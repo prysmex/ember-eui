@@ -11,6 +11,9 @@ import type {
   SheetFieldDraft,
   SheetGroup,
   SheetGroupBy,
+  SheetImportFieldDraft,
+  SheetImportMapping,
+  SheetImportTransform,
   SheetMessages,
   ValidateContext
 } from './core/index.ts';
@@ -688,5 +691,73 @@ export interface EuiSheetSignature<T> {
      * stores none of it.
      */
     recordFooter: [T, SheetBlockApi<T>];
+  };
+}
+
+/**
+ * What `<EuiSheetImport>`'s `@onImport` gets (v0.4 10): the lines to
+ * append, as texts, and how to read them. For a sheet:
+ * `api.appendRows(result.rows, result.fieldIds, { fields: result.fields })`.
+ */
+export interface SheetImportResult<T = any> {
+  /** One entry per line kept, one text per entry of `fieldIds`: each column's text after trim, its transform and its value map. A cell whose transform threw is `''`. */
+  rows: string[][];
+  /** The field each column goes to (the fields created on the way included, by their ids). */
+  fieldIds: string[];
+  /**
+   * The field each column is read with, one per entry of `fieldIds`: the
+   * target, a per-column copy (`{ ...field, dateOrder: 'mdy' }`), or a
+   * created field. Pass them as `appendRows`' `fields`; never store them.
+   */
+  fields: EuiSheetField<T>[];
+  /** The fields `@onCreateFields` created, as it returned them. */
+  createdFields: EuiSheetField<T>[];
+  /** The lines left out with "Skip lines with errors" (indexes in the file's lines, the header line is 0). */
+  skippedLines: number[];
+  /** Each row's line (index in the file's lines). */
+  lines: number[];
+  /** What each field's type reads from `rows` (`undefined` for a cell that cannot be read or needs `@onResolve`), for a target that is not a sheet. */
+  values: unknown[][];
+  /** To save and pass back as `@savedMapping` for a file with the same header line; `null` without a header line. */
+  mapping: SheetImportMapping | null;
+}
+
+/** `<EuiSheetImport>` (v0.4 10): the import screen. It renders inline; place it in your own modal, flyout or page. */
+export interface EuiSheetImportSignature<T = any> {
+  Element: HTMLDivElement;
+  Args: {
+    /** The target fields, hidden ones included. */
+    fields: EuiSheetField<T>[];
+    /** App field types, merged over the built-ins (as the sheet's `@fieldTypes`). */
+    fieldTypes?: Record<string, EuiSheetFieldType<any, any>>;
+    /** The source: a file, read as bytes (UTF-8, else windows-1252), then `parseCsv`. */
+    file?: File | null;
+    /** The source as text (`parseCsv`), when there is no `@file`. */
+    text?: string | null;
+    /** The source already parsed (an Excel sheet read by your library), when there is no `@file` or `@text`. */
+    matrix?: string[][] | null;
+    /** The named transforms a column can use. */
+    transforms?: SheetImportTransform[];
+    /**
+     * With it, a column can go to a new field ("New field…"): called once,
+     * on Import, with every new field's draft, in column order. Create the
+     * fields (you give the ids) and resolve with them in the drafts'
+     * order. A rejection shows its message and nothing is imported.
+     */
+    onCreateFields?: (
+      drafts: SheetImportFieldDraft[]
+    ) => Promise<EuiSheetField<T>[]> | EuiSheetField<T>[];
+    /** The types a new field may have, in order. Default: the field editor's list. */
+    creatableFieldTypes?: string[];
+    /** A mapping from an earlier import (`result.mapping`); used when its header line is this file's, over matching by name. */
+    savedMapping?: SheetImportMapping | null;
+    /** Called once with the lines to append. A returned promise keeps the screen busy; a rejection shows its message. */
+    onImport: (result: SheetImportResult<T>) => void | Promise<unknown>;
+    /** Shows a Cancel button that calls it. */
+    onCancel?: () => void;
+    /** Lines in the preview. Default 20. */
+    sampleSize?: number;
+    /** Overrides of the built-in messages; wins over `eui-i18n` translations. */
+    messages?: Partial<SheetMessages>;
   };
 }

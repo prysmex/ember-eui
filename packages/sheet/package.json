@@ -172,6 +172,7 @@
     "type": "addon",
     "main": "addon-main.cjs",
     "app-js": {
+      "./components/eui-sheet-import.js": "./dist/_app_/components/eui-sheet-import.js",
       "./components/eui-sheet.js": "./dist/_app_/components/eui-sheet.js"
     }
   },

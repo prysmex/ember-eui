@@ -6,6 +6,7 @@ export * from './core/index.ts';
 
 export { default as EuiSheet } from './components/eui-sheet.gts';
 export type { CellView } from './components/eui-sheet.gts';
+export { default as EuiSheetImport } from './components/eui-sheet-import.gts';
 export { LocalRecords, localRecords } from './local-records.ts';
 export type { LocalRecordsOptions } from './local-records.ts';
 export {
@@ -35,6 +36,7 @@ export {
 } from './field-types.ts';
 export type {
   EuiSheetFieldType,
+  EuiSheetImportSignature,
   EuiSheetSignature,
   SheetApi,
   SheetBlockApi,
@@ -47,6 +49,7 @@ export type {
   SheetFieldEditorSignature,
   SheetFieldEditorType,
   SheetFieldOptionsSignature,
+  SheetImportResult,
   SheetRowAction,
   SheetRowColor,
   SheetRowHeight,

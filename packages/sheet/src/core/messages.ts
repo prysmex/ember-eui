@@ -389,6 +389,126 @@ export interface SheetMessages {
   copyCells: () => string;
   /** 'Paste': the touch menu's item that pastes over the selected cells (V03 11.3) */
   pasteCells: () => string;
+  /** 'File': the import screen's first part (v0.4 10) */
+  importFile: () => string;
+  /** 'Encoding': the file's encoding found */
+  importEncoding: () => string;
+  /** 'Delimiter': the delimiter select */
+  importDelimiter: () => string;
+  /** 'Comma (,)' */
+  importDelimiterComma: () => string;
+  /** 'Semicolon (;)' */
+  importDelimiterSemicolon: () => string;
+  /** 'Tab' */
+  importDelimiterTab: () => string;
+  /** 'First line is the header': the switch */
+  importHeaderLine: () => string;
+  /** '3 lines': the file's data lines */
+  importLineCount: (n: number) => string;
+  /** 'Reading the file…': while a file is read */
+  importReading: () => string;
+  /** 'The file has no lines to import' */
+  importNoLines: () => string;
+  /** 'Columns': the second part */
+  importColumns: () => string;
+  /** 'Column 3': a column with no header */
+  importColumnN: (n: number) => string;
+  /** 'In the file': the columns table's first header */
+  importFileColumn: () => string;
+  /** 'Type': the guessed type's header */
+  importType: () => string;
+  /** 'Goes to': the target's header */
+  importTarget: () => string;
+  /** 'Where "Precio" goes': the target select's label */
+  importTargetFor: (header: string) => string;
+  /** 'Skip': the target "nowhere" */
+  importSkip: () => string;
+  /** 'New field…': the target that creates a field */
+  importNewField: () => string;
+  /** 'New field: Estado (Single select)': a new field target */
+  importNewFieldNamed: (label: string, type: string) => string;
+  /** 'Edit the new field': the button that opens its form */
+  importEditNewField: () => string;
+  /** 'Price (in use by "Precio")': a field another column goes to */
+  importTakenBy: (field: string, header: string) => string;
+  /** 'Its field already gets "Precio"': a column whose header names a taken field */
+  importTaken: (header: string) => string;
+  /** 'Transform': the transform's header */
+  importTransform: () => string;
+  /** 'Transform for "Precio"': the transform select's label */
+  importTransformFor: (header: string) => string;
+  /** 'None': no transform */
+  importNoTransform: () => string;
+  /** 'Options': the built-in options' header */
+  importOptions: () => string;
+  /** 'Trim spaces' */
+  importTrim: () => string;
+  /** 'Empty is no value' */
+  importEmptyIsNull: () => string;
+  /** 'Decimal separator' */
+  importDecimalSeparator: () => string;
+  /** 'Point (1.5)' */
+  importDecimalPoint: () => string;
+  /** 'Comma (1,5)' */
+  importDecimalComma: () => string;
+  /** 'Values (3 mapped)': the value map's button */
+  importValues: (n: number) => string;
+  /** 'Values of "Precio"': the value map table's caption */
+  importValueMapFor: (header: string) => string;
+  /** 'In the file': the value map's first header */
+  importValueInFile: () => string;
+  /** 'Becomes': the value map's second header */
+  importValueBecomes: () => string;
+  /** 'As in the file': a text left as it is */
+  importValueAsIs: () => string;
+  /** 'No value' */
+  importValueNone: () => string;
+  /** '(empty)': an empty text in the value map */
+  importValueEmpty: () => string;
+  /** 'new': a new field's preview header */
+  importNew: () => string;
+  /** 'Checked' */
+  importValueChecked: () => string;
+  /** 'Unchecked' */
+  importValueUnchecked: () => string;
+  /** 'Status': the status header */
+  importStatus: () => string;
+  /** '197 of 200 read': a column's status */
+  importRead: (read: number, total: number) => string;
+  /** '3 can’t be read': a column's status, a link that filters the preview */
+  importCantRead: (n: number) => string;
+  /** 'Single select · 98%': the guessed type's badge */
+  importGuess: (type: string, percent: number) => string;
+  /** 'Preview': the third part */
+  importPreview: () => string;
+  /** 'The first 3 of 200 lines': the preview's caption */
+  importPreviewOf: (n: number, total: number) => string;
+  /** 'Lines where "Precio" can’t be read': the filtered preview's caption */
+  importPreviewErrors: (header: string) => string;
+  /** 'Show the first lines': clears the filter */
+  importShowFirstLines: () => string;
+  /** 'Line': the preview's line number header */
+  importLine: () => string;
+  /** 'linked on import': a linked record or user in the preview */
+  importLinkedOnImport: () => string;
+  /** 'new option': a select value that creates one */
+  importNewOption: () => string;
+  /** '3 lines ready': the dry run's total */
+  importLinesReady: (n: number) => string;
+  /** '3 with errors' */
+  importLinesWithErrors: (n: number) => string;
+  /** 'Download the lines with errors' */
+  importDownloadErrors: () => string;
+  /** 'Import all (errors stay as rejections)' */
+  importAll: () => string;
+  /** 'Skip lines with errors' */
+  importSkipErrors: () => string;
+  /** 'Import 3 lines': the import button */
+  importLines: (n: number) => string;
+  /** 'No column goes to a field': why Import is disabled */
+  importNoTarget: () => string;
+  /** 'The new fields could not be created': `@onCreateFields` resolved with another number of fields */
+  importCreateMismatch: () => string;
 }
 
 export interface SheetMessageToken {
@@ -1359,6 +1479,306 @@ export const sheetMessageTokens: Readonly<
   pasteCells: {
     token: 'euiSheet.pasteCells',
     defaultMessage: 'Paste',
+    params: []
+  },
+  importFile: {
+    token: 'euiSheet.importFile',
+    defaultMessage: 'File',
+    params: []
+  },
+  importEncoding: {
+    token: 'euiSheet.importEncoding',
+    defaultMessage: 'Encoding',
+    params: []
+  },
+  importDelimiter: {
+    token: 'euiSheet.importDelimiter',
+    defaultMessage: 'Delimiter',
+    params: []
+  },
+  importDelimiterComma: {
+    token: 'euiSheet.importDelimiterComma',
+    defaultMessage: 'Comma (,)',
+    params: []
+  },
+  importDelimiterSemicolon: {
+    token: 'euiSheet.importDelimiterSemicolon',
+    defaultMessage: 'Semicolon (;)',
+    params: []
+  },
+  importDelimiterTab: {
+    token: 'euiSheet.importDelimiterTab',
+    defaultMessage: 'Tab',
+    params: []
+  },
+  importHeaderLine: {
+    token: 'euiSheet.importHeaderLine',
+    defaultMessage: 'First line is the header',
+    params: []
+  },
+  importLineCount: {
+    token: 'euiSheet.importLineCount',
+    defaultMessage: '{n} lines',
+    params: ['n']
+  },
+  importReading: {
+    token: 'euiSheet.importReading',
+    defaultMessage: 'Reading the file…',
+    params: []
+  },
+  importNoLines: {
+    token: 'euiSheet.importNoLines',
+    defaultMessage: 'The file has no lines to import',
+    params: []
+  },
+  importColumns: {
+    token: 'euiSheet.importColumns',
+    defaultMessage: 'Columns',
+    params: []
+  },
+  importColumnN: {
+    token: 'euiSheet.importColumnN',
+    defaultMessage: 'Column {n}',
+    params: ['n']
+  },
+  importFileColumn: {
+    token: 'euiSheet.importFileColumn',
+    defaultMessage: 'In the file',
+    params: []
+  },
+  importType: {
+    token: 'euiSheet.importType',
+    defaultMessage: 'Type',
+    params: []
+  },
+  importTarget: {
+    token: 'euiSheet.importTarget',
+    defaultMessage: 'Goes to',
+    params: []
+  },
+  importTargetFor: {
+    token: 'euiSheet.importTargetFor',
+    defaultMessage: 'Where "{header}" goes',
+    params: ['header']
+  },
+  importSkip: {
+    token: 'euiSheet.importSkip',
+    defaultMessage: 'Skip',
+    params: []
+  },
+  importNewField: {
+    token: 'euiSheet.importNewField',
+    defaultMessage: 'New field…',
+    params: []
+  },
+  importNewFieldNamed: {
+    token: 'euiSheet.importNewFieldNamed',
+    defaultMessage: 'New field: {label} ({type})',
+    params: ['label', 'type']
+  },
+  importEditNewField: {
+    token: 'euiSheet.importEditNewField',
+    defaultMessage: 'Edit the new field',
+    params: []
+  },
+  importTakenBy: {
+    token: 'euiSheet.importTakenBy',
+    defaultMessage: '{field} (in use by "{header}")',
+    params: ['field', 'header']
+  },
+  importTaken: {
+    token: 'euiSheet.importTaken',
+    defaultMessage: 'Its field already gets "{header}"',
+    params: ['header']
+  },
+  importTransform: {
+    token: 'euiSheet.importTransform',
+    defaultMessage: 'Transform',
+    params: []
+  },
+  importTransformFor: {
+    token: 'euiSheet.importTransformFor',
+    defaultMessage: 'Transform for "{header}"',
+    params: ['header']
+  },
+  importNoTransform: {
+    token: 'euiSheet.importNoTransform',
+    defaultMessage: 'None',
+    params: []
+  },
+  importOptions: {
+    token: 'euiSheet.importOptions',
+    defaultMessage: 'Options',
+    params: []
+  },
+  importTrim: {
+    token: 'euiSheet.importTrim',
+    defaultMessage: 'Trim spaces',
+    params: []
+  },
+  importEmptyIsNull: {
+    token: 'euiSheet.importEmptyIsNull',
+    defaultMessage: 'Empty is no value',
+    params: []
+  },
+  importDecimalSeparator: {
+    token: 'euiSheet.importDecimalSeparator',
+    defaultMessage: 'Decimal separator',
+    params: []
+  },
+  importDecimalPoint: {
+    token: 'euiSheet.importDecimalPoint',
+    defaultMessage: 'Point (1.5)',
+    params: []
+  },
+  importDecimalComma: {
+    token: 'euiSheet.importDecimalComma',
+    defaultMessage: 'Comma (1,5)',
+    params: []
+  },
+  importValues: {
+    token: 'euiSheet.importValues',
+    defaultMessage: 'Values ({n} mapped)',
+    params: ['n']
+  },
+  importValueMapFor: {
+    token: 'euiSheet.importValueMapFor',
+    defaultMessage: 'Values of "{header}"',
+    params: ['header']
+  },
+  importValueInFile: {
+    token: 'euiSheet.importValueInFile',
+    defaultMessage: 'In the file',
+    params: []
+  },
+  importValueBecomes: {
+    token: 'euiSheet.importValueBecomes',
+    defaultMessage: 'Becomes',
+    params: []
+  },
+  importValueAsIs: {
+    token: 'euiSheet.importValueAsIs',
+    defaultMessage: 'As in the file',
+    params: []
+  },
+  importValueNone: {
+    token: 'euiSheet.importValueNone',
+    defaultMessage: 'No value',
+    params: []
+  },
+  importValueEmpty: {
+    token: 'euiSheet.importValueEmpty',
+    defaultMessage: '(empty)',
+    params: []
+  },
+  importNew: {
+    token: 'euiSheet.importNew',
+    defaultMessage: 'new',
+    params: []
+  },
+  importValueChecked: {
+    token: 'euiSheet.importValueChecked',
+    defaultMessage: 'Checked',
+    params: []
+  },
+  importValueUnchecked: {
+    token: 'euiSheet.importValueUnchecked',
+    defaultMessage: 'Unchecked',
+    params: []
+  },
+  importStatus: {
+    token: 'euiSheet.importStatus',
+    defaultMessage: 'Status',
+    params: []
+  },
+  importRead: {
+    token: 'euiSheet.importRead',
+    defaultMessage: '{read} of {total} read',
+    params: ['read', 'total']
+  },
+  importCantRead: {
+    token: 'euiSheet.importCantRead',
+    defaultMessage: '{n} can’t be read',
+    params: ['n']
+  },
+  importGuess: {
+    token: 'euiSheet.importGuess',
+    defaultMessage: '{type} · {percent}%',
+    params: ['type', 'percent']
+  },
+  importPreview: {
+    token: 'euiSheet.importPreview',
+    defaultMessage: 'Preview',
+    params: []
+  },
+  importPreviewOf: {
+    token: 'euiSheet.importPreviewOf',
+    defaultMessage: 'The first {n} of {total} lines',
+    params: ['n', 'total']
+  },
+  importPreviewErrors: {
+    token: 'euiSheet.importPreviewErrors',
+    defaultMessage: 'Lines where "{header}" can’t be read',
+    params: ['header']
+  },
+  importShowFirstLines: {
+    token: 'euiSheet.importShowFirstLines',
+    defaultMessage: 'Show the first lines',
+    params: []
+  },
+  importLine: {
+    token: 'euiSheet.importLine',
+    defaultMessage: 'Line',
+    params: []
+  },
+  importLinkedOnImport: {
+    token: 'euiSheet.importLinkedOnImport',
+    defaultMessage: 'linked on import',
+    params: []
+  },
+  importNewOption: {
+    token: 'euiSheet.importNewOption',
+    defaultMessage: 'new option',
+    params: []
+  },
+  importLinesReady: {
+    token: 'euiSheet.importLinesReady',
+    defaultMessage: '{n} lines ready',
+    params: ['n']
+  },
+  importLinesWithErrors: {
+    token: 'euiSheet.importLinesWithErrors',
+    defaultMessage: '{n} with errors',
+    params: ['n']
+  },
+  importDownloadErrors: {
+    token: 'euiSheet.importDownloadErrors',
+    defaultMessage: 'Download the lines with errors',
+    params: []
+  },
+  importAll: {
+    token: 'euiSheet.importAll',
+    defaultMessage: 'Import all (errors stay as rejections)',
+    params: []
+  },
+  importSkipErrors: {
+    token: 'euiSheet.importSkipErrors',
+    defaultMessage: 'Skip lines with errors',
+    params: []
+  },
+  importLines: {
+    token: 'euiSheet.importLines',
+    defaultMessage: 'Import {n} lines',
+    params: ['n']
+  },
+  importNoTarget: {
+    token: 'euiSheet.importNoTarget',
+    defaultMessage: 'No column goes to a field',
+    params: []
+  },
+  importCreateMismatch: {
+    token: 'euiSheet.importCreateMismatch',
+    defaultMessage: 'The new fields could not be created',
     params: []
   }
 };

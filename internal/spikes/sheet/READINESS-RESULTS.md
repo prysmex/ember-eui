@@ -526,6 +526,10 @@ Its +0.5 KB after is `findRecords`, which `withoutConflicts` uses.)
   whatever the app bundles, used or not. A separate entry would not change
   that; dropping the `app-js` entry would change how classic apps resolve
   `<EuiSheetImport>` (not done: an import-path change for them).
+  (Corrected by "Tree shaking" below: a compat build with the default
+  `staticInvokables: true` does not keep app-js components, only
+  services and initializers; with `staticInvokables: false` it keeps all
+  of them. The `app-js` entries are gone since `3f753c5`.)
 - **The barcode scan panel** was in `sheet` (4.2 KB before minifying):
   `field-types.ts` -> the barcode editor -> `barcode-scan.gts`, statically.
   Now (`eff636a`) the panel is its own module, loaded with `import()` by
@@ -1319,3 +1323,170 @@ core `lint:types`; sheet `lint:types`; the tests' ember-tsc at the
 19-error baseline; eslint on the changed files; `generate-api-docs
 --check`; full sheet suite 754/754 with the proposed edits (the first
 run of the suite with them).
+
+## Tree shaking
+
+Done 2026-11-21 on `feat/sheet` after `98fa86d`: does a host load only
+what it imports from `@ember-eui/sheet` (and from `@ember-eui/core`
+through it)? The suspected hole was `ember-addon.app-js` (the sheet's 2
+entries, core's 409) reaching the bundle through
+`@embroider/virtual/compat-modules`, which `pnpm size`'s direct probes
+never use.
+
+### How it was measured
+
+`pnpm size --compat` (`scripts/compat-bundle-size.mjs`, `3212593`)
+builds small apps the way `@ember/app-blueprint` 7.3 does: `compatBuild`
+in `ember-cli-build.mjs`, `classicEmberSupport()` + `ember()` + babel in
+`vite.config.mjs`, `app.ts` with `Resolver.withModules(compatModules)`
+and `loadInitializers(App, ..., compatModules)`, a router, one
+application template (`.gts` importing the component, or a loose
+`.hbs`). Production, minified, against the site's `node_modules`. KB are
+the static graph from `index.html` (what loads before the app boots)
+minus a bare blueprint app without ember-eui (301.7 KB / 94.7 KB gzip).
+"dynamic" cases set `staticInvokables: false`. The "no compatModules"
+column is a scratch variant (not committed) whose `app.ts` registers only
+its router and application template and calls no `loadInitializers`,
+minus its own bare app (297.3 / 93.4): a lower bound, not a working app
+(core's services are not registered). The direct column is `pnpm size`
+(each probe minus Ember alone, 91.6 / 29.6): a smaller baseline, so it
+reads higher than compat for the same code (the router, the resolver
+and more of Ember are in the compat baseline).
+
+| App (KB / KB gzip over its baseline)                    | compat, before `3f753c5` | compat, after       | no compatModules | direct `pnpm size` |
+| ------------------------------------------------------- | ------------------------ | ------------------- | ---------------- | ------------------ |
+| core + sheet installed, nothing rendered (`sheet-none`) | 147.1 / 45.2             | 147.1 / 45.2        | 0 / 0            | -                  |
+| core installed, nothing rendered (`core-none`)          | 147.1 / 45.2             | 147.1 / 45.2        | 0 / 0            | -                  |
+| one `<EuiButton>` (`core-button`)                       | 213.6 / 66.4             | 213.6 / 66.4        | 114.3 / 38.9     | 230.4 / 74.8       |
+| `<EuiSheet>` in a .gts template (`sheet`)               | 1,407.3 / 367.0          | 1,407.3 / 367.0     | 1,380.6 / 358.2  | 1,499.7 / 395.2    |
+| `<EuiSheet>` + `<EuiSheetImport>` (`sheet-import`)      | 1,471.6 / 383.2          | 1,471.6 / 383.2     | 1,444.8 / 374.4  | 1,563.9 / 411.4    |
+| loose `.hbs` `<EuiSheet />` + host re-export            | 1,406.8 / 366.9          | 1,406.8 / 366.9     | -                | -                  |
+| dynamic, core installed, nothing rendered               | 2,444.1 / 626.5          | 2,444.1 / 626.5     | -                | -                  |
+| dynamic, core + sheet installed, nothing rendered       | **2,870.7 / 718.4**      | **2,444.1 / 626.5** | -                | -                  |
+
+What is in them (module ids in the output):
+
+| App                          | `eui-sheet` | `eui-sheet-import` | scan panel | sheet modules | core's app-js components reached |
+| ---------------------------- | ----------- | ------------------ | ---------- | ------------- | -------------------------------- |
+| `sheet-none`                 | no          | no                 | no         | 0             | 0 of 377                         |
+| `core-button`                | -           | -                  | -          | 0             | 5 of 377                         |
+| `sheet`                      | static      | no                 | lazy chunk | 126           | 128 of 377                       |
+| `sheet-import`               | static      | static             | lazy chunk | 135           | 131 of 377                       |
+| dynamic `sheet-none`, before | yes         | yes                | yes        | 137           | 377 of 377                       |
+| dynamic `sheet-none`, after  | no          | no                 | no         | 0             | 377 of 377                       |
+
+(`sheet`'s 1,106 lazy chunks are mostly one per icon; none loads until
+an icon of that type renders.)
+
+### Findings
+
+- **The default blueprint pays nothing for app-js components.** With
+  `staticInvokables: true` (the default of `@embroider/compat` 4 and of
+  the blueprint's `compatBuild(app, buildOnce)`), compatModules holds the
+  app tree's "other" files (services, initializers, routes, ...) and not
+  `components/`, `helpers/`, `modifiers/` (`virtual-entrypoint.js` in
+  `@embroider/core`); a template's `<EuiSheet>` resolves at build time.
+  `sheet-none` and `core-none` are byte-identical. The hole was real only
+  for `staticInvokables: false` (all app-js components in compatModules:
+  the sheet added 426.6 KB / 91.9 KB gzip, 137 modules, the import
+  screen and the scan panel included, rendered or not) and for classic
+  builds (not measured here: no `ember-auto-import` in this workspace).
+- **The barrel shakes.** `index.ts` re-exports `./core/index.ts`, the
+  field types and `EuiSheetImport`; with only `EuiSheet` imported, the
+  import screen is not in the output at all (64.3 KB / 16.2 KB gzip when
+  imported, compat). `sideEffects: ["*.css", "./tests/**"]` holds for the
+  sheet: no CSS import (its styles are a `<style>` it adds), no
+  `@embroider/macros`, no top-level call in any of its 152 modules (TS3).
+- **Core comes in by deep path, as far as it is used.** `<EuiSheet>`
+  reaches 128 of core's 377 app-js component modules (the data grid,
+  flyout, modal, popover, selectable, form controls...), not the rest;
+  no `@ember-eui/core` index import.
+- **Icons:** the sheet names icons by type; core loads each icon by
+  `import()` on first render, so none is static. Two tiny icon modules
+  are in the static graph through core (`empty`, and the `ember` icon in
+  a 389-byte shared chunk), as in `core-button`.
+- **compatModules' own cost for a sheet host** (compat minus no
+  compatModules): 26.7 KB / 8.8 KB gzip, core's five services and two
+  dependencies' app-js (below) that the sheet does not import itself.
+
+### Fixed
+
+- `3f753c5` fix(sheet): no `app-js` (package.json) and no
+  `addon.appReexports()` (rollup config, which rewrote it on every
+  build). Hosts import the components in .gts/.gjs, which every demo,
+  test and doc here already did; nothing in the repo resolved
+  `<EuiSheet>` by name. Loose mode opts in per component with a
+  re-export in the host's app tree (docs/sheet.md, installation); the
+  `sheet-loose-host` case builds and has `<EuiSheet>`; without the
+  re-export a loose `<EuiSheet />` fails the build ("failed to resolve
+  import @embroider/virtual/components/eui-sheet"), it is not silently
+  missing. Default-blueprint hosts gain 0 bytes and lose loose-mode
+  resolution by name; to undo, revert that one commit.
+- Nothing else in the sheet defeats shaking (above), so no other change.
+
+### Guards
+
+- **In the suite:** TS1-TS3 (`tests/unit/tree-shaking-test.ts`): no
+  `app-js` and the same `sideEffects` in package.json, no
+  `addon.appReexports(` in the rollup config, no top-level call in a
+  source module. TS1 and TS2 fail before `3f753c5`. BS1/BS2 (static
+  imports of `<EuiSheet>`) unchanged.
+- **Script:** `pnpm size --compat` (9 builds, a few minutes here;
+  `--only a,b` for some). Exit 1 when: a sheet module is anywhere in
+  `sheet-none` or dynamic `sheet-none`; `sheet` lacks `<EuiSheet>` or 50+
+  sheet modules, or has the import screen or the scan panel in its
+  static graph, or lacks the panel as a lazy chunk; `sheet-import` lacks
+  `<EuiSheetImport>`; `sheet-loose-host` lacks `<EuiSheet>`; dynamic
+  `core-none` reaches fewer than 300 of core's app-js components (the
+  control that the dynamic mode takes app-js components in, so the
+  sheet check cannot pass by accident). Module paths match a symlinked
+  (`packages/sheet`) and an injected (`@ember-eui/sheet`) copy. Before
+  `3f753c5` it failed with "dynamic-sheet-none: sheet modules in the
+  bundle: .../-private/cells/chip.js, .../core/fields.js, ... and 135
+  more"; after, every check passes. Not in CI (it would fit next to
+  `pnpm build` in the workflow).
+
+### Core: left as is, a decision for you
+
+Not changed (core's app-js and exports stay, for loose-mode users of
+`<EuiButton />` and the rest). What core's app-js costs a compat host:
+
+- **Components, helpers, modifiers (404 entries):** 0 bytes in a default
+  blueprint app, whether it uses one core component or none (`core-none`
+  has 0 of 377; `core-button` 5, the ones it imports).
+- **Services (5 entries) are always bundled:** 147.1 KB / 45.2 KB gzip
+  with no core component rendered. Before minifying: the theme and
+  Emotion (`eui-emotion` -> `utils/emotion/context` -> the EUI theme and
+  chroma-js) 202 KB, lodash-es `merge` (`eui-config`) 36 KB,
+  `eui-flyout-manager` and its reducer 29 KB, `eui-i18n` and
+  `eui-toaster` 4 KB; plus two app-js entries of core's dependencies,
+  ember-keyboard's `keyboard` service 17 KB and
+  ember-provide-consume-context's initializer 12 KB. With one
+  `<EuiButton>`, compat costs 99.3 KB / 27.5 KB gzip more than the
+  no-compatModules lower bound; much of it (the theme, Emotion) the
+  components need at runtime anyway, as they inject these services.
+  Making them cheaper would mean lazy theme/Emotion setup or fewer
+  services: a behaviour change, not a pure fix (none was made).
+- **`staticInvokables: false` hosts:** all of core, 2,444.1 KB / 626.5 KB
+  gzip, rendered or not, and today such a Vite host does not build at
+  all: core's app-js has four entries that re-export a default from
+  modules without one (`components/eui-data-grid/cell-actions`,
+  `row-tree-hooks`,
+  `components/eui-super-date-picker/utils/pretty-interval`,
+  `time-window`; in core since `e2ced9d`, v16.1.3,
+  before this branch), and `@nullvoxpopuli/ember-composable-helpers`'
+  app-js imports `ember`. The dynamic cases build only with
+  `shimMissingExports` and `ember` external. Options: narrow core's
+  `appReexports` globs to exclude those four (an app-js change, so not
+  done here), or leave it, since the default blueprint is unaffected.
+
+### Not verified
+
+- A classic (non-Embroider) build: no `ember-auto-import` here. By the
+  same mechanism it would have bundled the sheet's app-js components;
+  after `3f753c5` there are none.
+- Runtime: the probe apps were built, not booted (the no-compatModules
+  variant would not boot); bytes and module lists only.
+- `pnpm size --compat` on a checkout with real injected copies (here
+  `site/node_modules/@ember-eui/*` are symlinks); the path patterns
+  cover both.

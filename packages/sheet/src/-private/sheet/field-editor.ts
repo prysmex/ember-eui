@@ -3,7 +3,7 @@ import { tracked } from '@glimmer/tracking';
 import { isDestroyed, isDestroying } from '@ember/destroyable';
 import { modifier } from 'ember-modifier';
 
-import { withoutField } from '../../core/index.ts';
+import { CREATABLE_FIELD_TYPES, withoutField } from '../../core/index.ts';
 import { draftOf, FIELD_EDITOR_WIDTH } from '../field-editor.gts';
 import { ADD_FIELD_COLUMN_ID, afterRender, clamp } from './util.ts';
 
@@ -15,24 +15,6 @@ import type {
 } from '../../core/index.ts';
 import type { SheetFieldEditorType } from '../../types.ts';
 import type { HistoryEntry, WrapperBox } from './types.ts';
-
-/** The types the field editor offers without `@creatableFieldTypes`: the built-ins a draft can fully describe (V03 6.4). */
-const CREATABLE_FIELD_TYPES = [
-  'text',
-  'longText',
-  'number',
-  'currency',
-  'percent',
-  'checkbox',
-  'singleSelect',
-  'multiSelect',
-  'date',
-  'duration',
-  'rating',
-  'url',
-  'email',
-  'phone'
-];
 
 /** The message of a rejected field handler: `error.message`, else the value as text. */
 function errorMessage(error: unknown): string {

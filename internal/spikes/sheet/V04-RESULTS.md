@@ -1365,3 +1365,336 @@ time out (deviation 3); nothing else failed in it.
   `above` the last record.
 - `docs/sheet.md` says it in "Adding" and in the groups section; README
   unchanged (it describes `@newRecordValues` in one line).
+
+## Batch E, stage 1: the import helpers (10)
+
+Built 2026-11-21 on `a365483` (the paste fix), in this checkout. Design:
+`v04/10-import-screen.md`, its "Pure helpers" section with "Guessing a
+type", "Built-in column options", "Transforms" and "Matching", and
+decisions 5, 6 and 11-13 of `v04/README.md`. Only the pure helpers and
+their types: the component (`eui-sheet-import.gts`, stage 2) was not
+started. Everything is in `src/core/import.ts` (new, 861 lines with its
+doc comments), exported from `@ember-eui/sheet/core`; it imports
+nothing from Ember (the core-boundary test passes).
+
+### What was built
+
+- **`decodeText(bytes)`** → `{ text, encoding }`: a UTF-8 BOM is
+  stripped; strict UTF-8 (`TextDecoder('utf-8', { fatal: true })`), else
+  windows-1252. With a BOM, bad bytes stay UTF-8 (U+FFFD). Takes an
+  `ArrayBuffer` or a `Uint8Array`.
+- **`matchColumns(headers, fields, saved?, { headers? })`** →
+  `SheetImportColumn[]`, one per header. A saved mapping is used only when
+  its `signature` equals this header line's; its fields are taken first
+  (as `importMatrix`'s `mapping`), each column keeps its saved target,
+  transform and options (`matchedBy: 'saved'`); a saved field id that no
+  longer exists falls back to the header. Then batch B's `matchHeader`
+  (alias, label, id; `normalizeHeader`: case, accents, spaces, `_`, `-`).
+  A field takes one column; a header whose field is taken stays `'skip'`
+  with `taken: <id>` (decision 12, no fallback). `{ headers: false }`:
+  by position (decision 11). Unmatched: `'skip'` (the screen turns it
+  into "New field" when it has `@onCreateFields`).
+- **`importSignature(headers)`**: `JSON.stringify` of the normalised
+  headers (`normalizeHeader`), the `SheetImportMapping.signature`.
+- **`guessColumn(ctx, texts, candidates = CREATABLE_FIELD_TYPES)`** →
+  `SheetColumnGuess[]` (`{ type, share, options }`), every candidate that
+  reads at least 95 % of the sample, in the design's order; the first is
+  the guess. The sample: the first 200 non-blank texts. Each candidate is
+  read by its own type in `ctx.types` (`parse` with `source: 'paste'`)
+  with a draft field `{ id, type, ...options }`. Candidates: `checkbox`,
+  `date`, `dateTime` (D/M/Y unless proven M/D/Y), `percent`, `currency`,
+  `number` (each `.` then `,`), `email`, `url`, `phone`, `singleSelect`
+  (at most 20 distinct texts, each used twice; its `options` are those
+  texts), `longText` (a line break or over 200 characters), `text`. Only
+  names in `candidates` that `ctx.types` has. `options` are the new
+  field's: `dateOrder`, `decimalSeparator`, a select's `options`. An
+  all-blank sample gives `text` only (deviations 1-5).
+- **`CREATABLE_FIELD_TYPES`** moved from `field-editor.ts` to
+  `src/core/fields.ts` (exported); the field editor imports it, same list,
+  same behaviour.
+- **The plan** (`SheetImportPlan { headers?, columns }`;
+  `SheetImportColumn { index, header, target, matchedBy?, taken?,
+  transform?, trim?, emptyIsNull?, dateOrder?, decimalSeparator?,
+  valueMap? }`; `SheetImportTarget = { field } | { newField: draft } |
+  'skip'`). A new field's column is read with `{ ...draft, id:
+  importFieldId(index) }` (`'new:<index>'`) until it exists.
+- **Reading a cell** (one function for the preview and the run): the
+  file text → trim (default on) → the transform (`null` is `''`; a throw
+  is an error cell with its message) → the value map → empty and
+  `emptyIsNull` (default on: `null`, no parse) → the type's `parse`
+  (`source: 'paste'`, the line's values so far as the record, as
+  `buildPaste`), with the column's field: the target, or a copy with the
+  column's `dateOrder` (date, dateTime) or `decimalSeparator` (number,
+  currency, percent). The copy is never written back: the field object is
+  unchanged (IP3).
+- **The value map**: text → the value to write (an option's value, an
+  array for a multi-select, `true`/`false`, `null`); it is written as the
+  text the column's field reads back as that value (the type's
+  `copyText`, else `format`, checked by parsing it; else the value as
+  text). **`suggestValueMap(texts, field)`** gives the table: the distinct
+  trimmed texts (up to 50) and the prefill (option labels, case and
+  accents ignored; the yes/no words for a checkbox). Texts not in the map
+  are left as they are.
+- **`previewImport(ctx, matrix, plan, transforms, { size = 20 })`** →
+  `{ columns, fields, lines, cells }`: it takes its lines first (the first
+  `size` non-blank data lines), then reads only those. A cell is
+  `{ state: 'value', text, value, display }` (`display`: the type's
+  `format` with the column's field), `'newOption'` (with the `options` a
+  select creates), `'linked'` (an `unresolved` text: "linked on import")
+  or `'error'` with the type's or the transform's message.
+- **`runImport(ctx, matrix, plan, transforms, { skipLinesWithErrors? })`**
+  → `{ rows, fieldIds, fields, lines, values, errors, unresolved,
+  skippedLines }`. `rows` are the texts to append (one per `fieldIds`
+  entry), `fields` the fields they were read with (copies and drafts
+  included: pass them as `appendRows`' `fields`), `values` what `parse`
+  gave (`undefined` for an error or unresolved cell), `errors`
+  `{ line, column, fieldId, text, message }`, `unresolved` the cells for
+  `@onResolve` (not errors). Lines whose cells are all blank are dropped
+  (decision 11). `line` is always the index in `matrix` (the header line
+  is 0), `column` the file column.
+- **`errorsCsv(matrix, errors, { headers = true, delimiter = ',' })`**:
+  the header line, then each failed line once, in file order, as the file
+  has it (RFC 4180 quoting; no formula escaping: the user's own texts go
+  back to the user). The quoting function moved from `csv.ts` to
+  `delimited.ts` (`quoteDelimitedCell`, not exported from the index), and
+  `toCsv` calls it there.
+- **Types** (all exported): `SheetImportPlan`, `SheetImportColumn`,
+  `SheetImportMapping` (`{ signature, columns }`), `SheetColumnGuess`,
+  `SheetImportPreview`, `SheetImportTransform` (as the design),
+  `SheetImportFieldDraft` (= `SheetFieldDraft`), and
+  `SheetImportContext` (`{ types, messages, fields }`),
+  `SheetImportTypeContext` (`{ types, messages }`), `SheetImportTarget`,
+  `SheetImportCell`, `SheetImportError`, `SheetImportUnresolved`,
+  `SheetImportRun`.
+
+### Tests
+
+New file `tests/unit/import-test.ts` (prefixes IG and IP unused before:
+`grep -rnoE '\b(PNV|IG|IP|IW)[0-9]+\b'` found nothing). No existing test
+changed (CI1-CI6 and CX1-CX6 pass with the moved quoting).
+
+- **IG1** `19/11/2026`-style texts: `date` D/M/Y, share 1; ambiguous
+  texts: D/M/Y; one `11/19/2026`: M/D/Y; one proof among 30 still gives
+  M/D/Y (D/M/Y would read 96.7 %); texts proving both orders: `text`
+  (not `date`, not `url`).
+- **IG2** `1.234,5`/`12,5`/`3`/`1.000`: `number` with `,`; `1,234.5`:
+  with `.`; `Sí`/`No`: `checkbox`; five statuses twice each:
+  `singleSelect` with those options in order; a text used once: not a
+  select; a line break and 201 characters: `longText`; `25%`, `30 %`,
+  `7.5%`: `percent`; plain numbers: `number`, not `percent`;
+  `$1,200.00`, `MXN 300`, `45.5 €`: `currency`; `Calle 5`: `text`;
+  emails, urls, phones.
+- **IG3** only the candidates: `Sí`/`No` with `text`, `number` is
+  `text`; none reads it: `[]`; an unknown name ignored; a candidate
+  missing from `ctx.types` not tried; an app type not a candidate; a
+  blank sample: `text` only, or `[]` without `text`; the default list;
+  `dateTime` when it is a candidate.
+- **IP1** `decodeText`: UTF-8 without and with a BOM (`ArrayBuffer`),
+  windows-1252 `Año` and `€`, empty bytes.
+- **IP2** `matchColumns`: alias, label, id, accents (`AÑO` for `Año`),
+  `_` and spaces, the taken field (`taken: 'name'`), unmatched; a saved
+  mapping with the same signature: its target, transform and `trim`, a
+  saved `'skip'`, a saved field that no longer exists (by header), a
+  freed field matched by label, a saved new field; another header line:
+  ignored; `headers: false` by position; the signature.
+- **IP3** `previewImport`: an M/D/Y copy (the field unchanged), a value
+  map for a checkbox and a select (`Abierto` → `Open` → `o`), a transform
+  (cents) with its context (`line`, `header`, the raw `row`), a throwing
+  transform (its message), a linked record ("linked"), a new option
+  (`createOnPaste`), an empty linked cell (`null`), texts not in the map
+  read by the type, the blank line left out; without the copy the M/D/Y
+  text is `notADate`; `size`; a `null`-returning transform; `trim` and
+  `emptyIsNull` off; `'skip'` and unknown ids not read; a new field's
+  draft under `importFieldId`; `suggestValueMap` for a checkbox, a
+  single and a multi select, and a text field.
+- **IP4** `runImport` over 1,000 lines: 1,000 rows, the field ids, the
+  fields, a row's texts and values, the line indexes, ten errors
+  (`notANumber`), one unresolved cell; `skipLinesWithErrors`: 990 rows
+  and the ten `skippedLines`; `errorsCsv`: the header and ten lines, a
+  quoted cell, `headers: false`, `;`, each line once in file order. And
+  the rows with `run.fields` through the core's `pasteMatrix` (the path
+  `appendRows` takes) give inserts equal to `values` and rejections equal
+  to `errors`, with an M/D/Y copy and a decimal-comma copy.
+- **IP5** one matcher: an alias with `_` matches in `importMatrix` and
+  `matchColumns`; a second header naming the taken field is unmatched in
+  both.
+
+Suite: **670 tests, 670 pass** (baseline 657; +5 PNV, +8 IG/IP), one full
+run on the commit's tree, no retries.
+
+### Measurements
+
+Chromium 153 headless (the suite's testem launcher), this container, a
+temporary test file (not committed; no timing assertion is). A
+10,000-line, 20-column matrix (four columns each of text, number with a
+decimal comma, date D/M/Y, checkbox `Sí`/`No`, single select of five
+options; 416 `bad` numbers; one transform), all columns mapped. Two
+runs, idle machine:
+
+| Helper | Median | Range | Target (10) |
+| --- | --- | --- | --- |
+| `runImport`, 10,000 × 20 (the dry run) | 67.7 ms, 71.8 ms (7 runs each) | 61.3-88.4 ms; the first call 84-85 ms | < 1 s |
+| `previewImport`, 20 lines (of the 10,000) | 0.3 ms | 0.1-1.0 ms | < 300 ms |
+| `guessColumn`, 20 columns × 200 texts | 12.1-13.3 ms | 11.1-36.7 ms | (none) |
+| `matchColumns`, 20 headers | 0.1 ms | 0.0-0.3 ms | (none) |
+
+An earlier run while the full suite ran in another Chromium gave the
+same order (runImport 69.6 ms median). The dry run is well under 1 s, so
+it needs no idle callbacks; stage 2's 250 ms debounce stays as designed.
+Not measured: the component's rendering, a real 10,000-line CSV through
+`parseCsv` and `decodeText` (those are batch B's and the platform's).
+
+### Checks (on the commit's tree)
+
+- `pnpm lint:types`: no error. The tests' `ember-tsc`: the baseline
+  errors and no other (`diff` empty).
+- `eslint` and `prettier --check` on the changed files
+  (`src/core/import.ts`, `delimited.ts`, `fields.ts`, `csv.ts`,
+  `index.ts`, `src/-private/sheet/field-editor.ts`,
+  `tests/unit/import-test.ts`): clean.
+- Owner gate: OK.
+- `node scripts/generate-api-docs.mjs --check`: exit 0 (it reads no sheet
+  source).
+- `pnpm lint:js`, `pnpm lint:css` in `packages/sheet`: exit 0;
+  `pnpm eui:check` at the root: exit 0.
+- `packages/core/src` unchanged; no dependency added.
+
+### Deviations
+
+1. **A text counts as read when `parse` gives a value and the type's
+   `validate` passes on it**, not `parse` alone: `email`, `url`, `phone`,
+   `text` and `longText` never fail `parse` (they check in `validate`),
+   so "the first candidate at 95 %" would make every leftover column an
+   email. Still the types' own rules, no new ones for them.
+2. **Evidence for three types.** `percent.parse` reads a plain number
+   (`12` is 12 %) and comes before `number`; `currency.parse` strips every
+   other character (`Calle 5` is 5). So `percent` counts a text only when
+   it ends with `%`, and `currency` only when it is a number with a
+   currency sign (`\p{Sc}`) or a three-letter code and nothing else.
+   `url` counts a text only when its host as written has a dot and a
+   non-digit: `url`'s `validate` takes `19/11/2026` (`new URL` reads the
+   host `19` as the IPv4 address 0.0.0.19, which has dots), which made a
+   mix of dates guess `url`.
+3. **The date order.** "M/D/Y only when a text proves it" gates the
+   order before the 95 % rule (one `11/19/2026` among 30 would otherwise
+   still read 96.7 % as D/M/Y): a text that the type reads as M/D/Y and
+   not as D/M/Y proves M/D/Y, the other way round D/M/Y; M/D/Y is tried
+   only when proven and nothing proves D/M/Y. Same for `dateTime`.
+4. **Currency and percent drafts get an explicit `decimalSeparator`**
+   (`.` then `,`): without it currency uses the browser locale's, which
+   would make the guess depend on the machine. A currency guess has no
+   `currency` code: the new-field form must ask for it.
+5. **App types are never candidates** (they have no place in the
+   design's order), and a candidate missing from `ctx.types` is skipped
+   (`resolveType` would throw). A blank sample gives `text` (or nothing
+   without `text`), not the first type that reads 0 of 0.
+6. **Signatures beyond the design's**: `ctx` carries `fields` for
+   `previewImport` and `runImport` (they read `{ field: id }` targets);
+   `matchColumns` takes `{ headers: false }`; `runImport` takes
+   `{ skipLinesWithErrors }` and also returns `fields`, `lines`,
+   `unresolved` and `skippedLines`; `errorsCsv` takes `{ headers,
+   delimiter }`; `line` is the matrix index everywhere (errors,
+   `errorsCsv`, the transform's context). Without `lines` the rows could
+   not be tied to the file after blank lines are dropped.
+7. **Extra exports**: `importSignature`, `importFieldId`,
+   `suggestValueMap`, `CREATABLE_FIELD_TYPES` (moved), and the types in
+   the list above beyond the design's seven.
+8. **"Empty is no value"** decides `values` only: on, an empty text is
+   `null` without `parse`; off, the type's `parse('')` (`''` for text).
+   `rows` carry `''` either way (a string matrix cannot say "no value"),
+   and the sheet reads `''` with the type: a text field gets `''`.
+9. **Rows are full width**: a line shorter than the plan's columns gives
+   `''` for its missing cells (the design: "one text per entry of
+   `fieldIds`"; a transform may build a value from other columns). This
+   differs from `importMatrix`, whose short rows let `@newRecordValues`
+   fill the missing cells.
+10. **The pipeline order** (trim, transform, value map, empty, parse) is
+   this stage's choice; the design does not give one. The transform
+   gets the trimmed text; its `row` has the raw file texts by header
+   (the first column wins on a repeated header). An unknown transform id
+   is no transform (a saved mapping may name one the app removed).
+11. **A read-only target field is read like any other**; `appendRows`
+   skips read-only fields (APR4). The screen's target select should
+   offer only writable fields (stage 2).
+
+### Found (not changed)
+
+- `url`'s `validate` accepts `19/11/2026` and plain numbers (`12` →
+  `https://12` → the host 0.0.0.12): a url field shows such texts as
+  valid. Outside this batch (a field type's rule).
+- ISO timestamps (`2026-11-19T10:30`) guess `date`, not `dateTime`:
+  `date.parse` accepts a time part and drops it, and `date` comes first
+  (`dateTime` is not in the default creatable list anyway). Spaced phone
+  numbers (`81 1234 5678`, `+52 81 1234 5678`) guess `number`:
+  `number.parse` removes spaces. Both follow the design's order.
+
+### Notes for stage 2 (the component)
+
+What the screen calls, in order (`ctx = { types: merged registry,
+messages, fields: @fields }`):
+
+1. The source: `@file` → `decodeText(await file.arrayBuffer())` →
+   `parseCsv(text, { delimiter })` (the delimiter select re-parses);
+   `@text` → `parseCsv`; `@matrix` as given. The file part shows
+   `encoding` and the line count.
+2. `headers` = the first line (with "First line is the header"), else
+   `''` per column; `columns = matchColumns(headers, @fields,
+   @savedMapping, { headers })`.
+3. Per column, `guessColumn(ctx, texts, @creatableFieldTypes)` over its
+   data texts (it samples 200 itself). An unmatched column without
+   `taken`, with `@onCreateFields`, becomes `{ newField: { label: header,
+   type: guess.type, ...guess.options } }`; a `taken` column says which
+   column took its field. For a column mapped to an existing field the
+   badge share is `1 - errors in that column / lines` of the dry run.
+4. The value map table: `suggestValueMap(texts, field)` (select and
+   checkbox targets); the user's edits go to `column.valueMap`.
+5. Preview: `previewImport(ctx, matrix, plan, @transforms, { size:
+   @sampleSize })`; its `fields` are the preview's column fields.
+6. Dry run (debounced 250 ms): `runImport(ctx, matrix, plan,
+   @transforms)`: "N lines ready" is `rows.length` minus the lines in
+   `errors`; "M with errors" the distinct `errors[].line`; the column
+   status filters `errors` by `column`; the link is `errorsCsv(matrix,
+   run.errors, { headers, delimiter })`.
+7. Import: the drafts are the `newField` targets in column order →
+   `created = await @onCreateFields(drafts)`; replace each target with
+   `{ field: created[k].id }`; `runImport({ ...ctx, fields: [...@fields,
+   ...created] }, matrix, plan, @transforms, { skipLinesWithErrors })`;
+   `@onImport({ rows, fieldIds, createdFields: created, skippedLines,
+   mapping: { signature: importSignature(headers), columns } })`.
+8. **Decision needed:** the design's `SheetImportResult` has no
+   `fields`, and its example passes `{ fields: result.createdFields }` to
+   `appendRows`. That drops the per-column copies: an M/D/Y column of a
+   D/M/Y field would be rejected (APR6 shows it). Stage 2 should add
+   `fields: run.fields` to the result and the example should pass
+   `{ fields: result.fields }` (it includes the created fields' copies
+   too, by their real ids once step 7 replaced the targets).
+
+### Open items
+
+- The decisions above: `SheetImportResult.fields` (stage 2, note 8);
+  rows full width vs `importMatrix`'s short rows (deviation 9); "empty is
+  no value" for a text field in a sheet (deviation 8).
+- No docs yet: `docs/sheet.md`'s import-screen section and the demo are
+  stage 2's (the design's "Docs"). The helpers have doc comments.
+- Not verified: a real Excel windows-1252 file (only hand-made bytes),
+  UTF-16 files (not recognised: read as windows-1252, as the design's
+  risk says), Firefox, Safari.
+
+### Files
+
+- New: `packages/sheet/src/core/import.ts`,
+  `packages/sheet/tests/unit/import-test.ts`.
+- Changed: `src/core/index.ts` (the export), `src/core/fields.ts`
+  (`CREATABLE_FIELD_TYPES`), `src/core/delimited.ts`
+  (`quoteDelimitedCell`), `src/core/csv.ts` (uses it),
+  `src/-private/sheet/field-editor.ts` (imports the list).
+
+### Commits
+
+| Commit | Holds | Suite |
+| --- | --- | --- |
+| `a365483` | the paste fix (decision 10): `records.fillNewValues`, `pasteText`, `appendRows`; PNV1-PNV5; docs; its results | 662 / 662 |
+| the stage 1 commit | `src/core/import.ts` and the moves; IG1-IG3, IP1-IP5; these results | 670 / 670 |
+
+One commit in this range is the main session's: `c5ca46f` (readiness
+loose ends from batch C) before `a365483`.

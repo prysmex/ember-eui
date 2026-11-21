@@ -6,7 +6,7 @@
  * sheet never calls these: the app does, from its own toolbar.
  */
 import { rangeMatrix } from './change-set.ts';
-import { parseDelimited } from './delimited.ts';
+import { parseDelimited, quoteDelimitedCell } from './delimited.ts';
 import { headerLine } from './tsv.ts';
 
 import type { EuiSheetField, SheetContext } from './types.ts';
@@ -55,7 +55,7 @@ export function toCsv<T>(
     .map((line) =>
       line
         .map((text) =>
-          quoteCsvCell(escape ? escapeFormula(text) : text, delimiter)
+          quoteDelimitedCell(escape ? escapeFormula(text) : text, delimiter)
         )
         .join(delimiter)
     )
@@ -80,18 +80,6 @@ function escapeFormula(text: string): string {
     return `'${text}`;
   }
   return text;
-}
-
-function quoteCsvCell(text: string, delimiter: string): string {
-  if (
-    !text.includes(delimiter) &&
-    !text.includes('"') &&
-    !text.includes('\n') &&
-    !text.includes('\r')
-  ) {
-    return text;
-  }
-  return `"${text.replace(/"/g, '""')}"`;
 }
 
 /* -------------------------------------------------------------------- */

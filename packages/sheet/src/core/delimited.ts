@@ -103,3 +103,19 @@ function readQuoted(
   }
   return null;
 }
+
+/**
+ * A cell as delimited text (RFC 4180): quoted when it has the delimiter,
+ * a `"`, `\r` or `\n`, with `"` doubled. For `toCsv` and `errorsCsv`.
+ */
+export function quoteDelimitedCell(text: string, delimiter: string): string {
+  if (
+    !text.includes(delimiter) &&
+    !text.includes('"') &&
+    !text.includes('\n') &&
+    !text.includes('\r')
+  ) {
+    return text;
+  }
+  return `"${text.replace(/"/g, '""')}"`;
+}

@@ -7,6 +7,28 @@ import type {
   SheetOption
 } from './types.ts';
 
+/**
+ * The types a new field may have without `@creatableFieldTypes` (the
+ * field editor's list, V03 6.4, and the import screen's guess, v0.4 10):
+ * the built-ins a draft can fully describe.
+ */
+export const CREATABLE_FIELD_TYPES: readonly string[] = [
+  'text',
+  'longText',
+  'number',
+  'currency',
+  'percent',
+  'checkbox',
+  'singleSelect',
+  'multiSelect',
+  'date',
+  'duration',
+  'rating',
+  'url',
+  'email',
+  'phone'
+];
+
 /** The field's type: `types[field.type ?? 'text']`. Throws for an unknown name. */
 export function resolveType(
   types: FieldTypeRegistry,

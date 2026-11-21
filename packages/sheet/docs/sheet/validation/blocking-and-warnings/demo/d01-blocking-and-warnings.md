@@ -15,8 +15,8 @@ agree. More than 10 hours is not an error but a warning: the app draws
 it with `@cellColor` (a yellow bar) and lists it, since a colour alone
 is not read out. Type `abc` on Hours: the text is rejected and the
 record keeps its old value, so nothing wrong reaches your records or
-your submit. Fill the missing inspector and date of the last row, and
-Submit turns on.
+your submit. Bring the 26 hours of Press line to 24 or less and fill
+the last row's inspector and date, and Submit turns on.
 
 </EuiText>
 

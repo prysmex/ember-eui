@@ -26,8 +26,9 @@ submit records with errors.
   `field.validate`, `@validate`): stored, and marked. What to do with a
   record that has errors is your app's choice: keep a Submit button off
   while there are any, say. `validateCell(ctx, field, record)` runs a
-  field's rules as the sheet does (`ctx` is `{ types, messages }`, the
-  one `summarize` takes); the rules of your `@validate` are your own
+  field's rules as the sheet does (of its `ctx` only `types` and
+  `messages` are read: `{ types: builtInFieldTypes, messages:
+defaultMessages }`, as `summarize` takes); the rules of your `@validate` are your own
   code already.
 - **What your server refused** (`@cellErrors`): shown after the rest,
   until you take it away ([Server checks and

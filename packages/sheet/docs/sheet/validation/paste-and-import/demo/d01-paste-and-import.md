@@ -15,8 +15,8 @@ read (`n/a` as a score, `31/02/2026`, `maybe` for a checkbox, a site
 that is not an option) is not stored, is listed in the change set's
 `rejected` (the table) and stays on its cell, marked, until the cell is
 written again. **Undo** (`api.undo()`, or Ctrl/Cmd+Z) removes the whole
-import, rejections included. Copying the CSV's lines without the header
-and pasting them on the add row does the same.
+import, rejections included. A paste on the add row (tab-separated lines,
+from a spreadsheet) takes the same path.
 
 </EuiText>
 

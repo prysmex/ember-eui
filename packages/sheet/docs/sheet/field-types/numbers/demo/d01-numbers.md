@@ -12,8 +12,8 @@ Four number types on safety equipment: **Stock** is a `number` (`12`,
 **Discount** a `percent` stored as a fraction (type `15%` or `15`; at
 most 50%, `max: 0.5`) and **Fitting time** a `duration` stored in
 seconds (type `1:30`, `1h 30m`, `1.5h` or `90`, minutes). They are
-right-aligned and their header menus sort "Low-High". The bar under the
-grid sums them with `summarize`, through each type's `toNumber` and
+right-aligned. The bar under the grid summarizes them with
+`summarize`, through each type's `toNumber` and
 `format`. Select Stock of rows 1 and 2 and drag the fill handle down: a
 number with a step continues it.
 

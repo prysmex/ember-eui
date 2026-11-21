@@ -2014,10 +2014,11 @@ new tests are new files or new tests in `sheet-docs.test.mjs`).
 
 Commits: `97d4906` (the groups and pages, every demo and section moved,
 nav, old URLs, README, tests), `0a6ce66` (the Validation, Editing and
-Field types examples, the shared data module), and the commit after it
-(the Fields, Selection, Rows, Data, Import and export and More examples,
-written by three helper agents and integrated, fixed and checked here),
-then this section.
+Field types examples, the shared data module), `8d5cbb5` (the Fields,
+Selection, Rows, Data, Import and export and More examples: 11 drafted
+by three helper agents, then integrated, fixed and checked here),
+`e4ff764` (this section) and a last one (four example texts made exact,
+and this section's corrections).
 
 ### The page tree
 
@@ -2026,9 +2027,13 @@ group sorts by its first page). URLs are
 `/docs/sheet/docs/sheet/<path>`; a group's first page is its folder's
 `index.md` (`<group>/`, also without the slash). "moved" = an existing
 demo, unchanged but for `order` (two of them); "new" = written in this
-stage. 52 pages in the nav (about 40 were asked for: no page held a
-single tiny example worth merging, so none were merged) plus five old
-URLs.
+stage. 52 pages in the nav (about 40 were asked for; none were merged)
+plus five old URLs. **Against "each with 2-4 focused examples": 44 pages
+have one example, 7 have two (server checks, all field types, custom
+types, hide/reorder/resize/freeze, add/delete/duplicate, CSV export,
+translations) and the API reference none.** More examples per page, or
+merging small pages (the per-type field pages, say), is the user's
+choice; neither was done.
 
 | Group | Page (path) | Examples |
 | --- | --- | --- |
@@ -2141,6 +2146,12 @@ fields).
   example was needed. **Sorting** is `@sort` driven only: the example
   sorts a local array in its `@onSortChange`, as the page says.
 - Nothing was dropped.
+- Corrected after the checks (last commit): the numbers example no
+  longer says its headers sort (no `@onSortChange` there); the blocking
+  example names both fixes Submit needs; the import example says a
+  tab-separated paste takes the same path (not checked whether a comma
+  CSV pasted on a cell splits); the blocking page says only `types` and
+  `messages` of `validateCell`'s context are read.
 
 ### URL changes
 
@@ -2219,14 +2230,19 @@ stubs, `#anchors`) open. Light and dark screenshots of four new pages
 (`validation/blocking-and-warnings`, `field-types/selects`,
 `data/sorting`, `more/theme`) in
 `/tmp/claude-0/-home-user-ember-eui/87cd9e5a-212c-54c3-9d47-30ac398aebd2/scratchpad/example-pages/`
-(not committed), looked at by the agent: readable in both.
+(not committed); the agent looked at four of the eight (blocking and
+selects light and dark, sorting and theme dark): readable. In the theme
+page's dark shot the sheet is light inside the dark site: its own
+`EuiEmotionProvider` is light until its "Dark mode" switch is on, as the
+example means.
 
 Performance: the new pages hold one or two small sheets (at most 24
 records); no heavy sheet shares a page. `count-tags.js` on an
 instrumented copy of the build: Large data 70,554 re-walks per wheel
-step (69,862 before the stage: the same within 1 %); fields/columns
-(d12, 24 records, beside the new frozen example) 0 re-walks per step
-for either sheet (neither scrolls far in 12 steps). `site/dist` is the
+step (69,862 at the docs split, `1b7de8a`: the same within 1 %).
+fields/columns (d12 and the new frozen example) was not measured: the
+wheel steps rendered nothing there (0 re-walks for either sheet), and
+the arrow-press measure of the docs split was not repeated. `site/dist` is the
 production build, not instrumented.
 
 ### Left, and not verified

@@ -25,15 +25,58 @@ function withScheme(text: string): string {
   return /^[a-z][a-z\d+.-]*:/i.test(text) ? text : `https://${text}`;
 }
 
+/** Four decimal parts of 0-255: an IPv4 address as people write one. */
+const DOTTED_QUAD =
+  /^(?:25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(?:\.(?:25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3}$/;
+/** A label of a host name: letters, digits and `-` (any script; `_` for the odd real host). */
+const LABEL =
+  /^[\p{L}\p{N}\p{M}_](?:[\p{L}\p{N}\p{M}_-]*[\p{L}\p{N}\p{M}_])?$/u;
+
+/**
+ * The host as the text writes it (READINESS.md item 5): the part after
+ * `//` up to the path, without a `user@` and a `:port`. The URL parser's
+ * `hostname` is not used for the rule: it reads `19/11/2026` as the host
+ * `19`, and `19` as the IPv4 address 0.0.0.19.
+ */
+function writtenHost(href: string): string | undefined {
+  const match = /^[a-z][a-z\d+.-]*:\/\/([^/?#\\]*)/i.exec(href);
+  if (!match) return undefined;
+  let host = match[1]!;
+  host = host.slice(host.lastIndexOf('@') + 1);
+  if (host.startsWith('[')) {
+    const end = host.indexOf(']');
+    return end < 0 ? undefined : host.slice(0, end + 1);
+  }
+  return host.replace(/:\d*$/, '');
+}
+
+/**
+ * Whether a written host names a site: `localhost`, a bracketed IPv6
+ * address, a dotted quad (`192.168.0.1`), or a name of two or more
+ * dot-separated labels whose last label (the top-level domain) has a
+ * letter (`example.com`, `acme.mx.`, `ñandú.mx`). So `19`, `12`, `1.2.3`
+ * and `0x7f.1` are not sites, though the URL parser reads them as IPv4.
+ */
+function isSiteHost(host: string): boolean {
+  const name = host.toLowerCase().replace(/\.$/, '');
+  if (name === 'localhost') return true;
+  if (name.startsWith('[') && name.endsWith(']')) return true;
+  if (DOTTED_QUAD.test(name)) return true;
+  const labels = name.split('.');
+  return (
+    labels.length >= 2 &&
+    labels.every((label) => LABEL.test(label)) &&
+    /\p{L}/u.test(labels[labels.length - 1]!)
+  );
+}
+
 function webUrl(value: string): string | undefined {
   const href = withScheme(value.trim());
   try {
     const url = new URL(href);
     if (url.protocol !== 'http:' && url.protocol !== 'https:') return undefined;
-    // a bare word is not a site: it needs a dot or `localhost`
-    if (!url.hostname.includes('.') && url.hostname !== 'localhost') {
-      return undefined;
-    }
+    const host = writtenHost(href);
+    if (host === undefined || !isSiteHost(host)) return undefined;
     return href;
   } catch {
     return undefined;

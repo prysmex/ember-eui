@@ -1433,6 +1433,12 @@ your component.
 | `button` | none | none: a text is rejected (paste, fill, clear and cut skip the column) | `buttonLabel` (a string or a function of the record; default the label), `icon`, `color` (`'primary'`, `'success'`, `'warning'`, `'danger'`, `'text'`), `disabled(record)`, `url(record)` |
 | `barcode` | string or `null` | anything, trimmed | `pattern` (a RegExp source, tested as text fields do), `patternMessage`, `formats` (for a scan), `scan({ formats, signal })` |
 
+A `url` is a web address when its scheme is `http` or `https` (`https://`
+is added when it has none) and its host, as written, is `localhost`, an
+IPv6 address in brackets, an IPv4 address of four numbers (`192.168.0.1`),
+or a name of two or more parts whose last part has a letter
+(`example.com`, `ñandú.mx`): `19/11/2026`, `12` and `1.2.3` are not.
+
 Dates are shown as `DD/MM/YYYY` (or `MM/DD/YYYY`) and copied as ISO.
 Currencies are shown with `Intl.NumberFormat` and copied as plain numbers;
 percentages are shown with `precision` decimals and copied exactly;

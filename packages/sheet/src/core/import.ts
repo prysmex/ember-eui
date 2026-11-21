@@ -333,9 +333,6 @@ const PERCENT = /%\s*$/;
 /** A number with a currency sign or a three-letter code before or after it, and nothing else. */
 const CURRENCY =
   /^(?:[+-]?\s*(?:\p{Sc}|[A-Z]{3})\s*[+-]?[\d.,\s]*\d[\d.,\s]*|[+-]?[\d.,\s]*\d[\d.,\s]*(?:\p{Sc}|[A-Z]{3}))$/u;
-/** A host as written with a dot (`url`'s validate also takes `19/11/2026`, read as the IPv4 host 0.0.0.19). */
-const URL_HOST =
-  /^(?:[a-z][a-z\d+.-]*:\/\/)?[^\s/:]*[^\d\s/:.][^\s/:]*\.[^\s/:.]+/i;
 
 /** Whether `field`'s type reads `text`: `parse` gives a value and the type's `validate` passes on it. */
 function reads(
@@ -455,7 +452,8 @@ export function guessColumn(
   tryType('currency', decimals, (text) => CURRENCY.test(text.trim()));
   tryType('number', decimals);
   tryType('email', [{}]);
-  tryType('url', [{}], (text) => URL_HOST.test(text.trim()));
+  // `url`'s own rule wants a site's host (a date or a number is not one)
+  tryType('url', [{}]);
   tryType('phone', [{}]);
   if (allowed.has('singleSelect')) {
     const distinct = distinctTexts(sample);

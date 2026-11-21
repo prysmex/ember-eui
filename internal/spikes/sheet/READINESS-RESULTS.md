@@ -334,9 +334,12 @@ Reading them:
   apply, the rest the render of the pasted range, the flash and the
   selection, about as at 10,000 (321 ms). Not changed further.
 - **At ×4 every interaction is slow on this machine, at any size**: a
-  scroll step 250-310 ms, frame p90 200-217 ms, 40 of the ~60 frames over
-  50 ms; a drag move 120-140 ms; first render 1.4-1.7 s. That is the
-  per-render cost (below), not the data size.
+  scroll step 250-310 ms, frame p90 200-217 ms and about 40 frames over
+  50 ms during the 40 quick steps; a drag move 120-140 ms; first render
+  1.4-1.7 s. That is the per-render cost (below), not the data size. (The
+  quick steps' frame statistics include the idle frames of the wait after
+  them, 500 ms × the throttle rate, which is why the median stays 16.7 ms;
+  compare p90 and the count over 50 ms, not the median.)
 - **Frozen** (10,000 ×1): a step 130 ms and frame p90 83-100 ms, against
   82-88 ms and 33 ms unfrozen; first render 520-550 ms against 310-420 ms.
   The frozen grid renders all 31 cells of each row (below).
@@ -380,6 +383,11 @@ Measured (the table above): paste at 100,000 187 -> 106 ms (-43 %), ×4
 within noise. An earlier A/B of the first version (a full pass with
 `String()` of every id) gave about half of that (paste at 100,000 243 ->
 169 ms); the raw-id comparison is what took the rest. Tests LK1-LK6.
+`53a3a52`'s commit message quotes an earlier A/B of the same two builds in
+another part of the session (paste at 100,000 208.5 -> 126.0 ms, ×4 801.5
+-> 461.6 ms; undo 187.1 -> 99.6 ms, ×4 834.0 -> 374.0 ms); the numbers
+above are the later full matrix. They agree in direction and roughly in
+size; the matrix is the one to cite.
 
 ### Tried and dropped, measured
 
@@ -467,6 +475,18 @@ within noise. An earlier A/B of the first version (a full pass with
 - Only Chromium, headless, in this sandbox; no real device, no other
   browser. Frame times come in 16.7 ms quanta; first render's runs range
   ±20 %.
+- Scroll and drag at scale have counts and timings but no CPU profile of
+  their own here (the scrolling stage profiled d08's scroll; this stage
+  profiled first render, paste and undo).
+- Still a pass over every record after each change: with `@validate`,
+  `runValidate` keeps a map of every record as the validation's snapshot.
+  Not measured (the harness page has no `@validate`).
+- Scratch-only evidence, not in the repository: the render-pass counter
+  (a patch of Ember's `renderRoots` in a copied build), the upper-bound
+  patches (the row-window loop, the frozen columns), the in-page
+  micro-benchmark of the id lookup and the paste trace. Each is described
+  above well enough to redo; the harness itself (`build-large.sh`,
+  `scale.js`, `run-scale.sh`, `median-scale.mjs`) is committed.
 - The paste is of existing records (patches). A paste past the last record
   (inserts) was not measured at scale; `withoutConflicts` now builds the
   insert-placing id list only when there are inserts, so an undo of an

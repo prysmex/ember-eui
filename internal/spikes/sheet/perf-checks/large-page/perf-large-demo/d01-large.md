@@ -20,7 +20,12 @@ Timings go to `window.__perf`.
 import Component from '@glimmer/component';
 import { tracked } from '@glimmer/tracking';
 import { on } from '@ember/modifier';
-import { EuiButton, EuiDataGrid, EuiSpacer, EuiText } from '@ember-eui/core/components';
+import {
+  EuiButton,
+  EuiDataGrid,
+  EuiSpacer,
+  EuiText
+} from '@ember-eui/core/components';
 import { EuiSheet, localRecords } from '@ember-eui/sheet';
 
 const params = new URLSearchParams(globalThis.location?.search ?? '');
@@ -33,13 +38,18 @@ const DEPARTMENTS = [
   { value: 'ops', label: 'Operations', color: 'primary' },
   { value: 'hse', label: 'Safety', color: 'success' },
   { value: 'qa', label: 'Quality', color: 'warning' },
-  { value: 'it', label: 'IT', color: 'accent' },
+  { value: 'it', label: 'IT', color: 'accent' }
 ];
 
 const FIELDS = [
   { id: 'code', label: 'Code', readOnly: true },
   { id: 'name', label: 'Name', required: true },
-  { id: 'department', label: 'Department', type: 'singleSelect', options: DEPARTMENTS },
+  {
+    id: 'department',
+    label: 'Department',
+    type: 'singleSelect',
+    options: DEPARTMENTS
+  },
   { id: 'hours', label: 'Hours', type: 'number', min: 0, max: 60 },
   { id: 'start', label: 'Start', type: 'date' },
   { id: 'active', label: 'Active', type: 'checkbox' },
@@ -48,16 +58,27 @@ const FIELDS = [
     label: `Week ${i + 1}`,
     type: 'number',
     min: 0,
-    width: 110,
-  })),
+    width: 110
+  }))
 ];
 
 const TrivialCell = <template>{{@value}}</template>;
 const TrivialHeader = <template>#</template>;
 const TrivialRowNumber = <template>{{@rowIndex}}</template>;
 
-const GRID_COLUMNS = FIELDS.map((f) => ({ id: f.id, displayAsText: f.label, initialWidth: f.width ?? 150 }));
-const GRID_LEADING = [{ id: 'row', width: 48, headerCellRender: TrivialHeader, rowCellRender: TrivialRowNumber }];
+const GRID_COLUMNS = FIELDS.map((f) => ({
+  id: f.id,
+  displayAsText: f.label,
+  initialWidth: f.width ?? 150
+}));
+const GRID_LEADING = [
+  {
+    id: 'row',
+    width: 48,
+    headerCellRender: TrivialHeader,
+    rowCellRender: TrivialRowNumber
+  }
+];
 
 function generate(count) {
   return Array.from({ length: count }, (_, i) => ({
@@ -68,18 +89,28 @@ function generate(count) {
     hours: (i * 13) % 61,
     start: `20${String(10 + (i % 17)).padStart(2, '0')}-${String(1 + (i % 12)).padStart(2, '0')}-${String(1 + (i % 28)).padStart(2, '0')}`,
     active: i % 5 !== 0,
-    ...Object.fromEntries(Array.from({ length: WEEKS }, (_, w) => [`w${w + 1}`, (i + w) % 41])),
+    ...Object.fromEntries(
+      Array.from({ length: WEEKS }, (_, w) => [`w${w + 1}`, (i + w) % 41])
+    )
   }));
 }
 
 class GridCell extends Component {
   get value() {
-    return this.args.cellContext.store.records[this.args.rowIndex]?.[this.args.columnId];
+    return this.args.cellContext.store.records[this.args.rowIndex]?.[
+      this.args.columnId
+    ];
   }
   <template><TrivialCell @value={{this.value}} /></template>
 }
 
-const perf = (globalThis.__perf = { rows: ROWS, fields: FIELDS.length, frozen: FROZEN, mode: MODE, applies: [] });
+const perf = (globalThis.__perf = {
+  rows: ROWS,
+  fields: FIELDS.length,
+  frozen: FROZEN,
+  mode: MODE,
+  applies: []
+});
 
 export default class SheetPerfLarge extends Component {
   getId = (record) => record.id;
@@ -110,17 +141,27 @@ export default class SheetPerfLarge extends Component {
     const start = performance.now();
     this.store.apply(changeSet);
     const ms = performance.now() - start;
-    perf.applies.push({ at: start, source: changeSet.source, patches: changeSet.patches.length, inserts: changeSet.inserts.length, removes: changeSet.removes?.length ?? 0, ms });
+    perf.applies.push({
+      at: start,
+      source: changeSet.source,
+      patches: changeSet.patches.length,
+      inserts: changeSet.inserts.length,
+      removes: changeSet.removes?.length ?? 0,
+      ms
+    });
     this.last = `${changeSet.source}: ${changeSet.patches.length} patches, ${changeSet.inserts.length} inserts, applied in ${ms.toFixed(1)} ms`;
   };
 
   <template>
-    <EuiButton data-test-subj="perfMount" {{on "click" this.mount}}>Mount</EuiButton>
+    <EuiButton
+      data-test-subj='perfMount'
+      {{on 'click' this.mount}}
+    >Mount</EuiButton>
     <EuiSpacer @size='s' />
     {{#if this.mounted}}
-      {{#if (eq MODE "grid")}}
+      {{#if (eq MODE 'grid')}}
         <EuiDataGrid
-          aria-label="Employees"
+          aria-label='Employees'
           @columns={{GRID_COLUMNS}}
           @leadingControlColumns={{GRID_LEADING}}
           @rowCount={{this.store.records.length}}
@@ -143,7 +184,9 @@ export default class SheetPerfLarge extends Component {
     {{/if}}
     <EuiSpacer @size='s' />
     <EuiText @size='xs' @color='subdued'>
-      <p data-test-subj="perfStatus">{{this.store.records.length}} records. {{if this.last this.last 'No change yet.'}}</p>
+      <p data-test-subj='perfStatus'>{{this.store.records.length}}
+        records.
+        {{if this.last this.last 'No change yet.'}}</p>
     </EuiText>
   </template>
 }

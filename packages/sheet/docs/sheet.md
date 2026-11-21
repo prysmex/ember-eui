@@ -424,11 +424,15 @@ re-applies after each change set (a live view).
   no widths, rules or read-only flags: real apps pass `@fields`.
 - `@summary` is not mapped: turn `result.aggregations` into texts
   yourself.
-- `EuiSheetSearch` passes the other `EuiSheet` arguments through
-  (`@hiddenFields`, `@readOnly`, `@validate`, `@registerApi`, ...). For an
-  argument it does not take, use `searchRecords(this, driver, { getRecordId,
-  onChange })` with your own `<EuiSheet>`: its properties are the
-  arguments (`@records={{search.records}}`, `@onChange={{search.apply}}`,
+- `EuiSheetSearch` passes every other `EuiSheet` argument through
+  (`@hiddenFields`, `@readOnly`, `@validate`, `@registerApi`,
+  `@onVisibleRangeChange`, `@fullScreen`, `@cellColor`, ...) and the
+  `<:empty>` and `<:recordFooter>` blocks (their block API, like the
+  toolbar's and footer's, has `search`). The search owns `@records`,
+  `@sort`, `@onSortChange`, `@highlight`, `@isLoading` and
+  `@rowNumberOffset`. For more control, use `searchRecords(this, driver,
+  { getRecordId, onChange })` with your own `<EuiSheet>`: its properties
+  are the arguments (`@records={{search.records}}`, `@onChange={{search.apply}}`,
   `@sort`, `@onSortChange={{search.setSort}}`, `@highlight={{search.term}}`,
   `@isLoading`, `@rowNumberOffset`). It unsubscribes when `this` is
   destroyed and never destroys the driver.

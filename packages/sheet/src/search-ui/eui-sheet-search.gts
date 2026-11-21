@@ -3,7 +3,9 @@
  * EmberSearchUi driver's results through `SearchRecords`, with two default
  * controls: "Re-apply" in the toolbar while edits are shown over the last
  * results, and `EuiTablePagination` in the footer under offset paging.
- * An app that needs an `EuiSheet` argument this component does not forward
+ * Every other `EuiSheet` argument and block is passed on as it is (the
+ * search owns `@records`, `@sort`, `@onSortChange`, `@highlight`,
+ * `@isLoading` and `@rowNumberOffset`); an app that needs more control
  * uses `searchRecords` with its own `<EuiSheet>`.
  */
 import Component from '@glimmer/component';
@@ -32,58 +34,30 @@ import type {
   SheetSearchDriver
 } from './search-records.ts';
 import type EuiI18n from '@ember-eui/core/services/eui-i18n';
+import type { TOC } from '@ember/component/template-only';
 
 /** What the `<:toolbar>` and `<:footer>` blocks yield: the sheet's block API and the connector. */
 export type SheetSearchBlockApi<Doc extends object> = SheetBlockApi<Doc> & {
   search: SearchRecords<Doc>;
 };
 
-/** The `EuiSheet` arguments the component passes on as they are. */
-type ForwardedArgs<Doc> = Pick<
+/** The `EuiSheet` arguments the search provides (`SearchRecords`), or the component's own arguments replace. */
+type SheetSearchOwnedArg =
+  | 'fields'
+  | 'records'
+  | 'getRecordId'
+  | 'onChange'
+  | 'sort'
+  | 'onSortChange'
+  | 'highlight'
+  | 'isLoading'
+  | 'rowNumberOffset'
+  | 'groups';
+
+/** The `EuiSheet` arguments the component passes on as they are: all the others. */
+type ForwardedArgs<Doc> = Omit<
   EuiSheetSignature<Doc>['Args'],
-  | 'groupBy'
-  | 'onGroupByChange'
-  | 'onGroupToggle'
-  | 'hiddenFields'
-  | 'onHiddenFieldsChange'
-  | 'onFieldOrderChange'
-  | 'fieldWidths'
-  | 'onFieldWidthChange'
-  | 'rowHeight'
-  | 'onRowHeightChange'
-  | 'frozenFields'
-  | 'currentMatch'
-  | 'onSelectionChange'
-  | 'fieldDrag'
-  | 'headerLines'
-  | 'onFieldCreate'
-  | 'onFieldUpdate'
-  | 'onFieldDelete'
-  | 'fieldEditor'
-  | 'creatableFieldTypes'
-  | 'summary'
-  | 'onFilterByField'
-  | 'readOnly'
-  | 'canInsert'
-  | 'canDelete'
-  | 'cellErrors'
-  | 'validate'
-  | 'fieldTypes'
-  | 'messages'
-  | 'height'
-  | 'rowNumbers'
-  | 'rowLabel'
-  | 'rowActions'
-  | 'newRecordValues'
-  | 'expandedRecord'
-  | 'expandedRecordId'
-  | 'onExpandedRecordChange'
-  | 'checkedRecordIds'
-  | 'onCheckedChange'
-  | 'registerApi'
-  | 'ariaLabel'
-  | 'onResolve'
-  | 'editIn'
+  SheetSearchOwnedArg
 >;
 
 export interface EuiSheetSearchSignature<Doc extends object> {
@@ -114,10 +88,61 @@ export interface EuiSheetSearchSignature<Doc extends object> {
     toolbar: [SheetSearchBlockApi<Doc>];
     /** After the pagination. */
     footer: [SheetSearchBlockApi<Doc>];
+    /** As `EuiSheet`'s: replaces the "No records" message. */
+    empty: [SheetSearchBlockApi<Doc>];
+    /** As `EuiSheet`'s: below the expanded record's fields. */
+    recordFooter: [Doc, SheetSearchBlockApi<Doc>];
   };
 }
 
 const or = (a: unknown, b: unknown): boolean => Boolean(a) || Boolean(b);
+
+interface SearchBarSignature {
+  Args: {
+    connector: EuiSheetSearch<any>;
+    /** The app gave the connector this block (it is the yielded content). */
+    hasBlock: boolean;
+  };
+  Blocks: { default: [] };
+}
+
+/** The toolbar's content: "Re-apply" while the results are stale, then the app's block. */
+const SearchToolbar: TOC<SearchBarSignature> = <template>
+  {{#if (or @connector.search.isStale @hasBlock)}}
+    <div class="euiSheetSearch__bar" data-test-subj="euiSheetSearchToolbar">
+      {{#if @connector.search.isStale}}
+        {{! a small primary button: stale results must be noticed (V03 batch 2) }}
+        <EuiButton
+          @iconType="refresh"
+          @size="s"
+          @color="primary"
+          data-test-subj="euiSheetSearchReapply"
+          {{on "click" @connector.reapply}}
+        >{{@connector.reapplyLabel}}</EuiButton>
+      {{/if}}
+      {{yield}}
+    </div>
+  {{/if}}
+</template>;
+
+/** The footer's content: the pagination under offset paging, then the app's block. */
+const SearchFooter: TOC<SearchBarSignature> = <template>
+  {{#if (or @connector.showPager @hasBlock)}}
+    <div class="euiSheetSearch__footer" data-test-subj="euiSheetSearchFooter">
+      {{#if @connector.showPager}}
+        <EuiTablePagination
+          @activePage={{@connector.activePage}}
+          @pageCount={{@connector.search.page.pageCount}}
+          @itemsPerPage={{@connector.search.page.perPage}}
+          @onChangePage={{@connector.changePage}}
+          @onChangeItemsPerPage={{@connector.search.setPerPage}}
+          data-test-subj="euiSheetSearchPagination"
+        />
+      {{/if}}
+      {{yield}}
+    </div>
+  {{/if}}
+</template>;
 
 export default class EuiSheetSearch<Doc extends object> extends Component<
   EuiSheetSearchSignature<Doc>
@@ -189,6 +214,13 @@ export default class EuiSheetSearch<Doc extends object> extends Component<
     return (this.args.messages?.reapply ?? this.translatedMessages.reapply)();
   }
 
+  /** The sheet's own "No records" (the `<:empty>` block is always passed on). */
+  get noRecordsLabel(): string {
+    return (
+      this.args.messages?.noRecords ?? this.translatedMessages.noRecords
+    )();
+  }
+
   get showPager(): boolean {
     return this.args.paging !== false && this.search.page !== undefined;
   }
@@ -218,109 +250,132 @@ export default class EuiSheetSearch<Doc extends object> extends Component<
     void this.search.reapply();
   };
 
+  /** `EuiSheet` with this component's record type, for `(component)`. */
+  Sheet = EuiSheet<Doc>;
+
   withSearch = (block: SheetBlockApi<Doc>): SheetSearchBlockApi<Doc> => ({
     ...block,
     search: this.search
   });
 
   <template>
-    <EuiSheet
-      class="euiSheetSearch"
-      @fields={{this.fields}}
-      @records={{this.search.records}}
-      @getRecordId={{@getRecordId}}
-      @onChange={{this.search.apply}}
-      @sort={{this.search.sort}}
-      @onSortChange={{this.search.setSort}}
-      @highlight={{this.search.term}}
-      @currentMatch={{@currentMatch}}
-      @onSelectionChange={{@onSelectionChange}}
-      @isLoading={{this.search.isLoading}}
-      @rowNumberOffset={{this.search.rowNumberOffset}}
-      @hiddenFields={{@hiddenFields}}
-      @onHiddenFieldsChange={{@onHiddenFieldsChange}}
-      @onFieldOrderChange={{@onFieldOrderChange}}
-      @fieldWidths={{@fieldWidths}}
-      @onFieldWidthChange={{@onFieldWidthChange}}
-      @rowHeight={{@rowHeight}}
-      @onRowHeightChange={{@onRowHeightChange}}
-      @frozenFields={{@frozenFields}}
-      @groups={{this.groups}}
-      @groupBy={{@groupBy}}
-      @onGroupByChange={{@onGroupByChange}}
-      @onGroupToggle={{@onGroupToggle}}
-      @fieldDrag={{@fieldDrag}}
-      @headerLines={{@headerLines}}
-      @onFieldCreate={{@onFieldCreate}}
-      @onFieldUpdate={{@onFieldUpdate}}
-      @onFieldDelete={{@onFieldDelete}}
-      @fieldEditor={{@fieldEditor}}
-      @creatableFieldTypes={{@creatableFieldTypes}}
-      @summary={{@summary}}
-      @onFilterByField={{@onFilterByField}}
-      @readOnly={{@readOnly}}
-      @canInsert={{@canInsert}}
-      @canDelete={{@canDelete}}
-      @cellErrors={{@cellErrors}}
-      @validate={{@validate}}
-      @fieldTypes={{@fieldTypes}}
-      @messages={{@messages}}
-      @height={{@height}}
-      @rowNumbers={{@rowNumbers}}
-      @rowLabel={{@rowLabel}}
-      @rowActions={{@rowActions}}
-      @newRecordValues={{@newRecordValues}}
-      @expandedRecord={{@expandedRecord}}
-      @expandedRecordId={{@expandedRecordId}}
-      @onExpandedRecordChange={{@onExpandedRecordChange}}
-      @checkedRecordIds={{@checkedRecordIds}}
-      @onCheckedChange={{@onCheckedChange}}
-      @registerApi={{@registerApi}}
-      @ariaLabel={{@ariaLabel}}
-      @onResolve={{@onResolve}}
-      @editIn={{@editIn}}
-      ...attributes
-    >
-      <:toolbar as |sheet|>
-        {{#if (or this.search.isStale (has-block "toolbar"))}}
-          <div
-            class="euiSheetSearch__bar"
-            data-test-subj="euiSheetSearchToolbar"
-          >
-            {{#if this.search.isStale}}
-              {{! a small primary button: stale results must be noticed (V03 batch 2) }}
-              <EuiButton
-                @iconType="refresh"
-                @size="s"
-                @color="primary"
-                data-test-subj="euiSheetSearchReapply"
-                {{on "click" this.reapply}}
-              >{{this.reapplyLabel}}</EuiButton>
+    {{! every argument once: the two invocations below differ only in <:recordFooter> (EuiSheet draws its divider when the block is given) }}
+    {{#let
+      (component
+        this.Sheet
+        fields=this.fields
+        records=this.search.records
+        getRecordId=@getRecordId
+        onChange=this.search.apply
+        sort=this.search.sort
+        onSortChange=this.search.setSort
+        highlight=this.search.term
+        isLoading=this.search.isLoading
+        rowNumberOffset=this.search.rowNumberOffset
+        groups=this.groups
+        cellErrors=@cellErrors
+        height=@height
+        fieldTypes=@fieldTypes
+        readOnly=@readOnly
+        messages=@messages
+        ariaLabel=@ariaLabel
+        validate=@validate
+        registerApi=@registerApi
+        hiddenFields=@hiddenFields
+        onHiddenFieldsChange=@onHiddenFieldsChange
+        onFieldOrderChange=@onFieldOrderChange
+        fieldDrag=@fieldDrag
+        headerLines=@headerLines
+        onFieldCreate=@onFieldCreate
+        onFieldUpdate=@onFieldUpdate
+        onFieldDelete=@onFieldDelete
+        fieldEditor=@fieldEditor
+        creatableFieldTypes=@creatableFieldTypes
+        fieldWidths=@fieldWidths
+        onFieldWidthChange=@onFieldWidthChange
+        rowHeight=@rowHeight
+        onRowHeightChange=@onRowHeightChange
+        onFilterByField=@onFilterByField
+        currentMatch=@currentMatch
+        onSelectionChange=@onSelectionChange
+        onVisibleRangeChange=@onVisibleRangeChange
+        fullScreen=@fullScreen
+        onFullScreenChange=@onFullScreenChange
+        summary=@summary
+        frozenFields=@frozenFields
+        rowNumbers=@rowNumbers
+        rowLabel=@rowLabel
+        groupBy=@groupBy
+        onGroupByChange=@onGroupByChange
+        onGroupToggle=@onGroupToggle
+        canInsert=@canInsert
+        canDelete=@canDelete
+        canMove=@canMove
+        rowColor=@rowColor
+        cellColor=@cellColor
+        onButtonPress=@onButtonPress
+        newRecordValues=@newRecordValues
+        checkedRecordIds=@checkedRecordIds
+        onCheckedChange=@onCheckedChange
+        expandedRecordId=@expandedRecordId
+        onExpandedRecordChange=@onExpandedRecordChange
+        expandedRecord=@expandedRecord
+        rowActions=@rowActions
+        fieldActions=@fieldActions
+        copyWithFieldNames=@copyWithFieldNames
+        onResolve=@onResolve
+        editIn=@editIn
+      )
+      as |Sheet|
+    }}
+      {{#if (has-block "recordFooter")}}
+        <Sheet class="euiSheetSearch" ...attributes>
+          <:toolbar as |sheet|>
+            <SearchToolbar
+              @connector={{this}}
+              @hasBlock={{has-block "toolbar"}}
+            >{{yield (this.withSearch sheet) to="toolbar"}}</SearchToolbar>
+          </:toolbar>
+          <:footer as |sheet|>
+            <SearchFooter
+              @connector={{this}}
+              @hasBlock={{has-block "footer"}}
+            >{{yield (this.withSearch sheet) to="footer"}}</SearchFooter>
+          </:footer>
+          <:empty as |sheet|>
+            {{#if (has-block "empty")}}
+              {{yield (this.withSearch sheet) to="empty"}}
+            {{else}}
+              <span role="status">{{this.noRecordsLabel}}</span>
             {{/if}}
-            {{yield (this.withSearch sheet) to="toolbar"}}
-          </div>
-        {{/if}}
-      </:toolbar>
-      <:footer as |sheet|>
-        {{#if (or this.showPager (has-block "footer"))}}
-          <div
-            class="euiSheetSearch__footer"
-            data-test-subj="euiSheetSearchFooter"
-          >
-            {{#if this.showPager}}
-              <EuiTablePagination
-                @activePage={{this.activePage}}
-                @pageCount={{this.search.page.pageCount}}
-                @itemsPerPage={{this.search.page.perPage}}
-                @onChangePage={{this.changePage}}
-                @onChangeItemsPerPage={{this.search.setPerPage}}
-                data-test-subj="euiSheetSearchPagination"
-              />
+          </:empty>
+          <:recordFooter as |record sheet|>
+            {{yield record (this.withSearch sheet) to="recordFooter"}}
+          </:recordFooter>
+        </Sheet>
+      {{else}}
+        <Sheet class="euiSheetSearch" ...attributes>
+          <:toolbar as |sheet|>
+            <SearchToolbar
+              @connector={{this}}
+              @hasBlock={{has-block "toolbar"}}
+            >{{yield (this.withSearch sheet) to="toolbar"}}</SearchToolbar>
+          </:toolbar>
+          <:footer as |sheet|>
+            <SearchFooter
+              @connector={{this}}
+              @hasBlock={{has-block "footer"}}
+            >{{yield (this.withSearch sheet) to="footer"}}</SearchFooter>
+          </:footer>
+          <:empty as |sheet|>
+            {{#if (has-block "empty")}}
+              {{yield (this.withSearch sheet) to="empty"}}
+            {{else}}
+              <span role="status">{{this.noRecordsLabel}}</span>
             {{/if}}
-            {{yield (this.withSearch sheet) to="footer"}}
-          </div>
-        {{/if}}
-      </:footer>
-    </EuiSheet>
+          </:empty>
+        </Sheet>
+      {{/if}}
+    {{/let}}
   </template>
 }

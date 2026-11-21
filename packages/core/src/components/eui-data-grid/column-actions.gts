@@ -372,6 +372,7 @@ export default class EuiDataGridColumnActions extends Component<EuiDataGridColum
       @closePopover={{this.closePopover}}
       @panelRef={{this.registerPanel}}
       @popoverScreenReaderText={{this.popoverScreenReaderText}}
+      @ariaLabel={{@title}}
     >
       <:button>
         <EuiButtonIcon

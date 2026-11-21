@@ -1305,3 +1305,17 @@ without a set (self time 63-70 -> 42-53 ms, the paste's total not moved:
   at 10,000 ×4 (frozen: all four).
 - After the results commit the full sheet suite ran again on its tree:
   735/735.
+
+### The frozen grid: landed (main session, 2026-11-21)
+
+The user approved the five further test edits (FZ1, FZ4, FZ12, IM7, ED1)
+after the four first approved (FZ8, FZ9, VR5, the freezing field-type
+tests A4 and LT1). Both patches were applied as they were: core in
+`42e3782` (`virtualizationOptions.leadingColumnCount`), the sheet and the
+test edits in `e5a90b1` (every old -> new assertion listed there).
+Checks on the applied tree: core suite 2150 tests, 2148 pass, 2 todo,
+0 fail (the full suite had not run since the `renderedColumns` fix);
+core `lint:types`; sheet `lint:types`; the tests' ember-tsc at the
+19-error baseline; eslint on the changed files; `generate-api-docs
+--check`; full sheet suite 754/754 with the proposed edits (the first
+run of the suite with them).

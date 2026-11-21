@@ -334,6 +334,51 @@ const PERCENT = /%\s*$/;
 const CURRENCY =
   /^(?:[+-]?\s*(?:\p{Sc}|[A-Z]{3})\s*[+-]?[\d.,\s]*\d[\d.,\s]*|[+-]?[\d.,\s]*\d[\d.,\s]*(?:\p{Sc}|[A-Z]{3}))$/u;
 
+/** Signs that stand for one currency (`$` does not: dollars and pesos share it). */
+const SIGN_CODES: Readonly<Record<string, string>> = {
+  '€': 'EUR',
+  '£': 'GBP',
+  '¥': 'JPY',
+  '₹': 'INR',
+  '₩': 'KRW',
+  '₺': 'TRY',
+  '₱': 'PHP',
+  '₪': 'ILS',
+  '₫': 'VND',
+  '₦': 'NGN',
+  '₴': 'UAH',
+  '₽': 'RUB'
+};
+
+/**
+ * The currency a sample names, when every text that names one names the
+ * same: a three-letter code (`MXN 300`, one the browser knows when it
+ * lists them) or a sign of one currency (`€`). `$` and a mix name none.
+ */
+function currencyCode(texts: readonly string[]): string | undefined {
+  const list = (Intl as { supportedValuesOf?: (key: 'currency') => string[] })
+    .supportedValuesOf;
+  const known = typeof list === 'function' ? new Set(list('currency')) : null;
+  let code: string | undefined;
+  for (const text of texts) {
+    const letters = /[A-Z]{3}/.exec(text)?.[0];
+    const sign = /\p{Sc}/u.exec(text)?.[0];
+    let named: string | undefined;
+    if (letters) {
+      if (known && !known.has(letters)) return undefined;
+      named = letters;
+    } else if (sign) {
+      named = SIGN_CODES[sign];
+      if (!named) return undefined;
+    } else {
+      continue;
+    }
+    if (code && named !== code) return undefined;
+    code = named;
+  }
+  return code;
+}
+
 /** A time of day after a date (`2026-11-19T10:30`, `19/11/2026 10:30`). */
 const TIME = /\d[T\s]+\d{1,2}:\d{2}/;
 
@@ -405,7 +450,10 @@ function distinctTexts(
  * When a text has a time of day, `dateTime` comes before `date` (whose
  * `parse` drops the time); when 95% are written as phone numbers (a `+`
  * first, parentheses, or digit groups split by spaces or dashes, 7
- * digits or more, not `1 234 567`), `phone` comes before `number`.
+ * digits or more, not `1 234 567`), `phone` comes before `number`. A
+ * `currency` guess has the `currency` option when every text that names
+ * a currency names the same (a code the browser knows, such as `MXN`,
+ * or a sign of one currency, such as `€`; `$` names none).
  * Dates are D/M/Y unless a text proves M/D/Y (it reads only as M/D/Y)
  * and none proves D/M/Y. `singleSelect` is a candidate with at most 20
  * distinct texts each used twice or more (its options are those texts);
@@ -474,6 +522,11 @@ export function guessColumn(
   }
   tryType('percent', decimals, (text) => PERCENT.test(text));
   tryType('currency', decimals, (text) => CURRENCY.test(text.trim()));
+  const currency = guesses[guesses.length - 1];
+  if (currency?.type === 'currency') {
+    const code = currencyCode(sample);
+    if (code) currency.options = { ...currency.options, currency: code };
+  }
   // written as phone numbers: `phone` before `number` (which reads
   // `81 1234 5678` by dropping the spaces); plain digits stay numbers
   const phoneFirst =

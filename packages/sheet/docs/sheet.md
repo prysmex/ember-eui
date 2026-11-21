@@ -870,8 +870,9 @@ one written as phone numbers (`+52 81 1234 5678`, `(81) 1234-5678`)
 guesses phone before number (plain digits stay numbers). The guess proposes a new field's type and
 options (a select's options from the texts, the date order, the decimal
 separator); it never changes a column going to an existing field. A
-guessed currency gets the code `USD`; change it in the new field's
-form.
+guessed currency gets the code its texts name when they all name the
+same one (`MXN 300`, `12 €`, `£4`), else `USD` (a `$` alone could be
+dollars or pesos); change it in the new field's form.
 
 **New fields.** "Edit the new field" opens the field editor's form
 (name, type, the type's options, description, required) under the

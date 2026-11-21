@@ -2275,8 +2275,9 @@ polite live region), `b204580` (contrast), `8ef4a6e` (the row menu's
 role on the panel's list, after the first re-run), `f1cc28d` (site: the
 header's GitHub link and banner), `7f27775` (core: the column actions
 popover's name), `69b5617` (the row menu's name, after the second
-re-run) and the last one (the harness, `axe-core` in `site`, this
-section). Not pushed.
+re-run), `7693c31` (the harness, `axe-core` in `site`, this section),
+`2b5c5c2` (the paste count, after a review) and a last one (this
+section's corrections). Not pushed.
 
 ### How it was measured
 
@@ -2506,7 +2507,17 @@ Chromium's accessibility tree (CDP `Accessibility.getPartialAXTree`).
   range tint 16 %, one hover tint per row. Tests C1-C3
   (`eui-sheet-a11y-contrast-test`, light and dark).
 - `8ef4a6e`, `69b5617` the row menu: the panel's list is the menu, named
-  "Row menu" (message `rowMenu`).
+  "Row menu" (message `rowMenu`). It uses EuiContextMenuPanel's
+  `@isMenu` (typed, documented `@private`: "set by EuiContextMenu") and
+  sets `aria-label` on the panel's list through the DOM (a modifier on
+  the sheet's wrapper), since the panel names a menu only by a visible
+  title. Its portal has one `region` node it did not have before the
+  roles (best practice).
+- `2b5c5c2` the paste count: "N cells pasted" counted a new record's
+  `@newRecordValues` and group values too ("7 cells pasted" for three
+  lines of one column); it counts the pasted columns now, and
+  `appendRows` (an app's call, also source `paste`) is not announced as
+  a paste. Test A7.
 - `f1cc28d` site: the header's GitHub link named, the header
   `role="banner"`.
 - `7f27775` **core** (the one core change): the column actions popover
@@ -2515,9 +2526,24 @@ Chromium's accessibility tree (CDP `Accessibility.getPartialAXTree`).
   0 fail; core `lint:types` clean. `column-actions.gts` was not
   Prettier-clean before (core's drift); only the new line was added.
 
-Every new test was run against the code without its fix and failed
-there (A1-A7 and C1-C3 by stashing the source change, the core test
-likewise).
+The new tests were run against the code without their fix and failed
+there (A1-A7, C1 dark, C2, C3 and A7 of `2b5c5c2` by stashing the
+source change; the core test likewise), with two exceptions: C1 light
+passes either way (a guard: light was already 6.3:1), and A5 of
+`eui-sheet-a11y-menus-test` as changed in `8ef4a6e` and `69b5617` was
+not re-run against the code before each of those two commits. The
+773/773 for `3bbef3b` was run before lint-only edits to its two new
+test files (`settled()` after a helper, unused imports); after them only
+those seven tests were re-run (7/7).
+
+Visible changes (all for contrast): a hovered row has one hover tint,
+not two (lighter on hover, as frozen cells already were); the dark range
+tint is lighter (16 % instead of 20 %); a rating's empty stars are
+darker (textSubdued at 75 % instead of 45 %). Screenshots in light and
+dark of a range over invalid cells with a checked, hovered row, and of
+the rating cells, in the scratchpad's `a11y/shots/` (looked at: the tint
+shows, the stars read as empty).
+
 
 ### Left, and why
 
@@ -2548,6 +2574,17 @@ likewise).
   underlined: a design choice), the nav's search field outside a
   landmark (52), four docs tables with an empty header cell, one
   `landmark-unique`.
+- **Dark, a checked row under the mouse:** the rater does not see
+  `background-image`, and the sheet draws the hover on a checked (and
+  frozen, marked, add) cell as a gradient; computed by hand from the
+  theme's values: danger text 4.10:1 and links 4.42:1 on a checked,
+  hovered row in dark (light 6.5 / 6.3). Under 4.5 while the mouse is on
+  the row; a dark checked tint low enough to pass (4 %) would hardly
+  show. Left for a decision. `b204580`'s hovered-row numbers are for
+  rows that are not checked.
+- **The date and date-time editors** are native inputs (`type=date`,
+  `datetime-local`): the states rated the input; the calendar is the
+  browser's (not in the DOM, not rated).
 - **Not measured by the rater:** non-text contrast of borders, the
   focus rings and the drawn checkboxes (WCAG 1.4.11 beyond the stars),
   hover states other than the row under the mouse after a click, and
@@ -2597,17 +2634,19 @@ the docs pages:
   `3c-checks/baseline-tests-tsc.log`); eslint and Prettier on the changed
   files; `node scripts/generate-api-docs.mjs --check`; root
   `pnpm eui:check` (357/357); the full sheet suite: 773/773 (`3bbef3b`),
-  775/775 (`535a33c`), 780/780 (`b204580`, `8ef4a6e`, `69b5617`), no
-  flake. Site (`f1cc28d`): `pnpm lint`, `pnpm test` (node 21/21, browser
+  775/775 (`535a33c`), 780/780 (`b204580`, `8ef4a6e`, `69b5617`),
+  781/781 (`2b5c5c2`), no flake. Site (`f1cc28d`): `pnpm lint`, `pnpm test` (node 21/21, browser
   15/15), `pnpm build`. Core (`7f27775`): full suite, `lint:types`.
-- Final (at `69b5617`): sheet `lint:js` and `lint:css` clean; `pnpm
+- Final (at `69b5617`; `lint:js` again at `2b5c5c2`): sheet `lint:js` and `lint:css` clean; `pnpm
   size`: `sheet` 396.2 KB gzip over Ember (was 395.2; budget 400),
   `sheet-import` 412.7 (16.5 over `sheet`; budget 17), `sheet-core` -4.9
   as the script prints it (budget 25); site `pnpm lint`, `pnpm test`
   (node 21/21, browser 15/15), `pnpm build`.
-- `site/dist` is the production build of `69b5617` (core, sheet, site;
+- `site/dist` is the production build of `2b5c5c2` (core, sheet, site;
   rebuilt after the site tests, whose development build writes there).
-- Not verified: Safari, Firefox and real screen readers (the checklist);
+- Not verified: scroll performance after this batch (each cell now has
+  `@messages` and may get `aria-readonly`; not re-measured with the perf
+  harness); Safari, Firefox and real screen readers (the checklist);
   the pages' "after" run was on `7f27775`'s build (it differs from
   `69b5617` only in the row menu, re-run as a state); the dark runs rate
   the demos with their own light provider as light; touch states (the

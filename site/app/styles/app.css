@@ -274,6 +274,34 @@ button {
   background-color: var(--eui-color-lightest-shade);
 }
 
+/*
+  Their code, TypeScript-like (lib/docfy-table-code.mjs), in the colours the
+  code blocks' theme gives each kind (euiTheme.components.code*Color), through
+  the theme's text variables, so light, dark and high contrast follow it.
+*/
+.docsTok--keyword {
+  color: var(--eui-color-text-assistance);
+}
+
+.docsTok--type,
+.docsTok--block {
+  color: var(--eui-color-text-primary);
+}
+
+.docsTok--string {
+  color: var(--eui-color-text-accent);
+}
+
+.docsTok--number,
+.docsTok--boolean,
+.docsTok--arg {
+  color: var(--eui-color-text-accent-secondary);
+}
+
+.docsTok--punctuation {
+  color: var(--eui-color-text-subdued);
+}
+
 /* markdown tables (lib/docfy-scroll-tables.mjs) scroll sideways when wide */
 .guideTableScroll {
   max-width: 100%;

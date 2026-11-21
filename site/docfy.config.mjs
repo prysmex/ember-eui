@@ -6,6 +6,7 @@ import demosOutsideProse from './lib/docfy-demos-outside-prose.mjs';
 import demoPlaygrounds from './lib/demo-playgrounds.mjs';
 import demoCode from './lib/docfy-demo-code.mjs';
 import scrollTables from './lib/docfy-scroll-tables.mjs';
+import tableCode from './lib/docfy-table-code.mjs';
 import remarkKeepHeadingDepth from './lib/remark-keep-heading-depth.mjs';
 
 const root = dirname(fileURLToPath(import.meta.url));
@@ -14,6 +15,7 @@ export default {
   plugins: [
     demosOutsideProse,
     scrollTables,
+    tableCode,
     autoImportComponents,
     demoPlaygrounds,
     demoCode,

@@ -46,6 +46,12 @@ export interface EuiSheetField<T = any> {
    * `false` drops both (V03 4.4, 8.3).
    */
   groupable?: boolean;
+  /**
+   * Other names the field has in files (v0.4 07): `importMatrix` (and the
+   * import screen) match a header to them before the label and the id,
+   * ignoring case, accents, spaces, `_` and `-` (`matchHeader`).
+   */
+  importAliases?: string[];
   /** Options of the field's type (below) and of app types. */
   [option: string]: unknown;
 }

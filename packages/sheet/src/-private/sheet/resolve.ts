@@ -7,6 +7,7 @@ import { resolveWaiter } from './util.ts';
 import type EuiSheet from '../../components/eui-sheet.gts';
 import type {
   ChangeSet,
+  EuiSheetField,
   PendingCell,
   RecordId,
   ResolvePlan,
@@ -35,7 +36,11 @@ export default class SheetResolve<T extends object> {
    * emitted: that emit's `touched` covers them) and calls `@onResolve`
    * once, one request per field.
    */
-  startResolve(plan: ResolvePlan<T>, entry: HistoryEntry | null): void {
+  startResolve(
+    plan: ResolvePlan<T>,
+    entry: HistoryEntry | null,
+    fields?: readonly EuiSheetField<T>[]
+  ): void {
     const onResolve = this.sheet.args.onResolve;
     if (!onResolve || !plan.pending.length) return;
     const token = {};
@@ -49,12 +54,14 @@ export default class SheetResolve<T extends object> {
       });
     }
     this.pendingCells = next;
-    this.pendingCalls.set(token, {
+    const call: PendingCall = {
       kind: 'resolve',
       controller,
       waiter: resolveWaiter.beginAsync(),
       entry
-    });
+    };
+    if (fields) call.fields = fields;
+    this.pendingCalls.set(token, call);
     let result: Promise<ResolveResult>;
     try {
       result = Promise.resolve(
@@ -92,8 +99,12 @@ export default class SheetResolve<T extends object> {
     if (!cells.length) return;
     let changeSet: ChangeSet | null;
     if (answers) {
+      // the fields the texts were read with first (`appendRows`' own)
+      const fields = call.fields
+        ? [...call.fields, ...this.sheet.fields.allFields]
+        : this.sheet.fields.allFields;
       changeSet = resolveCells(
-        { ...this.sheet.context, fields: this.sheet.fields.allFields },
+        { ...this.sheet.context, fields },
         cells,
         answers
       );

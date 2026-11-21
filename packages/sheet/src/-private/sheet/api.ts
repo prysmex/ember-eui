@@ -32,7 +32,9 @@ export default class SheetApiModule<T extends object> {
     moveRecords: (ids, target) => this.sheet.rowDrag.moveFromApi(ids, target),
     fitField: (fieldId) => this.sheet.gridColumns.fitField(fieldId),
     fitFields: () => this.sheet.gridColumns.fitFields(),
-    setFullScreen: (on) => this.sheet.fullScreen.set(on)
+    setFullScreen: (on) => this.sheet.fullScreen.set(on),
+    appendRows: (rows, fieldIds, options) =>
+      this.sheet.clipboard.appendRows(rows, fieldIds, options)
   };
 
   /* Blocks (3.6) */

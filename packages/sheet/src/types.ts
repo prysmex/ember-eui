@@ -269,6 +269,26 @@ export interface SheetApi {
   fitFields(): void;
   /** Full screen on or off (v0.4 02): `@onFullScreenChange`, else the sheet's own state. */
   setFullScreen(on: boolean): void;
+  /**
+   * Appends the rows as new records after the last one (v0.4 07), as a
+   * paste on the add row: one change set (source `'paste'`, one insert
+   * per row), `@onResolve` for linked records and users, texts that cannot
+   * be read shown as rejections, one undo step. Column `j` goes to
+   * `fieldIds[j]`, not to the visible columns by position; an id with no
+   * field is dropped. `options.fields` are field definitions to read the
+   * texts with, by id, over `@fields`: fields `@fields` does not have yet
+   * (just created) and per-column copies (`{ ...field, dateOrder: 'mdy' }`);
+   * they are never stored. Fields with no column get `@newRecordValues`.
+   * Grouped, the rows go into the last record's group, whose values win.
+   * It does not split large imports (call it in chunks) and does not move
+   * the selection. `false` when nothing is appended (`@canInsert` false,
+   * no rows, no known field).
+   */
+  appendRows(
+    rows: readonly (readonly string[])[],
+    fieldIds: readonly string[],
+    options?: { fields?: readonly EuiSheetField[] }
+  ): boolean;
 }
 
 /** An app item of the row menu (`@rowActions`). */

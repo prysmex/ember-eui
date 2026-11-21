@@ -63,6 +63,12 @@ export interface PendingCall {
   waiter: unknown;
   /** The history entry of the paste or edit that asked for it: the resolve is merged into it. */
   entry: HistoryEntry | null;
+  /**
+   * The fields its texts were read with when they are not only `@fields`'
+   * (`api.appendRows`' `fields`, v0.4 07): the resolved values are combined
+   * with these first.
+   */
+  fields?: readonly EuiSheetField[];
 }
 
 /**

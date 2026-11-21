@@ -14,7 +14,7 @@ import {
 import { nextTempId, stop } from './util.ts';
 
 import type EuiSheet from '../../components/eui-sheet.gts';
-import type { PasteInsert, Range } from '../../core/index.ts';
+import type { EuiSheetField, PasteInsert, Range } from '../../core/index.ts';
 
 /**
  * Writes text to the clipboard: `navigator.clipboard.writeText`, else (or
@@ -278,6 +278,71 @@ export default class SheetClipboard<T extends object> {
       col: right
     };
     this.sheet.selection.rangeKind = 'cells';
+    return true;
+  }
+
+  /**
+   * `SheetApi.appendRows` (v0.4 07): the rows as new records after the
+   * last one, through a paste's path on the add row (`buildPaste`: one
+   * change set, source 'paste', `@onResolve`, rejections, one undo step).
+   * Column `j` goes to `fieldIds[j]`, read with `options.fields`' field of
+   * that id, else `@fields`' (visible or hidden); a column with neither is
+   * dropped. The fields the file has no column for get `@newRecordValues`
+   * (called per line, with the last record as `above`). Grouped: into the
+   * last record's group, whose values win. No selection or focus change.
+   * False when nothing is appended (`@canInsert` false, no rows, no known
+   * field).
+   */
+  appendRows(
+    rows: readonly (readonly string[])[],
+    fieldIds: readonly string[],
+    options: { fields?: readonly EuiSheetField<T>[] } = {}
+  ): boolean {
+    if (!this.sheet.canInsert || !rows.length) return false;
+    const given = new Map(options.fields?.map((field) => [field.id, field]));
+    const stored = new Map(
+      this.sheet.fields.allFields.map((field) => [field.id, field])
+    );
+    const columns: number[] = [];
+    const fields: EuiSheetField<T>[] = [];
+    fieldIds.forEach((id, j) => {
+      const field = given.get(id) ?? stored.get(id);
+      if (!field) return;
+      columns.push(j);
+      fields.push(field);
+    });
+    if (!fields.length) return false;
+    // `columns` ascend: the cells a short row has are a prefix
+    const matrix = rows.map((row) =>
+      columns.filter((j) => j < row.length).map((j) => row[j]!)
+    );
+    const records = this.sheet.args.records;
+    const ctx = { ...this.sheet.context, fields };
+    const at = { row: records.length, col: 0 };
+    // grouped: into the last record's group, as lines pasted past the end
+    const insert = this.sheet.rows.isGrouped ? this.pasteInsert(-1) : undefined;
+    const pasteOptions = insert ? { nextTempId, insert } : { nextTempId };
+    const plan = this.sheet.args.onResolve
+      ? planPaste(ctx, at, matrix, pasteOptions)
+      : null;
+    const changeSet = plan
+      ? plan.changeSet
+      : pasteMatrix(ctx, at, matrix, pasteOptions);
+    if (!changeSet?.inserts.length) return false;
+    // `@newRecordValues` for the fields with no column; the file's columns
+    // (read, rejected or pending) and a group's values win
+    const inFile = new Set(fields.map((field) => field.id));
+    const last = records[records.length - 1];
+    for (const row of changeSet.inserts) {
+      const defaults = this.sheet.records.newValues(last, undefined);
+      const extra = Object.fromEntries(
+        Object.entries(defaults).filter(([id]) => !inFile.has(id))
+      );
+      row.values = { ...extra, ...row.values };
+    }
+    if (this.sheet.edit.editing) this.sheet.edit.commit({ refocus: false });
+    const entry = this.sheet.changes.emit(changeSet, []);
+    if (plan) this.sheet.resolve.startResolve(plan, entry, fields);
     return true;
   }
 

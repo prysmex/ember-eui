@@ -1,10 +1,15 @@
 /** Emitting change sets: the one path every write takes (V03C-DESIGN.md 3.2). */
+import { tracked } from '@glimmer/tracking';
+import { isDestroyed, isDestroying } from '@ember/destroyable';
+import { next } from '@ember/runloop';
+
 import { cellKey, commitText, planCommit, valueOf } from '../../core/index.ts';
 import { findRecords } from '../../core/record-lookup.ts';
 
 import type EuiSheet from '../../components/eui-sheet.gts';
 import type { ChangeSet, Pos, SheetContext } from '../../core/index.ts';
 import { UNSEEN } from '../rejections.ts';
+import { samePos } from './util.ts';
 
 import type { Rejection } from '../rejections.ts';
 import type { HistoryEntry, PendingOwn, Touched } from './types.ts';
@@ -23,6 +28,83 @@ export default class SheetChanges<T extends object> {
 
   constructor(sheet: EuiSheet<T>) {
     this.sheet = sheet;
+  }
+
+  /**
+   * The text of the sheet's polite live region (READINESS.md item 3): a
+   * paste, an undo or a redo, a text that was not stored, an edit that
+   * left its cell invalid (when the active cell has moved on; the focused
+   * cell's error box is a live region of its own).
+   */
+  @tracked announcement = '';
+  /** Alternates, so the same message twice still changes the region's text. */
+  private announceFlip = false;
+
+  announce(text: string): void {
+    if (!text) return;
+    this.announceFlip = !this.announceFlip;
+    // a trailing no-break space: read the same, a new text for the region
+    this.announcement = this.announceFlip ? text : `${text}\u00a0`;
+  }
+
+  /** What a screen reader hears after a change set (`emit`). */
+  announceChangeSet(changeSet: ChangeSet): void {
+    const messages = this.sheet.messages;
+    const parts: string[] = [];
+    if (changeSet.source === 'undo') parts.push(messages.announceUndone());
+    else if (changeSet.source === 'redo') parts.push(messages.announceRedone());
+    else if (changeSet.source === 'paste') {
+      const cells =
+        changeSet.patches.length +
+        changeSet.inserts.reduce(
+          (count, insert) => count + Object.keys(insert.values).length,
+          0
+        );
+      if (cells) {
+        parts.push(
+          cells === 1
+            ? messages.announcePastedOne(cells)
+            : messages.announcePasted(cells)
+        );
+      }
+    }
+    const rejected = changeSet.rejected;
+    if (rejected.length === 1) parts.push(rejected[0]!.message);
+    else if (rejected.length > 1) {
+      parts.push(messages.announceRejected(rejected.length));
+    }
+    if (parts.length) {
+      this.announce(parts.join('. '));
+      return;
+    }
+    const patch = changeSet.patches[0];
+    // an edit, or an edit to nothing (a clear)
+    if (
+      (changeSet.source !== 'edit' && changeSet.source !== 'clear') ||
+      changeSet.patches.length !== 1
+    )
+      return;
+    // once the owner's new `@records` rendered and focus moved (Enter,
+    // Tab): the cell's own errors
+    next(() => {
+      if (isDestroying(this.sheet) || isDestroyed(this.sheet)) return;
+      const col = this.sheet.fields.visibleFields.findIndex(
+        (field) => field.id === patch!.fieldId
+      );
+      const row = this.sheet.rows.rowOf(
+        patch!.recordId,
+        this.sheet.rows.hintOf(this.sheet.selection.head?.row)
+      );
+      if (col < 0 || row < 0) return;
+      // focus still on the cell: its own error box says it
+      if (samePos(this.sheet.focus.focused?.pos ?? null, { row, col })) return;
+      const field = this.sheet.fields.visibleFields[col]!;
+      const errors = this.sheet.cells.cellView(row, col, field.id)?.errors;
+      if (!errors?.length) return;
+      this.announce(
+        messages.announceCellError(field.label ?? field.id, errors.join('. '))
+      );
+    });
   }
 
   /** What emitted change sets insert and delete, until `@records` changes. */
@@ -159,6 +241,7 @@ export default class SheetChanges<T extends object> {
       }
     }
     this.sheet.args.onChange(changeSet);
+    this.announceChangeSet(changeSet);
     this.sheet.validate.scheduleValidate();
     // a change ends the copy mark; a paste, fill, undo or redo flashes its cells
     if (this.sheet.outline.copied) this.sheet.outline.copied = null;

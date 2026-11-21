@@ -5,11 +5,21 @@
  */
 import { module, test } from 'qunit';
 import { setupRenderingTest } from 'ember-qunit';
-import { render, waitUntil } from '@ember/test-helpers';
+import { fillIn, render, waitUntil } from '@ember/test-helpers';
 
 import EuiSheet from '#src/components/eui-sheet.gts';
 import { localRecords } from '#src/local-records.ts';
-import { cell, el, focusCell, pressed } from '../../helpers/sheet.ts';
+import {
+  cell,
+  clipboard,
+  editor,
+  el,
+  focusCell,
+  press,
+  pressed,
+  text,
+  type
+} from '../../helpers/sheet.ts';
 
 import type { EuiSheetField } from '#src/core/index.ts';
 
@@ -142,5 +152,97 @@ module('Integration | Component | EuiSheet accessibility', function (hooks) {
     assert
       .dom(el('[data-test-subj=euiSheetCheckbox]', box('done')))
       .hasAttribute('aria-label', 'Checked', 'a cell component in the form');
+  });
+
+  test('A5 a polite live region announces a paste, an undo, a redo, a text not stored and an edit left invalid', async function (assert) {
+    const fields: EuiSheetField<Item>[] = [
+      { id: 'name', label: 'Name', required: true },
+      { id: 'code', label: 'Code' },
+      { id: 'stars', label: 'Stars', type: 'number' }
+    ];
+    const store = localRecords<Item>(ITEMS(), { getRecordId: getId });
+    await render(
+      <template>
+        <div style="width:700px">
+          <EuiSheet
+            @records={{store.records}}
+            @fields={{fields}}
+            @getRecordId={{getId}}
+            @onChange={{store.apply}}
+          />
+        </div>
+      </template>
+    );
+    const region = el('[data-test-subj=euiSheetAnnouncer]');
+    const said = () => region.textContent!.replace(/\u00a0/g, '').trim();
+    assert.dom(region).hasAttribute('role', 'status');
+    assert.strictEqual(said(), '', 'quiet at first');
+
+    await focusCell(0, 0);
+    await clipboard('paste', 'a\tb\nc\td');
+    assert.strictEqual(said(), '4 cells pasted');
+    await focusCell(1, 1);
+    await clipboard('paste', 'x');
+    assert.strictEqual(said(), '1 cell pasted');
+
+    await pressed('z', { ctrlKey: true });
+    assert.strictEqual(said(), 'Undone');
+    const first = region.textContent;
+    await pressed('z', { ctrlKey: true });
+    assert.strictEqual(said(), 'Undone', 'a second undo');
+    assert.notStrictEqual(
+      region.textContent,
+      first,
+      'a new text for the region'
+    );
+    await pressed('Z', { ctrlKey: true, shiftKey: true });
+    assert.strictEqual(said(), 'Redone');
+
+    await focusCell(0, 2);
+    await type('a');
+    await fillIn(editor()!, 'abc');
+    await press('Enter');
+    assert.strictEqual(said(), '"abc" is not a number', 'the rejection');
+    await focusCell(0, 0);
+    await clipboard('paste', 'p\tq\tr\ns\tt\tu');
+    assert.strictEqual(
+      said(),
+      '4 cells pasted. 2 values could not be read',
+      'a paste with two rejections'
+    );
+
+    // Enter moves down: the edited cell's error is announced
+    await focusCell(0, 0);
+    await type('x');
+    await fillIn(editor()!, '');
+    await press('Enter');
+    assert.strictEqual(text(0, 0), '', 'cleared');
+    assert.strictEqual(said(), 'Name: Required', 'focus moved on: the error');
+    // on the last record Enter stays: the cell's own error box says it
+    const before = region.textContent;
+    await focusCell(1, 0);
+    await type('x');
+    await fillIn(editor()!, '');
+    await press('Enter');
+    assert.strictEqual(region.textContent, before, 'not announced again');
+    assert
+      .dom('[data-test-subj=euiSheetCellError]')
+      .hasText('Required', 'the focused cell shows it, in its own live region');
+  });
+
+  test('A6 the announcements go through @messages', async function (assert) {
+    await renderSheet({
+      messages: {
+        announcePastedOne: (n: number) => `${n} celda pegada`,
+        announceUndone: () => 'Deshecho'
+      }
+    });
+    const region = el('[data-test-subj=euiSheetAnnouncer]');
+    await focusCell(0, 0);
+    await clipboard('paste', 'a');
+    const said = () => region.textContent!.replace(/\u00a0/g, '').trim();
+    assert.strictEqual(said(), '1 celda pegada');
+    await pressed('z', { ctrlKey: true });
+    assert.strictEqual(said(), 'Deshecho');
   });
 });

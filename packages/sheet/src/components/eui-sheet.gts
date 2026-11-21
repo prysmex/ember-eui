@@ -600,6 +600,14 @@ export default class EuiSheet<T extends object> extends Component<
           </div>
         {{/if}}
       </div>
+      {{! polite announcements (READINESS.md item 3): a paste, an undo or
+        redo, a text not stored, an edit that left its cell invalid; after
+        the error box's region, which stays the sheet's first status }}
+      <div
+        class="euiSheet__srOnly"
+        role="status"
+        data-test-subj="euiSheetAnnouncer"
+      >{{this.changes.announcement}}</div>
     </div>
   </template>
 }

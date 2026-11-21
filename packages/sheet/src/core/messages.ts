@@ -537,6 +537,18 @@ export interface SheetMessages {
   cellUnchecked: () => string;
   /** 'Row menu': the row menu's name, for screen readers. */
   rowMenu: () => string;
+  /** '12 cells pasted': announced to screen readers after a paste. */
+  announcePasted: (n: number) => string;
+  /** '1 cell pasted': `announcePasted` for one cell. */
+  announcePastedOne: (n: number) => string;
+  /** 'Undone': announced after an undo. */
+  announceUndone: () => string;
+  /** 'Redone': announced after a redo. */
+  announceRedone: () => string;
+  /** '3 values could not be read': announced when a change set leaves texts not stored (one: its own message). */
+  announceRejected: (n: number) => string;
+  /** 'Name: Required': announced when an edit leaves its cell invalid and focus has moved on. */
+  announceCellError: (field: string, message: string) => string;
 }
 
 export interface SheetMessageToken {
@@ -1878,6 +1890,36 @@ export const sheetMessageTokens: Readonly<
     token: 'euiSheet.rowMenu',
     defaultMessage: 'Row menu',
     params: []
+  },
+  announcePasted: {
+    token: 'euiSheet.announcePasted',
+    defaultMessage: '{n} cells pasted',
+    params: ['n']
+  },
+  announcePastedOne: {
+    token: 'euiSheet.announcePastedOne',
+    defaultMessage: '{n} cell pasted',
+    params: ['n']
+  },
+  announceUndone: {
+    token: 'euiSheet.announceUndone',
+    defaultMessage: 'Undone',
+    params: []
+  },
+  announceRedone: {
+    token: 'euiSheet.announceRedone',
+    defaultMessage: 'Redone',
+    params: []
+  },
+  announceRejected: {
+    token: 'euiSheet.announceRejected',
+    defaultMessage: '{n} values could not be read',
+    params: ['n']
+  },
+  announceCellError: {
+    token: 'euiSheet.announceCellError',
+    defaultMessage: '{field}: {message}',
+    params: ['field', 'message']
   }
 };
 

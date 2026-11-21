@@ -1745,3 +1745,253 @@ the demos).
 - Bisecting: `97254ae` alone still shows the `[[demos-all]]` marker as
   text at the end of each topic page (as the old page did); `1d383ef`
   fixes it.
+
+## API tables
+
+Done 2026-11-21 on `feat/sheet` after `32d54ed`. The user: "is there a
+way that the types that are rendered in each docs page get some colour?
+its just like a big white table thats hard to read... maybe alternating
+colours on each row, and the type coloured as ` ```ts``` `". Site and docs
+only (plus comments in sheet files).
+
+Commits: `5ac8c2e` (zebra rows and a shaded header), `50aff79` (the
+types coloured), `9efa72c` (the README's frozen-field paragraph and the
+comments naming `docs/sheet.md`).
+
+### What changed
+
+- **Zebra rows and a shaded header** (`site/app/styles/app.css`): the
+  header row `--eui-color-light-shade`, every second body row
+  `--eui-color-lightest-shade`, scoped to `.guideTableScroll > table`
+  (only markdown tables get that wrapper, from
+  `lib/docfy-scroll-tables.mjs`; a component's table in a demo is not
+  touched). The site has no dark stylesheet: the root Borealis provider
+  sets the `--eui-*` variables for the mode, so the header's Light/Dark
+  switch and the high contrast toggle change the tables at once (checked
+  in Chromium by clicking both, no reload: header `rgb(202, 211, 226)` ->
+  `rgb(36, 49, 71)`, stripe `rgb(236, 241, 249)` -> `rgb(23, 35, 54)`, and
+  back). A first variant with EUI's data-grid stripe
+  (`--eui-color-background-base-subdued`, `#F6F9FC` on white) was too
+  faint in light mode; `5ac8c2e`'s message quotes that variant's contrast
+  numbers, corrected in `50aff79`'s.
+- **Coloured code** (`site/lib/docfy-table-code.mjs`, a docfy plugin at
+  `runWithHast`, no dependency): in each markdown table, the inline code
+  of a "Type" or "Default" column is split by a small tokenizer and the
+  tokens wrapped in `span.docsTok.docsTok--<kind>`; in the first column,
+  code that is exactly an argument (`@paddingSize`, `@aria-label`) or a
+  block (`<:append>`) gets one span. Other first-column code
+  (`EuiButton @fill={{true}}`, `--eui-…` variables, `@ember-eui/core`),
+  the Description column and inline code outside tables are untouched.
+  `{{` and `}}` are one token each, so @docfy/ember-vite's escape-curlies
+  plugin (after this one, per text node) still escapes them. The markdown
+  is not changed: `generate-api-docs --check` passes.
+- **Colours**, the code blocks' theme slot for each kind
+  (`euiTheme.components.code*Color`, Borealis), through the theme's text
+  variables:
+
+| Class                                    | Variable                            | Light     | Dark      | Code theme slot                                                                              |
+| ---------------------------------------- | ----------------------------------- | --------- | --------- | -------------------------------------------------------------------------------------------- |
+| `--keyword` (`string`, `void`, `keyof`…) | `--eui-color-text-assistance`       | `#6B3C9F` | `#C5A5FA` | `codeInlineCodeKeywordColor` (light exact; dark one step lighter than the theme's `#B386F9`) |
+| `--type` (capitalised), `--block`        | `--eui-color-text-primary`          | `#1750BA` | `#61A2FF` | `codeTypeColor`, `codeTagColor` (exact)                                                      |
+| `--string`                               | `--eui-color-text-accent`           | `#A11262` | `#EE72A6` | `codeStringColor` (exact)                                                                    |
+| `--number`, `--boolean`, `--arg`         | `--eui-color-text-accent-secondary` | `#047471` | `#16C5C0` | `codeNumberColor` (exact; the code blocks colour booleans and a template's `@arg` so)        |
+| `--punctuation`                          | `--eui-color-text-subdued`          | `#516381` | `#98A8C3` | not the theme's 0.7 opacity on the text colour                                               |
+
+No variable holds the code blocks' keyword colour in both modes (light
+`#1750BA` is also the type colour, dark `#B386F9` is only a border
+variable), so keywords take the inline-code keyword colour instead:
+keywords and type names stay apart in both modes. Lower-case
+identifiers, property and parameter names (`key:`) and members
+(`row.parent`) keep the text colour. `true` and `false` are coloured as
+booleans (like numbers), not as keywords, as the code blocks do.
+
+- **Contrast** (computed colour on the composed cell background, every
+  kind on a plain and a striped row, Chromium): lowest 4.95 light (teal
+  on a stripe), 5.71 dark, the same with high contrast on; the text on
+  the header, a stripe and a plain row: light 6.1 / 8.2 / 9.3, dark
+  7.2 / 8.7 / 9.4 (WCAG AA 4.5).
+- **The sheet's API page** has `Argument | Description` tables (no Type
+  or Default column): there only the argument names are coloured, and the
+  zebra rows apply. The Description column was not widened to.
+- **README** (`9efa72c`): the frozen-field paragraph says the frozen grid
+  renders the frozen columns besides those in view (since `e5a90b1`),
+  with the Large data numbers (72 cells at the left edge either way; the
+  same frame p90, 50 ms, frozen and not; about 7 % more busy time
+  frozen). Comments naming `docs/sheet.md` (`shortcuts.ts`,
+  `tree-shaking-test.ts`, `rollup.config.mjs`, `compat-bundle-size.mjs`)
+  name the new pages; no test asserts a path, and TS2's
+  `^\s*addon\.appReexports\(` does not match the reworded comment.
+
+### Tests
+
+`site/lib/docfy-table-code.test.mjs` (in `pnpm test`): the tokenizer
+(kinds, the tokens join to the input, `{{` whole, names stay text); a
+fixture page through the site's docfy config (the Type, Default and
+first columns coloured, prose, Description and other code plain, `{{`
+escaped); and the whole docs corpus rendered with and without the
+plugin: byte-equal once the spans are removed, every span inside a
+`<td>`, 7,317 spans on 124 pages.
+
+### Screenshots (not committed)
+
+In `/tmp/claude-0/-home-user-ember-eui/87cd9e5a-212c-54c3-9d47-30ac398aebd2/scratchpad/api-tables/`,
+the production build, 1300 × 900, the header hidden over the table:
+`button-light.png`, `button-dark.png` (EuiButton's API: grey header,
+striped rows, purple `string`/`boolean`, pink `'primary'`, blue `EuiCss`
+and `EuiElementProps`, teal `@color` and `false`), `code-light.png`,
+`code-dark.png` (EuiCodeBlock: `'pre' | 'pre-wrap'` with a grey `|`,
+`boolean | LineNumbersConfig`, `number | string`), `sheet-api-light.png`,
+`sheet-api-dark.png` (the sheet's arguments: teal names, plain
+descriptions, striped). Looked at by the agent, not a person: readable
+in both modes. No console error on any of the three pages in light,
+dark and both with high contrast.
+
+### Checks
+
+Site `pnpm lint` (css, format, hbs, js, types), `pnpm test` (node 16,
+browser 14/14) and `pnpm build`; `generate-api-docs --check`; root
+`pnpm eui:check` (357); sheet lint:types and the tests' ember-tsc at the
+19-error baseline; the full sheet suite 757/757 on `9efa72c`'s tree.
+The repository root has no eslint config, so `scripts/*.mjs` got
+Prettier only.
+
+## The user's decisions, applied
+
+Done 2026-11-21 on `feat/sheet`, READINESS.md "The user's decisions,
+2026-11-21" items 1-3 and 6 (4 and 5 keep what is there).
+
+### 1. `@newRecordValues` for a paste past the last record (`ab168b7`)
+
+A paste from a record row whose lines run past the last record fills the
+new records from `@newRecordValues`, through the add row's code: the
+`fill` in `clipboard.ts` now runs for any change set with inserts (it
+ran on an add row only) and calls the same `records.fillNewValues`:
+once per insert (the records pasted over get nothing), the last record
+as `above`, no `below`, for the fields the text has no column for; the
+text's columns win (also rejected and pending ones); grouped, the last
+record's group's values win over both.
+
+PNV5's expectation, as approved (old -> new):
+
+- name: `PNV5 a paste on a record row does not call @newRecordValues,
+also for its lines past the end` -> `PNV5 a paste on a record row: its
+lines past the end get @newRecordValues, the record pasted over does
+not`
+- `[{ name: 'Caro' }], 'the line past the end: the pasted values only
+(unchanged)'` -> `[{ name: 'Caro', code: 'NEW' }], 'the line past the
+end: the defaults under the pasted values'`
+- `assert.deepEqual(owner.seen, [], 'no call')` ->
+  `assert.deepEqual(owner.seen, [['r1', undefined]], 'one call')`
+
+New tests PPV1-PPV5 (`eui-sheet-paste-past-end-values-test.gts`, a new
+file, so the baseline's line numbers stay): the call count (two inserts
+of three lines: two calls), the merge (defaults under the pasted values;
+a rejected cell and a short line get no default), undo as one step and
+redo without a new call, no `@newRecordValues` / no line past the end,
+`@onResolve`'s pending column, grouped. With the change reversed, PNV5,
+PPV1, PPV2, PPV4 and PPV5 fail (PPV3 is a guard). Docs: the rows and
+groups pages. No other existing test changed.
+
+### 2. The import screen's open time (`5f0460d`)
+
+`readiness-import-first-run.patch` applied cleanly to HEAD and its two
+tests pass. Measured as before (the d28 demo, now on the import-export
+page; a 10,000-line, 20-column file; the input's `change` event to the
+first preview row in the DOM; production builds, Chromium headless,
+1300 × 900); HEAD (`665f6c0`'s parent tree without the patch) and the
+patched tree served side by side and run alternately, three rounds, one
+first open and three warm each, nothing else running:
+
+|               | first open | warm runs     | warm median |
+| ------------- | ---------- | ------------- | ----------- |
+| before, run 1 | 467 ms     | 397, 313, 347 | 347 ms      |
+| after, run 1  | 348 ms     | 245, 311, 228 | 245 ms      |
+| before, run 2 | 507 ms     | 453, 358, 412 | 412 ms      |
+| after, run 2  | 412 ms     | 261, 245, 262 | 261 ms      |
+| before, run 3 | 529 ms     | 418, 367, 353 | 367 ms      |
+| after, run 3  | 335 ms     | 257, 209, 298 | 257 ms      |
+
+- **The target stays 300 ms: reached** in all three rounds (warm medians
+  245-261 ms, against 347-412 ms before on the same page; the old 442 ms
+  was the single docs page with 28 demos). The margin is thin: earlier
+  rounds of the patched build on this machine (with an edit step, or
+  beside a third build) had warm medians of 234-316 ms, two of five over
+  300, and a last run on the final build gave 268 ms (214-351). The
+  counts arrive 349-467 ms after the `change` event (warm), with
+  "Checking the lines…" until then.
+- **Each column's options on demand: not built (blocked).** An
+  experiment build without them (the transform, trim, empty-is-null,
+  date order, decimal and value-map controls not rendered; not
+  committed) opens in 190-206 ms warm, so they cost about 40-60 ms of
+  the open. But existing tests select the transform, the date order, the
+  trim switch and the value-map toggle right after render
+  (`eui-sheet-import-test.gts`, `eui-sheet-import-counts-test.gts`, e.g.
+  IVM1 clicks `euiSheetImportValuesToggle` and selects
+  `euiSheetImportTransform` with no opening click), so a disclosure
+  closed by default breaks them, and existing tests may not be edited.
+  Rendering them a frame later instead was not done either: it is not
+  on demand, it moves the controls' render past the probe without making
+  the screen usable sooner, and it would reflow the table under the
+  preview. For the user: allow those tests an opening click (then the
+  options can sit behind a button per column), or an opt-in argument
+  that defaults to open.
+- Tests: IDR1-IDR2 (the patch), IDR3 (Import while the first run waits:
+  every line, the unreadable prices as without the wait), IDR4 (the
+  screen removed while it waits: no run, no error, the waiter ends). The
+  patch's test header had a `×` that ember-eslint-parser misreads
+  (a parsing error); it is an `x` now. The new message `importChecking`
+  is listed by `sheetMessageTokens`, which the d07 translations demo and
+  the errors test enumerate (nothing lists keys by hand). The import
+  page says what the screen shows while it waits.
+- The probe's file reads "0 lines ready, 10000 with errors" in both
+  builds: its `Precio` uses a decimal comma (`123,45`) the demo's price
+  field does not read, and its `Estado` texts are not options of the
+  demo's select; the comparison is not affected.
+
+### 3. The import size budget (`665f6c0`)
+
+17 KB gzip over `sheet`, recorded in "Bundle size" above (the only
+place: `measure-bundle-size.mjs` encodes no budget). `pnpm size` after
+item 2 and again at the end: `sheet` 395.2 KB gzip over Ember,
+`sheet-import` 411.7 (16.5 KB more: fits), `sheet-core` 24.5 KB in all.
+
+### 6. Core's app-js (`099dada`)
+
+`addon.appReexports(..., { exclude: [...] })` in core's rollup config,
+with the four exact paths (`eui-data-grid/cell-actions.js`,
+`row-tree-hooks.js`, `eui-super-date-picker/utils/pretty-interval.js`,
+`time-window.js`). A clean `pnpm build` regenerated `package.json` with
+exactly those four app-js lines removed (409 -> 405) and no
+`dist/_app_` file for them; a scan of every app-js entry found no other
+target without a default. `pnpm size --compat`: the
+`staticInvokables: false` probes build without `shimMissingExports`
+(removed from the script; `external: ['ember']` stays for
+`@nullvoxpopuli/ember-composable-helpers`), 2,443.8 / 626.4 KB gzip
+(was 2,444.1 / 626.5 with the shim), 373 of core's app-js components
+(was 377); every check passes, the other cases unchanged. Core's full
+suite: 2150 tests, 2148 pass, 2 todo (LI-2, LI-3, as before), 0 fail;
+core lint:types passes. lodash's `merge` untouched.
+
+### Checks
+
+- Before each commit, on its tree: sheet lint:types; the tests'
+  ember-tsc at the 19-error baseline (empty diff); eslint and Prettier
+  on the changed code and tests (the changed doc pages' Prettier drift
+  as before); `generate-api-docs --check`; `pnpm eui:check` (357).
+- Full sheet suite: 762/762 (`ab168b7`), 766/766 (`5f0460d`); no flaky
+  failure in any run.
+- Final: sheet lint:js and lint:css; `pnpm size`; `pnpm size --compat`
+  (all 9, checks pass); core, then sheet, rebuilt; site `pnpm lint`,
+  `pnpm test` (node 16, browser 14/14), `pnpm build`: `site/dist` is that
+  production build (no instrumentation; the `TAG_COMPUTE` in a chunk is
+  Glimmer's own symbol). Preview servers stopped.
+
+### Not verified
+
+- Chromium only, headless; no other browser, no person looked at the
+  screenshots.
+- The open time on a slower or a real machine; the 300 ms margin is
+  small (above).
+- That HEAD's core still fails the dynamic probe without the shim was not
+  re-run (the earlier stage recorded it); only that it builds now.
+- A classic (non-Embroider) host with core's narrower app-js.

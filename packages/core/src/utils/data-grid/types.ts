@@ -320,6 +320,15 @@ export interface EuiDataGridVirtualizationOptions {
   /** Extra columns rendered before/after the viewport. Defaults to 1. */
   overscanColumnCount?: number;
   /**
+   * Ember addition: the first this many columns (leading control columns
+   * included) are always rendered, besides the columns in and around the
+   * viewport: for leading cells kept in view with `position: sticky`
+   * (through `setCellProps`), which must not unmount when the grid scrolls
+   * sideways. They come first in each row. `onItemsRendered` still reports
+   * the window only. Defaults to 0 (columns are only windowed).
+   */
+  leadingColumnCount?: number;
+  /**
    * Height in px assumed for rows the grid hasn't laid out yet (react-window
    * `estimatedRowHeight`): rows past the last rendered one count with this
    * height in the scrollable height, which then grows or shrinks as rows

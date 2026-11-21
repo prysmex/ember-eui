@@ -212,6 +212,146 @@ module('Integration | Component | EuiDataGrid virtualization', function (hooks) 
     assert.false(scroll.isScrolledToBlockEnd);
   });
 
+  test('leadingColumnCount: the first columns are always rendered, first in each row', async function (assert) {
+    const items: EuiDataGridItemsRendered[] = [];
+    const options = {
+      leadingColumnCount: 2,
+      onItemsRendered: (rendered: EuiDataGridItemsRendered) => items.push(rendered)
+    };
+    await render(
+      <template>
+        <div style="width:500px">
+          <EuiDataGrid
+            @height={{300}}
+            @columns={{WIDE_COLUMNS}}
+            @rowCount={{20}}
+            @toolbarVisibility={{false}}
+            @virtualizationOptions={{options}}
+          >
+            <:cell as |c|>{{c.columnId}}</:cell>
+          </EuiDataGrid>
+        </div>
+      </template>
+    );
+    const columnsOf = (row: number) =>
+      Array.from(
+        document.querySelectorAll<HTMLElement>(
+          `.euiDataGridRow[data-grid-visible-row-index="${row}"] [role=gridcell]`
+        )
+      ).map((element) => Number(element.dataset['gridcellColumnIndex']));
+    const atStart = columnsOf(0);
+    assert.strictEqual(atStart[0], 0);
+    assert.strictEqual(atStart[1], 1);
+    assert.deepEqual(
+      atStart,
+      [...atStart].sort((a, b) => a - b),
+      'ascending, no column twice'
+    );
+    const first = cell(0, 0);
+    const second = cell(0, 1);
+
+    await scrollTo(0, 120 * 20);
+    const scrolled = columnsOf(0);
+    assert.deepEqual(scrolled.slice(0, 2), [0, 1], 'the leading columns come first');
+    assert.true(scrolled.includes(20), 'the columns in view render');
+    assert.notOk(cell(0, 2), 'a column between them and the window does not');
+    assert.notOk(cell(0, 10));
+    assert.ok(scrolled.length <= 2 + 7, `the window plus the leading columns (${scrolled.length})`);
+    assert.strictEqual(cell(0, 0), first, 'the leading cells are kept, not re-created');
+    assert.strictEqual(cell(0, 1), second);
+    assert.dom('[data-datagrid-cellcontent]', cell(0, 1)!).hasText('col1');
+    assert.strictEqual(cell(0, 1)!.offsetLeft, 120, 'positioned by its column offset');
+    const last = items[items.length - 1]!;
+    assert.true(
+      last.overscanColumnStartIndex > 2,
+      `onItemsRendered reports the window only (${last.overscanColumnStartIndex})`
+    );
+
+    // the last row's cells, scrolled down and right: the same
+    await scrollTo(10000, 120 * 25);
+    const row = renderedRowIndexes().pop()!;
+    assert.deepEqual(columnsOf(row).slice(0, 2), [0, 1]);
+    assert.true(columnsOf(row).includes(29));
+  });
+
+  test('leadingColumnCount: 0, below 0 or more than the columns', async function (assert) {
+    const columns = (): number[] =>
+      Array.from(el('.euiDataGridRow').querySelectorAll<HTMLElement>('[role=gridcell]')).map(
+        (element) => Number(element.dataset['gridcellColumnIndex'])
+      );
+    for (const leadingColumnCount of [0, -3]) {
+      const options = { leadingColumnCount };
+      await render(
+        <template>
+          <div style="width:500px">
+            <EuiDataGrid
+              @height={{300}}
+              @columns={{WIDE_COLUMNS}}
+              @rowCount={{20}}
+              @toolbarVisibility={{false}}
+              @virtualizationOptions={{options}}
+            >
+              <:cell as |c|>{{c.columnId}}</:cell>
+            </EuiDataGrid>
+          </div>
+        </template>
+      );
+      await scrollTo(0, 120 * 20);
+      assert.notOk(cell(0, 0), `${leadingColumnCount}: only the window, as without the option`);
+      assert.true(columns()[0]! >= 18, `${leadingColumnCount}: starts at the window (${columns()[0]})`);
+    }
+    const all = { leadingColumnCount: 100 };
+    await render(
+      <template>
+        <div style="width:500px">
+          <EuiDataGrid
+            @height={{300}}
+            @columns={{WIDE_COLUMNS}}
+            @rowCount={{20}}
+            @toolbarVisibility={{false}}
+            @virtualizationOptions={{all}}
+          >
+            <:cell as |c|>{{c.columnId}}</:cell>
+          </EuiDataGrid>
+        </div>
+      </template>
+    );
+    await scrollTo(0, 120 * 20);
+    assert.deepEqual(
+      columns(),
+      Array.from({ length: 30 }, (_, i) => i),
+      'more than the columns: every column once'
+    );
+  });
+
+  test('leadingColumnCount: the arrows go from a leading column into the window and back', async function (assert) {
+    const options = { leadingColumnCount: 1 };
+    await render(
+      <template>
+        <div style="width:500px">
+          <EuiDataGrid
+            @height={{300}}
+            @columns={{WIDE_COLUMNS}}
+            @rowCount={{20}}
+            @toolbarVisibility={{false}}
+            @virtualizationOptions={{options}}
+          >
+            <:cell as |c|>{{c.columnId}}</:cell>
+          </EuiDataGrid>
+        </div>
+      </template>
+    );
+    await scrollTo(0, 120 * 20);
+    await click(cell(2, 0)!);
+    assert.strictEqual(document.activeElement, cell(2, 0));
+    await triggerKeyEvent(document.activeElement!, 'keydown', 'ArrowRight');
+    await waitUntil(() => document.activeElement === cell(2, 1));
+    assert.strictEqual(document.activeElement, cell(2, 1), 'the next column renders and takes focus');
+    await triggerKeyEvent(document.activeElement!, 'keydown', 'ArrowLeft');
+    await waitUntil(() => document.activeElement === cell(2, 0));
+    assert.strictEqual(document.activeElement, cell(2, 0), 'back on the leading column');
+  });
+
   test('without a height the grid grows with its rows', async function (assert) {
     await render(
       <template>

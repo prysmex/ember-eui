@@ -300,6 +300,13 @@ export default class EuiDataGridBody extends EuiDataGridBodyBase<EuiDataGridBody
     return this.grid.args.virtualizationOptions?.overscanColumnCount ?? 1;
   }
 
+  /** Ember addition: `virtualizationOptions.leadingColumnCount`, clamped to the columns. */
+  get leadingColumnCount(): number {
+    const count = this.grid.args.virtualizationOptions?.leadingColumnCount;
+    if (typeof count !== 'number' || !(count > 0)) return 0;
+    return Math.min(Math.floor(count), this.grid.visibleColCount);
+  }
+
   private computeRowWindow(scrollTop: number): Window & { visibleStart: number; visibleStop: number } {
     const count = this.visibleRowCount;
     if (count === 0) return { start: 0, stop: 0, visibleStart: 0, visibleStop: 0 };
@@ -361,11 +368,22 @@ export default class EuiDataGridBody extends EuiDataGridBodyBase<EuiDataGridBody
     return rows;
   }
 
+  /**
+   * The column indices each row renders, ascending: the leading columns
+   * (`leadingColumnCount`) first, then the window's.
+   */
   @cached
   get renderedColumns(): number[] {
     const { start, stop } = this.columnWindow;
     const columns: number[] = [];
-    for (let i = start; i < stop; i++) columns.push(i);
+    const leading = this.leadingColumnCount;
+    if (leading >= start) {
+      // the leading columns reach the window: one run
+      for (let i = 0; i < Math.max(leading, stop); i++) columns.push(i);
+    } else {
+      for (let i = 0; i < leading; i++) columns.push(i);
+      for (let i = start; i < stop; i++) columns.push(i);
+    }
     return columns;
   }
 

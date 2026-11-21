@@ -17,7 +17,10 @@ page.
 
 `@virtualizationOptions` tunes the virtualized body: `overscanRowCount` and
 `overscanColumnCount` (extra rows and columns rendered outside the view, 1
-by default), `estimatedRowHeight`, the `onItemsRendered` and `onScroll`
+by default), `leadingColumnCount` (an Ember addition: the first columns are
+always rendered too, for leading cells kept in view with `position: sticky`
+through `setCellProps`; 0 by default), `estimatedRowHeight`, the
+`onItemsRendered` and `onScroll`
 callbacks (with react-window's scroll directions and
 `scrollUpdateWasRequested`), the scrolling element's `className` and
 `style`, and `initialScrollTop` / `initialScrollLeft`. To scroll from

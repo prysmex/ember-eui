@@ -128,10 +128,17 @@ module('Integration | Component | EuiSheet row-number keys', function (hooks) {
     assert.true(await page('PageDown'), 'again');
     const again = focusedRow();
     assert.true(again !== null && again > down!, `row ${again}`);
+    // a page is the rows fully in view, so it depends on where the scroll
+    // stops: PageUp goes up a page, not back to the same row
     assert.true(await page('PageUp'), 'PageUp taken');
-    assert.strictEqual(focusedRow(), down, 'a page up');
-    assert.true(await page('PageUp'));
-    assert.strictEqual(focusedRow(), 1, 'back on the first row number');
+    const up = focusedRow();
+    assert.true(
+      up !== null && up < again!,
+      `a page up, on a row number (row ${up})`
+    );
+    for (let i = 0; i < 4 && focusedRow() !== 0; i++) await page('PageUp');
+    assert.strictEqual(focusedRow(), 0, 'up to the first row number');
+    assert.strictEqual(scrollTop(), 0, 'scrolled to the top');
   });
 
   test('RNK2 Shift+PageDown on a row number selects whole rows; at the end PageDown stays; Ctrl+PageDown is not taken', async function (assert) {

@@ -20,4 +20,5 @@ export * from './list.ts';
 export * from './convert.ts';
 export * from './rows.ts';
 export * from './groups.ts';
+export * from './csv.ts';
 export type { PasteInsert } from './paste-plan.ts';

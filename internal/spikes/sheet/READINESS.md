@@ -46,8 +46,16 @@ fixes coming back as commits.
    - TR1 (the touch handles' placement test failed once in a full run):
      find the cause, and re-place the handles after a late layout change
      if that is it.
-   - The EmberSearchUi connector forwards `@onVisibleRangeChange`, which
-     v0.4 batch D left as a follow-up.
+   - The EmberSearchUi connector (`EuiSheetSearch`) forwards the sheet's
+     arguments one by one and passes none of v0.4's: `@onVisibleRangeChange`
+     (batch D), `@fullScreen`, `@onFullScreenChange`, `@fieldActions`,
+     `@copyWithFieldNames`, `<:recordFooter>` (A), `@cellColor` (C), nor
+     batch 4's `@rowColor`. Forward them all, with a test that fails on a
+     missing one.
+   - The fill handle seen about 90 px above the selected cell's corner
+     600 ms after a row-height change (v0.4 batch C's screenshot at the
+     extra-tall height): find whether it is a placement bug (the handle
+     not re-placed on a row-height change) or a screenshot taken too early.
    - A rejection on an inserted row is hidden when the owner's
      `createRecord` gives that field a default value (e.g. `qty: null`):
      the sheet shows a rejection only while the value is the one it saw

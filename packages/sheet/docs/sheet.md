@@ -23,6 +23,27 @@ pnpm add @ember-eui/sheet
 sheet adds its few styles to the page itself; there is no stylesheet to
 import.
 
+Import the components in the `.gts` or `.gjs` files that render them:
+`import { EuiSheet, EuiSheetImport } from '@ember-eui/sheet'`. The
+package adds nothing to your app's tree (no `app-js`), so your app
+bundles only what it imports: installed and not rendered, the sheet
+costs nothing; `<EuiSheet>` alone does not bring the import screen; and
+the barcode scan panel loads when someone starts a scan.
+
+A loose-mode template (`.hbs`) does not find `<EuiSheet />` by name. To
+use it from one, re-export it in your own app tree; only the components
+you re-export are bundled:
+
+```js
+// app/components/eui-sheet.js
+export { default } from '@ember-eui/sheet/components/eui-sheet';
+```
+
+(`app/components/eui-sheet-import.js` the same way for
+`<EuiSheetImport />`, from `@ember-eui/sheet/components/eui-sheet-import`.)
+Without it, an Embroider build stops with an error that it cannot
+resolve `eui-sheet`.
+
 ## Records in, change sets out
 
 The sheet is controlled. You pass `@records` and `@fields`; the sheet

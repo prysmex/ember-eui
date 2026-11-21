@@ -2,18 +2,21 @@
 // rows 3-4, Shift+click), then wheel steps down and right; a screenshot
 // after each stage, and the cells' classes and attributes (what
 // setCellProps sets: selected, frozen, row numbers) in cells.json.
-//   PORT=4195 node shots-d08.js <out-dir>
+//   PORT=4195 node shots-d08.js <out-dir> [unfrozen]
+// (`unfrozen`: the same without freezing the first field: the grid then
+// virtualizes its columns too)
 const L = require('./lib');
 const fs = require('fs');
 const path = require('path');
 const out = process.argv[2];
+const unfrozen = process.argv[3] === 'unfrozen';
 fs.mkdirSync(out, { recursive: true });
 
 (async () => {
   const { browser, page, errors } = await L.open({ width: 1400, height: 900 });
   const n = await L.sheetIndexByLabel(page, 'Employees');
   await L.centerSheet(page, n);
-  await L.freezeFirstField(page, n);
+  if (!unfrozen) await L.freezeFirstField(page, n);
   await L.selectCell(page, n, 2, 'name');
   const b = await page.evaluate((n) => {
     const c = document

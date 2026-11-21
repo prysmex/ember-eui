@@ -2195,3 +2195,36 @@ loose ends from stage 1) before `d6d978c`.
 - Open for the user: `@fieldTypes` (the sheet's name) rather than the
   design's `@types`; the 300 ms preview target, missed (see
   `READINESS.md`).
+
+## v0.4: verified by the sandbox session (2026-11-21)
+
+Built in a claude.ai cloud session, which could not push; the user
+handed it over as a git bundle (on `995f3e57`), fast-forwarded onto
+`feat/sheet` (`a054532b`). No existing test file was modified (every
+v0.4 test is a new file); the only `package.json` change is the new
+component's `app-js` entry; `packages/core` and the lockfile unchanged.
+
+Checked in the sandbox on `a054532b`: `pnpm lint:types` clean; the
+tests' `ember-tsc` has the baseline's 19 errors and no other; ESLint and
+Prettier clean on every added or changed `.ts`/`.gts` file; the API docs
+check passes. The suite: 683 tests, 683 pass.
+
+Real input in Chromium (`playwright-core`, production docs build,
+1400 × 900), no page errors:
+
+- d23 load more: a real wheel to the end of the first page fetches the
+  next ("100 of 1000 loaded in 1 page" → "200 of 1000 loaded in 2
+  pages").
+- d24: "Fit all" refits the columns (120, 110, 120, 90, 90 → 83, 277,
+  372, 170, 114); full screen fills the window (fixed, 1400 × 900, the
+  button reads "Exit full screen"); Escape with focus on the toolbar
+  button does nothing, Escape after a click on a cell leaves full screen,
+  as the docs say.
+- d26 CSV: the Spanish sample imported through the file input, "3 lines
+  into 5 fields; not imported: Proveedor"; Export downloads
+  `inventory.csv`, 7 lines, a UTF-8 BOM, the field labels as the header.
+- d28 import screen: the sample opens the screen in a modal with the
+  mapping and the "can't be read" counts the docs describe. The full
+  flow (comma, value map, skip lines with errors, Import) is the cloud
+  session's real-input check above; pressing Import while errors are
+  kept (no skip) was not re-checked here.

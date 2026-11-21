@@ -3,6 +3,7 @@ import { tracked } from '@glimmer/tracking';
 import { debounce } from '@ember/runloop';
 import { buildWaiter } from '@ember/test-waiters';
 
+import { findRecords } from '../../core/record-lookup.ts';
 import { isPromise } from './util.ts';
 
 import type EuiSheet from '../../components/eui-sheet.gts';
@@ -47,6 +48,23 @@ export default class SheetValidate<T extends object> {
     }
   }
 
+  /**
+   * A run's result and, by id, the records it ran on that have errors (as
+   * a map of every record by `String(id)` would give them: the last of two
+   * records with one id).
+   */
+  validationOf(
+    errors: CellErrors,
+    records: readonly T[],
+    getRecordId: (record: T) => RecordId
+  ): Validation {
+    const ids = new Set(Object.keys(errors ?? {}));
+    const found = findRecords(records, getRecordId, ids);
+    const byId = new Map<string, unknown>();
+    for (const [id, entry] of found) byId.set(id, entry.record);
+    return { errors, records: byId };
+  }
+
   runValidate(): void {
     this.validateTimer = null;
     const validate = this.sheet.args.validate;
@@ -58,12 +76,12 @@ export default class SheetValidate<T extends object> {
     const controller = new AbortController();
     this.validateController = controller;
     const records = this.sheet.args.records;
-    const snapshot = new Map<string, unknown>(
-      records.map((record) => [
-        String(this.sheet.args.getRecordId(record)),
-        record
-      ])
-    );
+    // the records the run starts with: the array as it is now (an owner may
+    // change it in place before an async result); the records of the ids
+    // with errors are looked up in it when the result comes, not every
+    // record put in a map by id (its strings cost 20-45 ms at 100,000)
+    const snapshot = records.slice();
+    const getRecordId = this.sheet.args.getRecordId;
     const changed = this.changedSinceRun;
     this.changedSinceRun = [];
     const isCurrent = () =>
@@ -74,7 +92,7 @@ export default class SheetValidate<T extends object> {
 
     const result = validate({ records, changed, signal: controller.signal });
     if (!isPromise<CellErrors>(result)) {
-      this.validation = { errors: result, records: snapshot };
+      this.validation = this.validationOf(result, snapshot, getRecordId);
       return;
     }
     const token = validateWaiter.beginAsync();
@@ -84,7 +102,8 @@ export default class SheetValidate<T extends object> {
     };
     result.then(
       (errors) => {
-        if (isCurrent()) this.validation = { errors, records: snapshot };
+        if (isCurrent())
+          this.validation = this.validationOf(errors, snapshot, getRecordId);
         end();
       },
       (error: unknown) => {

@@ -68,3 +68,34 @@ Playwright is resolved from Node's global paths (`require('playwright')`).
   the profile's wall and busy times move by 10-30 % between sessions of
   this sandbox. Compare builds interleaved (A/B) in one session, and
   read p90 with `busy` and `over50`, not alone.
+
+## At scale (10,000 to 100,000 records)
+
+- `build-large.sh <out-dir>`: a production docs build with a harness-only
+  page, `large-page/` (the d08 demo sized from the URL:
+  `/docs/sheet/docs/perf-large?rows=100000&weeks=24&frozen=1&mode=grid`),
+  into `<out-dir>` (never `site/dist`). The page is copied into
+  `packages/sheet/docs` for the build and removed after it, with the
+  generated page templates; it is never in the published docs. The records
+  are generated when the page loads; the sheet mounts on "Mount", so its
+  first render is timed alone. `mode=grid` is a plain `EuiDataGrid` with a
+  trivial cell and the same columns.
+- `scale.js rows=N [throttle=4] [frozen] [profile] [mode=grid]
+[only=mount+scroll+drag+paste+undo] [lines=1000]`: on one page, in this
+  order: first render (the click on "Mount" to the first frame with rows),
+  10 wheel steps of 120 px each waited out, then 40 quick steps (frame
+  times), a range drag (Name of row 2 to Week 3 of row 9, 14 moves; each
+  move's time and the mouseup's), a paste of `lines` lines × 6 fields
+  (Name, Department, Hours, Start, Active, Week 1) on Name of row 2 through
+  the real clipboard (`navigator.clipboard.writeText`, then Ctrl+V; read
+  back to check), its undo (Ctrl+Z). A time runs from the input event's
+  `timeStamp` (the harness waits for the event to reach the page) to the
+  end of the first frame after the result is on screen (the task after the
+  next `requestAnimationFrame`). `throttle=4`: CDP's
+  `Emulation.setCPUThrottlingRate`, set after the page loads. With the
+  instrumented chunk the counters of each scenario are added; `profile`
+  writes a CPU profile per scenario to `$OUT` and prints its top functions.
+- `run-scale.sh <out-dir>` with `BUILDS="base:4197 new:4198"`,
+  `CASES="rows=100000 rows=100000,throttle=4"`, `RUNS=3`: every case on
+  every build, run by run (interleaved); `median-scale.mjs <out-dir>
+[metrics]` prints the medians and the three values.

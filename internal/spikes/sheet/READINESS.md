@@ -144,3 +144,44 @@ checklists, and every problem they found is fixed or listed as known.
    `app-js` (they re-export a default that does not exist and break a
    `staticInvokables: false` build); no to replacing lodash's `merge` in
    `eui-config` ("not really needed").
+
+## Example pages (the user, 2026-11-21: "go with that list")
+
+After the API-table and decisions stage, before accessibility: many
+smaller docs pages, each with 2-4 focused examples (one idea each,
+realistic data, code shown, runnable, a test that the shown code matches
+the demo). Existing demos keep their text and move to the fitting page.
+New examples are marked with *.
+
+- **Start:** Getting started; Example app; Your own store (`onChange`,
+  `localRecords`).
+- **Validation** (its own group, the user asked where it was):
+  - Field rules*: required, ranges, formats, per field type.
+  - Whole-record checks*.
+  - Async server checks and rejections*: how they show, how they clear.
+  - Blocking vs warning*.
+  - Validation while pasting and importing*.
+- **Editing:** Editing basics; Keyboard and shortcuts; Undo and redo*;
+  Read-only cells and fields*.
+- **Field types:**
+  - Text and long text.
+  - Numbers, currency, percent, duration*.
+  - Dates and dateTime*.
+  - Select, multi-select, colours*.
+  - Checkbox and rating*.
+  - Email, URL, phone*.
+  - Linked records; User*; Attachments and upload progress.
+  - Barcode and camera scan*; Buttons*.
+  - Custom field types and editors.
+- **Fields:** Field editor; Field actions and menus*; Hide, reorder,
+  resize, freeze*.
+- **Selection:** Ranges, copy and paste; Paste rules and new records;
+  Fill handle*; Touch selection*; Summary footer.
+- **Rows:** Add, delete, duplicate*; Row drag and order; Row and cell
+  colours; Row height*; Expanded record; Record footer.
+- **Data:** Groups; Sorting*; Load more; Large data; Search and match
+  stepping; EmberSearchUi.
+- **Import and export:** CSV export; CSV paste and import; The import
+  screen* (mapping, transforms, value map, creating fields).
+- **More:** Full screen and fit width; Translations and messages*;
+  Theming and dark mode*; API reference.

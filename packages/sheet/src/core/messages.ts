@@ -525,6 +525,8 @@ export interface SheetMessages {
   importNoTarget: () => string;
   /** 'The new fields could not be created': `@onCreateFields` resolved with another number of fields */
   importCreateMismatch: () => string;
+  /** 'Checking the lines…': the totals while the first dry run of a file waits for the preview to show */
+  importChecking: () => string;
 }
 
 export interface SheetMessageToken {
@@ -1835,6 +1837,11 @@ export const sheetMessageTokens: Readonly<
   importCreateMismatch: {
     token: 'euiSheet.importCreateMismatch',
     defaultMessage: 'The new fields could not be created',
+    params: []
+  },
+  importChecking: {
+    token: 'euiSheet.importChecking',
+    defaultMessage: 'Checking the lines…',
     params: []
   }
 };

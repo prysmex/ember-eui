@@ -18,7 +18,7 @@ import { cached, tracked } from '@glimmer/tracking';
 import { on } from '@ember/modifier';
 import { guidFor } from '@ember/object/internals';
 import { isDestroyed, isDestroying } from '@ember/destroyable';
-import { cancel, later } from '@ember/runloop';
+import { cancel, later, run } from '@ember/runloop';
 import { service } from '@ember/service';
 import { buildWaiter } from '@ember/test-waiters';
 
@@ -286,6 +286,16 @@ export default class EuiSheetImport<T = any> extends Component<
   runTimer: Timer | null = null;
   runTimerFor: SheetImportColumn[] | null = null;
   runWaiter: unknown = null;
+  /**
+   * A new source's first dry run waits for the frame that shows its
+   * preview (READINESS.md item 5: the screen opened in 377-446 ms on a
+   * 10,000-line file, 300 ms wanted): the source it is for, the frame and
+   * the timer after it, and its test waiter.
+   */
+  firstRunFor: { parsed: Parsed; headers: boolean } | null = null;
+  firstRunFrame = 0;
+  firstRunTimer: ReturnType<typeof setTimeout> | null = null;
+  firstRunWaiter: unknown = null;
 
   /** Messages through `eui-i18n` (each call looks its token up). */
   translatedMessages: SheetMessages = createMessages((token, def, values) =>
@@ -304,6 +314,7 @@ export default class EuiSheetImport<T = any> extends Component<
     if (this.runTimer) cancel(this.runTimer);
     this.runTimer = null;
     this.endRunWaiter();
+    this.cancelFirstRun();
   }
 
   get gone(): boolean {
@@ -736,7 +747,11 @@ export default class EuiSheetImport<T = any> extends Component<
   /* Preview and dry run                                                   */
   /* -------------------------------------------------------------------- */
 
-  /** The dry run of the plan now: at once for a new source, else debounced (the last result meanwhile). */
+  /**
+   * The dry run of the plan now: for a new source after the frame that
+   * shows its preview and mapping (`null` meanwhile), else debounced (the
+   * last result meanwhile).
+   */
   @cached
   get dryRun(): SheetImportRun | null {
     void this.runTick;
@@ -756,10 +771,60 @@ export default class EuiSheetImport<T = any> extends Component<
       return state.run;
     }
     if (!state || state.parsed !== parsed || state.headers !== this.headers) {
-      return this.storeRun().run;
+      this.scheduleFirstRun(parsed);
+      return null;
     }
     this.scheduleRun(columns);
     return state.run;
+  }
+
+  /** The first dry run of a source: after the next frame is painted. */
+  scheduleFirstRun(parsed: Parsed): void {
+    const pending = this.firstRunFor;
+    if (pending?.parsed === parsed && pending.headers === this.headers) return;
+    this.cancelFirstRun();
+    this.firstRunFor = { parsed, headers: this.headers };
+    this.firstRunWaiter = waiter.beginAsync();
+    // a frame's callbacks run before its paint; a timer set there, after it
+    this.firstRunFrame = requestAnimationFrame(() => {
+      this.firstRunFrame = 0;
+      this.firstRunTimer = setTimeout(() => {
+        this.firstRunTimer = null;
+        run(this, this.finishFirstRun);
+      }, 0);
+    });
+  }
+
+  finishFirstRun(): void {
+    const pending = this.firstRunFor;
+    this.firstRunFor = null;
+    this.endFirstRunWaiter();
+    if (this.gone || !this.parsed || !pending) return;
+    // a newer source schedules its own
+    if (pending.parsed !== this.parsed || pending.headers !== this.headers) {
+      return;
+    }
+    this.storeRun();
+    this.runTick++;
+  }
+
+  cancelFirstRun(): void {
+    if (this.firstRunFrame) cancelAnimationFrame(this.firstRunFrame);
+    if (this.firstRunTimer) clearTimeout(this.firstRunTimer);
+    this.firstRunFrame = 0;
+    this.firstRunTimer = null;
+    this.firstRunFor = null;
+    this.endFirstRunWaiter();
+  }
+
+  endFirstRunWaiter(): void {
+    if (this.firstRunWaiter !== null) waiter.endAsync(this.firstRunWaiter);
+    this.firstRunWaiter = null;
+  }
+
+  /** A file's first dry run has not run yet: the totals and statuses wait. */
+  get runPending(): boolean {
+    return this.parsed !== null && this.dryRun === null;
   }
 
   /** Runs the dry run over the plan now and remembers it. */
@@ -826,6 +891,8 @@ export default class EuiSheetImport<T = any> extends Component<
   }
 
   get importCount(): number {
+    // before the first dry run: every line (the import reads them itself)
+    if (this.runPending) return this.skipErrors ? 0 : this.dataLines.length;
     return this.skipErrors ? this.linesReady : this.totalLines;
   }
 
@@ -1012,8 +1079,16 @@ export default class EuiSheetImport<T = any> extends Component<
       }
 
       const errors = this.errorsByColumn.get(index) ?? 0;
+      const pending = this.runPending;
       let badge: ImportColumnView['badge'] = null;
-      if (field && !newField && typeName) {
+      if (field && !newField && typeName && pending) {
+        // the share that reads comes with the dry run
+        const text = typeText(this.types, messages, typeName, {
+          dateOrder: column.dateOrder ?? field['dateOrder'],
+          decimalSeparator: column.decimalSeparator ?? field['decimalSeparator']
+        });
+        badge = { text, color: 'hollow', title: text };
+      } else if (field && !newField && typeName) {
         const share = total ? (total - errors) / total : 1;
         const text = messages.importGuess(
           typeText(this.types, messages, typeName, {
@@ -1086,7 +1161,8 @@ export default class EuiSheetImport<T = any> extends Component<
               '.')
             : null,
         valueMap,
-        status: field ? { read: total - errors, total, errors } : null,
+        status:
+          field && !pending ? { read: total - errors, total, errors } : null,
         formOpen: this.formOpen === index && newField !== null,
         valuesOpen: this.valuesOpen === index && valueMap !== null
       };
@@ -1532,12 +1608,16 @@ export default class EuiSheetImport<T = any> extends Component<
               data-test-subj="euiSheetImportTotals"
             >
               <span role="status" data-test-subj="euiSheetImportTotalsText">
-                {{this.linesReadyText}},
-                <span
-                  class={{if this.linesWithErrors "euiSheetImport__danger"}}
-                >
-                  {{this.linesWithErrorsText}}
-                </span>
+                {{#if this.runPending}}
+                  {{this.messages.importChecking}}
+                {{else}}
+                  {{this.linesReadyText}},
+                  <span
+                    class={{if this.linesWithErrors "euiSheetImport__danger"}}
+                  >
+                    {{this.linesWithErrorsText}}
+                  </span>
+                {{/if}}
               </span>
               {{#if this.linesWithErrors}}
                 <EuiLink

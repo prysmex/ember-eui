@@ -338,6 +338,11 @@ on the created fields, so Import again does not create them twice.
 result has every line, so call `appendRows` per 1,000 rows as above.
 The preview and the guesses read samples; the dry run reads every line
 once per change of a column, 250 ms after the last change (a
-10,000-line, 20-column dry run took about 70 ms in Chromium).
+10,000-line, 20-column dry run took about 70 ms in Chromium). A new
+file's first dry run waits until its preview is on screen: meanwhile the
+totals read "Checking the lines…", each column's status is empty and its
+badge shows the type without the share, and "Import N lines" counts
+every line (the import reads the lines itself, so it can start before
+the run).
 
 </EuiText>

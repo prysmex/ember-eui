@@ -2814,3 +2814,43 @@ HTTPS, upload progress, the row-number column), VoiceOver and NVDA (14,
 the accessibility stage's list with the live region's announcements,
 the header's check all and the page keys), Prysmex (one screen, what to
 report), and "Known issues and decisions left".
+
+## Final checks
+
+On the final tree (`5836dce`: the stage's code, tests and docs; this
+section only adds text), 2026-11-21, in this sandbox (Chromium only):
+
+| Check | Result |
+| --- | --- |
+| sheet `pnpm lint:types` | pass |
+| sheet `pnpm lint:js` | pass (no problems) |
+| sheet `pnpm lint:css` | pass |
+| the tests' ember-tsc (`pnpm exec ember-tsc --noEmit -p tsconfig.eslint.json`) | 19 errors, the `error TS` lines identical to `3c-checks/baseline-tests-tsc.log` |
+| sheet full suite (`vite build --mode=development`, testem) | 793/793 (781 + RNW1-RNW5 as 8 tests + RNK1-RNK4), twice in a row, no flake; an earlier run failed RNK1 once (its PageUp assertion assumed a fixed page size: fixed in `5836dce`, a test-only change) |
+| core full suite (`pnpm test`) | 2151 tests: 2149 pass, 2 todo (LI-2, LI-3), 0 fail |
+| core `pnpm lint:types` | pass |
+| core `pnpm lint:js` | the 3 pre-existing errors, all in untouched files (`tests/addon-app-modules.ts`, `tests/integration/leak-infra-test.gts`, `tests/integration/leaks/components-teardown-test.gts`, last changed in `e2ced9d`); no new one |
+| `node scripts/generate-api-docs.mjs --check` | pass |
+| root `pnpm eui:check` | 357/357 |
+| `pnpm size` | `sheet` 396.6 KB gzip over Ember (budget 400; was 396.2), `sheet-import` 413.1 (16.5 over `sheet`; budget 17), `sheet-core` -4.9 as the script prints it, about 24.7 KB in all (budget 25) |
+| `pnpm size --compat` | all 9 apps build, checks passed (sheet-none, dynamic-sheet-none, dynamic-core-none, sheet, sheet-import, sheet-loose-host); `sheet` 368.4 KB gzip, `sheet-import` 384.9, the dynamic probes 626.4 with 373 core app-js components |
+| site `pnpm lint` | pass (css, format, js, types) |
+| site `pnpm test` | node 21/21, browser 15/15 |
+| site `pnpm build` | pass; `site/dist` is this production build (rebuilt after the site tests), no instrumented chunk (no counter in `template-*.js`, no `.orig`) |
+
+Preview servers stopped; the working tree is clean.
+
+### Not verified
+
+- Safari, Firefox and real phones (the row-number column was checked in
+  Chromium with `devices['iPhone 13']` only; iOS Safari's Inter or
+  system font may differ slightly from the 9.5 px a character the width
+  allows: Inter's tabular digits are about 8.7 px at 14 px), real screen
+  readers: all in `CHECKLISTS.md`.
+- The row-number width with an app font larger or wider than the grid's
+  14 px default: the width is computed, not measured.
+- The scroll numbers come from this sandbox (p90 on the 33.4 / 50 ms
+  quantum edge, busy times moving about 10 % between runs).
+- `@records` replaced by new objects with the same ids clears the range
+  outline (seen while writing RNW5, also before this stage): not looked
+  into.

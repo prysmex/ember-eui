@@ -3,6 +3,16 @@
 // that order on one page, with real input (Playwright's mouse and keyboard;
 // the paste through the real clipboard).
 //   PORT=4197 node scale.js rows=100000 [frozen] [throttle=4] [profile] [mode=grid]
+//     [validate] [pasteAt=end] [only=mount+scroll+drag+paste+undo+edit]
+// `validate`: the page passes a `@validate` (an error on Hours over 58, about
+// 3 % of the records); after the paste, the undo and the edit the harness
+// waits for its run and reports the run's task (`validateTask`: the sheet's
+// `runValidate` with the owner's function, from the CPU profile when
+// `profile` is on; `validateFn`: the owner's function alone).
+// `pasteAt=end`: the paste goes on Name of the last record, so all but its
+// first line are inserts. `edit`: a click on Hours of row 2, "12" typed and
+// Enter: `open` is the first keydown to the frame with the editor,
+// `commit` the Enter to the frame with the new value (and to `onChange`).
 // Each scenario's time runs from the input event (its timeStamp, read by a
 // capturing listener) to the end of the first frame after the result is on
 // screen: the task after the next requestAnimationFrame, so style, layout
@@ -24,13 +34,15 @@ const THROTTLE = Number(arg('throttle', 1));
 const MODE = arg('mode', 'sheet');
 const FROZEN = process.argv.includes('frozen');
 const PROFILE = process.argv.includes('profile');
+const VALIDATE = process.argv.includes('validate');
+const PASTE_AT = arg('pasteAt', 'row2');
 // scenarios to run (default all), joined by +: mount+scroll+drag+paste+undo
 const ONLY = arg('only', 'mount+scroll+drag+paste+undo').split(/[+,]/);
 const PASTE_LINES = Number(arg('lines', 1000));
 const PORT = process.env.PORT || '4197';
 const OUT = process.env.OUT || path.join(require('os').tmpdir(), 'sheet-perf');
 fs.mkdirSync(OUT, { recursive: true });
-const caseName = `${MODE}-${ROWS}${FROZEN ? '-frozen' : ''}-x${THROTTLE}`;
+const caseName = `${MODE}-${ROWS}${FROZEN ? '-frozen' : ''}${VALIDATE ? '-validate' : ''}${PASTE_AT === 'end' ? '-pasteEnd' : ''}-x${THROTTLE}`;
 
 // in the page: the end of the first frame from now on (after the next
 // requestAnimationFrame, the task that follows its paint)
@@ -51,7 +63,7 @@ async function main() {
   page.on('console', (m) => {
     if (m.type() === 'error') errors.push(m.type() + ': ' + m.text());
   });
-  const q = `rows=${ROWS}${FROZEN ? '&frozen=1' : ''}${MODE === 'grid' ? '&mode=grid' : ''}`;
+  const q = `rows=${ROWS}${FROZEN ? '&frozen=1' : ''}${MODE === 'grid' ? '&mode=grid' : ''}${VALIDATE ? '&validate=1' : ''}`;
   await page.goto(`http://127.0.0.1:${PORT}/docs/sheet/docs/perf-large?${q}`, {
     timeout: 300000
   });
@@ -120,7 +132,9 @@ async function main() {
     rows: ROWS,
     throttle: THROTTLE,
     frozen: FROZEN,
-    mode: MODE
+    mode: MODE,
+    validate: VALIDATE,
+    pasteAt: PASTE_AT
   };
   const counts = {};
   const profiles = {};
@@ -147,6 +161,27 @@ async function main() {
     }
     return out;
   }
+
+  // with `validate`: waits for the run after a change (debounced 50 ms) and
+  // returns the owner's function's time; the profile gives the whole task
+  const validateRun = async (before) => {
+    if (!VALIDATE) return null;
+    return page.evaluate(async (before) => {
+      for (let i = 0; i < 2000; i++) {
+        if (globalThis.__perf.validates.length > before) break;
+        await new Promise((r) => setTimeout(r, 5));
+      }
+      const v = globalThis.__perf.validates[before];
+      return v
+        ? { fn: +v.ms.toFixed(1), records: v.records, errors: v.errors }
+        : null;
+    }, before);
+  };
+  const validateCount = () =>
+    VALIDATE ? page.evaluate(() => globalThis.__perf.validates.length) : 0;
+  // runValidate's inclusive time in the last profile (ms), if profiled
+  const lastValidateTask = (name) =>
+    profiles[name] ? (profiles[name].incl.runValidate ?? null) : null;
 
   const gridBox = () =>
     page.evaluate(() => {
@@ -343,6 +378,32 @@ async function main() {
     const at = await cellBox(2, 'name');
     await page.mouse.click(at.x, at.y);
     await page.waitForTimeout(500 * THROTTLE);
+    if (PASTE_AT === 'end') {
+      // the last record's Name: Ctrl+End (the last cell), Home (Code), ArrowRight
+      await page.keyboard.press('Control+End');
+      await page.waitForTimeout(800 * THROTTLE);
+      await page.keyboard.press('Home');
+      await page.waitForTimeout(500 * THROTTLE);
+      await page.keyboard.press('ArrowRight');
+      await page.waitForTimeout(500 * THROTTLE);
+      // Ctrl+End may land on the add row: the last record is above it
+      const row = await page.evaluate(() =>
+        Number(
+          document.activeElement?.closest?.('[role=gridcell]')?.dataset
+            .gridcellVisibleRowIndex
+        )
+      );
+      if (row === ROWS) {
+        await page.keyboard.press('ArrowUp');
+        await page.waitForTimeout(500 * THROTTLE);
+      }
+      result.pasteRow = await page.evaluate(
+        () =>
+          document.activeElement?.closest?.('[role=gridcell]')?.dataset
+            .gridcellVisibleRowIndex
+      );
+    }
+    const vBefore = await validateCount();
     const tsv = Array.from({ length: PASTE_LINES }, (_, i) =>
       [
         `Pasted ${i}`,
@@ -362,60 +423,150 @@ async function main() {
     result.paste = await scenario('paste', async () => {
       const n = await countOf('keydown');
       await page.keyboard.press('Control+V');
-      return page.evaluate(
-        async ({ FRAME_END, before, n }) => {
-          const frameEnd = () => eval(FRAME_END);
-          const t0 = await globalThis.__waitEv('keydown', n);
-          let end;
-          for (let i = 0; i < 4000; i++) {
-            end = await frameEnd();
-            const a = globalThis.__perf.applies;
-            if (
-              a.length > before &&
-              document
-                .querySelector(
-                  '[role=gridcell][data-gridcell-visible-row-index="2"][data-gridcell-column-id="name"]'
-                )
-                ?.textContent.includes('Pasted 0')
-            )
-              break;
-          }
-          const ap = globalThis.__perf.applies[before];
-          return {
-            total: +(end - t0).toFixed(1),
-            toOnChange: ap ? +(ap.at - t0).toFixed(1) : null,
-            apply: ap ? +ap.ms.toFixed(1) : null,
-            patches: ap?.patches,
-            inserts: ap?.inserts,
-            pasteEvent: globalThis.__ev.paste != null
-          };
-        },
-        { FRAME_END, before, n }
-      );
+      return page
+        .evaluate(
+          async ({ FRAME_END, before, n }) => {
+            const frameEnd = () => eval(FRAME_END);
+            const t0 = await globalThis.__waitEv('keydown', n);
+            let end;
+            for (let i = 0; i < 4000; i++) {
+              end = await frameEnd();
+              const a = globalThis.__perf.applies;
+              if (
+                a.length > before &&
+                [
+                  ...document.querySelectorAll(
+                    '[role=gridcell][data-gridcell-column-id="name"]'
+                  )
+                ].some((c) => c.textContent.includes('Pasted 0'))
+              )
+                break;
+            }
+            const ap = globalThis.__perf.applies[before];
+            return {
+              total: +(end - t0).toFixed(1),
+              toOnChange: ap ? +(ap.at - t0).toFixed(1) : null,
+              apply: ap ? +ap.ms.toFixed(1) : null,
+              patches: ap?.patches,
+              inserts: ap?.inserts,
+              pasteEvent: globalThis.__ev.paste != null
+            };
+          },
+          { FRAME_END, before, n }
+        )
+        .then(async (out) => {
+          // the debounced @validate run lands in this scenario's profile
+          if (VALIDATE) await validateRun(vBefore);
+          return out;
+        });
     });
+    if (VALIDATE) {
+      result.paste.validateFn = (await validateRun(vBefore))?.fn ?? null;
+      result.paste.validateTask = lastValidateTask('paste');
+    }
     await page.waitForTimeout(1000 * THROTTLE);
   }
 
   // 5. undo of that paste (Ctrl+Z)
   if (ONLY.includes('undo') && ONLY.includes('paste') && MODE === 'sheet') {
     const before = await page.evaluate(() => globalThis.__perf.applies.length);
+    const vBefore = await validateCount();
     result.undo = await scenario('undo', async () => {
       const n = await countOf('keydown');
       await page.keyboard.press('Control+Z');
-      return page.evaluate(
+      return page
+        .evaluate(
+          async ({ FRAME_END, before, n }) => {
+            const frameEnd = () => eval(FRAME_END);
+            const t0 = await globalThis.__waitEv('keydown', n);
+            let end;
+            for (let i = 0; i < 4000; i++) {
+              end = await frameEnd();
+              if (
+                globalThis.__perf.applies.length > before &&
+                ![
+                  ...document.querySelectorAll(
+                    '[role=gridcell][data-gridcell-column-id="name"]'
+                  )
+                ].some((c) => c.textContent.includes('Pasted'))
+              )
+                break;
+            }
+            const ap = globalThis.__perf.applies[before];
+            return {
+              total: +(end - t0).toFixed(1),
+              toOnChange: ap ? +(ap.at - t0).toFixed(1) : null,
+              apply: ap ? +ap.ms.toFixed(1) : null,
+              source: ap?.source,
+              patches: ap?.patches,
+              removes: ap?.removes
+            };
+          },
+          { FRAME_END, before, n }
+        )
+        .then(async (out) => {
+          if (VALIDATE) await validateRun(vBefore);
+          return out;
+        });
+    });
+    if (VALIDATE) {
+      result.undo.validateFn = (await validateRun(vBefore))?.fn ?? null;
+      result.undo.validateTask = lastValidateTask('undo');
+    }
+    await page.waitForTimeout(1000 * THROTTLE);
+  }
+
+  // 6. a single cell edit: a click on Hours of row 2 (scrolled to the top
+  // first), "12" typed, Enter
+  if (ONLY.includes('edit') && MODE === 'sheet') {
+    await page.evaluate(() =>
+      document.querySelector('.euiDataGrid__virtualized')?.scrollTo?.(0, 0)
+    );
+    await page.waitForTimeout(800 * THROTTLE);
+    await centerGrid();
+    const at = await cellBox(2, 'hours');
+    if (!at) throw new Error('edit cell not rendered');
+    await page.mouse.click(at.x, at.y);
+    await page.waitForTimeout(500 * THROTTLE);
+    const before = await page.evaluate(() => globalThis.__perf.applies.length);
+    const vBefore = await validateCount();
+    result.edit = await scenario('edit', async () => {
+      let n = await countOf('keydown');
+      await page.keyboard.press('1');
+      const open = await page.evaluate(
+        async ({ FRAME_END, n }) => {
+          const frameEnd = () => eval(FRAME_END);
+          const t0 = await globalThis.__waitEv('keydown', n);
+          let end;
+          for (let i = 0; i < 1000; i++) {
+            end = await frameEnd();
+            if (document.querySelector('[data-test-subj=euiSheetEditor] input'))
+              break;
+          }
+          return +(end - t0).toFixed(1);
+        },
+        { FRAME_END, n }
+      );
+      await page.keyboard.press('2');
+      await page.waitForTimeout(200 * THROTTLE);
+      n = await countOf('keydown');
+      await page.keyboard.press('Enter');
+      const commit = await page.evaluate(
         async ({ FRAME_END, before, n }) => {
           const frameEnd = () => eval(FRAME_END);
           const t0 = await globalThis.__waitEv('keydown', n);
           let end;
-          for (let i = 0; i < 4000; i++) {
+          for (let i = 0; i < 1000; i++) {
             end = await frameEnd();
+            const c = document.querySelector(
+              '[role=gridcell][data-gridcell-visible-row-index="2"][data-gridcell-column-id="hours"]'
+            );
             if (
               globalThis.__perf.applies.length > before &&
-              !document
-                .querySelector(
-                  '[role=gridcell][data-gridcell-visible-row-index="2"][data-gridcell-column-id="name"]'
-                )
-                ?.textContent.includes('Pasted')
+              !document.querySelector('[data-test-subj=euiSheetEditor]') &&
+              c
+                ?.querySelector('[data-datagrid-cellcontent]')
+                ?.textContent.trim() === '12'
             )
               break;
           }
@@ -424,13 +575,19 @@ async function main() {
             total: +(end - t0).toFixed(1),
             toOnChange: ap ? +(ap.at - t0).toFixed(1) : null,
             apply: ap ? +ap.ms.toFixed(1) : null,
-            source: ap?.source,
             patches: ap?.patches
           };
         },
         { FRAME_END, before, n }
       );
+      // the debounced @validate run lands in this scenario's profile
+      if (VALIDATE) await validateRun(vBefore);
+      return { open, ...commit };
     });
+    if (VALIDATE) {
+      result.edit.validateFn = (await validateRun(vBefore))?.fn ?? null;
+      result.edit.validateTask = lastValidateTask('edit');
+    }
   }
 
   if (counters) result.counts = counts;
@@ -466,9 +623,27 @@ function summarize(profile) {
     const key = `${cf.functionName || '(anonymous)'}  [${file}:${cf.lineNumber + 1}:${cf.columnNumber + 1}]`;
     fns.set(key, (fns.get(key) || 0) + us / 1000);
   }
+  // inclusive time of a few named functions (method names survive minifying)
+  const parent = new Map();
+  for (const nd of profile.nodes)
+    for (const c of nd.children || []) parent.set(c, nd.id);
+  const incl = {};
+  for (const name of ['runValidate']) {
+    let us = 0;
+    for (const [id, t] of self) {
+      for (let p = id; p !== undefined; p = parent.get(p)) {
+        if (byId.get(p).callFrame.functionName === name) {
+          us += t;
+          break;
+        }
+      }
+    }
+    if (us) incl[name] = +(us / 1000).toFixed(1);
+  }
   return {
     busy: Math.round((total - idle) / 1000),
-    fns: [...fns].sort((a, b) => b[1] - a[1]).slice(0, 25)
+    fns: [...fns].sort((a, b) => b[1] - a[1]).slice(0, 25),
+    incl
   };
 }
 

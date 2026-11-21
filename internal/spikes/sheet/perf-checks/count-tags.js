@@ -18,7 +18,7 @@ const caseName = [frozen ? 'frozen' : 'plain', selected ? 'selected' : '']
   if (frozen) {
     const on = await L.freezeFirstField(page, n);
     console.log('frozen:', JSON.stringify(on));
-    if (on.checked !== 'true' || on.cellsInRow < 31)
+    if (on.checked !== 'true' || !on.frozenCell)
       throw new Error('the first field is not frozen');
   }
   if (selected)

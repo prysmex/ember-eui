@@ -2,14 +2,17 @@
 // rows 3-4, Shift+click), then wheel steps down and right; a screenshot
 // after each stage, and the cells' classes and attributes (what
 // setCellProps sets: selected, frozen, row numbers) in cells.json.
-//   PORT=4195 node shots-d08.js <out-dir> [unfrozen]
+//   PORT=4195 node shots-d08.js <out-dir> [unfrozen] [edge]
 // (`unfrozen`: the same without freezing the first field: the grid then
-// virtualizes its columns too)
+// virtualizes its columns too; `edge`: the range starts on the frozen Code
+// cell, and the steps right go to the far right, so the range's other
+// columns are scrolled out to the left)
 const L = require('./lib');
 const fs = require('fs');
 const path = require('path');
 const out = process.argv[2];
-const unfrozen = process.argv[3] === 'unfrozen';
+const unfrozen = process.argv.includes('unfrozen');
+const edge = process.argv.includes('edge');
 fs.mkdirSync(out, { recursive: true });
 
 (async () => {
@@ -17,7 +20,7 @@ fs.mkdirSync(out, { recursive: true });
   const n = await L.sheetIndexByLabel(page, 'Employees');
   await L.centerSheet(page, n);
   if (!unfrozen) await L.freezeFirstField(page, n);
-  await L.selectCell(page, n, 2, 'name');
+  await L.selectCell(page, n, 2, edge ? 'code' : 'name');
   const b = await page.evaluate((n) => {
     const c = document
       .querySelectorAll('div.euiSheet')
@@ -65,7 +68,7 @@ fs.mkdirSync(out, { recursive: true });
   await snap('d08-scrolled-down');
   await L.hoverGrid(page, n);
   for (let i = 0; i < 3; i++) {
-    await page.mouse.wheel(240, 0);
+    await page.mouse.wheel(edge ? 1200 : 240, 0);
     await page.waitForTimeout(100);
   }
   await page.mouse.move(5, 5);

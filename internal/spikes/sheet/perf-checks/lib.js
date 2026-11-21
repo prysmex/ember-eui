@@ -104,7 +104,16 @@ async function freezeFirstField(page, n) {
     const cells = s.querySelectorAll(
       '[role=gridcell][data-gridcell-visible-row-index="3"]'
     ).length;
-    return { checked: sw?.getAttribute('aria-checked'), cellsInRow: cells };
+    // the frozen grid renders the frozen columns and the ones in view (no
+    // longer all 31), so the check is the first field's frozen class
+    const code = s.querySelector(
+      '[role=gridcell][data-gridcell-visible-row-index="3"][data-gridcell-column-id="code"]'
+    );
+    return {
+      checked: sw?.getAttribute('aria-checked'),
+      cellsInRow: cells,
+      frozenCell: !!code?.classList.contains('euiSheet__cell--frozen')
+    };
   }, n);
 }
 

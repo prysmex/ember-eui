@@ -28,7 +28,9 @@ Playwright is resolved from Node's global paths (`require('playwright')`).
 - `profile-scroll.js [frozen] [selected]`: a CPU profile and the frame
   times of 40 wheel steps of 120 px down, 20 right and 20 up (30 ms
   apart). `frozen` turns on the demo's "Freeze the first field" switch
-  (and fails unless a row then renders all 31 cells); `selected` clicks
+  (and fails unless the first field's cells then have the frozen class: a
+  count of a row's cells, the earlier check, depends on whether the frozen
+  grid renders every column); `selected` clicks
   the Name cell of row 3 first, so the fill handle is shown while
   scrolling. Prints the top files and functions by self time and a
   `RESULT {...}` line: frame `median`, `p90`, `over50` (frames over
@@ -55,8 +57,14 @@ Playwright is resolved from Node's global paths (`require('playwright')`).
   shows chips, and the chips' DOM (classes, title, attributes, inner
   spans, `innerText`, width) in `chips.json`; `dark` switches the docs'
   theme first.
-- `compare.js <dir-a> <dir-b>`: `chips.json` exactly and each PNG pixel by
-  pixel.
+- `compare.js <dir-a> <dir-b> [--common]`: `chips.json` exactly and each
+  PNG pixel by pixel; `--common` compares a `shots-d08.js` directory's cells
+  matched by row and column, only those both render (a build that renders
+  fewer columns has fewer).
+- `shots-d08.js <dir> [unfrozen] [edge]`: d08 frozen, a range selected,
+  3 wheel steps down, 3 right, 3 up, a screenshot and every cell's
+  attributes after each; `edge` starts the range on the frozen Code cell
+  and goes to the far right (the range's other columns scrolled out).
 - `median.mjs <dir>`: the medians of a `run.sh` directory.
 
 ## Reading the numbers
@@ -80,8 +88,8 @@ Playwright is resolved from Node's global paths (`require('playwright')`).
   are generated when the page loads; the sheet mounts on "Mount", so its
   first render is timed alone. `mode=grid` is a plain `EuiDataGrid` with a
   trivial cell and the same columns.
-- `scale.js rows=N [throttle=4] [frozen] [profile] [mode=grid]
-[only=mount+scroll+drag+paste+undo] [lines=1000]`: on one page, in this
+- `scale.js rows=N [throttle=4] [frozen] [profile] [mode=grid] [validate]
+[pasteAt=end] [only=mount+scroll+drag+paste+undo+edit] [lines=1000]`: on one page, in this
   order: first render (the click on "Mount" to the first frame with rows),
   10 wheel steps of 120 px each waited out, then 40 quick steps (frame
   times), a range drag (Name of row 2 to Week 3 of row 9, 14 moves; each
@@ -95,6 +103,15 @@ Playwright is resolved from Node's global paths (`require('playwright')`).
   `Emulation.setCPUThrottlingRate`, set after the page loads. With the
   instrumented chunk the counters of each scenario are added; `profile`
   writes a CPU profile per scenario to `$OUT` and prints its top functions.
+  `validate`: the page's `@validate` (`&validate=1`, an error on Hours over
+  58); the harness waits for its debounced run after the paste, the undo and
+  the edit, and reports the owner's function's time (`validateFn`) and, with
+  `profile`, `runValidate`'s inclusive time (`validateTask`). `pasteAt=end`:
+  the paste on Name of the last record (its lines past the end are
+  inserts). `edit` (not in the default list): a click on Hours of row 2,
+  "12" typed and Enter (`open`: the first key to the editor on screen;
+  `total`/`toOnChange`: the Enter to the new value on screen / to
+  `onChange`).
 - `run-scale.sh <out-dir>` with `BUILDS="base:4197 new:4198"`,
   `CASES="rows=100000 rows=100000,throttle=4"`, `RUNS=3`: every case on
   every build, run by run (interleaved); `median-scale.mjs <out-dir>

@@ -10,7 +10,9 @@ The d08 demo ("Employees") with its size from the URL: `?rows=100000`
 (default 10,000), `&weeks=24` (the number of "Week" fields, default 24:
 30 fields), `&frozen=1` (`@frozenFields={{1}}`), `&mode=grid` (a plain
 `EuiDataGrid` with a trivial cell and the same columns, for comparing
-the sheet's own cost). The records are generated when the page loads;
+the sheet's own cost), `&validate=1` (a `@validate`: an error on Hours
+over 58, about 3 % of the records; its runs go to
+`window.__perf.validates`). The records are generated when the page loads;
 the sheet mounts on "Mount", so its first render can be timed alone.
 Timings go to `window.__perf`.
 
@@ -33,6 +35,7 @@ const ROWS = Number(params.get('rows') ?? 10_000);
 const WEEKS = Number(params.get('weeks') ?? 24);
 const FROZEN = params.get('frozen') === '1' ? 1 : 0;
 const MODE = params.get('mode') ?? 'sheet';
+const VALIDATE = params.get('validate') === '1';
 
 const DEPARTMENTS = [
   { value: 'ops', label: 'Operations', color: 'primary' },
@@ -109,8 +112,31 @@ const perf = (globalThis.__perf = {
   fields: FIELDS.length,
   frozen: FROZEN,
   mode: MODE,
-  applies: []
+  applies: [],
+  validates: []
 });
+
+// `&validate=1`: one pass over the records, an error per Hours over 58
+const validate = VALIDATE
+  ? ({ records }) => {
+      const start = performance.now();
+      const errors = {};
+      let count = 0;
+      for (const record of records) {
+        if (record.hours > 58) {
+          errors[record.id] = { hours: 'At most 58 hours' };
+          count++;
+        }
+      }
+      perf.validates.push({
+        at: start,
+        ms: performance.now() - start,
+        records: records.length,
+        errors: count
+      });
+      return errors;
+    }
+  : undefined;
 
 export default class SheetPerfLarge extends Component {
   getId = (record) => record.id;
@@ -178,6 +204,7 @@ export default class SheetPerfLarge extends Component {
           @onChange={{this.onChange}}
           @height={{420}}
           @frozenFields={{FROZEN}}
+          @validate={{validate}}
           @ariaLabel='Employees'
         />
       {{/if}}

@@ -1,6 +1,6 @@
 // Compares two shots.js directories: chips.json exactly, and each PNG pixel
 // by pixel (decoded in Chromium).
-//   node compare.js <dir-a> <dir-b>
+//   node compare.js <dir-a> <dir-b> [--common]
 const { chromium } = require('playwright');
 const fs = require('fs');
 const path = require('path');
@@ -9,7 +9,28 @@ const [a, b] = process.argv.slice(2);
 (async () => {
   const ja = JSON.parse(fs.readFileSync(path.join(a, 'chips.json'), 'utf8'));
   const jb = JSON.parse(fs.readFileSync(path.join(b, 'chips.json'), 'utf8'));
+  // `--common`: the cells (shots-d08.js) matched by row and column, only
+  // those in both (a build that renders fewer columns has fewer)
+  const common = process.argv.includes('--common');
+  const keyOf = (line) =>
+    (line.match(/data-gridcell-visible-row-index=\S*/)?.[0] ?? '') +
+    ' ' +
+    (line.match(/data-gridcell-column-index=\S*/)?.[0] ?? '');
   for (const k of Object.keys(ja)) {
+    if (common) {
+      const ma = new Map(ja[k].map((line) => [keyOf(line), line]));
+      const mb = new Map(jb[k].map((line) => [keyOf(line), line]));
+      const both = [...ma.keys()].filter((key) => mb.has(key));
+      const differ = both.filter((key) => ma.get(key) !== mb.get(key));
+      console.log(
+        `cells ${k}: ${ma.size} vs ${mb.size}, ${both.length} in both, ${differ.length} of them differ`
+      );
+      for (const key of differ.slice(0, 3)) {
+        console.log('  a', ma.get(key));
+        console.log('  b', mb.get(key));
+      }
+      continue;
+    }
     const same = JSON.stringify(ja[k]) === JSON.stringify(jb[k]);
     console.log(
       `chips ${k}: ${ja[k].length} vs ${jb[k]?.length}, ${same ? 'identical' : 'DIFFERENT'}`

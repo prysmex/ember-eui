@@ -23,8 +23,31 @@ export default class SheetScroll<T extends object> {
 
   /** The grid is scrolled horizontally (the frozen edge's shadow). */
   @tracked scrolledX = false;
-  /** Changes when the grid scrolls or its columns change: the fill handle measures again. */
+  /**
+   * Changes when the grid's columns or its layout change: the parts placed
+   * over the grid (outlines, fill handle, selection handles) measure again.
+   * A scroll places them without it (`placeOnScroll`).
+   */
   @tracked layoutTick = 0;
+
+  /**
+   * The parts placed over the grid that are shown, each one's placing
+   * (READINESS.md, Performance, step 2): a scroll places them again after
+   * its render, without a tracked write, which would make every rendered
+   * cell revalidate on every scroll step.
+   */
+  placers = new Set<() => void>();
+
+  /** Registers a part's placing for the grid's scrolls; returns its removal. */
+  placeOnScroll(place: () => void): () => void {
+    this.placers.add(place);
+    return () => this.placers.delete(place);
+  }
+
+  /** Places every registered part again. */
+  placeAll = (): void => {
+    for (const place of this.placers) place();
+  };
 
   /** The grid's scroll element. */
   scrollElement(): HTMLElement | null {
@@ -265,7 +288,8 @@ export default class SheetScroll<T extends object> {
       }
     }
     if (this.sheet.rowMenu.menu) this.sheet.rowMenu.closeMenu(false);
-    this.layoutTick++;
+    // the parts over the grid follow, after the render of this scroll
+    if (this.placers.size) afterRender(this.sheet, this.placeAll);
     // the error box follows its cell, or hides while the cell is not rendered
     const focused = this.sheet.focus.focused;
     if (focused) {

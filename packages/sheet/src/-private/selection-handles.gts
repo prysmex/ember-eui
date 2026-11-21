@@ -20,7 +20,7 @@ interface SelectionHandlesSignature {
   Args: {
     sheet: EuiSheet<any>;
     range: Range;
-    /** Changes when the grid scrolls or its columns change. */
+    /** Changes when the grid's columns change (a scroll places them through `scroll.placeOnScroll`). */
     tick: number;
     /** `@records` and the row height: rows may have moved. */
     records: unknown[];
@@ -43,11 +43,14 @@ export default class SelectionHandles extends Component<SelectionHandlesSignatur
       void tick;
       void records;
       void rowHeight;
-      // after the grid rendered the cells of this render
-      schedule('afterRender', () => {
+      const place = () => {
         if (this.isDestroying || this.isDestroyed) return;
         this.args.sheet.selectionHandles.place(element, range, corner);
-      });
+      };
+      // after the grid rendered the cells of this render
+      schedule('afterRender', place);
+      // and after each scroll's
+      return this.args.sheet.scroll.placeOnScroll(place);
     }
   );
 

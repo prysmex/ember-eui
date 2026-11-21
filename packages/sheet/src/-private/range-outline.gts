@@ -18,7 +18,7 @@ interface RangeOutlineSignature {
   Args: {
     sheet: EuiSheet<any>;
     range: Range;
-    /** Changes when the grid scrolls or a column is resized. */
+    /** Changes when a column is resized (a scroll places it through `scroll.placeOnScroll`). */
     tick: number;
     /** `@records`, the columns and the row height: cells may have moved. */
     records: unknown[];
@@ -45,11 +45,14 @@ export default class RangeOutline extends Component<RangeOutlineSignature> {
       void records;
       void columns;
       void rowHeight;
-      // after the grid rendered the cells of this render
-      schedule('afterRender', () => {
+      const place = () => {
         if (this.isDestroying || this.isDestroyed) return;
         this.args.sheet.outline.placeRangeOutline(element, range);
-      });
+      };
+      // after the grid rendered the cells of this render
+      schedule('afterRender', place);
+      // and after each scroll's
+      return this.args.sheet.scroll.placeOnScroll(place);
     }
   );
 

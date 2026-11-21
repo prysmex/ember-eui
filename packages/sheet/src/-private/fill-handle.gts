@@ -4,7 +4,7 @@
  * it is above frozen cells too). Pressing and dragging it fills; the sheet
  * owns the drag. Mouse only: Ctrl/Cmd+D and Ctrl/Cmd+R are the keyboard's
  * fills. Its place is measured after each render that changes the range or
- * scrolls; it hides while that corner is not in view.
+ * scrolls the grid; it hides while that corner is not in view.
  */
 import Component from '@glimmer/component';
 import { on } from '@ember/modifier';
@@ -18,7 +18,7 @@ interface FillHandleSignature {
   Args: {
     sheet: EuiSheet<any>;
     range: Range;
-    /** Changes when the grid scrolls or its columns change. */
+    /** Changes when the grid's columns change (a scroll places it through `scroll.placeOnScroll`). */
     tick: number;
     /** `@records` and the row height: rows may have moved. */
     records: unknown[];
@@ -36,11 +36,14 @@ export default class FillHandle extends Component<FillHandleSignature> {
       void tick;
       void records;
       void rowHeight;
-      // after the grid rendered the cells of this render
-      schedule('afterRender', () => {
+      const place = () => {
         if (this.isDestroying || this.isDestroyed) return;
         this.args.sheet.filling.placeFillHandle(element, range);
-      });
+      };
+      // after the grid rendered the cells of this render
+      schedule('afterRender', place);
+      // and after each scroll's
+      return this.args.sheet.scroll.placeOnScroll(place);
     }
   );
 

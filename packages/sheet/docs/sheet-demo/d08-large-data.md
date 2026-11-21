@@ -14,12 +14,11 @@ jumps to the last cell. The line under the sheet shows how long the last
 change set took to apply.
 
 Turn on "Freeze the first field" (`@frozenFields={{1}}`) and "Code"
-stays in view when you scroll right, with the row numbers. That has a
-cost, which is why it is off by default: while a field is frozen the grid
-renders every column of the rows in view (not only the columns in view),
-so a frozen cell never unmounts: here 31 cells per row instead of the few
-in view. Scroll down with it on and off to compare; above 50 visible
-fields the sheet does not freeze.
+stays in view when you scroll right, with the row numbers. While a field
+is frozen the grid renders the frozen columns besides the columns in
+view, so a frozen cell never unmounts: here the row numbers and Code, then
+the dozen or so columns in view of 31, as without freezing. It is off by
+default; above 50 visible fields the sheet does not freeze.
 
 </EuiText>
 

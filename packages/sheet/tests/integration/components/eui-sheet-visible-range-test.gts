@@ -361,7 +361,7 @@ module('Integration | Component | EuiSheet visible range', function (hooks) {
     );
   });
 
-  test('VR5 with a frozen field: the call happens and every column of a rendered row is still rendered', async function (assert) {
+  test('VR5 with a frozen field: the call happens and a rendered row has the same cells as without it', async function (assert) {
     const cellsOfRow = () =>
       document.querySelectorAll(
         '[role=gridcell][data-gridcell-visible-row-index="3"]'
@@ -388,19 +388,26 @@ module('Integration | Component | EuiSheet visible range', function (hooks) {
       frozenCells,
       `the same cells per row as without the handler (${frozenCells})`
     );
-    // 12 fields, the row numbers and the add-field column
-    assert.true(frozenCells >= 13, 'every column rendered');
+    // of 12 fields, the row numbers and the add-field column
+    assert.true(
+      frozenCells < 14,
+      `the frozen columns and the ones in view, not every column (${frozenCells})`
+    );
 
     await scrollGrid(0, 700);
     await frame();
-    assert.strictEqual(cellsOfRow(), frozenCells, 'after a scroll right');
+    const scrolled = cellsOfRow();
+    assert.true(
+      scrolled < 14,
+      `after a scroll right: still not every column (${scrolled})`
+    );
     assert.ok(cell(3, 0), 'the frozen cell stays');
 
     // and without a frozen field the columns are virtualized again
     state.frozenFields = 0;
     await frame();
     assert.true(
-      cellsOfRow() < frozenCells,
+      cellsOfRow() < scrolled,
       `virtualized without frozen fields (${cellsOfRow()})`
     );
   });

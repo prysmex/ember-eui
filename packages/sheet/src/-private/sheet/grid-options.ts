@@ -149,20 +149,20 @@ export default class SheetGridOptions<T extends object> {
   });
 
   /**
-   * While a field is frozen every column of a rendered row is rendered
-   * (9.1): a frozen cell must not unmount. With `@onVisibleRangeChange`
-   * the grid reports its visible rows (`onItemsRendered`, v0.4 09).
-   * Cached: the grid sees a new object only when one of these changes.
+   * While a field is frozen the grid always renders the leading columns
+   * (the row numbers and the frozen fields) besides the columns in view
+   * (9.1): a frozen cell must not unmount when the grid scrolls sideways.
+   * With `@onVisibleRangeChange` the grid reports its visible rows
+   * (`onItemsRendered`, v0.4 09). Cached: the grid sees a new object only
+   * when one of these changes.
    */
   @cached
   get virtualizationOptions(): EuiDataGridVirtualizationOptions | undefined {
     const reports = !!this.sheet.args.onVisibleRangeChange;
     const options: EuiDataGridVirtualizationOptions = {};
     if (this.sheet.frozen.frozenCount)
-      options.overscanColumnCount =
-        this.sheet.fields.visibleFields.length +
-        this.sheet.colOffset +
-        (this.sheet.gridColumns.hasAddFieldColumn ? 1 : 0);
+      options.leadingColumnCount =
+        this.sheet.colOffset + this.sheet.frozen.frozenCount;
     if (reports) options.onItemsRendered = this.onItemsRendered;
     return Object.keys(options).length ? options : undefined;
   }

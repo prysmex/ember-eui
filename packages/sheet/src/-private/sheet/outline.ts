@@ -75,10 +75,14 @@ export default class SheetOutline<T extends object> {
     const cells = wrapper.querySelectorAll<HTMLElement>(
       '[role=gridcell][data-gridcell-visible-row-index]:not(.euiDataGridFooterCell)'
     );
+    const frozen = this.sheet.frozen.frozenCount;
+    // the first rendered column right of the frozen ones (the window's)
+    let windowStart = Infinity;
     for (const cell of cells) {
       const row = Number(cell.dataset['gridcellVisibleRowIndex']);
       const col =
         Number(cell.dataset['gridcellColumnIndex']) - this.sheet.colOffset;
+      if (col >= frozen && col < windowStart) windowStart = col;
       if (row < range.top || row > bottom) continue;
       if (col < range.left || col > range.right) continue;
       if (grouped && !this.sheet.rows.isRecordRow(row)) continue;
@@ -110,8 +114,7 @@ export default class SheetOutline<T extends object> {
     if (!boxes.size) return hide();
     const clip = {
       left:
-        bounds.frozenRight !== undefined &&
-        range.left >= this.sheet.frozen.frozenCount
+        bounds.frozenRight !== undefined && range.left >= frozen
           ? bounds.frozenRight
           : bounds.left,
       top: bounds.top,
@@ -134,7 +137,17 @@ export default class SheetOutline<T extends object> {
       if (found.minRow > first) top = clip.top - past;
       if (found.maxRow < last) lower = clip.bottom + past;
       if (found.minCol > range.left) left = clip.left - past;
-      if (found.maxCol < range.right) right = clip.right + past;
+      // frozen: the columns between the frozen ones and the grid's column
+      // window are not rendered, and they are scrolled out to the left.
+      // When the window starts past the range, its unrendered columns are
+      // all there: its right side is its frozen cells' (the frozen edge),
+      // not past the clip
+      const leftOfWindow =
+        found.maxCol < frozen &&
+        windowStart !== Infinity &&
+        windowStart > range.right;
+      if (found.maxCol < range.right && !leftOfWindow)
+        right = clip.right + past;
       if (
         right <= clip.left ||
         left >= clip.right ||

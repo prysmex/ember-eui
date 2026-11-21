@@ -220,7 +220,8 @@ module(
         </template>
       );
       const outer = el('.euiDataGrid__virtualized');
-      await focusCell(0, 12);
+      await focusCell(0, 0);
+      await press('End');
       assert.true(outer.scrollLeft > 0, 'scrolled to the column');
       await keydown({ key: 'Dead' });
       assert.strictEqual(document.activeElement, catcher());

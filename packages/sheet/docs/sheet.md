@@ -1078,8 +1078,10 @@ fastest of two rounds):
 
 That run was on a quiet machine. Two more, under load from other work,
 gave 0.75 to 1.26 times the ungrouped time, either way: the difference is
-noise. So grouping costs about what not grouping costs; freezing is what
-multiplies the work (Frozen field, below). A change of `@groups` rebuilds
+noise. So grouping costs about what not grouping costs. (The frozen
+rows of that table are from before the frozen grid rendered only the
+frozen columns and the columns in view; it now renders 72 cells there
+too: Frozen field, below.) A change of `@groups` rebuilds
 the row model and one class entry per header and add row (200 groups:
 400 entries).
 
@@ -1087,8 +1089,8 @@ the row model and one class entry per header and add row (200 groups:
 
 With `@frozenFields={{1}}` the first field stays in view when the grid
 scrolls sideways, and so do the row numbers, its header and its summary
-cell. `@frozenFields={{2}}` freezes two fields. It is off by default
-because of its cost (below). A frozen field always has a
+cell. `@frozenFields={{2}}` freezes two fields. It is off by default.
+A frozen field always has a
 width (200 px unless `@fieldWidths` or `field.width` say otherwise), and
 resizing it moves the frozen edge. Keyboard focus that would land under
 the frozen columns scrolls the cell clear, and focusing a frozen cell
@@ -1096,45 +1098,30 @@ the frozen columns scrolls the cell clear, and focusing a frozen cell
 
 ### Performance
 
-Freezing turns off column virtualization. The grid can only keep a cell
-pinned while it stays mounted, so while a field is frozen it renders every
-column of the rows in view, not only the columns in view. Rows stay
-virtualized, so the number of records does not matter. What matters is:
+The grid can only keep a cell pinned while it stays mounted, so while a
+field is frozen it always renders the frozen columns (and the row
+numbers) besides the columns in view; the other columns are virtualized
+as without freezing, and so are the rows. So the number of records and
+of fields hardly matters:
 
 | | Cells rendered |
 | --- | --- |
-| Not frozen | rows in view × fields in view |
-| Frozen | rows in view × every visible field (plus the row numbers) |
+| Not frozen | rows in view × columns in view |
+| Frozen | rows in view × (frozen columns + columns in view) |
 
-Vertical scrolling mounts a new row's cells, so its cost grows with that
-count. Horizontal scrolling then mounts nothing, since every column is
-already there.
+At the left edge the frozen columns are among the columns in view anyway:
+in the sheet's own test (FZ9: 10,000 records × 30 fields, 12 rows
+rendered, headless Chromium, 20 scroll steps of 600 px) both render 72
+cells, and a scroll step takes the same time frozen or not (104 and
+106 ms in one run on a loaded machine; take the absolute numbers as a test
+machine's). Scrolled sideways, a row renders the frozen cells more. (Up
+to this release the frozen grid rendered every column of the rendered
+rows: 372 cells there, about four times the time per step.)
 
-Measured in the sheet's own test (FZ9: 10,000 records × 30 fields, 12 rows
-rendered, headless Chromium, 20 scroll steps of 600 px):
-
-| | Cells rendered | Time per scroll step |
-| --- | --- | --- |
-| Not frozen | 72 | 38–50 ms |
-| Frozen | 372 | 182–197 ms |
-
-So five times the cells cost about four times the time. Take the absolute
-numbers as a test machine's, not a target; the ratio is what carries over.
-The "Large data" example lets you feel it: it has 31 columns, with a
-switch to freeze the first one.
-
-What makes it worse, each one multiplied by every column:
-
-- More visible fields. Hide the ones not needed on screen
-  (`@hiddenFields`); they stay in the expanded record.
-- A taller grid (`@height`), so more rows in view.
-- Heavy cells: attachment thumbnails, linked-record chips, your own cell
-  components from `@fieldTypes`.
-
-A sheet with a dozen fields barely notices. With thirty or more, freeze
-only if users really scroll sideways a lot, and check it on the slowest
-device you support. Above 50 visible fields the sheet does not freeze at
-all, and `@frozenFields` is ignored.
+What a scroll step costs grows with the cells in view: a wide or tall
+grid (`@height`), and heavy cells (attachment thumbnails, linked-record
+chips, your own cell components from `@fieldTypes`). Above 50 visible
+fields the sheet does not freeze at all, and `@frozenFields` is ignored.
 
 ## The sheet's API
 

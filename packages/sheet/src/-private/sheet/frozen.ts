@@ -11,8 +11,9 @@ import type { FrozenLayout } from './types.ts';
 
 /**
  * The frozen field (V02-DESIGN.md 9): above this many visible fields the
- * sheet stops freezing (it renders every column of the rendered rows while
- * a field is frozen).
+ * sheet stops freezing. (Set when a frozen grid rendered every column of
+ * its rendered rows; it now renders the frozen columns and the columns in
+ * view, and the limit is kept as it was.)
  */
 const FROZEN_MAX_COLUMNS = 50;
 
@@ -33,7 +34,7 @@ export default class SheetFrozen<T extends object> {
     if (wanted <= 0 || count === 0) return 0;
     if (count > FROZEN_MAX_COLUMNS) {
       warn(
-        `EuiSheet: ${count} visible fields: frozen fields are off above ${FROZEN_MAX_COLUMNS} (every column of the rendered rows would be rendered).`,
+        `EuiSheet: ${count} visible fields: frozen fields are off above ${FROZEN_MAX_COLUMNS}.`,
         false,
         { id: 'ember-eui.sheet.frozen-fields-off' }
       );

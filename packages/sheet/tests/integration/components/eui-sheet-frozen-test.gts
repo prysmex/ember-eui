@@ -183,8 +183,8 @@ module('Integration | Component | EuiSheet frozen field', function (hooks) {
       'the first field is sticky'
     );
     assert.notOk(
-      cell(3, 1).style.position === 'sticky',
-      'the second field is not'
+      cell(3, 6).style.position === 'sticky',
+      'a scrolled field is not'
     );
   });
 
@@ -288,6 +288,8 @@ module('Integration | Component | EuiSheet frozen field', function (hooks) {
   test('FZ4 ArrowLeft never leaves the focused cell under the frozen columns', async function (assert) {
     const state = new State();
     await renderSheet(state);
+    await scrollGrid(outer().scrollWidth);
+    await frame();
     await focusCell(3, 11);
     await frame();
     for (let col = 10; col >= 1; col--) {
@@ -452,7 +454,15 @@ module('Integration | Component | EuiSheet frozen field', function (hooks) {
       .dom(
         `[role=gridcell][data-gridcell-visible-row-index="3"][data-gridcell-column-index="12"]`
       )
-      .exists('frozen: every column of a rendered row is rendered');
+      .doesNotExist(
+        'frozen: the last column is not rendered either (column window)'
+      );
+    await scrollGrid(outer().scrollWidth);
+    assert
+      .dom(
+        `[role=gridcell][data-gridcell-visible-row-index="3"][data-gridcell-column-index="12"]`
+      )
+      .exists('frozen, scrolled to the end: the last column is rendered');
   });
 
   test('FZ9 vertical scroll over 10,000 rows with 30 fields, frozen on (time logged)', async function (assert) {
@@ -476,7 +486,11 @@ module('Integration | Component | EuiSheet frozen field', function (hooks) {
       `FZ9: frozen on ${on.ms.toFixed(1)} ms per scroll step, ${on.cells} cells rendered; off ${off.ms.toFixed(1)} ms, ${off.cells} cells`
     );
     assert.ok(on.ms > 0 && off.ms > 0);
-    assert.ok(on.cells > off.cells, 'frozen renders every column');
+    assert.strictEqual(
+      on.cells,
+      off.cells,
+      'at the left edge the frozen columns are in the column window anyway: the same cells'
+    );
 
     async function measure(): Promise<{ ms: number; cells: number }> {
       const steps = 20;
@@ -678,6 +692,8 @@ module('Integration | Component | EuiSheet frozen field', function (hooks) {
     );
 
     // ArrowLeft from the last field to the third: never under the frozen two
+    await scrollGrid(outer().scrollWidth);
+    await frame();
     await focus(at(3, 11));
     await frame();
     for (let col = 10; col >= 2; col--) {

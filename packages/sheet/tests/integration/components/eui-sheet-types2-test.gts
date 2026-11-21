@@ -10,6 +10,8 @@ import {
   waitUntil
 } from '@ember/test-helpers';
 
+import { htmlSafe } from '@ember/template';
+
 import EuiSheet from '#src/components/eui-sheet.gts';
 import { localRecords } from '#src/local-records.ts';
 import {
@@ -123,13 +125,15 @@ module(
     async function renderSheet(
       fields: EuiSheetField<Row>[],
       records: Row[],
-      // frozen: every column of a rendered row is in the DOM
-      frozenFields?: number
+      frozenFields?: number,
+      // wide enough for every column to be in view, so in the DOM
+      width = 1100
     ) {
       const store = localRecords<Row>(records, { getRecordId: getId, fields });
+      const style = htmlSafe(`width:${width}px`);
       await render(
         <template>
-          <div style="width:1100px">
+          <div style={{style}}>
             <EuiSheet
               @records={{store.records}}
               @fields={{store.fields}}
@@ -719,7 +723,7 @@ module(
     });
 
     test('A4 no cell of the new types holds a tabbable element (P9, N12)', async function (assert) {
-      await renderSheet(allFields(), [fullRow()], 1);
+      await renderSheet(allFields(), [fullRow()], 1, 3000);
       const cells = Array.from(
         document.querySelectorAll<HTMLElement>(
           '[role=gridcell][data-gridcell-visible-row-index="0"]:not([data-gridcell-column-id=euiSheetRow])'
@@ -877,7 +881,7 @@ module(
     });
 
     test('LT1 long text: Shift+Enter adds a line, the frame grows, Enter saves; copy is quoted', async function (assert) {
-      const store = await renderSheet(allFields(), [fullRow()], 1);
+      const store = await renderSheet(allFields(), [fullRow()], 1, 3000);
       assert.strictEqual(text(0, 12), 'one\ntwo');
       await focusCell(0, 12);
       // the grid scrolls the last column into view; its scroll event comes

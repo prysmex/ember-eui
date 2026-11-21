@@ -627,13 +627,15 @@ module('Integration | Component | EuiSheet editing polish', function (hooks) {
   });
 
   test('ED1 an editor opened on a far column right after its focus stays open', async function (assert) {
-    // frozen: the far cell is in the DOM before it is scrolled into view
+    // frozen: the far cell is reached with End (the frozen grid renders
+    // the columns in view only); the focus's scroll event comes late
     await renderSheet(wideFields(14), wideRows(5, 14), {
       width: 600,
       frozenFields: 1
     });
     const outer = el('.euiDataGrid__virtualized');
-    await focusCell(0, 12);
+    await focusCell(0, 0);
+    await press('End');
     assert.true(outer.scrollLeft > 0, 'the grid scrolled to the column');
     // no frame waited: the focus's scroll event has not come yet
     await press('Enter');
@@ -644,7 +646,7 @@ module('Integration | Component | EuiSheet editing polish', function (hooks) {
     await triggerEvent(outer, 'scroll');
     assert.dom(editorFrame()).exists('a scroll that keeps the cell in view');
     const frame = editorFrame()!.getBoundingClientRect();
-    const box = cell(0, 12).getBoundingClientRect();
+    const box = cell(0, 13).getBoundingClientRect();
     assert.true(
       Math.abs(frame.left - box.left) < 2 && Math.abs(frame.top - box.top) < 2,
       'the editor is over its cell'

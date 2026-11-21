@@ -4,7 +4,8 @@
  * button that opens the scan panel. A click on the cell's opener (the
  * camera) opens the editor with the panel already scanning. The first
  * code read is committed and the editor closes. A USB or Bluetooth
- * scanner types into the input like a keyboard and ends with Enter.
+ * scanner types into the input like a keyboard and ends with Enter. The
+ * panel is a separate chunk, loaded when an editor that can scan opens.
  */
 import Component from '@glimmer/component';
 import { tracked } from '@glimmer/tracking';
@@ -13,10 +14,15 @@ import { modifier } from 'ember-modifier';
 
 import EuiButtonIcon from '@ember-eui/core/components/eui-button-icon';
 
-import BarcodeScan, { canScan } from './barcode-scan.gts';
+import { canScan } from './barcode-scan.gts';
+import {
+  barcodeScanPanel,
+  loadBarcodeScanPanel
+} from './barcode-scan-loader.ts';
 import InputEditor from './input-editor.gts';
 
 import type { BarcodeField } from '../../core/index.ts';
+import type Owner from '@ember/owner';
 import type { SheetEditorSignature } from '../../types.ts';
 
 export default class BarcodeEditor extends Component<
@@ -25,8 +31,22 @@ export default class BarcodeEditor extends Component<
   /** The scan panel is open: from the opener, or the camera button. */
   @tracked scanning = !!this.args.openedByOpener && canScan(this.args.field);
 
+  constructor(
+    owner: Owner,
+    args: SheetEditorSignature<string | null, BarcodeField>['Args']
+  ) {
+    super(owner, args);
+    // the panel is a lazy chunk: start loading it while the editor opens
+    if (canScan(args.field)) void loadBarcodeScanPanel();
+  }
+
   get canScan(): boolean {
     return canScan(this.args.field);
+  }
+
+  /** The scan panel's component, once loaded. */
+  get BarcodeScan() {
+    return barcodeScanPanel();
   }
 
   get scanLabel(): string {
@@ -80,12 +100,16 @@ export default class BarcodeEditor extends Component<
         />
       {{/if}}
       {{#if this.scanning}}
-        <BarcodeScan
-          @field={{@field}}
-          @messages={{@messages}}
-          @onScanned={{this.onScanned}}
-          @onClose={{this.closeScan}}
-        />
+        {{#let this.BarcodeScan as |BarcodeScan|}}
+          {{#if BarcodeScan}}
+            <BarcodeScan
+              @field={{@field}}
+              @messages={{@messages}}
+              @onScanned={{this.onScanned}}
+              @onClose={{this.closeScan}}
+            />
+          {{/if}}
+        {{/let}}
       {{/if}}
     </div>
   </template>

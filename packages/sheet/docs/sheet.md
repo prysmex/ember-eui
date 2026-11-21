@@ -1731,7 +1731,11 @@ There are three kinds:
 - **Rejected text**: a text the type cannot read, such as `abc` in a
   number field, typed or pasted. It makes no patch: the record keeps
   its value, the change set lists it in `rejected`, and the cell shows
-  the text, marked invalid, until the cell is written again.
+  the text, marked invalid, until the cell is written again (or you
+  change the value: the sheet compares with the value it saw). On a
+  new record (a paste on the add row or past the end, `appendRows`) it
+  compares with the value the record arrives with in `@records`, so a
+  default from your `createRecord` (`qty: null`) keeps it shown.
 - **Validation errors**: a stored value that breaks a rule: `required`,
   the type's options (`min`, `max`, `maxLength`, `pattern`, an unknown
   option, a bad date), `field.validate(value, record)`, and `@validate`

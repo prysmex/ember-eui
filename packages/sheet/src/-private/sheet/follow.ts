@@ -86,6 +86,8 @@ export default class SheetFollow<T extends object> {
       String(this.sheet.args.getRecordId(record))
     );
     const pending = this.sheet.changes.pendingOwn;
+    // the rejections of the records the sheet inserted, now they are here
+    this.sheet.cells.bindInserted();
     this.lastRecords = records;
     this.lastIds = ids;
     this.lastRowModel = this.sheet.rows.rowModel;

@@ -14,9 +14,18 @@ export interface Rejection {
   fieldId: string;
   text: string;
   message: string;
-  /** The record's value when the rejection was stored; another value means the owner changed it. */
+  /**
+   * The record's value when the rejection was stored; another value means
+   * the owner changed it. `UNSEEN` for a record the sheet has just
+   * inserted and not seen yet: it becomes the value the record arrives
+   * with in `@records` (the owner's `createRecord` may give the field a
+   * default, such as `qty: null`).
+   */
   seenValue: unknown;
 }
+
+/** A rejection's `seenValue` while its inserted record has not arrived in `@records`. */
+export const UNSEEN: unique symbol = Symbol('unseen');
 
 export type RejectionMap = ReadonlyMap<string, Rejection>;
 
@@ -55,7 +64,8 @@ export function clearRejections(
 
 /**
  * Redo of an entry: puts back each of its rejections whose record exists
- * and still holds the value it had when the text was rejected. `value`
+ * and still holds the value it had when the text was rejected (one whose
+ * inserted record was not seen yet takes the value it has now). `value`
  * says whether the record exists (`found`) and its value. `null` when
  * nothing was put back.
  */
@@ -67,9 +77,14 @@ export function restoreRejections(
   let next: Map<string, Rejection> | null = null;
   for (const rejection of entry) {
     const cell = value(rejection.id, rejection.fieldId);
-    if (!cell.found || !Object.is(cell.value, rejection.seenValue)) continue;
+    if (!cell.found) continue;
+    const unseen = rejection.seenValue === UNSEEN;
+    if (!unseen && !Object.is(cell.value, rejection.seenValue)) continue;
     next ??= new Map(current);
-    next.set(cellKey(rejection.id, rejection.fieldId), { ...rejection });
+    next.set(
+      cellKey(rejection.id, rejection.fieldId),
+      unseen ? { ...rejection, seenValue: cell.value } : { ...rejection }
+    );
   }
   return next;
 }

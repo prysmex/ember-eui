@@ -4,6 +4,8 @@ import { findRecords } from '../../core/record-lookup.ts';
 
 import type EuiSheet from '../../components/eui-sheet.gts';
 import type { ChangeSet, Pos, SheetContext } from '../../core/index.ts';
+import { UNSEEN } from '../rejections.ts';
+
 import type { Rejection } from '../rejections.ts';
 import type { HistoryEntry, PendingOwn, Touched } from './types.ts';
 
@@ -111,12 +113,17 @@ export default class SheetChanges<T extends object> {
       );
       for (const rejection of changeSet.rejected) {
         const id = String(rejection.recordId ?? rejection.tempId);
+        const record = found.get(id);
         const entry: Rejection = {
           id,
           fieldId: rejection.fieldId,
           text: rejection.text,
           message: rejection.message,
-          seenValue: valueOf(found.get(id)?.record, rejection.fieldId)
+          // a record this change set inserts: the value it arrives with
+          seenValue:
+            record || rejection.recordId !== undefined
+              ? valueOf(record?.record, rejection.fieldId)
+              : UNSEEN
         };
         next.set(cellKey(id, rejection.fieldId), entry);
         stored.push(entry);

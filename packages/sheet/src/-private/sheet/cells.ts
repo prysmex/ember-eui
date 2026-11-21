@@ -11,6 +11,8 @@ import {
   valueOf
 } from '../../core/index.ts';
 
+import { findRecords } from '../../core/record-lookup.ts';
+import { UNSEEN } from '../rejections.ts';
 import { colorProps } from './row-colors.ts';
 
 import type EuiSheet from '../../components/eui-sheet.gts';
@@ -37,6 +39,8 @@ export default class SheetCells<T extends object> {
   ): Rejection | undefined {
     const rejection = this.rejections.get(cellKey(recordId, fieldId));
     if (!rejection) return undefined;
+    // an inserted record's, until `bindInserted` sees the record
+    if (rejection.seenValue === UNSEEN) return rejection;
     return this.sheet.fields.valueEquals(
       fieldId,
       rejection.seenValue,
@@ -44,6 +48,31 @@ export default class SheetCells<T extends object> {
     )
       ? rejection
       : undefined;
+  }
+
+  /**
+   * After a render with a new `@records`: each rejection on a record the
+   * sheet inserted and had not seen takes the value the record arrived
+   * with (READINESS.md item 5), so an owner's default (`qty: null`) does
+   * not hide it; a later change by the owner still does. A plain write: the
+   * rejection was already shown on this render.
+   */
+  bindInserted(): void {
+    let ids: Set<string> | null = null;
+    for (const rejection of this.rejections.values()) {
+      if (rejection.seenValue === UNSEEN) (ids ??= new Set()).add(rejection.id);
+    }
+    if (!ids) return;
+    const found = findRecords(
+      this.sheet.args.records,
+      this.sheet.args.getRecordId,
+      ids
+    );
+    for (const rejection of this.rejections.values()) {
+      if (rejection.seenValue !== UNSEEN) continue;
+      const entry = found.get(rejection.id);
+      if (entry) rejection.seenValue = valueOf(entry.record, rejection.fieldId);
+    }
   }
 
   /** `@validate`'s errors of a cell, unless its record changed since the run started. */

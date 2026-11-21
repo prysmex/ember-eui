@@ -261,6 +261,19 @@ button {
   font-weight: 600;
 }
 
+/*
+  The docs' markdown tables (only they have the .guideTableScroll wrapper, not
+  a component's table in a demo): a shaded header and zebra rows, in the EUI
+  theme's shades, so light, dark and high contrast follow it.
+*/
+.guideTableScroll > table th {
+  background-color: var(--eui-color-light-shade);
+}
+
+.guideTableScroll > table > tbody > tr:nth-child(even) {
+  background-color: var(--eui-color-lightest-shade);
+}
+
 /* markdown tables (lib/docfy-scroll-tables.mjs) scroll sideways when wide */
 .guideTableScroll {
   max-width: 100%;

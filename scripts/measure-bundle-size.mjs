@@ -15,6 +15,12 @@
  *                                             largest modules in an entry
  *   … --modules eui-markdown-format --chunk markdown-engine
  *                                             largest modules in its lazy chunk
+ *   node scripts/measure-bundle-size.mjs --compat
+ *                                             apps built like the standard
+ *                                             blueprint (compatModules), and
+ *                                             the checks that the sheet stays
+ *                                             out until imported (exit 1 if
+ *                                             one fails); compat-bundle-size.mjs
  */
 import {
   mkdirSync,
@@ -52,6 +58,11 @@ if (!args.includes('--entry'))
   execFileSync('node', [join(workspaceDir, 'scripts/sync-injected.mjs')], {
     stdio: 'ignore'
   });
+
+if (args.includes('--compat')) {
+  const { runCompat } = await import('./compat-bundle-size.mjs');
+  process.exit(await runCompat({ workspaceDir, siteDir, args }));
+}
 
 const { build } = await import(require.resolve('vite'));
 const { ember, extensions } = await import(require.resolve('@embroider/vite'));

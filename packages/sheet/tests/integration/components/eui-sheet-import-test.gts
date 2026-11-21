@@ -311,8 +311,8 @@ module('Integration | Component | EuiSheetImport', function (hooks) {
     await rerender();
     assert.deepEqual(
       previewRows()[0]!.slice(2, 3),
-      ['01/11/2026'],
-      '01/11 reads as January 11 (the preview shows it in the order the column reads: M/D/Y)'
+      ['11/01/2026'],
+      '01/11/2026 reads as January 11, shown as the D/M/Y field shows it'
     );
     assert.strictEqual(
       all('euiSheetImportPreviewCell', all('euiSheetImportPreviewRow')[12])[2]!
@@ -351,15 +351,31 @@ module('Integration | Component | EuiSheetImport', function (hooks) {
     await click(q('euiSheetImportShowFirst'));
     assert.strictEqual(previewRows().length, 20);
 
-    // a field takes one column: choosing it for another moves it
-    await setTarget(3, 'f:name');
-    assert.deepEqual(targets(), ['skip', 'f:price', 'f:due', 'f:name']);
-    const options = [
+    // a field takes one column: shown taken and disabled in the others
+    const taken = [
+      ...q<HTMLSelectElement>('euiSheetImportTarget', row(3)).options
+    ].find((o) => o.value === 'f:name')!;
+    assert.strictEqual(
+      taken.text.trim(),
+      'Name of product (in use by "Nombre")'
+    );
+    assert.true(taken.disabled, 'disabled for the other columns');
+    const own = [
       ...q<HTMLSelectElement>('euiSheetImportTarget', row(0)).options
-    ].map((o) => o.text);
+    ].find((o) => o.value === 'f:name')!;
+    assert.false(own.disabled, 'not for its own column');
+    await setTarget(0, 'skip');
+    await setTarget(3, 'f:name');
+    assert.deepEqual(
+      targets(),
+      ['skip', 'f:price', 'f:due', 'f:name'],
+      'freed, then taken'
+    );
     assert.true(
-      options.includes('Name of product (in use by "Activo")'),
-      'the other columns show the field as taken'
+      [...q<HTMLSelectElement>('euiSheetImportTarget', row(0)).options].find(
+        (o) => o.value === 'f:name'
+      )!.disabled,
+      'now taken by Activo'
     );
   });
 
@@ -858,6 +874,14 @@ module('Integration | Component | EuiSheetImport', function (hooks) {
       'D/M/Y reads neither'
     );
     await select(q('euiSheetImportDateOrder', row(1)), 'mdy');
+    assert.deepEqual(
+      previewRows(),
+      [
+        ['A', '19/11/2026'],
+        ['B', '31/12/2026']
+      ],
+      'read as M/D/Y, shown as the D/M/Y field shows it'
+    );
     assert.strictEqual(totals(), '2 lines ready, 0 with errors');
     await click(SEL('euiSheetImportSubmit'));
     const result = screen.results[0]!;

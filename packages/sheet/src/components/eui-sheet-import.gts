@@ -75,6 +75,7 @@ import {
 import type {
   EuiSheetField,
   SheetColumnGuess,
+  SheetImportCell,
   SheetImportColumn,
   SheetImportContext,
   SheetImportFieldDraft,
@@ -148,7 +149,8 @@ export interface ImportColumnView {
   samples: string[];
   badge: { text: string; color: string; title: string } | null;
   targetValue: string;
-  targetOptions: Array<{ value: string; text: string }>;
+  /** A field another column goes to is disabled (a field takes one column; the arrow keys of a closed select skip it). */
+  targetOptions: Array<{ value: string; text: string; disabled?: boolean }>;
   /** The header names a field another column takes. */
   takenNote: string | null;
   isSkip: boolean;
@@ -696,9 +698,52 @@ export default class EuiSheetImport<T = any> extends Component<
         (this.headers && i === 0) || lines.has(i) ? line : []
       );
     }
-    return previewImport(this.ctx, matrix, this.plan, this.transforms, {
-      size: this.sampleSize
+    const preview = previewImport(
+      this.ctx,
+      matrix,
+      this.plan,
+      this.transforms,
+      { size: this.sampleSize }
+    );
+    return this.asStored(preview);
+  }
+
+  /**
+   * The preview's values as the target field shows them: a column read
+   * with a copy (`dateOrder`, `decimalSeparator`) is formatted with the
+   * field itself, so `11/19/2026` read as M/D/Y shows `19/11/2026` in a
+   * D/M/Y field, as the sheet will show it.
+   */
+  asStored(preview: SheetImportPreview): SheetImportPreview {
+    const byIndex = new Map(this.columns.map((c) => [c.index, c]));
+    const stored = preview.columns.map((index, k) => {
+      const column = byIndex.get(index);
+      const field = column ? this.fieldOf(column) : null;
+      return field && field !== preview.fields[k] ? field : null;
     });
+    if (stored.every((field) => field === null)) return preview;
+    const messages = this.messages;
+    const cells = preview.cells.map((line) => {
+      const record: Record<string, unknown> = {};
+      line.forEach((cell, k) => {
+        if (cell.state === 'value' || cell.state === 'newOption') {
+          record[preview.fields[k]!.id] = cell.value;
+        }
+      });
+      return line.map((cell, k): SheetImportCell => {
+        const field = stored[k];
+        if (!field || (cell.state !== 'value' && cell.state !== 'newOption')) {
+          return cell;
+        }
+        const type = this.types[field.type ?? 'text'];
+        if (!type) return cell;
+        return {
+          ...cell,
+          display: type.format(cell.value, field, { record, messages })
+        };
+      });
+    });
+    return { ...preview, cells };
   }
 
   get previewCaption(): string {
@@ -744,20 +789,22 @@ export default class EuiSheetImport<T = any> extends Component<
       const field = this.fieldOf(column);
       const typeName = field ? (field.type ?? 'text') : null;
 
-      const targetOptions: Array<{ value: string; text: string }> = [];
+      const targetOptions: ImportColumnView['targetOptions'] = [];
       for (const candidate of this.writableFields) {
         const owner = takenBy.get(candidate.id);
         const label = this.fieldLabel(candidate);
-        targetOptions.push({
-          value: `f:${candidate.id}`,
-          text:
-            owner !== undefined && owner !== index
-              ? messages.importTakenBy(
+        targetOptions.push(
+          owner !== undefined && owner !== index
+            ? {
+                value: `f:${candidate.id}`,
+                text: messages.importTakenBy(
                   label,
                   this.columnData[owner]?.name ?? ''
-                )
-              : label
-        });
+                ),
+                disabled: true
+              }
+            : { value: `f:${candidate.id}`, text: label }
+        );
       }
       if (this.canCreate) {
         targetOptions.push({
@@ -887,7 +934,8 @@ export default class EuiSheetImport<T = any> extends Component<
     } else {
       const id = value.slice(2);
       target = { field: id };
-      // a field takes one column: the other column gives it up
+      // a field takes one column (the select disables a taken field; a
+      // call from elsewhere still frees it from the other column)
       for (const column of this.columns) {
         const other = column.target;
         if (

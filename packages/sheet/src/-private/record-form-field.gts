@@ -43,6 +43,8 @@ interface RecordFormFieldSignature {
 
 export default class RecordFormField extends Component<RecordFormFieldSignature> {
   labelId = `${guidFor(this)}-label`;
+  /** The box: its name is the label and its own text (the value). */
+  boxId = `${guidFor(this)}-box`;
 
   get view(): CellView {
     return this.args.sheet.cells.cellViewFor(this.args.record, this.args.field);
@@ -173,9 +175,10 @@ export default class RecordFormField extends Component<RecordFormFieldSignature>
             class="euiSheetRecord__box
               {{if this.view.errors.length 'euiSheetRecord__box--invalid'}}
               {{if this.view.link 'euiSheetRecord__box--withLink'}}"
+            id={{this.boxId}}
             role="button"
             tabindex="0"
-            aria-labelledby={{this.labelId}}
+            aria-labelledby="{{this.labelId}} {{this.boxId}}"
             aria-invalid={{if this.view.errors.length "true"}}
             data-eui-sheet-record-box={{@field.id}}
             data-test-subj="euiSheetRecordBox"
@@ -192,6 +195,7 @@ export default class RecordFormField extends Component<RecordFormFieldSignature>
                 @readOnly={{this.view.readOnly}}
                 @onCommit={{this.onCellCommit}}
                 @link={{this.view.link}}
+                @messages={{@sheet.messages}}
               />
             {{else}}
               {{this.view.text}}
@@ -216,6 +220,7 @@ export default class RecordFormField extends Component<RecordFormFieldSignature>
                 @readOnly={{true}}
                 @onCommit={{this.onCellCommit}}
                 @link={{this.view.link}}
+                @messages={{@sheet.messages}}
               />
             {{else}}
               {{this.view.text}}

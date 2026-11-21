@@ -110,6 +110,8 @@ export default class SheetCell extends Component<{
     if (this.sheet.filling.isFillPreview(this.args.rowIndex, this.col)) {
       classes.push('euiSheet__cell--fillPreview');
     }
+    // a cell whose value cannot be edited (the field, the record, the sheet)
+    if (view?.readOnly) props['aria-readonly'] = 'true';
     if (view?.errors.length) {
       classes.push('euiSheet__cell--invalid');
       props['aria-invalid'] = 'true';
@@ -210,6 +212,7 @@ export default class SheetCell extends Component<{
           @link={{this.view.link}}
           @pending={{this.view.pending}}
           @disabled={{this.view.disabled}}
+          @messages={{this.sheet.messages}}
         />
       {{else if this.highlight}}
         <EuiHighlight

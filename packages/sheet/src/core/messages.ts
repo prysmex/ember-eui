@@ -527,6 +527,16 @@ export interface SheetMessages {
   importCreateMismatch: () => string;
   /** 'Checking the lines…': the totals while the first dry run of a file waits for the preview to show */
   importChecking: () => string;
+  /** 'Row 3, checked': the row-number cell's label when its row is checked. */
+  rowNumberChecked: (n: number) => string;
+  /** 'Row number': the row-number column's header, for screen readers. */
+  rowNumberHeader: () => string;
+  /** 'Checked': a checkbox cell's label when checked. */
+  cellChecked: () => string;
+  /** 'Not checked': a checkbox cell's label when not checked. */
+  cellUnchecked: () => string;
+  /** 'Row menu': the row menu's name, for screen readers. */
+  rowMenu: () => string;
 }
 
 export interface SheetMessageToken {
@@ -1842,6 +1852,31 @@ export const sheetMessageTokens: Readonly<
   importChecking: {
     token: 'euiSheet.importChecking',
     defaultMessage: 'Checking the lines…',
+    params: []
+  },
+  rowNumberChecked: {
+    token: 'euiSheet.rowNumberChecked',
+    defaultMessage: 'Row {n}, checked',
+    params: ['n']
+  },
+  rowNumberHeader: {
+    token: 'euiSheet.rowNumberHeader',
+    defaultMessage: 'Row number',
+    params: []
+  },
+  cellChecked: {
+    token: 'euiSheet.cellChecked',
+    defaultMessage: 'Checked',
+    params: []
+  },
+  cellUnchecked: {
+    token: 'euiSheet.cellUnchecked',
+    defaultMessage: 'Not checked',
+    params: []
+  },
+  rowMenu: {
+    token: 'euiSheet.rowMenu',
+    defaultMessage: 'Row menu',
     params: []
   }
 };

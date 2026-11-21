@@ -11,7 +11,11 @@ const CheckboxCell: TOC<SheetCellSignature<any, any>> = <template>
   <span
     class="euiSheet__checkbox {{if @value 'euiSheet__checkbox--checked'}}"
     role="img"
-    aria-label={{@text}}
+    aria-label={{if
+      @messages
+      (if @value (@messages.cellChecked) (@messages.cellUnchecked))
+      @text
+    }}
     data-test-subj="euiSheetCheckbox"
   ></span>
 </template>;

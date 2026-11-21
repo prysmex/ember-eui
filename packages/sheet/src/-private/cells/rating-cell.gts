@@ -34,8 +34,8 @@ export default class RatingCell extends Component<
   <template>
     <span
       class="euiSheet__rating"
-      role="img"
-      aria-label={{@text}}
+      role={{if @text "img"}}
+      aria-label={{if @text @text}}
       data-test-subj="euiSheetRating"
     >
       {{#each this.stars key="n" as |star|}}

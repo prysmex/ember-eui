@@ -63,14 +63,21 @@ export default class RowMenu extends Component<RowMenuSignature> {
     return groupOf(items[index]!.id) !== groupOf(items[index - 1]!.id);
   };
 
+  get label(): string {
+    return this.args.sheet.messages.rowMenu();
+  }
+
   select = (item: RowMenuItem): void => {
     if (!item.disabled) this.args.onSelect(item);
   };
 
   <template>
     <SheetLayer @sheet={{@sheet}}>
+      {{! a menu of menuitems (the panel's ArrowUp/Down and Enter, the sheet's Escape) }}
       <div
         class="euiSheet__menu"
+        role="menu"
+        aria-label={{this.label}}
         data-test-subj="euiSheetRowMenu"
         data-eui-sheet-menu
         {{placeLayer
@@ -90,13 +97,14 @@ export default class RowMenu extends Component<RowMenuSignature> {
           >
             {{#each @items as |item index|}}
               {{#if (this.startsGroup index)}}
-                <hr class="euiSheet__menuSeparator" aria-hidden="true" />
+                <hr class="euiSheet__menuSeparator" role="separator" />
               {{/if}}
               <EuiContextMenuItem
                 @icon={{item.icon}}
                 @color={{item.color}}
                 @disabled={{item.disabled}}
                 @size="s"
+                role="menuitem"
                 data-test-subj="euiSheetRowMenu-{{item.id}}"
                 {{on "click" (fn this.select item)}}
               >{{item.label}}</EuiContextMenuItem>

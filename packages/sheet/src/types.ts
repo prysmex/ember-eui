@@ -141,6 +141,8 @@ export interface SheetCellSignature<
     pending?: boolean;
     /** A button cell (`onCellClick` → `{ press: true }`) with no press for this record. */
     disabled?: boolean;
+    /** The sheet's messages (labels for screen readers, e.g. a checkbox's state). */
+    messages?: SheetMessages;
   };
 }
 

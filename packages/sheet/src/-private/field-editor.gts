@@ -323,6 +323,16 @@ export default class FieldEditor extends Component<FieldEditorSignature> {
     return this.sheet.fields.fieldById(this.state.fieldId);
   }
 
+  confirmId = `${guidFor(this)}-confirm`;
+
+  /** The dialog's name: "Delete field", "Add field" or "Edit field". */
+  get dialogLabel(): string {
+    if (this.isDelete) return this.messages.deleteField();
+    return this.mode === 'create'
+      ? this.messages.addField()
+      : this.messages.editField();
+  }
+
   get confirmText(): string {
     const field = this.field;
     return this.messages.deleteFieldConfirm(field?.label ?? field?.id ?? '');
@@ -352,8 +362,12 @@ export default class FieldEditor extends Component<FieldEditorSignature> {
 
   <template>
     <SheetLayer @sheet={{this.sheet}}>
+      {{! a dialog named by what it does (any @fieldEditor content inside) }}
       <div
         class="euiSheet__fieldEditor"
+        role="dialog"
+        aria-label={{this.dialogLabel}}
+        aria-describedby={{if this.isDelete this.confirmId}}
         data-eui-sheet-field-editor
         data-test-subj="euiSheetFieldEditor"
         {{placeLayer
@@ -379,7 +393,10 @@ export default class FieldEditor extends Component<FieldEditorSignature> {
                 class="euiSheetFieldEditor__form"
                 data-test-subj="euiSheetFieldDelete"
               >
-                <p class="euiSheetFieldEditor__confirm">{{this.confirmText}}</p>
+                <p
+                  class="euiSheetFieldEditor__confirm"
+                  id={{this.confirmId}}
+                >{{this.confirmText}}</p>
                 {{#if this.state.error}}
                   <EuiCallOut
                     @size="s"

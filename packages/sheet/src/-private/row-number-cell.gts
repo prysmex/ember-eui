@@ -107,9 +107,11 @@ export class RowNumberCell extends Component<RowNumberCellSignature> {
       classes.push('euiSheet__rowCell--add');
       props['aria-label'] = messages.addRecord();
     } else if (this.hasRecord) {
-      props['aria-label'] = messages.rowNumber(
-        this.sheet.rows.positionOf(this.args.rowIndex)
-      );
+      // the row's checkbox is drawn, not a control: its state is in the label
+      const position = this.sheet.rows.positionOf(this.args.rowIndex);
+      props['aria-label'] = this.checked
+        ? messages.rowNumberChecked(position)
+        : messages.rowNumber(position);
       if (this.checked) classes.push('euiSheet__rowCell--checked');
       // V03 10.1: a row being dragged
       if (this.sheet.rowDrag.isMoving(this.args.rowIndex)) {
@@ -195,6 +197,11 @@ export class RowNumberHeader extends Component<RowNumberHeaderSignature> {
     return this.args.sheet.messages.selectAllRows();
   }
 
+  /** The column header's name (its checkbox is drawn and `aria-hidden`). */
+  get headerName(): string {
+    return this.args.sheet.messages.rowNumberHeader();
+  }
+
   <template>
     <span
       class="euiSheet__checkbox euiSheet__rowCheckAll
@@ -204,7 +211,7 @@ export class RowNumberHeader extends Component<RowNumberHeaderSignature> {
       data-test-subj="euiSheetRowCheckAll"
       title={{this.label}}
       aria-hidden="true"
-    ></span>
+    ></span><span class="euiSheet__srOnly">{{this.headerName}}</span>
   </template>
 }
 

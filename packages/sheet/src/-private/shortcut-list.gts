@@ -61,35 +61,45 @@ export default class ShortcutList extends Component<ShortcutListSignature> {
         >{{this.title}}</EuiModalHeaderTitle>
       </EuiModalHeader>
       <EuiModalBody>
-        {{#each this.sections as |section|}}
-          <table class="euiSheetShortcuts__section">
-            <caption
-              class="euiSheetShortcuts__title"
-            >{{section.title}}</caption>
-            <tbody>
-              {{#each section.rows as |row|}}
-                <tr data-test-subj="euiSheetShortcut">
-                  <td class="euiSheetShortcuts__keys">
-                    {{#each row.keys as |combo index|}}
-                      {{#if index}}
-                        <span class="euiSheetShortcuts__or">{{this.or}}</span>
-                      {{/if}}
-                      {{#each combo as |key position|}}
-                        {{#if position}}+{{/if}}<kbd
-                          class="euiSheetShortcuts__key"
-                        >{{key}}</kbd>
+        {{! focusable, so the keyboard scrolls a list taller than the modal }}
+        {{! template-lint-disable no-noninteractive-tabindex }}
+        <div
+          class="euiSheetShortcuts__list"
+          role="region"
+          tabindex="0"
+          aria-labelledby={{this.titleId}}
+          data-test-subj="euiSheetShortcutList"
+        >
+          {{#each this.sections as |section|}}
+            <table class="euiSheetShortcuts__section">
+              <caption
+                class="euiSheetShortcuts__title"
+              >{{section.title}}</caption>
+              <tbody>
+                {{#each section.rows as |row|}}
+                  <tr data-test-subj="euiSheetShortcut">
+                    <td class="euiSheetShortcuts__keys">
+                      {{#each row.keys as |combo index|}}
+                        {{#if index}}
+                          <span class="euiSheetShortcuts__or">{{this.or}}</span>
+                        {{/if}}
+                        {{#each combo as |key position|}}
+                          {{#if position}}+{{/if}}<kbd
+                            class="euiSheetShortcuts__key"
+                          >{{key}}</kbd>
+                        {{/each}}
                       {{/each}}
-                    {{/each}}
-                  </td>
-                  <td
-                    class="euiSheetShortcuts__text"
-                    data-test-subj="euiSheetShortcutText"
-                  >{{row.text}}</td>
-                </tr>
-              {{/each}}
-            </tbody>
-          </table>
-        {{/each}}
+                    </td>
+                    <td
+                      class="euiSheetShortcuts__text"
+                      data-test-subj="euiSheetShortcutText"
+                    >{{row.text}}</td>
+                  </tr>
+                {{/each}}
+              </tbody>
+            </table>
+          {{/each}}
+        </div>
       </EuiModalBody>
     </EuiModal>
   </template>

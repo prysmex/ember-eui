@@ -21,7 +21,8 @@ module('Unit | Sheet | tree shaking', function () {
   // built with `staticInvokables: false`, or a classic build, bundles it
   // (and all it imports) whether it renders it or not. Hosts import the
   // components; loose-mode templates opt in with a re-export in their own
-  // app tree (docs/sheet.md). `pnpm size --compat` measures it.
+  // app tree (docs/sheet/index.md, "Install"). `pnpm size --compat`
+  // measures it.
   test('TS1 package.json publishes no app-js', function (assert) {
     const pkg = JSON.parse(files['../../package.json']!) as {
       'ember-addon': Record<string, unknown>;

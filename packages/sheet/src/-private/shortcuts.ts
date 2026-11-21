@@ -1,6 +1,7 @@
 /**
- * The shortcut list's table (V03 5.5): what `docs/sheet.md` "Keyboard"
- * documents, one row each, by section. Plain data: `shortcut-list.gts`
+ * The shortcut list's table (V03 5.5): what the docs' editing page
+ * (`docs/sheet/editing/index.md`, "Keyboard") documents, one row each, by
+ * section. Plain data: `shortcut-list.gts`
  * draws it, and every text is a message (`src/core/messages.ts`), key
  * names included, so `@messages` and `eui-i18n` translate it.
  */

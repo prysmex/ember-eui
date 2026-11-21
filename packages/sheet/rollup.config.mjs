@@ -27,7 +27,8 @@ export default {
     ]),
     // no addon.appReexports(): an app-js entry puts the component in every
     // host's app tree, bundled whether rendered or not (classic builds,
-    // staticInvokables: false); hosts import it (docs/sheet.md)
+    // staticInvokables: false); hosts import it (docs/sheet/index.md,
+    // "Install")
     addon.dependencies(),
     nodeResolve({ extensions }),
     babel({

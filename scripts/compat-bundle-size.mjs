@@ -76,7 +76,7 @@ const CASES = {
     ]
   },
   // loose mode, the opt-in way: the host re-exports the component into its
-  // own app tree (docs/sheet.md, "Loose-mode templates")
+  // own app tree (packages/sheet/docs/sheet/index.md, "Install")
   'sheet-loose-host': {
     deps: sheet,
     hbs: '<EuiSheet @fields={{array}} @records={{array}} />',

@@ -199,12 +199,15 @@ page, a collapsed group) draws nothing until you show it.
 
 `@frozenFields={{1}}` freezes the first field (off by default): it, its
 header, its summary cell and the row numbers stay in view on horizontal
-scroll. It has a cost: while a field is frozen the grid renders every
-column of the rows in view, not only the columns in view (rows stay
-virtualized). In the sheet's test with 30 fields that was 372 cells instead
-of 72, and about four times the time per vertical scroll step. Freeze on
-sheets with few fields, or hide the fields not needed on screen. Above 50
-visible fields the sheet does not freeze. The docs' [Large data](https://ember-eui.vercel.app/docs/sheet/docs/sheet/large-data#performance-with-frozen-fields)
+scroll. While a field is frozen the grid renders the frozen columns
+besides the columns in view; the other columns stay virtualized, and so
+do the rows, so the number of fields and records hardly matters. At the
+left edge both render the same cells (72 in the sheet's test with 10,000
+records and 30 fields) and a scroll step takes about the same time; on
+the docs' Large data page (10,000 records) a scroll pass had the same
+frame p90 frozen and not (50 ms), and about 7 % more busy time frozen.
+Scrolled sideways, a row renders its frozen cells more. Above 50 visible
+fields the sheet does not freeze. The docs' [Large data](https://ember-eui.vercel.app/docs/sheet/docs/sheet/large-data#performance-with-frozen-fields)
 page has the numbers.
 
 ### Group by

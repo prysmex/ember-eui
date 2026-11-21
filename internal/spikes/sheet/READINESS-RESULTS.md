@@ -2656,8 +2656,10 @@ the docs pages:
 
 Done 2026-11-21 on `feat/sheet` after `a9a9295`. Commits: `9f6d30d`
 (the row-number column), `ff87e4a` (the two keys), `4ea669a`
-(`CHECKLISTS.md`), this section (the scroll numbers) and "Final checks"
-below. Not pushed. No change to `packages/core/src`; no existing test
+(`CHECKLISTS.md`), `a09da55` (this section, the scroll numbers),
+`5836dce` (RNK1's PageUp assertion), `d7794c5` ("Final checks"),
+`6a98ea0` (RNW6, checklist corrections) and a last one (this section's
+follow-ups). Not pushed. No change to `packages/core/src`; no existing test
 edited.
 
 ### 1. The row-number column on a phone (`9f6d30d`)
@@ -2695,7 +2697,10 @@ edited.
   the expand icon after both and inside the cell; 9 → 10 records grows
   the column and an edit keeps it; the grip; group starts (123456) and
   `@rowLabel`; the range outline, the fill handle and the header follow
-  a width change after render, frozen or not. All eight fail without the
+  a width change after render, frozen or not; RNW6 (`6a98ea0`): Enter on
+  the add row of 9 records with Name resized adds the tenth, the column
+  grows, Name keeps its width, focus stays on a grid cell and the fill
+  handle on its corner. RNW1-RNW5's eight tests fail without the
   fix (gap 0 px; "123456" in 22 px). Noted while writing RNW5: replacing
   `@records` with new objects (same ids) clears the range outline, also
   before the fix; RNW5 grows the column with `@rowNumberOffset` instead.
@@ -2713,6 +2718,10 @@ edited.
 
 ### 2. Two keyboard bugs (`ff87e4a`)
 
+- **A decision for the user (GR11):** the fix takes the page keys on an
+  ungrouped row number only while the grid has rows out of view, so that
+  an existing assertion stays green (below). "Always take them" would
+  change GR11's expectation; listed in `CHECKLISTS.md`.
 - **PageDown / PageUp on a row-number cell, no groups:** the sheet left
   them to the grid (only grouped sheets took them, V03 8.5), and core's
   grid takes page keys only with pagination, so the browser scrolled the
@@ -2728,7 +2737,8 @@ edited.
   and there nothing scrolls the focused row away. Real keys on the
   production build (Large sheet, Playwright `keyboard.press`): before,
   PageDown from row 2 left focus on `BODY` twice; after, rows 2 → 12 →
-  22 → 12 → 2, focus on the row number each time.
+  22 → 12 → 2, focus on the row number each time; the same with "Freeze
+  the first field" on (2 → 12 → 22 → 12).
 - **The row-number header's "check all"** was mouse only (core's
   control-column header has no keys: no actions, no focus trap). Space
   or Enter on the focused header (no modifier) now runs the same toggle
@@ -2736,7 +2746,9 @@ edited.
   `@onCheckedChange` when given. Its name stays "Row number" (A2 pins
   the first hidden text); a second hidden text follows it: "Select all
   rows", "Some rows checked" or "All rows checked" (Chromium's
-  accessibility tree: columnheader "Row number Select all rows"). New
+  accessibility tree: columnheader "Row number Select all rows"; with real
+  keys on the Large sheet, Ctrl+Home, ArrowLeft, ArrowUp reach the
+  header, Space checks every row, Enter none). New
   messages `someRowsChecked`, `allRowsChecked` (and `selectAllRows`
   reused), and `shortcutCheckAll`, a row of the shortcut list ("Check
   every row, or none (on the row-number header)", with row numbers on).
@@ -2817,8 +2829,10 @@ report), and "Known issues and decisions left".
 
 ## Final checks
 
-On the final tree (`5836dce`: the stage's code, tests and docs; this
-section only adds text), 2026-11-21, in this sandbox (Chromium only):
+On the final tree, 2026-11-21, in this sandbox (Chromium only). The core,
+root and site checks ran on `5836dce`; `6a98ea0` after it adds one sheet
+test and checklist text only (no source, docs page or build input), and
+the sheet checks were run again on it:
 
 | Check | Result |
 | --- | --- |
@@ -2826,7 +2840,7 @@ section only adds text), 2026-11-21, in this sandbox (Chromium only):
 | sheet `pnpm lint:js` | pass (no problems) |
 | sheet `pnpm lint:css` | pass |
 | the tests' ember-tsc (`pnpm exec ember-tsc --noEmit -p tsconfig.eslint.json`) | 19 errors, the `error TS` lines identical to `3c-checks/baseline-tests-tsc.log` |
-| sheet full suite (`vite build --mode=development`, testem) | 793/793 (781 + RNW1-RNW5 as 8 tests + RNK1-RNK4), twice in a row, no flake; an earlier run failed RNK1 once (its PageUp assertion assumed a fixed page size: fixed in `5836dce`, a test-only change) |
+| sheet full suite (`vite build --mode=development`, testem) | 794/794 on `6a98ea0` (781 + RNW1-RNW6 as 9 tests + RNK1-RNK4); 793/793 twice on `5836dce`; no flake; an earlier run failed RNK1 once (its PageUp assertion assumed a fixed page size: fixed in `5836dce`, a test-only change) |
 | core full suite (`pnpm test`) | 2151 tests: 2149 pass, 2 todo (LI-2, LI-3), 0 fail |
 | core `pnpm lint:types` | pass |
 | core `pnpm lint:js` | the 3 pre-existing errors, all in untouched files (`tests/addon-app-modules.ts`, `tests/integration/leak-infra-test.gts`, `tests/integration/leaks/components-teardown-test.gts`, last changed in `e2ced9d`); no new one |
@@ -2848,7 +2862,8 @@ Preview servers stopped; the working tree is clean.
   allows: Inter's tabular digits are about 8.7 px at 14 px), real screen
   readers: all in `CHECKLISTS.md`.
 - The row-number width with an app font larger or wider than the grid's
-  14 px default: the width is computed, not measured.
+  14 px default, and `@rowLabel` labels of wide letters (W, M can pass
+  9.5 px a character): the width is computed, not measured.
 - The scroll numbers come from this sandbox (p90 on the 33.4 / 50 ms
   quantum edge, busy times moving about 10 % between runs).
 - `@records` replaced by new objects with the same ids clears the range

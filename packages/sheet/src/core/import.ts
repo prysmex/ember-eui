@@ -63,7 +63,7 @@ export interface SheetImportTransform {
   id: string;
   label: string;
   description?: string;
-  /** Text in, text out. `null` is an empty cell. Throwing marks the cell as an error with the message. */
+  /** Text in, text out. `null` is an empty cell. Throwing marks the cell as an error with the message (its row text is `''`). */
   apply(
     text: string,
     context: {
@@ -186,7 +186,7 @@ export interface SheetImportUnresolved {
 }
 
 export interface SheetImportRun {
-  /** One entry per line kept, one text per entry of `fieldIds`: what `api.appendRows` takes. */
+  /** One entry per line kept, one text per entry of `fieldIds`: what `api.appendRows` takes. A cell whose transform threw is `''`. */
   rows: string[][];
   /** The field each column goes to; a new field's column has its placeholder id (`importFieldId`) until it is created. */
   fieldIds: string[];
@@ -689,7 +689,9 @@ function readLine(
             row: rowOf()
           }) ?? '';
       } catch (error) {
-        texts.push(text);
+        // the row writes nothing for it: the text it failed on is not the
+        // column's text (a text field would store it)
+        texts.push('');
         reads.push({ kind: 'error', text, message: errorMessage(error) });
         continue;
       }
@@ -806,6 +808,7 @@ export function runImport(
   for (const i of dataLines(matrix, plan)) {
     const { texts, reads } = readLine(ctx, plan, readers, matrix[i]!, i);
     let failed = false;
+    const unresolved: SheetImportUnresolved[] = [];
     const values = reads.map((read, k) => {
       const reader = readers[k]!;
       if (read.kind === 'value') return read.value;
@@ -819,7 +822,7 @@ export function runImport(
         failed = true;
         result.errors.push({ ...cell, message: read.message });
       } else {
-        result.unresolved.push(cell);
+        unresolved.push(cell);
       }
       return undefined;
     });
@@ -827,6 +830,7 @@ export function runImport(
       result.skippedLines.push(i);
       continue;
     }
+    result.unresolved.push(...unresolved);
     result.rows.push(texts);
     result.lines.push(i);
     result.values.push(values);

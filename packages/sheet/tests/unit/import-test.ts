@@ -487,6 +487,17 @@ module('Unit | import screen helpers', function () {
       'the transform gets the line, its header and the line’s texts'
     );
 
+    // the run writes '' for a cell whose transform threw (not the text)
+    const run = runImport({ ...ctx, fields }, matrix, plan, transforms);
+    assert.deepEqual(
+      run.rows.map((row) => row[3]),
+      ['123.45', '', '0.05']
+    );
+    assert.deepEqual(
+      run.errors.map((e) => [e.line, e.column, e.text, e.message]),
+      [[2, 3, 'x', '"x" is not cents']]
+    );
+
     // without the copy, the M/D/Y text is the date type's error
     const plain = previewImport(
       { ...ctx, fields },
@@ -622,7 +633,7 @@ module('Unit | import screen helpers', function () {
         i === 500 ? 'a, "b"' : `n${i}`,
         i % 100 === 0 ? 'bad' : String(i),
         '19/11/2026',
-        i === 1 ? 'Acme' : ''
+        i === 1 ? 'Acme' : i === 100 ? 'Bolt' : ''
       ])
     ];
     const plan: SheetImportPlan = { columns: matchColumns(matrix[0]!, fields) };
@@ -643,7 +654,8 @@ module('Unit | import screen helpers', function () {
       message: messages.notANumber('bad')
     });
     assert.deepEqual(run.unresolved, [
-      { line: 2, column: 3, fieldId: 'client', text: 'Acme' }
+      { line: 2, column: 3, fieldId: 'client', text: 'Acme' },
+      { line: 101, column: 3, fieldId: 'client', text: 'Bolt' }
     ]);
     assert.deepEqual(run.skippedLines, []);
 
@@ -656,6 +668,11 @@ module('Unit | import screen helpers', function () {
       Array.from({ length: 10 }, (_, k) => k * 100 + 1)
     );
     assert.false(skipped.lines.includes(101));
+    assert.deepEqual(
+      skipped.unresolved.map((cell) => cell.line),
+      [2],
+      'a skipped line’s unresolved cell is not listed'
+    );
     assert.strictEqual(
       skipped.errors.length,
       10,
@@ -673,7 +690,7 @@ module('Unit | import screen helpers', function () {
         headers: false,
         delimiter: ';'
       }),
-      'n0;bad;19/11/2026;\r\nn100;bad;19/11/2026;',
+      'n0;bad;19/11/2026;\r\nn100;bad;19/11/2026;Bolt',
       'once each, in file order; no header; another delimiter'
     );
 

@@ -1280,8 +1280,9 @@ decisions 10-13 after batch B in `v04/README.md`) before `32cfe62`.
 
 ## The paste fix (decision 10)
 
-Built 2026-11-21 on `f360376` (batches D, A, B, C done), in this
-checkout. Decision 10 of `v04/README.md`: "A paste on the add row also
+Built 2026-11-21 on `c5ca46f` (batches D, A, B, C done; `c5ca46f` is the
+main session's readiness docs on top of `f360376`), in this checkout.
+Decision 10 of `v04/README.md`: "A paste on the add row also
 fills the fields the pasted text has no column for from
 `@newRecordValues`, as `appendRows` does" (batch B's deviation 4).
 
@@ -1341,6 +1342,15 @@ time out (deviation 3); nothing else failed in it.
 - `eslint` and `prettier --check` on the three changed files: clean.
 - Owner gate: OK (38 module classes).
 - `node scripts/generate-api-docs.mjs --check`: exit 0.
+- These ran before PNV3's switch to `pasteNow` (a test-only change);
+  after it, the tests' `ember-tsc` (same baseline), `eslint` and
+  `prettier --check` on the test file were run again, not `lint:types`,
+  the owner gate or the API-docs check (they read no test file).
+- The first full run was **661 / 662** (PNV3 timed out at 60 s on the
+  shared `clipboard` helper's `settled()`, deviation 3); the run after
+  the fix, on the committed tree, was 662 / 662. A second Chromium (a
+  scratch build of stage 1's unit tests and its first measurement) ran
+  during part of that second run.
 
 ### Deviations
 
@@ -1554,7 +1564,7 @@ Not measured: the component's rendering, a real 10,000-line CSV through
   `tests/unit/import-test.ts`): clean.
 - Owner gate: OK.
 - `node scripts/generate-api-docs.mjs --check`: exit 0 (it reads no sheet
-  source).
+  source; only `--check` was run, nothing regenerated).
 - `pnpm lint:js`, `pnpm lint:css` in `packages/sheet`: exit 0;
   `pnpm eui:check` at the root: exit 0.
 - `packages/core/src` unchanged; no dependency added.
@@ -1616,12 +1626,26 @@ Not measured: the component's rendering, a real 10,000-line CSV through
 11. **A read-only target field is read like any other**; `appendRows`
    skips read-only fields (APR4). The screen's target select should
    offer only writable fields (stage 2).
+12. **A cell whose transform threw is `''` in `rows`** (the follow-up
+   commit). The first stage 1 commit (`edbf64e`) wrote the untransformed
+   text there: with "Import all", `appendRows` would then store it
+   wherever the type reads it (always, for a text field), although the
+   dry run reported an error. No text makes every type reject, so the
+   row writes nothing for that cell (the type's empty value) and the
+   error is only in `errors`. IP3 asserts it. **The user's decision**
+   whether the raw text should be written instead.
+13. **With `skipLinesWithErrors`, `unresolved` lists only the kept
+   lines' cells** (the follow-up commit; `edbf64e` listed the skipped
+   lines' too). IP4 asserts it.
 
 ### Found (not changed)
 
 - `url`'s `validate` accepts `19/11/2026` and plain numbers (`12` →
   `https://12` → the host 0.0.0.12): a url field shows such texts as
-  valid. Outside this batch (a field type's rule).
+  valid. Checked with Node 22 (`new URL('https://19/11/2026').hostname`
+  is `0.0.0.19`, `https://12` gives `0.0.0.12`; `urlFieldType.validate`
+  returns `[]` for both and an error for `Calle 5`). Outside this batch
+  (a field type's rule).
 - ISO timestamps (`2026-11-19T10:30`) guess `date`, not `dateTime`:
   `date.parse` accepts a time part and drops it, and `date` comes first
   (`dateTime` is not in the default creatable list anyway). Spaced phone
@@ -1661,7 +1685,18 @@ messages, fields: @fields }`):
    ...created] }, matrix, plan, @transforms, { skipLinesWithErrors })`;
    `@onImport({ rows, fieldIds, createdFields: created, skippedLines,
    mapping: { signature: importSignature(headers), columns } })`.
-8. **Decision needed:** the design's `SheetImportResult` has no
+8. **Two columns can target one field.** `matchColumns` gives a field
+   to one column, but the plan is the user's to edit and `runImport`
+   does not stop a second column naming the same field: both go into
+   `fieldIds`, and in `appendRows` the later one wins. The target select
+   should take the field from the other column (or say it is taken).
+9. **Without a header line** every header is `''`: `importSignature` is
+   the same for every file of that width (a saved mapping then applies
+   to any such file), and a transform's `row` has one key (`''`, the
+   first column). The screen should save mappings only with headers, and
+   may give such columns names (`Column 1`, …) before calling
+   `matchColumns`.
+10. **Decision needed:** the design's `SheetImportResult` has no
    `fields`, and its example passes `{ fields: result.createdFields }` to
    `appendRows`. That drops the per-column copies: an M/D/Y column of a
    D/M/Y field would be rejected (APR6 shows it). Stage 2 should add
@@ -1671,7 +1706,8 @@ messages, fields: @fields }`):
 
 ### Open items
 
-- The decisions above: `SheetImportResult.fields` (stage 2, note 8);
+- The decisions above: `SheetImportResult.fields` (stage 2, note 10);
+  a transform error's row text (deviation 12);
   rows full width vs `importMatrix`'s short rows (deviation 9); "empty is
   no value" for a text field in a sheet (deviation 8).
 - No docs yet: `docs/sheet.md`'s import-screen section and the demo are
@@ -1694,7 +1730,8 @@ messages, fields: @fields }`):
 | Commit | Holds | Suite |
 | --- | --- | --- |
 | `a365483` | the paste fix (decision 10): `records.fillNewValues`, `pasteText`, `appendRows`; PNV1-PNV5; docs; its results | 662 / 662 |
-| the stage 1 commit | `src/core/import.ts` and the moves; IG1-IG3, IP1-IP5; these results | 670 / 670 |
+| `edbf64e` | `src/core/import.ts` and the moves; IG1-IG3, IP1-IP5; these results | 670 / 670 |
+| the follow-up commit | a transform error writes `''` in `rows`, skipped lines' unresolved cells left out (deviations 12, 13; IP3, IP4 assertions); corrections to these results | 670 / 670 |
 
 One commit in this range is the main session's: `c5ca46f` (readiness
 loose ends from batch C) before `a365483`.

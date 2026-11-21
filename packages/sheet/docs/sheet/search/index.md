@@ -137,13 +137,3 @@ views (search box, sort menu, filter bar, chips, paging info) in the
 blocks.
 
 </EuiText>
-
-<EuiSpacer @size="xl" />
-
-<EuiText>
-
-## Examples
-
-</EuiText>
-
-[[demos-all]]

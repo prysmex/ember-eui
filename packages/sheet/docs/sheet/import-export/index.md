@@ -341,13 +341,3 @@ once per change of a column, 250 ms after the last change (a
 10,000-line, 20-column dry run took about 70 ms in Chromium).
 
 </EuiText>
-
-<EuiSpacer @size="xl" />
-
-<EuiText>
-
-## Examples
-
-</EuiText>
-
-[[demos-all]]

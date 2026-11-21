@@ -242,13 +242,3 @@ list is odd: `@canInsert={{false}}` until everything is loaded, as the
 "Load more as you scroll" example does.
 
 </EuiText>
-
-<EuiSpacer @size="xl" />
-
-<EuiText>
-
-## Examples
-
-</EuiText>
-
-[[demos-all]]

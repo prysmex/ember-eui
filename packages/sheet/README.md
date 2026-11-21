@@ -21,6 +21,9 @@ and the column menu), through your handlers. Records can be drawn in
 groups, with collapsible headers, counts and per-group summaries, from the
 groups you pass.
 
+**New to the sheet?** Start with [Getting started](https://ember-eui.vercel.app/docs/sheet/docs/sheet): a working
+sheet in five minutes, with a link to each topic page of the docs.
+
 ## Install
 
 ```sh
@@ -198,8 +201,8 @@ column of the rows in view, not only the columns in view (rows stay
 virtualized). In the sheet's test with 30 fields that was 372 cells instead
 of 72, and about four times the time per vertical scroll step. Freeze on
 sheets with few fields, or hide the fields not needed on screen. Above 50
-visible fields the sheet does not freeze. The docs' "Frozen field" section
-has the numbers.
+visible fields the sheet does not freeze. The docs' [Large data](https://ember-eui.vercel.app/docs/sheet/docs/sheet/large-data#performance-with-frozen-fields)
+page has the numbers.
 
 ### Group by
 
@@ -232,7 +235,7 @@ of the group (Shift+Enter, insert, duplicate), gets the group's values and
 `groupRecords`, `applyChangeSetToGroups` and `pageGroups` help an owner
 build `@groups`; `EuiSheetSearch` forwards the four arguments. Grouping
 keeps column virtualization, so it costs about what an ungrouped sheet
-costs. The docs' "Group by" section has the contract.
+costs. The docs' [Group by](https://ember-eui.vercel.app/docs/sheet/docs/sheet/groups#group-by) section has the contract.
 
 ## Full screen
 
@@ -297,7 +300,7 @@ with a download of the lines with errors. `@onCreateFields(drafts)`
 creates new fields on Import; `@onImport(result)` gets the lines:
 `api.appendRows(result.rows, result.fieldIds, { fields: result.fields })`.
 It takes no sheet, so any target described by fields works
-(`result.values`). See the docs, "Import from CSV".
+(`result.values`). See the docs, [Import from CSV](https://ember-eui.vercel.app/docs/sheet/docs/sheet/import-export#import-from-csv).
 
 ## EmberSearchUi
 

@@ -107,13 +107,3 @@ your own focus trap around the sheet if you need one.
 presentation state; `api.setFullScreen(on)` sets it from outside.
 
 </EuiText>
-
-<EuiSpacer @size="xl" />
-
-<EuiText>
-
-## Examples
-
-</EuiText>
-
-[[demos-all]]

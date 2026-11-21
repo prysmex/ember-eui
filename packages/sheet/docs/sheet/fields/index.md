@@ -111,13 +111,3 @@ need `search` or `upload` functions, which a draft cannot hold; list them
 and complete the field in your handler.
 
 </EuiText>
-
-<EuiSpacer @size="xl" />
-
-<EuiText>
-
-## Examples
-
-</EuiText>
-
-[[demos-all]]

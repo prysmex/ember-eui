@@ -154,13 +154,3 @@ duplicate check, a total) once when `@records` changes, and read the
 result by id.
 
 </EuiText>
-
-<EuiSpacer @size="xl" />
-
-<EuiText>
-
-## Examples
-
-</EuiText>
-
-[[demos-all]]

@@ -43,13 +43,3 @@ chips, your own cell components from `@fieldTypes`). Above 50 visible
 fields the sheet does not freeze at all, and `@frozenFields` is ignored.
 
 </EuiText>
-
-<EuiSpacer @size="xl" />
-
-<EuiText>
-
-## Examples
-
-</EuiText>
-
-[[demos-all]]

@@ -167,13 +167,3 @@ their values make the cell's value (`resolve: { parts, combine }`); by
 default the whole text is one part and its value is the cell's value.
 
 </EuiText>
-
-<EuiSpacer @size="xl" />
-
-<EuiText>
-
-## Examples
-
-</EuiText>
-
-[[demos-all]]

@@ -188,13 +188,3 @@ itself outside the sheet (a wormholed list) adds it there; without it
 that part uses the light colours.
 
 </EuiText>
-
-<EuiSpacer @size="xl" />
-
-<EuiText>
-
-## Examples
-
-</EuiText>
-
-[[demos-all]]

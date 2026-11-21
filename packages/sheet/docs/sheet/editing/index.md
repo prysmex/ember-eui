@@ -263,13 +263,3 @@ rejection and `@cellErrors`: the other rules would describe the old
 value.
 
 </EuiText>
-
-<EuiSpacer @size="xl" />
-
-<EuiText>
-
-## Examples
-
-</EuiText>
-
-[[demos-all]]

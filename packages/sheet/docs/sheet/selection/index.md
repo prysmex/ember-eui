@@ -134,13 +134,3 @@ tried on a real phone yet: the handles were checked with synthetic touch
 events and Chromium's touch emulation only.
 
 </EuiText>
-
-<EuiSpacer @size="xl" />
-
-<EuiText>
-
-## Examples
-
-</EuiText>
-
-[[demos-all]]

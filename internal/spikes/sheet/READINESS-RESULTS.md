@@ -1647,10 +1647,27 @@ re-walks 76,211 (search, d22 "People", 300 records, beside d14),
 75,097 (selection, d18 "Work log", beside d05 and d13), 63,615 (layout,
 d24 "Inventory", beside d12), 49,782 (example app, 50 loaded). Their
 profiles: p90 49.9 ms and 6 frames over 50 ms (search), 33.3 ms and 2
-(selection), 33.3 ms and 3 (example app). No page has several heavy
-demos, so rendering a demo only near the viewport was not built: it
-would not be measurably worth it. (The rows and field-types sheets do
-not scroll vertically in 12 steps: 8 and 9 records.)
+(selection), 33.3 ms and 3 (example app). The two pages with the most
+demos, rows (5) and field-types (4), have no sheet that scrolls in 12
+wheel steps (d10 has 8 records), so they were measured with the keys
+instead: a cell clicked, then six arrow presses (down and back up), each
+one render pass, re-walks per press (the instrumented build, all six
+presses within 9 of each other):
+
+| Page (sheets on it)      | Sheet         | re-walks per arrow press |
+| ------------------------ | ------------- | ------------------------ |
+| Getting started (1)      | Tasks         | 16,200                   |
+| Large data (1)           | d08 Employees | 35,173                   |
+| Search (2)               | d22 People    | 38,477                   |
+| Records and rows (5)     | d10 Workers   | 45,281                   |
+| Field types (4)          | d15 Products  | 79,741                   |
+| the old single page (28) | d05 Products  | 236,741                  |
+
+Field types costs the most (its four sheets are all chips, avatars and
+thumbnails), about 2.3 times d08 alone and a third of what any key cost
+on the old page. No page has several heavy demos (d08 is the only large
+one, and it is alone), so rendering a demo only near the viewport was not
+built: it would not be measurably worth it.
 
 ### Harness
 
@@ -1659,13 +1676,15 @@ page) and the sheet from `LABEL` (default `Employees`); `count-tags.js`,
 `profile-scroll.js` and `shots-d08.js` use `LABEL` and fail when no sheet
 has it. A build from before the split: `PAGE=/docs/sheet/docs/sheet`.
 `shots.js` screenshots the sheets with chips of one page, so since the
-split a run covers one page's sheets (README there). `build-large.sh`'s
-harness page (`/docs/sheet/docs/perf-large`) is unaffected.
+split a run covers one page's sheets (README there). `build-large.sh`
+still works: re-run after the split into a scratch directory, its page
+(`/docs/sheet/docs/perf-large?rows=10000`) loads and mounts the sheet
+with no console error.
 
 ### Checks
 
 Before each commit: `node scripts/generate-api-docs.mjs --check`; root
-`pnpm eui:check`; site `pnpm lint`, `pnpm test` (node tests 9, 9, then 11
+`pnpm eui:check`; site `pnpm lint`, `pnpm test` (node tests 8, 9, then 11
 with the two new ones; browser tests 14/14, the every-page tests
 included) and `pnpm build`; a Playwright pass over every sheet page of
 the production build (`vite preview`): each loads with no console error
@@ -1673,11 +1692,17 @@ the production build (`vite preview`): each loads with no console error
 `[[demo` marker text, the nav group lists the pages in order and opens
 on each, the old URL with and without its slash shows Getting started
 with its nav item selected, and every `/docs` link on the pages lands on
-a route with its `#id`. The example app was driven in Chromium (scroll
+a route with its `#id`; each of the group's 13 nav items was clicked and
+landed on its page with its item selected. The demo-identity and prose
+checks were re-run on the last commit (the 28 demos identical to
+`daa475e` but for `order`; every line of the old page found on the new
+pages, whitespace aside, except the rewritten cross-references, two
+headings, the front matter and the old closing "Examples"). The example app was driven in Chromium (scroll
 loads 50 then 100 of 230; grouping loads all 230 and draws the headers
 with their stock sums; an edited price shows in the record's footer;
 the sample import reads "3 lines ready, 1 with errors" and adds 4
-records; the export downloads `products.csv` with every record).
+records; the export downloads `products.csv` with 234 records, SKU-2001
+to SKU-2004 among them, SKU-2003's unreadable price empty).
 Prettier: the moved demos are as before; the new pages are at most as
 unformatted as the old `sheet.md` (517 lines of prettier diff over the
 pages against 519 for `sheet.md`; Getting started and its demo, the
@@ -1702,6 +1727,13 @@ the demos).
   sections went" table there links each.
 - Docfy's links render with spaces inside the anchor ("( Group by )"
   around parenthesized links); site-wide, core's pages too; not changed.
-- Chromium only, headless, in this sandbox; the StackBlitz playgrounds
-  were not opened (no network to it); the example app's file picker was
-  not driven with a real file (the sample uses `@text`).
+- Chromium only, headless, in this sandbox, on the production build
+  (development assertions stripped: the example app was not driven on a
+  development build); the StackBlitz playgrounds were not opened (no
+  network to it: the gts demo and the copied helper module there are
+  unchecked); the example app's file picker was not driven with a real
+  file (the sample uses `@text`); how the `gts` fence of Getting started
+  is highlighted was not looked at.
+- Bisecting: `97254ae` alone still shows the `[[demos-all]]` marker as
+  text at the end of each topic page (as the old page did); `1d383ef`
+  fixes it.

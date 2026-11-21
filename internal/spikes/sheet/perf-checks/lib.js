@@ -8,7 +8,7 @@
 const { chromium } = require('playwright');
 
 const PORT = process.env.PORT || '4195';
-const PAGE = process.env.PAGE || '/docs/sheet/docs/sheet/large-data';
+const PAGE = process.env.PAGE || '/docs/sheet/docs/sheet/data/large-sheet';
 const LABEL = process.env.LABEL || 'Employees';
 const URL = `http://127.0.0.1:${PORT}${PAGE}`;
 

@@ -5,7 +5,7 @@ READINESS-RESULTS.md's "Performance: scrolling": real wheel scrolling of
 the d08 demo ("Employees", 10,000 records × 31 fields) in Playwright's
 Chromium, on the production docs build.
 
-The page: `PAGE` (default `/docs/sheet/docs/sheet/large-data`, the
+The page: `PAGE` (default `/docs/sheet/docs/sheet/data/large-sheet`, the
 Large data page, where d08 is alone) and the sheet: `LABEL` (default
 `Employees`), both in `lib.js`. Until the docs split (READINESS-RESULTS.md,
 "Docs split and getting started") every demo was on one page,

@@ -99,3 +99,6 @@ Playwright is resolved from Node's global paths (`require('playwright')`).
   `CASES="rows=100000 rows=100000,throttle=4"`, `RUNS=3`: every case on
   every build, run by run (interleaved); `median-scale.mjs <out-dir>
 [metrics]` prints the medians and the three values.
+
+`results-at-scale.jsonl`: the RESULT lines of READINESS-RESULTS.md's
+"Performance: at scale" matrix (base `46a7fbe`, head `53a3a52`).

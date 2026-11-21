@@ -89,6 +89,7 @@ module(
       // the panel's list: the panel is focusable, so it holds the menu
       const list = el('[role=menu]', menu);
       assert.dom(list).hasClass('euiContextMenuPanel__list');
+      assert.dom(list).hasAttribute('aria-label', 'Row menu', 'named');
       assert.notOk(
         list.querySelector('[tabindex]:not([role=menuitem])'),
         'nothing focusable in the menu but its items'

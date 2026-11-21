@@ -9,6 +9,7 @@
 import Component from '@glimmer/component';
 import { fn } from '@ember/helper';
 import { on } from '@ember/modifier';
+import { modifier } from 'ember-modifier';
 
 import EuiContextMenuItem from '@ember-eui/core/components/eui-context-menu-item';
 import EuiContextMenuPanel from '@ember-eui/core/components/eui-context-menu-panel';
@@ -50,6 +51,15 @@ const GROUPS: Readonly<Record<string, number>> = {
   delete: 4
 };
 
+/**
+ * Names the menu (the panel's list, `@isMenu`): the panel labels it only by
+ * a title, which this menu has none of. A named menu is also what axe's
+ * `region` rule takes as a part of its own, not loose page content.
+ */
+const nameMenu = modifier((element: HTMLElement, [label]: [string]) => {
+  element.querySelector('[role=menu]')?.setAttribute('aria-label', label);
+});
+
 /** The sheet's items by group; the app's `@rowActions` go together, before Delete. */
 function groupOf(id: string): number {
   return GROUPS[id] ?? 3;
@@ -63,6 +73,10 @@ export default class RowMenu extends Component<RowMenuSignature> {
     return groupOf(items[index]!.id) !== groupOf(items[index - 1]!.id);
   };
 
+  get label(): string {
+    return this.args.sheet.messages.rowMenu();
+  }
+
   select = (item: RowMenuItem): void => {
     if (!item.disabled) this.args.onSelect(item);
   };
@@ -72,6 +86,7 @@ export default class RowMenu extends Component<RowMenuSignature> {
       <div
         class="euiSheet__menu"
         data-test-subj="euiSheetRowMenu"
+        {{nameMenu this.label}}
         data-eui-sheet-menu
         {{placeLayer
           anchor=@anchor

@@ -535,6 +535,8 @@ export interface SheetMessages {
   cellChecked: () => string;
   /** 'Not checked': a checkbox cell's label when not checked. */
   cellUnchecked: () => string;
+  /** 'Row menu': the row menu's name, for screen readers. */
+  rowMenu: () => string;
   /** '12 cells pasted': announced to screen readers after a paste. */
   announcePasted: (n: number) => string;
   /** '1 cell pasted': `announcePasted` for one cell. */
@@ -1882,6 +1884,11 @@ export const sheetMessageTokens: Readonly<
   cellUnchecked: {
     token: 'euiSheet.cellUnchecked',
     defaultMessage: 'Not checked',
+    params: []
+  },
+  rowMenu: {
+    token: 'euiSheet.rowMenu',
+    defaultMessage: 'Row menu',
     params: []
   },
   announcePasted: {

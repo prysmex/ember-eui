@@ -548,3 +548,292 @@ over Ember (now 394.1), `sheet-import` at most 15.5 KB gzip more than
 `sheet` (now 15.1), `sheet-core` at most 25 KB gzip in all (now 23.8), and
 neither `eui-sheet-import` nor `barcode-scan-panel` among `sheet`'s static
 modules (BS1 checks the second part in the suite). Not wired into CI here.
+
+## Loose ends
+
+Done 2026-11-21, on `feat/sheet` after `0882057`, READINESS.md item 5.
+One commit per item, each with tests that fail without it (said in each
+commit message); no change to `packages/core/src`, no existing test
+edited, the public API only added to. Test prefixes are new (`grep`ped
+first): UH, RI, SA, IG4-IG7, LL, RH, IPL, IVM, VR6.
+
+### 1. TR1, the touch handles' placement (`587c2e0`)
+
+- **Cause, found:** a layout change after the render the handles are
+  placed on. A scratch copy of TR1 that taps right after the render
+  (without the two-frame wait TR1 got in V03 batch 5), 15 runs while
+  another test run loaded the CPU: in 8 the cell moved 1.66 px left and
+  narrowed (197.7 -> 196.0 px) after the handles were placed, and they
+  stayed 1.66 px off for every later frame. The grid's body measures its
+  scroll bar in the frame after a ResizeObserver callback
+  (`observeResize` in core's `body.gts`) and the columns share the new
+  width; the parts' arguments do not change, so nothing placed them
+  again until the next scroll or selection change. A container or window
+  resize does the same.
+- **Fix:** while a part over the grid is shown, the sheet observes the
+  grid's content box (the inner element sized to the columns and rows)
+  and places every registered part again on a resize, through the same
+  `scroll.placeAll` that `onScroll` uses since `ac281da`, with no
+  tracked write. The observer starts with the first part shown and stops
+  with the last.
+- **Tests:** LL1 (the touch handles) and LL2 (the fill handle and the
+  range outline) narrow the sheet's container after the parts are
+  placed; both fail without the fix (the fill handle 146.5 px off in a first draft of LL2). With
+  the fix the scratch copy's 15 runs are all on the corner (5 had the
+  late move); TR1-TR5, TK1-TK4, LL and RH passed 10 targeted runs in a
+  row, and every full run since.
+
+### 2. The EmberSearchUi connector (`fa658b6`)
+
+- `EuiSheetSearch` now passes on every `EuiSheet` argument but the ones
+  the search provides or it replaces (`fields`, `records`,
+  `getRecordId`, `onChange`, `sort`, `onSortChange`, `highlight`,
+  `isLoading`, `rowNumberOffset`, `groups`). Besides the eight the plan
+  named it was also missing `@canMove`, `@onButtonPress`, `<:empty>`
+  and `<:recordFooter>`. Its signature is `Omit<>` of the sheet's
+  arguments (was a `Pick<>` list), so a new argument is in it at once.
+- **Blocks:** `EuiSheet` draws the expanded record's footer divider when
+  `<:recordFooter>` is given, and a named block cannot be passed
+  conditionally, so the template curries `EuiSheet` once with every
+  argument (`(component this.Sheet ...)`) and invokes it twice, with and
+  without the block. `<:empty>` is always passed and renders the sheet's
+  own "No records" (the same markup and message) when the app gives none.
+  Both yield the connector's block API (with `search`).
+- **The guard:** `src/-private/sheet-arg-names.ts` lists every argument
+  and block of `EuiSheetSignature` with `satisfies Record<keyof ...>`, so
+  `lint:types` fails on a new one until it is listed; SA1 reads the inner
+  sheet's arguments from Ember's debug render tree (`captureRenderTree`,
+  on in development builds) and fails for any listed name not passed.
+  SA1, SA3 and SA4 fail on the old connector; SA1 also fails with one
+  line (`cellColor=@cellColor`) removed.
+- Its suite (716/716) ran before a lint fix that turned the toolbar's and
+  footer's content into template-only components; the 17 connector tests
+  re-ran green then, and every later full run includes it.
+
+### 3. The fill handle after a row-height change (`7d0030e`)
+
+- **A placement bug, not an early screenshot.** In the test runner, a
+  selected cell and `@rowHeight` from short to extra tall: the fill
+  handle stayed 135 px above the corner (two rows of 67.5 px more) in
+  every frame after the change; tall -81 px, medium -27 px. The parts are
+  placed after the render that changes `@rowHeight`, but the grid gives
+  the rows their new height after that render.
+- **Fix:** item 1's observer (the content box's height follows the
+  rows'); the handle is on the corner within two frames. RH1 (the fill
+  handle and the outline at each height) and RH2 (the touch handles),
+  test-only commit; both fail without `587c2e0`.
+- **Production build** (the final one, below; `vite preview`, Chromium
+  headless, 1300 × 900, scale 2, real clicks): d27 ("Cell colours"), a
+  click on row 1's Task cell, then each row-height button: the fill
+  handle's centre on the cell's corner (0.0, 0.0 px) at 100, 300 and
+  600 ms after the click, at Extra tall (cell 156 px), Tall (108),
+  Medium (60) and Short (36). No page or console errors. The build before
+  the fix was not re-run here (batch C's screenshot is the before).
+
+### 4. A rejection on an inserted row (`7207995`)
+
+- **Rule:** a rejection on a record the change set inserts is stored as
+  `UNSEEN` and takes the value its record arrives with in `@records`,
+  after the render that brings it (`cells.bindInserted`, called from
+  `follow.recordsRendered`; a plain write, the cell already showed it).
+  Until then it is shown. So an owner's default (`qty: null`, and also
+  `qty: 0`) keeps it, and a later change by the owner still hides it.
+  Chosen over "compare with the value sent, or empty": it also covers a
+  default that is not empty and an owner that normalises the value, and
+  binds at one place (not in a cell's render, where a cell out of view
+  would bind to a later value). Redo puts back a rejection whose record
+  was not seen yet with the record's current value.
+- **Tests:** RI1 (`appendRows`), RI2 (a paste on the add row), RI3 (a
+  `0` default), RI4 (the owner's change hides it), RI5 (undo and redo),
+  RI6 (`remapIds`), RI7 (`localRecords`' default, as before), RI8
+  (`restoreRejections`). RI1-RI6 fail without the change.
+
+### 5. `url`'s host rule (`2821741`)
+
+- **Rule (documented in docs/sheet.md):** the host as the text writes it
+  (after `//`, without `user@` and `:port`) must be `localhost`, an IPv6
+  address in brackets, a dotted quad of 0-255, or two or more labels
+  whose last one has a letter (`example.com`, `ñandú.mx`). So
+  `19/11/2026`, `12`, `1.2.3`, `0x7f.1` and empty labels are not URLs.
+  The URL parser's `hostname` is not used for it: it turns `19` into
+  0.0.0.19.
+- **The import guess's workaround (`URL_HOST`) is gone:** the type's rule
+  is enough for dates and numbers. One change: a column of dotted quads
+  now guesses `url`. Tests UH1-UH4.
+- Pre-existing, not changed: a text with no scheme and a port
+  (`localhost:4200`, `example.com:8080`) reads as the scheme
+  `localhost:` and is not a URL.
+
+### 6. The import guess (`97e5226`)
+
+- A sample with a time of day after a date tries `dateTime` before
+  `date`; without `dateTime` among the candidates (the default list) it
+  stays `date`. When 95 % of the sample is written as phone numbers (a
+  `+` first, parentheses, or digit groups split by spaces or dashes, 7
+  digits or more, not `1 234 567`), `phone` comes before `number`; plain
+  digits, decimals, negatives and `+5` stay numbers. Tests IG4-IG5.
+
+### 7. `@newRecordValues` for a paste past the last record: blocked
+
+Not done: PNV5 pins the old behaviour and existing tests may not be
+edited. `tests/integration/components/eui-sheet-paste-new-values-test.gts`,
+PNV5 ("a paste on a record row does not call @newRecordValues, also for
+its lines past the end"), with `@newRecordValues` giving `{ code: 'NEW' }`
+and `Bea\nCaro` pasted on record row 1:
+
+```ts
+assert.deepEqual(
+  set!.inserts.map((insert) => insert.values),
+  [{ name: 'Caro' }],
+  'the line past the end: the pasted values only (unchanged)'
+);
+assert.deepEqual(owner.seen, [], 'no call');
+```
+
+**The user's decision:** allow PNV5's expectation to change (to
+`[{ name: 'Caro', code: 'NEW' }]` and one call with `['r1', undefined]`),
+then it is the one call the plan names.
+
+### 8. The import screen's counts and its value map (`9d10999`, `7daf0f9`)
+
+- **Counts:** every count message has a form for one, as new keys beside
+  the old ones, with the same parameters and tokens `euiSheet.<key>`:
+  `importLinesOne` ("Import 1 line"), `importLineCountOne`,
+  `importLinesReadyOne`, `importLinesWithErrorsOne`, `importValuesOne`,
+  `importCantReadOne`, and `importReadOne` and `importPreviewOfOne`
+  ("The only line") for a one-line file. The old keys keep their meaning
+  (any count but one). An app that overrides (`@messages`) or translates
+  (`eui-i18n`) only the plural keeps its text for one too.
+- **Value map, decided: list the texts it is applied to** (after the
+  column's trim and transform), not move it before the transform. The
+  design (`v04/10-import-screen.md`) has a transform return text "so the
+  target type still reads it", and the value map is one of the column's
+  options for reading it; `SheetImportColumn.valueMap` already documents
+  "a text (after trim and the transform)" and `runImport` applies it so,
+  so the public helpers keep their order and only the screen changes. A
+  text whose transform throws is left out. A change of the transform or
+  of "Trim spaces" keeps the choices made and prefills only the texts it
+  brings. The transform runs over the lines until the table's 50
+  distinct texts: over the whole file when the column has fewer (the
+  usual case for a select or checkbox; `9d10999`'s message says it does
+  not, which is wrong). Not timed on a large file.
+- **A bug in `9d10999`, fixed in `7daf0f9`:** with a saved mapping whose
+  checkbox or select column has a transform and no value map, proposing
+  the plan read the plan for the transform's `row` (re-entering a
+  `@cached` getter): "Maximum call stack size exceeded". The `row` now
+  comes from the header line, as `runImport` builds it. IVM3 fails
+  without it.
+- Tests IPL1-IPL3, IVM1-IVM3.
+
+### 9. The import screen's open time: not reached, not committed
+
+The deferral the plan recommends was built and measured, and is **not
+committed**: it does not get the open under 300 ms. The patch and its
+test are kept, for the user's decision, in
+`internal/spikes/sheet/readiness-import-first-run.patch` (it applies to
+this commit's tree: `git apply`).
+
+- **What it does:** a new source's first dry run waits for the frame that
+  shows the preview (a `requestAnimationFrame`, then a timer, so after
+  the paint; a test waiter meanwhile); the totals read "Checking the
+  lines…" (one new message, `importChecking`), each column's status is
+  empty and its badge shows the type without the share, and "Import N
+  lines" counts every line. Import itself never used the dry run (it runs
+  its own), so it cannot act on a missing one. Two tests (IDR1-IDR2, in
+  the patch) hold `requestAnimationFrame` to see the state between.
+- **Measured** as batch E stage 2 did (the docs demo, a 10,000-line,
+  20-column file, from the input's `change` event to the first preview
+  row in the DOM; production build, Chromium headless, 1300 × 900), one
+  first open and three warm per run, the two builds served side by side
+  and run alternately, twice:
+
+|               | first open | warm runs     | warm median |
+| ------------- | ---------- | ------------- | ----------- |
+| before, run 1 | 732 ms     | 442, 455, 417 | 442 ms      |
+| before, run 2 | 749 ms     | 372, 555, 439 | 439 ms      |
+| after, run 1  | 568 ms     | 393, 337, 302 | 337 ms      |
+| after, run 2  | 566 ms     | 362, 365, 353 | 362 ms      |
+
+(An earlier before-only run: 751 ms, then 463, 445, 405.) The deferral
+takes about 90 ms off the warm open and 180 ms off the first, and the
+counts come later: 553-646 ms after the `change` event, against about
+445 ms before (they came with the preview). The rest of the open is
+the first render of the columns table's EUI controls (stage 2's
+profile). The probe's "painted" time is not reported: its timer queues
+behind the dry run's, so it includes the run.
+
+- **For the user:** take the deferral as it is (about 340-360 ms warm), or
+  also render fewer controls per column (the plan's "options behind a
+  button"), or relax the target.
+
+### 10. Other open items of the v0.4 batches
+
+Done (no user decision needed):
+
+- **A guessed currency's code** (batch E stage 2: "always `USD`"; and
+  "the `USD` default has no test"): the code every text that names a
+  currency names (a code the browser lists, such as `MXN`, or a sign of
+  one currency, such as `€`), else the new field's `USD` (`$` alone names
+  none: dollars and pesos share it; a mix names none). IG6-IG7; both fail
+  without the change. `616822c`
+- **`@onVisibleRangeChange` on a height change** (batch D: "not
+  verified: the resize path"): VR6, a test only; it passes on the code as
+  it was, so the docs' claim holds. `616822c`
+
+Left, each needs the user or a device: the v0.4 decisions listed in
+V04-RESULTS.md (`@fieldTypes` vs `@types`, the result's extra keys,
+disabled vs moved for a taken field, the preview's format,
+`importAliases` matching a value-map option, the expanded record's cell
+colour, the selected bar on a range's bottom row, batch A's deviations
+2-4); the focus of a single cell after a scroll that moves its row node
+(core's list update, pre-existing); the core reporting the visible range
+only when its overscanned window changes; scroll chaining at the end of a
+half-loaded list; fitting measuring loaded records only; the 3 px resize
+edge; no focus trap in full screen; field creation not undoable;
+`appendRows` chunks needing the owner to apply each change set first;
+and everything listed as not verified on other browsers, touch devices
+and screen readers.
+
+### Checks
+
+- **Before every commit** (on its tree, with the noted exceptions): the
+  sheet's `pnpm lint:types`; the tests' `ember-tsc` at the 19 baseline
+  errors (`diff` against `3c-checks/baseline-tests-tsc.log` empty);
+  eslint and Prettier on the changed code and test files;
+  `node scripts/generate-api-docs.mjs --check` exits 0 (no `EuiSheet`
+  argument was added, so no API docs changed). `docs/sheet.md` is not
+  Prettier-clean at `0882057` either and was not reformatted.
+- **Full sheet suite** (development build, testem, headless Chrome):
+  704/704 (`2821741`), 712/712 (`7207995`), 716/716 (`fa658b6`, before
+  its template-only refactor), 718/718 (`97e5226`), 722/722 (`587c2e0`
+  and `7d0030e`, one run with both), 727/727 (`9d10999`), 731/731
+  (`7daf0f9` and `616822c`, one run with both). No flaky failure in any
+  run. Each new test was also run against its change reversed
+  (`git apply -R` of a saved diff) and failed, but the regression
+  guards named in the commits.
+- **Final:** the sheet's `lint:js` and `lint:css` pass; root
+  `pnpm eui:check` passes (357 node tests); `site`'s `pnpm lint` passes
+  (css, format, js, types) and its `pnpm test` passes (node 8, testem 14).
+  Every package rebuilt (`pnpm build` in core, flatpickr, pikaday,
+  validated-form, changeset-form, sheet), then `site`'s `pnpm build`:
+  `site/dist` is that production build. Preview servers stopped.
+- **Bundle size** (`pnpm size` on the final build, gzip over Ember):
+  `sheet` 394.8 KB (was 394.1; the proposed budget 400), `sheet-import`
+  16.2 KB more than `sheet` (was 15.1; **over the proposed 15.5** by
+  0.7 KB: the value map's texts and the counts' forms, items 8 and 10),
+  `sheet-core` 24.4 KB in all (was 23.8; budget 25). The budget is not
+  wired into CI; raising it to 16.5 or trimming is the user's call.
+
+### Not verified
+
+- Only Chromium (headless, the test runner and one production run); no
+  other browser, no touch device, no screen reader.
+- Item 8's value map with a transform on a large file was not timed (the
+  transform runs over every line when the column has fewer than 50
+  distinct texts).
+- Item 9's numbers are single-machine runs (two alternated rounds of one
+  first and three warm opens each); the profile behind "the rest is the
+  columns table's controls" is stage 2's, not redone.
+- Item 1's observer is checked for the late column sizing and a
+  container resize; a toolbar that changes height while a part is shown
+  (the grid moves without resizing) is not covered by it.

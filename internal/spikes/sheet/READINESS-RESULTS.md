@@ -2651,3 +2651,166 @@ the docs pages:
   `69b5617` only in the row menu, re-run as a state); the dark runs rate
   the demos with their own light provider as light; touch states (the
   selection handles, the touch menu) were not run through axe.
+
+## Last stage: the phone's row numbers, two keys, scroll cost, checklists
+
+Done 2026-11-21 on `feat/sheet` after `a9a9295`. Commits: `9f6d30d`
+(the row-number column), `ff87e4a` (the two keys), `4ea669a`
+(`CHECKLISTS.md`), this section (the scroll numbers) and "Final checks"
+below. Not pushed. No change to `packages/core/src`; no existing test
+edited.
+
+### 1. The row-number column on a phone (`9f6d30d`)
+
+- **Seen** (Playwright, `devices['iPhone 13']`, the production build of
+  `a9a9295`, Example app page): the column was 64 px for any record
+  count. On a touch screen (`hover: none`) the number, the checkbox and
+  the expand icon all show: `10`-`12` were cut ("1..", 17 of 21 px), the
+  number touched the checkbox (0 px gap), and at five digits the
+  checkbox itself shrank to 8-9 px (Large sheet scrolled to the end).
+  With a mouse four- and five-digit numbers were cut too (`9990`-`10000`
+  on the Large sheet page): the 64 px only fits the label and the
+  expand icon's room up to three digits.
+- **Cause:** `rowColumnWidth` was a constant 64 px (wider only for
+  `@rowLabel`, at 8 px a character with 24 px of room, which left out the
+  checkbox and the expand icon), and the row's start (number and
+  checkbox) had no gap and let the checkbox shrink.
+- **Fix:** the width is 54 px of room (borders 2, padding 12, checkbox
+  14 after a 4 px gap, expand icon 16 after the content's 4 px gap, 2 to
+  spare) plus 9.5 px per character of the longest label (the last
+  record's number; with group starts the widest of `rowNumbers`; with
+  `@rowLabel` its longest), at least 64 px; the grip adds 16 (12 and a
+  gap). One width for touch and mouse (the checkbox takes the number's
+  place on hover with a mouse, so the room fits both): 64 px up to 9
+  records, 73 px for 10-99, 83 for 100-999, 102 for 10,000, 111 for
+  100,000. CSS: a 4 px gap in the row's start; the checkbox and the
+  expand icon `flex: none`; the grip's own 2 px margin replaced by the
+  gap. The width now depends on `@records` (its length): the control
+  column array is kept while its width and class are the same, so an
+  edit gives the grid no new control columns.
+- **Tests** RNW1-RNW5 (`eui-sheet-row-number-width-test.gts`): 1 to 6
+  digits in light and dark, in the touch layout and the mouse layout
+  (headless Chrome matches `hover: none`, so each layout is set by a
+  style of its own), the number whole, the checkbox 14 px with a gap,
+  the expand icon after both and inside the cell; 9 → 10 records grows
+  the column and an edit keeps it; the grip; group starts (123456) and
+  `@rowLabel`; the range outline, the fill handle and the header follow
+  a width change after render, frozen or not. All eight fail without the
+  fix (gap 0 px; "123456" in 22 px). Noted while writing RNW5: replacing
+  `@records` with new objects (same ids) clears the range outline, also
+  before the fix; RNW5 grows the column with `@rowNumberOffset` instead.
+- **Checked on the production build** (Playwright, light and dark,
+  iPhone 13 and 1400 × 900 with a row hovered; Example app and Large
+  sheet at the top and scrolled to `10000`): before, the cuts and the
+  0 px gap above; after, no number cut, the checkbox 14 px, a 4 px gap,
+  the expand icon inside the cell on every row. Screenshots (not
+  committed): `/tmp/claude-0/-home-user-ember-eui/87cd9e5a-212c-54c3-9d47-30ac398aebd2/scratchpad/final/`
+  (`before-*` and `after-*`, page, top/bottom, phone/desktop,
+  light/dark); looked at: the phone before/after and the dark end of
+  the Large sheet.
+- The phone's tap on a select (the expanded record with the field's
+  picker) is unchanged, as the user asked.
+
+### 2. Two keyboard bugs (`ff87e4a`)
+
+- **PageDown / PageUp on a row-number cell, no groups:** the sheet left
+  them to the grid (only grouped sheets took them, V03 8.5), and core's
+  grid takes page keys only with pagination, so the browser scrolled the
+  grid's body, the focused row left the rendered rows, and focus went to
+  `<body>`. Not core's to change: core's data cells do the same, and the
+  sheet already takes these keys on its own data cells. Now they move by
+  the rows in view in the row-number column (Shift selects whole rows),
+  through the grouped path's code, **while the grid has rows out of
+  view**. With every row in view they stay the grid's and the browser's:
+  an existing test pins that (GR11 "row-number cells without groups: the
+  page keys are not taken", a 6-record sheet 600 px high:
+  `assert.false(await pressed('PageDown'), 'the grid and the browser')`),
+  and there nothing scrolls the focused row away. Real keys on the
+  production build (Large sheet, Playwright `keyboard.press`): before,
+  PageDown from row 2 left focus on `BODY` twice; after, rows 2 → 12 →
+  22 → 12 → 2, focus on the row number each time.
+- **The row-number header's "check all"** was mouse only (core's
+  control-column header has no keys: no actions, no focus trap). Space
+  or Enter on the focused header (no modifier) now runs the same toggle
+  as the click: every record, or none when all are, through
+  `@onCheckedChange` when given. Its name stays "Row number" (A2 pins
+  the first hidden text); a second hidden text follows it: "Select all
+  rows", "Some rows checked" or "All rows checked" (Chromium's
+  accessibility tree: columnheader "Row number Select all rows"). New
+  messages `someRowsChecked`, `allRowsChecked` (and `selectAllRows`
+  reused), and `shortcutCheckAll`, a row of the shortcut list ("Check
+  every row, or none (on the row-number header)", with row numbers on).
+  The keyboard page says both.
+- **Tests** RNK1-RNK4 (`eui-sheet-row-number-keys-test.gts`): page keys
+  on a 100-record sheet 300 px high (taken, focus on a row number, the
+  grid scrolled, back up), Shift selects rows, at the end it stays,
+  Ctrl+PageDown not taken; the header's Space and Enter, its texts in
+  each state, modifiers not taken; `@onCheckedChange` and `@messages`.
+  All four fail without the fix. The tests' events are synthetic (no
+  default action, so they cannot show the focus drop itself: that was
+  checked with real keys above). RNK1's waits: the grid focuses the new
+  cell a frame after the key (as P7), so the test waits for focus to move.
+
+### 3. Scroll cost after the accessibility stage
+
+The harness (`perf-checks/run.sh`, `count-tags.js` on the instrumented
+chunk and `profile-scroll.js`, the Large sheet page, d08), three
+production builds served side by side and run interleaved, run by run
+(RUN_IDS 1-3, then 4-8 for the profiles of A and C):
+
+- **A** `68aad5a` (before the accessibility stage): its
+  `packages/sheet/src` checked out into the tree for the build, then
+  restored (core and the docs as HEAD's: core's one change since is the
+  column actions popover's label, not rendered while scrolling);
+- **B** `a9a9295` (after the accessibility stage, before this stage);
+- **C** HEAD's code (`ff87e4a`, after items 1 and 2).
+
+Per 120 px wheel step (medians of 3; the counts are deterministic, the
+three runs agree exactly):
+
+| | re-walks plain | re-walks frozen | tag computes plain | writes |
+| --- | --- | --- | --- | --- |
+| A `68aad5a` | 70,554 | 67,800 | 190,570 | 11 |
+| B `a9a9295` | 70,732 (+0.25 %) | 67,978 (+0.26 %) | 191,483 | 11 |
+| C HEAD | 70,738 (+0.26 %) | 67,984 (+0.27 %) | 191,497 | 11 |
+
+Frames (40 + 20 + 20 wheel steps; median of the runs, values in brackets):
+
+| | p90 plain | p90 frozen | over 50 ms plain / frozen | busy ms plain / frozen |
+| --- | --- | --- | --- | --- |
+| A, runs 1-3 | 50 [33.4, 50, 50] | 33.4 [33.4, 33.4, 50] | 11 / 7 | 4,232 / 3,984 |
+| B, runs 1-3 | 50 [50, 33.4, 50] | 49.9 [49.9, 33.4, 50] | 10 / 9 | 3,928 / 4,071 |
+| C, runs 1-3 | 50 [50, 49.9, 50] | 50 [49.9, 50, 50] | 15 / 14 | 4,260 / 4,389 |
+| A, runs 1-8 | 49.9 (three of 8 at 33.4) | 50 (three of 8 at 33.4) | 11 / 11 | 4,095 / 4,003 |
+| C, runs 1-8 | 50 (three of 8 at 33.4) | 50 (two of 8 at 33.4) | 13 / 14 | 4,027 / 4,389 |
+
+- **Not measurably worse; nothing changed.** The re-walks are +0.26 %
+  (the 5 % bar), the tracked writes the same 11, the frame median
+  16.7 ms everywhere. The p90 sits on the 33.4 / 50 ms quantum edge: in
+  runs 1-3 the frozen median read 33.4 for A and 50 for C, but with 8
+  interleaved runs both are 50 (A had three runs at 33.4, C two), and
+  plain is 50 for both. Frozen busy is about 10 % higher for C (4,389 vs
+  4,003 ms), plain 2 % lower (4,027 vs 4,095); the frozen profiles'
+  median self time per function rises evenly, 3-10 %, for every function
+  (Glimmer's tag compute 626 → 679 ms, the grid's
+  `calculateHeightForLineCount` 151 → 156, `insertBefore`, the GC,
+  "(program)"), with no new function in the top 22: the sandbox's
+  run-to-run noise (README: 10-30 %), not a per-cell cost. The last
+  recorded numbers (70,554 re-walks, p90 50 ms) hold.
+- The accessibility stage's per-cell additions do not add re-walks:
+  `@messages` is the sheet's one messages object (not a new one per
+  render) and `aria-readonly` goes through the cell's existing
+  `setCellProps` call.
+- Logs and medians: the scratchpad's `perf/` (`a11y`, `before`, `head`),
+  not committed. `site/dist` was never instrumented (the counters ran on
+  copies).
+
+### 4. The checklists (`4ea669a`)
+
+`internal/spikes/sheet/CHECKLISTS.md`: Safari and Firefox on a Mac (12
+items), the iPhone and the Android phone (11, the select's tap, the
+handles, the long press menu, the camera scan on Android Chrome over
+HTTPS, upload progress, the row-number column), VoiceOver and NVDA (14,
+the accessibility stage's list with the live region's announcements,
+the header's check all and the page keys), Prysmex (one screen, what to
+report), and "Known issues and decisions left".

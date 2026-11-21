@@ -1,10 +1,16 @@
-// Shared helpers: open the docs page of the production build in Playwright's
+// Shared helpers: open a docs page of the production build in Playwright's
 // Chromium and find a sheet by its grid's aria-label.
 //   PORT (default 4195): the `vite preview` port.
+//   PAGE (default the Large data page, where d08 is alone): the page's path.
+//     The docs were one page until the split (`/docs/sheet/docs/sheet`, all
+//     28 demos); on a build from before it, pass PAGE=/docs/sheet/docs/sheet.
+//   LABEL (default 'Employees', d08): the measured sheet's grid aria-label.
 const { chromium } = require('playwright');
 
 const PORT = process.env.PORT || '4195';
-const URL = `http://127.0.0.1:${PORT}/docs/sheet/docs/sheet`;
+const PAGE = process.env.PAGE || '/docs/sheet/docs/sheet/large-data';
+const LABEL = process.env.LABEL || 'Employees';
+const URL = `http://127.0.0.1:${PORT}${PAGE}`;
 
 async function open({ width = 1400, height = 900 } = {}) {
   const browser = await chromium.launch();
@@ -180,6 +186,8 @@ module.exports = {
   selectCell,
   setTheme,
   PORT,
+  PAGE,
+  LABEL,
   URL,
   open,
   sheetSel,

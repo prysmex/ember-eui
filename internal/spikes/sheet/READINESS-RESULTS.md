@@ -1509,3 +1509,199 @@ Not changed (core's app-js and exports stay, for loose-mode users of
 - `pnpm size --compat` on a checkout with real injected copies (here
   `site/node_modules/@ember-eui/*` are symlinks); the path patterns
   cover both.
+
+## Docs split and getting started
+
+Done 2026-11-21 on `feat/sheet` after `daa475e`: READINESS.md item 4
+(getting started, an example app, both linked first), and the user's
+idea for item 2's docs-page numbers: "If the demos is what's making
+this slow (the qty of demos) maybe splitting in different demos (like
+pages) could be the solution." On the single page every demo stayed
+mounted, so a scroll step of d08 revalidated all 28 (about 86 % of its
+re-walks were the other demos, "Performance: at scale").
+
+Commits: `97254ae` (the split), `1d383ef` (getting started, README
+link), `1b7de8a` (the example app), and the harness and these numbers
+(the commit after them). Docs, site and harness only: no change to
+`packages/*/src` or to an existing test.
+
+### The pages
+
+A "Sheet" group in the Addons nav, in this order (core's multi-page
+layout: `packages/sheet/docs/sheet/<page>/index.md` and its `demo/`).
+Every demo of the old page is on exactly one page, moved unchanged
+(`git mv`; only its `order` changed, checked file by file against
+`daa475e`); the prose is moved verbatim (checked line by line: every
+non-blank line of the old `sheet.md` is on a new page, except the
+cross-references rewritten as links and two headings).
+
+| Page (`/docs/sheet/docs/sheet/…`)                                   | Demos                                                                                            | Sections of the old page                                                                                                                        |
+| ------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------- |
+| Getting started (the old URL, `…/sheet`, with or without the slash) | new: Tasks                                                                                       | intro, install, Not yet; new: a sheet in five minutes, getting the changes, the page list, where each old section went                          |
+| Example app (`example-app`)                                         | new: Products                                                                                    | new                                                                                                                                             |
+| Editing and keyboard (`editing`)                                    | d01 Basics, d03 Validation, d09 Your own store                                                   | Records in, change sets out; Undo and redo; Keyboard (the keys, the shortcut list, headers, row numbers, the editor); IME and dead keys; Errors |
+| Selection, copy and paste (`selection`)                             | d05 Paste rules, d18 Fill handle, series, cut, d13 Summary bar                                   | Keyboard's mouse, range, fill handle and paste paragraphs; Summary bar; Touch                                                                   |
+| Field types (`field-types`)                                         | d02 Field types, d15 More field types, d16 Linked records, d17 Attachments                       | Field types; Bulk resolve                                                                                                                       |
+| Fields and custom types (`fields`)                                  | d20 Fields from the grid, d04 Custom cells and editors, d06 Another date picker                  | Fields (field editor, field actions); In the field editor                                                                                       |
+| Records and rows (`rows`)                                           | d10 Records, d21 Row order and colours, d27 Cell colours, d11 Expanded record, d25 Record footer | Records; Expanded record; Theme's row and cell colours                                                                                          |
+| Groups and loading more (`groups`)                                  | d19 Group by, d23 Load more                                                                      | Group by (all of it); Loading more as you scroll                                                                                                |
+| Layout and full screen (`layout`)                                   | d12 View intents, d24 Full screen and column tools                                               | Presentation state (fit to content); Frozen field; Full screen                                                                                  |
+| Search and EmberSearchUi (`search`)                                 | d22 Search navigation, d14 EmberSearchUi                                                         | Search matches; EmberSearchUi                                                                                                                   |
+| Large data (`large-data`)                                           | d08 alone                                                                                        | Frozen field's Performance                                                                                                                      |
+| Import and export (`import-export`)                                 | d26 CSV, d28 Import screen                                                                       | Export to CSV; Import from CSV; The import screen                                                                                               |
+| API reference (`api`)                                               | d07 Translations                                                                                 | Arguments; The owner (and the blocks); The sheet's API; Theme                                                                                   |
+
+Against the suggested grouping: fields are two pages (types; the field
+editor and own types), groups and load more are a page apart from rows,
+search and the EmberSearchUi connector are a page apart from layout,
+and d07 (translations) sits with the API reference. The generated API
+docs do not cover the sheet (`scripts/api-docs-pages.json` has no sheet
+page and `sheet.md` had no `api:` markers): its hand-written argument
+table moved to the API reference page; `generate-api-docs --check`
+passes unchanged.
+
+- **Getting started**: install (the loose-mode re-export text of
+  `3f753c5`), a `.gts` component with `localRecords`, the sheet's
+  `@fields`, `@records` with `@getRecordId`, and `@onChange` (the page
+  says "three things"; the signature has four required arguments, the
+  records and their id counted as one), one field of each common type
+  (text, number, single select, checkbox, date), getting the changes
+  (`store.apply`, `applyChangeSet`), the page list, and a table of where
+  each old section went (old `#anchors` land on this page; the table links
+  each to its new place). The demo under the code is a `gts component`
+  demo with exactly that code; `site/lib/sheet-docs.test.mjs` fails when
+  they differ. The code type-checks (ember-tsc, copied into the site app
+  for the check, then removed).
+- **Example app**: 230 products on a fake server, 50 per page: load more
+  as you scroll, group by category (loads the rest first), editing with
+  a per-record edit list in `<:recordFooter>`, `<EuiSheetImport>` on a
+  file or a sample supplier file (`importAliases`, one unreadable price),
+  `toCsv` export, the expanded record. The data module is
+  `site/app/utils/sheet-example-products.js`, shown on the page (the same
+  test checks the page's copy); the StackBlitz playground copies a
+  demo's `site/utils/*` imports (`lib/demo-playgrounds.mjs`, a new test).
+- **Links**: README ("Start with Getting started", then the example
+  app; its three references to docs sections are links). Cross-references
+  between sections ("Group by, below") are links to the new pages; every
+  `/docs` link on the sheet pages (43) was followed in the Playwright
+  pass: the route loads and the `#id` exists.
+- **Site** (`97254ae`): the Addons nav lists a multi-page addon by its
+  pages' `order` (the nav of the 144 other pages is identical before and
+  after, compared page by page); a group's label in the nav only opens
+  it (it called `transitionTo` with a non-route id and threw a page
+  error, for core's groups such as "Data grid" too); an index URL
+  without its trailing slash selects its nav item. The side-nav count
+  test (126 items on /docs/introduction) is unchanged: the group is
+  closed there.
+- **Fixed on the way** (`1d383ef`): `[[demos-all]]` is only honoured
+  with `manualDemoInsertion` front matter; without it docfy puts the
+  demos after the page's introduction and the marker showed as text (on
+  the old single page too, at its end). The topic pages now have their
+  examples after their introduction; Getting started places its demo
+  after the code.
+
+### Numbers: d08 on the Large data page
+
+Measured as in "Performance: scrolling" (`count-tags.js`,
+`profile-scroll.js` through `run.sh`: 120 px wheel steps in headless
+Chromium, 1400 × 900, the production build). Before: the build of
+`daa475e` (the single page, `PAGE=/docs/sheet/docs/sheet`); after: the
+build of `1b7de8a` (`PAGE=/docs/sheet/docs/sheet/large-data`, now the
+default). Both served side by side and run in turn (run 1 of each, then
+run 2, …), medians of 3; the counts were identical in all 3 runs.
+
+Re-walks per step (tag computes in brackets):
+
+| d08            | single page (`daa475e`) | Large data page  | change  |
+| -------------- | ----------------------- | ---------------- | ------- |
+| plain          | 476,930 (1,156,599)     | 69,862 (189,099) | -85.4 % |
+| frozen         | 474,176 (1,147,441)     | 67,108 (179,941) | -85.8 % |
+| tracked writes | 11 / 11                 | 11 / 11          | 0       |
+
+The last recorded single-page numbers were 476,539 / 476,604 plain and
+about 473,850 frozen; this build gives 476,930 / 474,176, the same
+offset (+326) in both cases, from commits in between (not chased). The
+Large data numbers match the one-sheet harness page of "Performance:
+at scale" (about 67,000 per pass): on its own page d08 costs what one
+sheet costs.
+
+Profile (40 steps down, 20 right, 20 up, 30 ms apart; medians of 3,
+frame median 16.7 ms in every run):
+
+| d08    | page       | frame p90 | frames > 50 ms | busy      | `[TAG_COMPUTE]` of busy |
+| ------ | ---------- | --------- | -------------- | --------- | ----------------------- |
+| plain  | single     | 116.6 ms  | 80             | 9,270 ms  | 51.1 %                  |
+| plain  | Large data | 50.0 ms   | 20             | 4,317 ms  | 15.7 %                  |
+| frozen | single     | 133.2 ms  | 80             | 10,088 ms | 49.0 %                  |
+| frozen | Large data | 50.0 ms   | 19             | 4,629 ms  | 15.4 %                  |
+
+(Single page p90 runs: plain 116.6, 116.6, 133.4; frozen 133.2, 100.1,
+133.3. Large data: 50 in all six.) Frame p90 -57 % / -62 %, busy -53 % /
+-54 %. On the Large data page the top of the profile is native work
+(`(program)` 888 ms, GC 406 ms, DOM inserts), the tag compute 679 ms,
+and core's `calculateHeightForLineCount` 134 ms (plain run 1).
+
+**The other pages** (after build, single runs, plain; the counts are
+deterministic): a scroll step of the page's largest scrolling sheet
+re-walks 76,211 (search, d22 "People", 300 records, beside d14),
+75,097 (selection, d18 "Work log", beside d05 and d13), 63,615 (layout,
+d24 "Inventory", beside d12), 49,782 (example app, 50 loaded). Their
+profiles: p90 49.9 ms and 6 frames over 50 ms (search), 33.3 ms and 2
+(selection), 33.3 ms and 3 (example app). No page has several heavy
+demos, so rendering a demo only near the viewport was not built: it
+would not be measurably worth it. (The rows and field-types sheets do
+not scroll vertically in 12 steps: 8 and 9 records.)
+
+### Harness
+
+`perf-checks/lib.js` takes the page from `PAGE` (default the Large data
+page) and the sheet from `LABEL` (default `Employees`); `count-tags.js`,
+`profile-scroll.js` and `shots-d08.js` use `LABEL` and fail when no sheet
+has it. A build from before the split: `PAGE=/docs/sheet/docs/sheet`.
+`shots.js` screenshots the sheets with chips of one page, so since the
+split a run covers one page's sheets (README there). `build-large.sh`'s
+harness page (`/docs/sheet/docs/perf-large`) is unaffected.
+
+### Checks
+
+Before each commit: `node scripts/generate-api-docs.mjs --check`; root
+`pnpm eui:check`; site `pnpm lint`, `pnpm test` (node tests 9, 9, then 11
+with the two new ones; browser tests 14/14, the every-page tests
+included) and `pnpm build`; a Playwright pass over every sheet page of
+the production build (`vite preview`): each loads with no console error
+(only blocked requests to outside hosts), every demo renders a grid, no
+`[[demo` marker text, the nav group lists the pages in order and opens
+on each, the old URL with and without its slash shows Getting started
+with its nav item selected, and every `/docs` link on the pages lands on
+a route with its `#id`. The example app was driven in Chromium (scroll
+loads 50 then 100 of 230; grouping loads all 230 and draws the headers
+with their stock sums; an edited price shows in the record's footer;
+the sample import reads "3 lines ready, 1 with errors" and adds 4
+records; the export downloads `products.csv` with every record).
+Prettier: the moved demos are as before; the new pages are at most as
+unformatted as the old `sheet.md` (517 lines of prettier diff over the
+pages against 519 for `sheet.md`; Getting started and its demo, the
+example's demo, the README and the new site files are clean; the
+example page's data fence keeps the site's trailing commas, which the
+root config would drop). The full sheet suite ran once at the end, on
+`1b7de8a` with the harness change: 757/757 (no test reads the docs or
+the demos).
+
+### Left, and not verified
+
+- Comments that name `docs/sheet.md` (`src/-private/shortcuts.ts`,
+  `tests/unit/tree-shaking-test.ts`, `rollup.config.mjs`,
+  `scripts/compat-bundle-size.mjs`) are not changed (source and tests
+  are out of this task's scope); the sections they name are on the
+  editing and getting-started pages.
+- The README's frozen-field paragraph still says the frozen grid
+  renders every column (372 cells, four times the time); that is out of
+  date since `e5a90b1`. Only its link was changed here.
+- Old anchors (`/docs/sheet/docs/sheet#group-by`) land on Getting
+  started, not on the section: no hash redirects; the "Where the
+  sections went" table there links each.
+- Docfy's links render with spaces inside the anchor ("( Group by )"
+  around parenthesized links); site-wide, core's pages too; not changed.
+- Chromium only, headless, in this sandbox; the StackBlitz playgrounds
+  were not opened (no network to it); the example app's file picker was
+  not driven with a real file (the sample uses `@text`).

@@ -13,7 +13,8 @@ fs.mkdirSync(out, { recursive: true });
   const { browser, page, errors } = await L.open({ width: 1400, height: 900 });
   if (dark) await L.setTheme(page, 'Dark');
   const dom = {};
-  // every sheet on the page that shows chips (d08's "Employees" among them)
+  // every sheet on the page (PAGE) that shows chips; since the docs split
+  // the sheets are on several pages (d15 "Products": PAGE=…/field-types)
   const sheets = await page.evaluate(() =>
     [...document.querySelectorAll('div.euiSheet')]
       .map((s, n) => ({

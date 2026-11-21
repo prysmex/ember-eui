@@ -5,6 +5,15 @@ READINESS-RESULTS.md's "Performance: scrolling": real wheel scrolling of
 the d08 demo ("Employees", 10,000 records × 31 fields) in Playwright's
 Chromium, on the production docs build.
 
+The page: `PAGE` (default `/docs/sheet/docs/sheet/large-data`, the
+Large data page, where d08 is alone) and the sheet: `LABEL` (default
+`Employees`), both in `lib.js`. Until the docs split (READINESS-RESULTS.md,
+"Docs split and getting started") every demo was on one page,
+`/docs/sheet/docs/sheet`: pass `PAGE=/docs/sheet/docs/sheet` to measure a
+build from before it. `shots.js` screenshots the sheets with chips of
+one page, so since the split it covers fewer sheets per run (d15
+"Products" is on `/docs/sheet/docs/sheet/field-types`).
+
 ## Build and serve
 
 Turbo fails here ("Exec format error"), so build each package by hand

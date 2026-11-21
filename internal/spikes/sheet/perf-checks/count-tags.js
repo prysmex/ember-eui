@@ -13,7 +13,8 @@ const caseName = [frozen ? 'frozen' : 'plain', selected ? 'selected' : '']
   .join('-');
 (async () => {
   const { browser, page, errors } = await L.open({ width: 1400, height: 900 });
-  const n = await L.sheetIndexByLabel(page, 'Employees');
+  const n = await L.sheetIndexByLabel(page, L.LABEL);
+  if (n < 0) throw new Error(`no sheet labelled ${L.LABEL} on ${L.URL}`);
   await L.centerSheet(page, n);
   if (frozen) {
     const on = await L.freezeFirstField(page, n);

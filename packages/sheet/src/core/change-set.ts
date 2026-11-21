@@ -4,6 +4,7 @@
  */
 import { isReadOnly, resolveType, sameFieldValue, valueOf } from './fields.ts';
 import { buildPaste } from './paste-plan.ts';
+import { namedBy } from './record-lookup.ts';
 
 import type { PasteInsert } from './paste-plan.ts';
 
@@ -238,8 +239,10 @@ export function applyChangeSet<T extends object>(
     byId.set(patch.recordId, values);
   }
   const deleted = new Set((changeSet.deletes ?? []).map(String));
+  // the raw ids compared, not `String()` of each record's (20 ms at 100,000)
+  const isDeleted = namedBy(deleted);
   const kept = deleted.size
-    ? records.filter((record) => !deleted.has(String(getRecordId(record))))
+    ? records.filter((record) => !isDeleted(getRecordId(record)))
     : records;
   const next = kept.map((record) => {
     const values = byId.get(getRecordId(record));

@@ -1,7 +1,11 @@
 import { module, test } from 'qunit';
 
-import { undoChangeSet, withoutConflicts } from '#src/core/index.ts';
-import { findRecords } from '#src/core/record-lookup.ts';
+import {
+  applyChangeSet,
+  undoChangeSet,
+  withoutConflicts
+} from '#src/core/index.ts';
+import { findRecords, namedBy } from '#src/core/record-lookup.ts';
 
 import type { ChangeSet } from '#src/core/index.ts';
 
@@ -144,6 +148,67 @@ module(
           ['r10', 10],
           ['r11', 11]
         ]
+      );
+    });
+    test('LK7 namedBy: true exactly for an id whose String() is named', function (assert) {
+      const ids = new Set(['1', '2', '0', '1e+21', '07', '08', '9', 'NaN']);
+      const named = namedBy(ids);
+      for (const raw of [
+        1,
+        '1',
+        2,
+        '2',
+        -0,
+        0,
+        '0',
+        1e21,
+        7,
+        '07',
+        '7',
+        8,
+        '08',
+        BigInt(9),
+        NaN,
+        'NaN',
+        null,
+        undefined,
+        true
+      ]) {
+        assert.strictEqual(
+          named(raw),
+          ids.has(String(raw)),
+          `${typeof raw} ${String(raw)}`
+        );
+      }
+    });
+
+    test('LK8 applyChangeSet: deletes match the records as String(id), as before', function (assert) {
+      const records = [
+        { id: 1 },
+        { id: '1' },
+        { id: 7 },
+        { id: '07' },
+        { id: -0 },
+        { id: 1e21 },
+        { id: NaN },
+        { id: 'x' }
+      ] as unknown as Row[];
+      const next = applyChangeSet(
+        records,
+        {
+          source: 'delete',
+          patches: [],
+          inserts: [],
+          rejected: [],
+          newOptions: [],
+          deletes: ['1', '07', '0', '1e+21', 'NaN']
+        },
+        { getRecordId: (r) => r.id }
+      );
+      assert.deepEqual(
+        next.map((r) => String(r.id)),
+        ['7', 'x'],
+        'the records whose String(id) is deleted are gone, the others kept'
       );
     });
   }

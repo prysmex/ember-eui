@@ -49,3 +49,20 @@ export function findRecords<T>(
   }
   return found;
 }
+
+/**
+ * A test of whether a record's id, as `String(id)`, is one of `ids`,
+ * comparing the raw id first (as `findRecords` does): for a pass over many
+ * records with few ids, without `String()` of each.
+ */
+export function namedBy(ids: ReadonlySet<string>): (raw: unknown) => boolean {
+  const keys = new Set<unknown>(ids);
+  for (const id of ids) {
+    const number = Number(id);
+    if (String(number) === id) keys.add(number);
+  }
+  return (raw) =>
+    typeof raw === 'number' || typeof raw === 'string'
+      ? keys.has(raw)
+      : ids.has(String(raw));
+}

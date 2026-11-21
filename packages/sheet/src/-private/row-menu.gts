@@ -63,21 +63,14 @@ export default class RowMenu extends Component<RowMenuSignature> {
     return groupOf(items[index]!.id) !== groupOf(items[index - 1]!.id);
   };
 
-  get label(): string {
-    return this.args.sheet.messages.rowMenu();
-  }
-
   select = (item: RowMenuItem): void => {
     if (!item.disabled) this.args.onSelect(item);
   };
 
   <template>
     <SheetLayer @sheet={{@sheet}}>
-      {{! a menu of menuitems (the panel's ArrowUp/Down and Enter, the sheet's Escape) }}
       <div
         class="euiSheet__menu"
-        role="menu"
-        aria-label={{this.label}}
         data-test-subj="euiSheetRowMenu"
         data-eui-sheet-menu
         {{placeLayer
@@ -91,7 +84,11 @@ export default class RowMenu extends Component<RowMenuSignature> {
           @hasShadow={{true}}
           class="euiSheet__menuPanel"
         >
+          {{! a menu of menuitems: the panel's list is the menu (the
+            panel itself is focusable, so not inside it); the panel's
+            ArrowUp/Down and Enter, the sheet's Escape }}
           <EuiContextMenuPanel
+            @isMenu={{true}}
             @hasFocus={{true}}
             @initialFocusedItemIndex={{0}}
           >

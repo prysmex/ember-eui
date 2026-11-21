@@ -80,14 +80,19 @@ module(
       return state;
     }
 
-    test('A5 the row menu is a named menu of menuitems; Escape gives focus back to the cell', async function (assert) {
+    test('A5 the row menu is a menu of menuitems; Escape gives focus back to the cell', async function (assert) {
       await renderSheet();
       await focusCell(1, 1);
       await pressed('F10', { shiftKey: true });
       await waitUntil(() => byTest('euiSheetRowMenu'));
       const menu = byTest('euiSheetRowMenu')!;
-      assert.dom(menu).hasAttribute('role', 'menu');
-      assert.dom(menu).hasAttribute('aria-label', 'Row menu');
+      // the panel's list: the panel is focusable, so it holds the menu
+      const list = el('[role=menu]', menu);
+      assert.dom(list).hasClass('euiContextMenuPanel__list');
+      assert.notOk(
+        list.querySelector('[tabindex]:not([role=menuitem])'),
+        'nothing focusable in the menu but its items'
+      );
       const items = [
         ...menu.querySelectorAll<HTMLElement>(
           '[data-test-subj^=euiSheetRowMenu-]'

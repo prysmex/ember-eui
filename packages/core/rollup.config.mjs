@@ -96,12 +96,25 @@ export default {
       '**/*.cjs'
     ]),
 
-    addon.appReexports([
-      'components/**/*.js',
-      'helpers/**/*.js',
-      'modifiers/**/*.js',
-      'services/**/*.js'
-    ]),
+    addon.appReexports(
+      [
+        'components/**/*.js',
+        'helpers/**/*.js',
+        'modifiers/**/*.js',
+        'services/**/*.js'
+      ],
+      {
+        // modules of helpers, not components: they have no default export, so
+        // their app-js re-export (`export { default } from ...`) breaks a host
+        // that bundles the app tree (`staticInvokables: false`)
+        exclude: [
+          'components/eui-data-grid/cell-actions.js',
+          'components/eui-data-grid/row-tree-hooks.js',
+          'components/eui-super-date-picker/utils/pretty-interval.js',
+          'components/eui-super-date-picker/utils/time-window.js'
+        ]
+      }
+    ),
 
     addon.dependencies(),
 

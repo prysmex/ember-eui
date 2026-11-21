@@ -176,11 +176,11 @@ export default defineConfig({
   ],
   build: {
     chunkSizeWarningLimit: Infinity,
-    // with staticInvokables: false, core's app-js re-exports a default
-    // from four modules that have none (eui-data-grid/cell-actions,
-    // row-tree-hooks, eui-super-date-picker/utils/pretty-interval,
-    // time-window), which fails the build; shim them to measure the rest
-    ${c.dynamic ? "rolldownOptions: { shimMissingExports: true, external: ['ember'] }," : ''}
+    // with staticInvokables: false, @nullvoxpopuli/ember-composable-helpers'
+    // app-js imports \`ember\`, which a Vite build cannot resolve: keep it
+    // external to measure the rest (core's own app-js builds as it is
+    // since its four modules without a default left app-js)
+    ${c.dynamic ? "rolldownOptions: { external: ['ember'] }," : ''}
   },
 });
 `,

@@ -47,5 +47,6 @@ export default {
     charts: 'Elastic charts',
     'changeset-form': 'Changeset form',
     'validated-form': 'Validated form',
+    'import-export': 'Import and export',
   },
 };

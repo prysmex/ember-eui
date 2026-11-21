@@ -1,16 +1,17 @@
 ---
-title: Fields and custom types
-order: 6
+title: Field editor
+order: 50
 ---
 
 <EuiSpacer/>
-<EuiPageHeader @pageTitle="Sheet: fields and custom types"/>
+<EuiPageHeader @pageTitle="Sheet: field editor"/>
 <EuiSpacer @size="l" />
 
 <EuiText>
 
-Adding, editing and deleting fields from the grid, your own header
-menu items, and your own cells, editors and types.
+Adding, editing, duplicating and deleting fields from the grid: the "+"
+column, the header menu and the field editor. Fields are your data
+model, so each is an intent you handle.
 
 ## Fields
 
@@ -39,27 +40,13 @@ no local fallback: fields are your data model). A bare app passes
   End stop at the last field.
 - **The column menu** has Edit field, Duplicate field, Insert left,
   Insert right and Delete field (last, in red), after "Fit to content"
-  ([Presentation state](/docs/sheet/docs/sheet/layout#presentation-state)) and with your `@fieldActions` just before
+  ([Presentation state](/docs/sheet/docs/sheet/more/full-screen#fit-to-content)) and with your `@fieldActions` just before
   Delete. Nothing is inserted to
   the left of the first field and the first field cannot be deleted (it
   stays first). Duplicate calls `@onFieldCreate` at once, with the
   field's draft, the label "Name copy", the next index and `copyOf`: you
   decide whether values are copied. Delete asks first.
-- **Your items** (`@fieldActions`) come after the sheet's items and
-  before Delete field, on every visible field; disable one on the
-  fields it does not apply to with `isDisabled(field)`. `onSelect(field)`
-  runs once the menu has closed and focus is back on the header's menu
-  button, so your own dialog can take focus:
 
-  ```js
-  fieldActions = [
-    { id: 'history', label: 'Show history', icon: 'clock', onSelect: (field) => this.openHistory(field.id) },
-    { id: 'sum', label: 'Summarize', isDisabled: (field) => field.type !== 'number', onSelect: (field) => this.summarize(field) },
-  ];
-  ```
-
-  The columns are built from the array: keep it stable (not created in a
-  template), as `@fieldTypes`.
 - **The field editor** opens under the header it belongs to: the name
   (required; Enter saves), the type (`@creatableFieldTypes`, each labelled
   by `type.label`), the type's options (a select's options and colours, a
@@ -99,15 +86,10 @@ the sheet drops that field from its undo history (an entry left empty is
 removed), its rejected texts and pending cells, and closes an editor on
 it. You can make them undoable in your own UI.
 
-### In the field editor
+## Related
 
-A type can name itself in the field editor's type select with `label`
-(default: the built-in name, "Single line text", "Single select", …) and
-add its own part of the editor with `fieldOptions`, a component that gets
-`draft`, `field` (on edit), `messages` and `onChange(patch)`, which merges
-keys into the draft. List the type in `@creatableFieldTypes` to offer it.
-`linkedRecord`, `user` and `attachment` are not offered by default: they
-need `search` or `upload` functions, which a draft cannot hold; list them
-and complete the field in your handler.
+- [Field actions and menus](/docs/sheet/docs/sheet/fields/field-actions)
+- [Custom field types and editors](/docs/sheet/docs/sheet/field-types/custom-types): a type's part of the field editor
+- [API reference](/docs/sheet/docs/sheet/more/api-reference)
 
 </EuiText>

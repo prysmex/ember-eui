@@ -166,7 +166,7 @@ It runs below, as it is.
   and how to tell them apart (`@records`, and `@getRecordId`, which
   returns a record's id), and what to do with a change (`@onChange`).
   `@height` (the grid's height in px) and `@ariaLabel` (its accessible
-  name) are optional; [the API reference](/docs/sheet/docs/sheet/api#arguments) lists the
+  name) are optional; [the API reference](/docs/sheet/docs/sheet/more/api-reference#arguments) lists the
   rest.
 - **One field of each common type.** A field is `{ id, label, type }`
   plus the type's options, and the record keeps its value under the
@@ -205,8 +205,10 @@ records back:
 - With your own store, `applyChangeSet(records, changeSet, { getRecordId
 })` returns the new records, and you pass them as `@records`.
 
-[Editing and keyboard](/docs/sheet/docs/sheet/editing#records-in-change-sets-out) has the
-whole change set, undo and the errors a cell can show.
+[Your own store](/docs/sheet/docs/sheet/own-store#records-in-change-sets-out) has the
+whole change set, [Undo and redo](/docs/sheet/docs/sheet/editing/undo-redo) how undo comes
+back through `@onChange`, and [Field rules](/docs/sheet/docs/sheet/validation/field-rules#errors)
+the errors a cell can show.
 
 ## Next
 
@@ -216,57 +218,65 @@ export, loading more as you scroll and the expanded record, with its
 code.
 
 Then each page explains one part of the sheet, with its examples after
-its introduction:
+its introduction. The pages, by group (also in the side nav):
 
-| Page                                                          | What it covers                                                                                | Examples                                                                                       |
-| ------------------------------------------------------------- | --------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------- |
-| [Editing and keyboard](/docs/sheet/docs/sheet/editing)        | change sets, undo and redo, every key, IME, errors                                            | Basics; Validation; Your own store, server ids                                                 |
-| [Selection, copy and paste](/docs/sheet/docs/sheet/selection) | ranges, the fill handle, paste, the summary bar, touch                                        | Paste rules; Editing: fill handle, series, cut; Summary bar                                    |
-| [Field types](/docs/sheet/docs/sheet/field-types)             | every built-in type, bulk resolve                                                             | Field types; More field types; Linked records and bulk resolve; Attachments                    |
-| [Fields and custom types](/docs/sheet/docs/sheet/fields)      | the field editor, field actions, your own cells and editors                                   | Fields from the grid; Custom cells and editors; Another date picker                            |
-| [Records and rows](/docs/sheet/docs/sheet/rows)               | the row menu, add, delete, row drag, the expanded record and its footer, row and cell colours | Records; Row order and colours; Cell colours; Expanded record; Comments in the expanded record |
-| [Groups and loading more](/docs/sheet/docs/sheet/groups)      | group by, loading more as you scroll                                                          | Group by; Load more as you scroll                                                              |
-| [Layout and full screen](/docs/sheet/docs/sheet/layout)       | hidden fields, order, widths, fit to content, row height, frozen fields, full screen          | View intents; Full screen and column tools                                                     |
-| [Search and EmberSearchUi](/docs/sheet/docs/sheet/search)     | search matches, the EmberSearchUi connector                                                   | Search navigation; Sheet with EmberSearchUi                                                    |
-| [Large data](/docs/sheet/docs/sheet/large-data)               | 10,000 records and 30 fields, frozen fields at scale                                          | Large data                                                                                     |
-| [Import and export](/docs/sheet/docs/sheet/import-export)     | CSV export and import, the import screen                                                      | CSV export and import; Import screen                                                           |
-| [API reference](/docs/sheet/docs/sheet/api)                   | arguments, the owner, the blocks, the sheet's API, theme                                      | Translations                                                                                   |
+| Group             | Pages                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        |
+| ----------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Start             | [Example app](/docs/sheet/docs/sheet/example-app); [Your own store](/docs/sheet/docs/sheet/own-store)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        |
+| Validation        | [Field rules](/docs/sheet/docs/sheet/validation/field-rules); [Whole-record checks](/docs/sheet/docs/sheet/validation/record-checks); [Server checks and rejections](/docs/sheet/docs/sheet/validation/server-checks); [Blocking and warnings](/docs/sheet/docs/sheet/validation/blocking-and-warnings); [Validation while pasting and importing](/docs/sheet/docs/sheet/validation/paste-and-import)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        |
+| Editing           | [Editing basics](/docs/sheet/docs/sheet/editing); [Keyboard and shortcuts](/docs/sheet/docs/sheet/editing/keyboard); [Undo and redo](/docs/sheet/docs/sheet/editing/undo-redo); [Read-only cells and fields](/docs/sheet/docs/sheet/editing/read-only)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       |
+| Field types       | [All field types](/docs/sheet/docs/sheet/field-types); [Text and long text](/docs/sheet/docs/sheet/field-types/text-fields); [Numbers, currency, percent, duration](/docs/sheet/docs/sheet/field-types/numbers); [Dates and times](/docs/sheet/docs/sheet/field-types/dates); [Select, multi-select, colours](/docs/sheet/docs/sheet/field-types/selects); [Checkbox and rating](/docs/sheet/docs/sheet/field-types/checkbox-and-rating); [Email, URL, phone](/docs/sheet/docs/sheet/field-types/email-url-phone); [Linked records](/docs/sheet/docs/sheet/field-types/linked-records); [User](/docs/sheet/docs/sheet/field-types/users); [Attachments and upload progress](/docs/sheet/docs/sheet/field-types/attachments); [Barcode and camera scan](/docs/sheet/docs/sheet/field-types/barcode); [Buttons](/docs/sheet/docs/sheet/field-types/buttons); [Custom field types and editors](/docs/sheet/docs/sheet/field-types/custom-types) |
+| Fields            | [Field editor](/docs/sheet/docs/sheet/fields); [Field actions and menus](/docs/sheet/docs/sheet/fields/field-actions); [Hide, reorder, resize, freeze](/docs/sheet/docs/sheet/fields/columns)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                |
+| Selection         | [Ranges, copy and paste](/docs/sheet/docs/sheet/selection); [Paste rules and new records](/docs/sheet/docs/sheet/selection/paste); [Fill handle](/docs/sheet/docs/sheet/selection/fill-handle); [Touch selection](/docs/sheet/docs/sheet/selection/touch); [Summary footer](/docs/sheet/docs/sheet/selection/summary)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        |
+| Rows              | [Add, delete, duplicate](/docs/sheet/docs/sheet/rows); [Row drag and order](/docs/sheet/docs/sheet/rows/drag); [Row and cell colours](/docs/sheet/docs/sheet/rows/colours); [Row height](/docs/sheet/docs/sheet/rows/row-height); [Expanded record](/docs/sheet/docs/sheet/rows/expanded-record); [Record footer](/docs/sheet/docs/sheet/rows/record-footer)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 |
+| Data              | [Groups](/docs/sheet/docs/sheet/data/record-groups); [Sorting](/docs/sheet/docs/sheet/data/sorting); [Load more](/docs/sheet/docs/sheet/data/load-more); [Large data](/docs/sheet/docs/sheet/data/large-sheet); [Search and match stepping](/docs/sheet/docs/sheet/data/search-matches); [EmberSearchUi](/docs/sheet/docs/sheet/data/search-ui)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              |
+| Import and export | [CSV export](/docs/sheet/docs/sheet/import-export); [CSV paste and import](/docs/sheet/docs/sheet/import-export/csv-import); [The import screen](/docs/sheet/docs/sheet/import-export/import-screen)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
+| More              | [Full screen and fit width](/docs/sheet/docs/sheet/more/full-screen); [Translations and messages](/docs/sheet/docs/sheet/more/translations); [Theming and dark mode](/docs/sheet/docs/sheet/more/theme); [API reference](/docs/sheet/docs/sheet/more/api-reference)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          |
 
 ## Where the sections went
 
-The sheet's docs were one page. Its sections are now on these pages:
+The sheet's docs were one page, then thirteen. Their sections are now on
+these pages (the old addresses still open, with links to these):
 
-| Section                                     | Page                                                                                |
-| ------------------------------------------- | ----------------------------------------------------------------------------------- |
-| Records in, change sets out                 | [Editing and keyboard](/docs/sheet/docs/sheet/editing#records-in-change-sets-out)   |
-| Undo and redo                               | [Editing and keyboard](/docs/sheet/docs/sheet/editing#undo-and-redo)                |
-| Arguments                                   | [API reference](/docs/sheet/docs/sheet/api#arguments)                               |
-| The owner                                   | [API reference](/docs/sheet/docs/sheet/api#the-owner)                               |
-| Search matches                              | [Search and EmberSearchUi](/docs/sheet/docs/sheet/search#search-matches)            |
-| Loading more as you scroll                  | [Groups and loading more](/docs/sheet/docs/sheet/groups#loading-more-as-you-scroll) |
-| EmberSearchUi                               | [Search and EmberSearchUi](/docs/sheet/docs/sheet/search#embersearchui)             |
-| Presentation state                          | [Layout and full screen](/docs/sheet/docs/sheet/layout#presentation-state)          |
-| Full screen                                 | [Layout and full screen](/docs/sheet/docs/sheet/layout#full-screen)                 |
-| Summary bar                                 | [Selection, copy and paste](/docs/sheet/docs/sheet/selection#summary-bar)           |
-| Export to CSV                               | [Import and export](/docs/sheet/docs/sheet/import-export#export-to-csv)             |
-| Import from CSV, the import screen          | [Import and export](/docs/sheet/docs/sheet/import-export#import-from-csv)           |
-| Group by                                    | [Groups and loading more](/docs/sheet/docs/sheet/groups#group-by)                   |
-| Frozen field                                | [Layout and full screen](/docs/sheet/docs/sheet/layout#frozen-field)                |
-| Frozen field: performance                   | [Large data](/docs/sheet/docs/sheet/large-data#performance-with-frozen-fields)      |
-| The sheet's API                             | [API reference](/docs/sheet/docs/sheet/api#the-sheets-api)                          |
-| Theme                                       | [API reference](/docs/sheet/docs/sheet/api#theme)                                   |
-| Theme: row colours, cell colours            | [Records and rows](/docs/sheet/docs/sheet/rows#row-and-cell-colours)                |
-| Records                                     | [Records and rows](/docs/sheet/docs/sheet/rows#records)                             |
-| Fields                                      | [Fields and custom types](/docs/sheet/docs/sheet/fields#fields)                     |
-| Expanded record                             | [Records and rows](/docs/sheet/docs/sheet/rows#expanded-record)                     |
-| Field types                                 | [Field types](/docs/sheet/docs/sheet/field-types#field-types)                       |
-| Field types: in the field editor            | [Fields and custom types](/docs/sheet/docs/sheet/fields#in-the-field-editor)        |
-| Bulk resolve                                | [Field types](/docs/sheet/docs/sheet/field-types#bulk-resolve)                      |
-| Keyboard                                    | [Editing and keyboard](/docs/sheet/docs/sheet/editing#keyboard)                     |
-| Keyboard: the mouse, the fill handle, paste | [Selection, copy and paste](/docs/sheet/docs/sheet/selection#the-mouse-and-ranges)  |
-| Touch                                       | [Selection, copy and paste](/docs/sheet/docs/sheet/selection#touch)                 |
-| IME and dead keys                           | [Editing and keyboard](/docs/sheet/docs/sheet/editing#ime-and-dead-keys)            |
-| Errors                                      | [Editing and keyboard](/docs/sheet/docs/sheet/editing#errors)                       |
+| Section                            | Page                                                                                                  |
+| ---------------------------------- | ----------------------------------------------------------------------------------------------------- |
+| Records in, change sets out        | [Your own store](/docs/sheet/docs/sheet/own-store#records-in-change-sets-out)                         |
+| Undo and redo                      | [Undo and redo](/docs/sheet/docs/sheet/editing/undo-redo#undo-and-redo)                               |
+| Arguments                          | [API reference](/docs/sheet/docs/sheet/more/api-reference#arguments)                                  |
+| The owner                          | [API reference](/docs/sheet/docs/sheet/more/api-reference#the-owner)                                  |
+| Search matches                     | [Search and match stepping](/docs/sheet/docs/sheet/data/search-matches#search-matches)                |
+| Loading more as you scroll         | [Load more](/docs/sheet/docs/sheet/data/load-more#loading-more-as-you-scroll)                         |
+| EmberSearchUi                      | [EmberSearchUi](/docs/sheet/docs/sheet/data/search-ui#embersearchui)                                  |
+| Presentation state                 | [Hide, reorder, resize, freeze](/docs/sheet/docs/sheet/fields/columns#presentation-state)             |
+| Presentation state: fit to content | [Full screen and fit width](/docs/sheet/docs/sheet/more/full-screen#fit-to-content)                   |
+| Full screen                        | [Full screen and fit width](/docs/sheet/docs/sheet/more/full-screen#full-screen)                      |
+| Summary bar                        | [Summary footer](/docs/sheet/docs/sheet/selection/summary#summary-bar)                                |
+| Export to CSV                      | [CSV export](/docs/sheet/docs/sheet/import-export#export-to-csv)                                      |
+| Import from CSV                    | [CSV paste and import](/docs/sheet/docs/sheet/import-export/csv-import#import-from-csv)               |
+| The import screen                  | [The import screen](/docs/sheet/docs/sheet/import-export/import-screen#the-import-screen)             |
+| Group by                           | [Groups](/docs/sheet/docs/sheet/data/record-groups#group-by)                                          |
+| Frozen field                       | [Hide, reorder, resize, freeze](/docs/sheet/docs/sheet/fields/columns#frozen-field)                   |
+| Frozen field: performance          | [Large data](/docs/sheet/docs/sheet/data/large-sheet#performance-with-frozen-fields)                  |
+| The sheet's API                    | [API reference](/docs/sheet/docs/sheet/more/api-reference#the-sheets-api)                             |
+| Theme                              | [Theming and dark mode](/docs/sheet/docs/sheet/more/theme#theme)                                      |
+| Theme: row colours, cell colours   | [Row and cell colours](/docs/sheet/docs/sheet/rows/colours#row-and-cell-colours)                      |
+| Records                            | [Add, delete, duplicate](/docs/sheet/docs/sheet/rows#records)                                         |
+| Records: moving rows               | [Row drag and order](/docs/sheet/docs/sheet/rows/drag)                                                |
+| Fields                             | [Field editor](/docs/sheet/docs/sheet/fields#fields)                                                  |
+| Fields: your header menu items     | [Field actions and menus](/docs/sheet/docs/sheet/fields/field-actions)                                |
+| Expanded record                    | [Expanded record](/docs/sheet/docs/sheet/rows/expanded-record#expanded-record)                        |
+| Expanded record: its footer        | [Record footer](/docs/sheet/docs/sheet/rows/record-footer)                                            |
+| Field types                        | [All field types (and each type's page)](/docs/sheet/docs/sheet/field-types#field-types)              |
+| Field types: in the field editor   | [Custom field types and editors](/docs/sheet/docs/sheet/field-types/custom-types#in-the-field-editor) |
+| Bulk resolve                       | [Linked records](/docs/sheet/docs/sheet/field-types/linked-records#bulk-resolve)                      |
+| Keyboard                           | [Keyboard and shortcuts](/docs/sheet/docs/sheet/editing/keyboard#keyboard)                            |
+| Keyboard: the editor               | [Editing basics](/docs/sheet/docs/sheet/editing#cells-and-the-editor)                                 |
+| Keyboard: the mouse and ranges     | [Ranges, copy and paste](/docs/sheet/docs/sheet/selection#the-mouse-and-ranges)                       |
+| Keyboard: the fill handle          | [Fill handle](/docs/sheet/docs/sheet/selection/fill-handle#the-fill-handle)                           |
+| Keyboard: paste                    | [Paste rules and new records](/docs/sheet/docs/sheet/selection/paste#paste)                           |
+| Touch                              | [Touch selection](/docs/sheet/docs/sheet/selection/touch#touch)                                       |
+| IME and dead keys                  | [Keyboard and shortcuts](/docs/sheet/docs/sheet/editing/keyboard#ime-and-dead-keys)                   |
+| Errors                             | [Field rules](/docs/sheet/docs/sheet/validation/field-rules#errors)                                   |
 
 ## Not yet
 
@@ -281,9 +291,9 @@ These are not in yet:
   `@onGroupToggle`, taller headers, a colour per level.
 - A group-by in EmberSearchUi's own state (its driver and memory
   backend): today the connector forwards your groups and your handlers
-  write them with `setExtension` ([Group by](/docs/sheet/docs/sheet/groups#group-by)). Sorting, filtering, search,
+  write them with `setExtension` ([Group by](/docs/sheet/docs/sheet/data/record-groups#group-by)). Sorting, filtering, search,
   paging and grouping are not "not yet": they are the owner's ([The
-  owner](/docs/sheet/docs/sheet/api#the-owner), and the [EmberSearchUi connector](/docs/sheet/docs/sheet/search#embersearchui)), and the sheet draws them.
+  owner](/docs/sheet/docs/sheet/more/api-reference#the-owner), and the [EmberSearchUi connector](/docs/sheet/docs/sheet/data/search-ui#embersearchui)), and the sheet draws them.
 - Date and time values without a zone ("floating" times).
 - A tint of the whole row (`@rowColor` draws a bar).
 - Undo of field operations (adding, editing or deleting a field).

@@ -20,31 +20,31 @@ data; each part below links to the page that explains it.
   bar meanwhile, and the component keeps its own cursor (`fetched`).
   The add row waits until every product is loaded (`@canInsert`): an
   added record would otherwise land before products not loaded yet.
-  ([Groups and loading more](/docs/sheet/docs/sheet/groups#loading-more-as-you-scroll))
+  ([Load more](/docs/sheet/docs/sheet/data/load-more#loading-more-as-you-scroll))
 - **Groups.** "Group by category", or "Group by this field" in a column's
   menu (`@onGroupByChange`). Grouping needs every product, so it loads
   the rest first; then `localRecords` groups them (`store.view`), with
   the stock's sum on each header (`summaries`). The chevrons collapse a
-  group (`@onGroupToggle`). ([Group by](/docs/sheet/docs/sheet/groups#group-by))
+  group (`@onGroupToggle`). ([Group by](/docs/sheet/docs/sheet/data/record-groups#group-by))
 - **Editing.** Type, paste, fill, clear, undo: each change set goes to
   `@onChange`, which applies it to the store (where a real app also
   sends it to its server) and keeps a line per changed cell. SKU and
-  Product are required, Price and Stock have `min: 0`. ([Editing and
-  keyboard](/docs/sheet/docs/sheet/editing))
+  Product are required, Price and Stock have `min: 0`. ([Editing
+  basics](/docs/sheet/docs/sheet/editing))
 - **Import.** "Import CSV…" opens `<EuiSheetImport>` in a modal on a
   file of yours; "Import a supplier's file" on a sample whose columns
   have other names (the fields' `importAliases` match them) and whose
   third line has a price that can't be read. Import calls
   `api.appendRows`: one change set, one Ctrl/Cmd+Z. It loads every
   product first and turns grouping off, since imported lines go after
-  the last record (and, grouped, would take its group). ([Import and
-  export](/docs/sheet/docs/sheet/import-export#the-import-screen))
+  the last record (and, grouped, would take its group). ([The import
+  screen](/docs/sheet/docs/sheet/import-export/import-screen#the-import-screen))
 - **CSV export.** "Export CSV" loads every product and downloads
-  `toCsv` of them, the visible fields in their order. ([Import and
+  `toCsv` of them, the visible fields in their order. ([CSV
   export](/docs/sheet/docs/sheet/import-export#export-to-csv))
 - **The expanded record.** Space on a cell, or the expand icon on a
   row's number, opens the product; its footer (`<:recordFooter>`) lists
-  the edits made to it on this page. ([Records and rows](/docs/sheet/docs/sheet/rows#expanded-record))
+  the edits made to it on this page. ([Expanded record](/docs/sheet/docs/sheet/rows/expanded-record#expanded-record))
 
 The first field is frozen (`@frozenFields={{1}}`), so the SKU stays in
 view when you scroll right. [Getting started](/docs/sheet/docs/sheet) has the basics; the

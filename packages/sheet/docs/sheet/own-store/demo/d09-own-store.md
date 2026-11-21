@@ -1,5 +1,5 @@
 ---
-order: 3
+order: 1
 ---
 
 # Your own store, server ids

@@ -30,6 +30,9 @@ export type Page = {
     disabled: boolean;
     disabled_demos: string[];
     order?: number;
+    // `nav: false`: the page is routed but not listed (an old URL's page
+    // that links to where its sections went)
+    nav?: boolean;
   };
 };
 
@@ -94,8 +97,22 @@ export function getSidenavRoutes([docfyNode, clickHandler, options]: [
   SidenavOptions?,
 ]): Item[] {
   return docfyNode
-    ? [getItems(docfyNode, clickHandler, docfyNode.name, options ?? {})]
+    ? [getItems(docfyNode, clickHandler, docfyNode.name, options ?? {}, 0)]
     : [];
+}
+
+/** The lowest `order` among a group's items, at any depth. */
+function firstOrder(items: Item[]): number | undefined {
+  const orders = items.flatMap((item) =>
+    typeof item.order === 'number'
+      ? [item.order]
+      : item.items.length
+        ? [firstOrder(item.items) ?? Infinity]
+        : [],
+  );
+  const lowest = Math.min(...orders);
+
+  return Number.isFinite(lowest) ? lowest : undefined;
 }
 
 function getItems(
@@ -103,6 +120,7 @@ function getItems(
   clickHandler: (id: NodeId) => void,
   parent: string,
   options: SidenavOptions,
+  depth: number,
 ): Item {
   let items: Item[] = [];
 
@@ -115,16 +133,23 @@ function getItems(
         clickHandler,
         `${parent}-${docfyNode.name}`,
         options,
+        depth + 1,
       );
     });
   }
 
   items = [
     ...items,
-    ...(docfyNode.pages?.map((page) => {
-      return getItemFromPage(page, clickHandler, options);
-    }) ?? []),
+    ...(docfyNode.pages
+      ?.filter((page) => page.frontmatter?.nav !== false)
+      .map((page) => {
+        return getItemFromPage(page, clickHandler, options);
+      }) ?? []),
   ].sort(options.byOrder ? compareByOrder : compareFunction);
+
+  // a group inside an addon (the sheet's "Validation") sorts by its first
+  // page's `order`; the addons themselves (depth 1) keep their name order
+  const order = options.byOrder && depth >= 2 ? firstOrder(items) : undefined;
 
   return {
     name: humanize(docfyNode.label),
@@ -133,6 +158,7 @@ function getItems(
       docfyNode.onClick ??
       clickHandler.bind(clickHandler, `${parent}-${docfyNode.label}`),
     items,
+    ...(order === undefined ? {} : { order }),
   };
 }
 

@@ -576,7 +576,9 @@ export default class EuiSheetImport<T = any> extends Component<
     const cached = cache.get(key);
     if (cached) return cached;
     const matrix = this.parsed?.matrix ?? [];
-    const plan = this.proposed;
+    // the line's texts by header, as `runImport` gives a transform: from
+    // the header line (the plan may be what is being proposed)
+    const headers = this.headerTexts;
     const out: string[] = [];
     const distinct = new Set<string>();
     for (const i of this.dataLines) {
@@ -585,11 +587,9 @@ export default class EuiSheetImport<T = any> extends Component<
       const rowOf = () => {
         if (!row) {
           row = {};
-          for (const other of plan) {
-            if (!(other.header in row)) {
-              row[other.header] = cells[other.index] ?? '';
-            }
-          }
+          headers.forEach((header, j) => {
+            if (!(header in row!)) row![header] = cells[j] ?? '';
+          });
         }
         return row;
       };

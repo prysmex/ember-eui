@@ -155,3 +155,14 @@ measurement or a user decision first:
    rebuild of the columns. A change from v0.3, kept.
 9. A press on the resize edge that moves nothing does not call
    `@onFieldWidthChange`. A change from v0.3, kept.
+
+## Decided (the user, 2026-11-21, after batch B)
+
+10. A paste on the add row also fills the fields the pasted text has no
+    column for from `@newRecordValues`, as `appendRows` does (a small
+    fix of the paste path, made before batch E).
+11. `importMatrix` drops lines whose cells are all blank, and without
+    headers maps columns to fields by position.
+12. A header whose best field is already taken stays unmatched (no
+    fallback to another field); `normalizeHeader` is public.
+13. Header matching ignores accents, so `ñ` matches `n`.

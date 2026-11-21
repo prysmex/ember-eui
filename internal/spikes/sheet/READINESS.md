@@ -48,6 +48,11 @@ fixes coming back as commits.
      if that is it.
    - The EmberSearchUi connector forwards `@onVisibleRangeChange`, which
      v0.4 batch D left as a follow-up.
+   - A rejection on an inserted row is hidden when the owner's
+     `createRecord` gives that field a default value (e.g. `qty: null`):
+     the sheet shows a rejection only while the value is the one it saw
+     when emitting it. Seen in v0.4 batch B, for `appendRows` and a paste
+     on the add row alike; `localRecords`' default is not affected.
    - Any open item the v0.4 batches leave.
 
 ## On the user's devices (checklists in the batch's results)

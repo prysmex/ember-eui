@@ -2265,3 +2265,350 @@ production build, not instrumented.
   `vite preview`); the StackBlitz playgrounds were not opened (no
   network); Chromium only; the field-type examples' editors were not
   driven on a real phone.
+
+## Accessibility
+
+Done 2026-11-21 on `feat/sheet` after `8a54905`: READINESS.md item 3
+(axe over every demo page in light and dark, a review of roles and
+labels, fixes). Commits: `3bbef3b` (roles and labels), `535a33c` (a
+polite live region), `b204580` (contrast), `8ef4a6e` (the row menu's
+role on the panel's list, after the first re-run), `f1cc28d` (site: the
+header's GitHub link and banner), `7f27775` (core: the column actions
+popover's name), `69b5617` (the row menu's name, after the second
+re-run) and the last one (the harness, `axe-core` in `site`, this
+section). Not pushed.
+
+### How it was measured
+
+- **Build:** production build at each point (core, sheet, site
+  `pnpm build`), `vite preview --port 4211`, Playwright's Chromium,
+  1400 × 900. "Before" is `8a54905` (the site rebuilt after it); "after"
+  is the last code commit, rebuilt the same way.
+- **axe-core 4.11.0**, added as a dev dependency of `site` (`pnpm add -D`:
+  the network allowed it; it was in no `node_modules` of the workspace).
+  Default rules (WCAG 2.0/2.1 A and AA, best practices), injected from
+  `site/node_modules`.
+- **Pages:** the 52 pages of the Sheet nav: every `index.md` under
+  `packages/sheet/docs/sheet/` (the walker skips `nav: false`), 51 with
+  sheets and the API reference, which has none (the coordinator's 51 after
+  `8a54905`).
+- **Modes:** `light`, `dark`, `light-hc`, `dark-hc`, set with the site's
+  own `?theme=` and `?highContrast=true` (the theme manager reads them).
+  High contrast was checked to take effect: the header toggle is pressed
+  and the sheet's `--euiSheet-border` goes from `#E3E8F2` to `#07101F`,
+  `--euiSheet-text` from `#384861` to `#1D2A3E` (light). Several demos
+  put their sheet in an `EuiEmotionProvider` of their own (light until
+  their "Dark" switch is on), so the dark runs rate those sheets light.
+- **Scopes:** each violation node is the sheet's (inside a sheet, its
+  import screen, its portaled layers, the expanded record or the
+  shortcut list; in a state run, any EUI portal open), the demo's (inside
+  a demo's example, not a sheet) or the site's ("chrome": header, nav,
+  prose, code).
+- **States** (each on its page, checked to be reached): a text, select,
+  multi-select, date and date-time editor open; the row menu; the field
+  (column) menu; the field editor; the expanded record; the import screen
+  with a 30-line file; the shortcut list; an invalid cell focused; a range
+  over invalid cells with two checked rows ("tints"); a search match;
+  full screen.
+- **Contrast: axe did not rate the sheet.** Every grid cell has
+  pseudo-elements (its rings and borders), so axe's `color-contrast`
+  result for the cells is "incomplete", not a pass: 1,846 sheet nodes
+  per mode over the pages (and 4,704 of the site's). Its "0 contrast
+  violations" in the sheets means nothing. A rater of the batch's own
+  (`a11y-checks/lib.js`, `runContrast`) rates every visible text in the
+  sheets: the computed colour with the opacity of the element and its
+  ancestors over the ancestors' backgrounds composited to the first
+  opaque one; 4.5:1, 3:1 for large text and for glyphs that are graphics
+  (a rating's stars). Shown to fail: with `--euiSheet-text` forced to a
+  light grey it reported the 40 cells (1.6-1.7:1). It sees the state the
+  script leaves (the hover only on the row under the mouse, e.g. after a
+  click).
+
+The harness: `internal/spikes/sheet/a11y-checks/` (README: build, serve,
+`axe-pages.js`, `axe-states.js`, `aria-grid.js`). Outputs (JSON per
+mode, logs) in the session's scratchpad, not committed.
+
+### axe and the rater: before → after (nodes)
+
+Pages, all 52, by scope and rule. The four modes gave the same counts
+before and after (no rule depended on the theme except contrast, below):
+
+| scope | rule (impact) | light | dark | light-hc | dark-hc |
+| --- | --- | --- | --- | --- | --- |
+| chrome | empty-table-header (minor) | 4 → 4 | 4 → 4 | 4 → 4 | 4 → 4 |
+| chrome | landmark-unique (moderate) | 1 → 1 | 1 → 1 | 1 → 1 | 1 → 1 |
+| chrome | link-in-text-block (serious) | 86 → 86 | 86 → 86 | 86 → 86 | 86 → 86 |
+| chrome | link-name (serious) | 52 → 0 | 52 → 0 | 52 → 0 | 52 → 0 |
+| chrome | region (moderate) | 104 → 52 | 104 → 52 | 104 → 52 | 104 → 52 |
+| demo | heading-order (moderate) | 8 → 8 | 8 → 8 | 8 → 8 | 8 → 8 |
+| sheet | aria-allowed-attr (critical) | 2 → 2 | 2 → 2 | 2 → 2 | 2 → 2 |
+| sheet | empty-table-header (minor) | 58 → 0 | 58 → 0 | 58 → 0 | 58 → 0 |
+| sheet | rater: li.euiPagination__item | 1 → 1 | 1 → 1 | 1 → 1 | 1 → 1 |
+| sheet | rater: span.euiSheet__star | 26 → 0 | 26 → 0 | 26 → 0 | 26 → 0 |
+| sheet | rater: span.euiSwitch__label | 1 → 1 | 1 → 1 | 1 → 1 | 1 → 1 |
+| sheet | role-img-alt (serious) | 3 → 0 | 3 → 0 | 3 → 0 | 3 → 0 |
+| sheet | scrollable-region-focusable (serious) | 36 → 36 | 36 → 36 | 36 → 36 | 36 → 36 |
+
+"rater" rows are the batch's contrast rater (a node per failing text);
+`euiPagination__item` (the "…" of EuiPagination in the EmberSearchUi
+demo's footer, core's colour) and `euiSwitch__label` (a disabled switch's
+label in d12, exempt as disabled: the rater only sees `disabled` on the
+switch button, not its sibling label) are left.
+
+States, by scope and rule (the re-run row menu merged in, see `69b5617`):
+
+| scope | rule (impact) | light | dark | light-hc | dark-hc |
+| --- | --- | --- | --- | --- | --- |
+| chrome | empty-table-header (minor) | 1 → 1 | 1 → 1 | 1 → 1 | 1 → 1 |
+| chrome | link-in-text-block (serious) | 19 → 19 | 19 → 19 | 19 → 19 | 19 → 19 |
+| chrome | link-name (serious) | 15 → 0 | 15 → 0 | 15 → 0 | 15 → 0 |
+| chrome | region (moderate) | 30 → 15 | 30 → 15 | 30 → 15 | 30 → 15 |
+| demo | heading-order (moderate) | 5 → 5 | 5 → 5 | 5 → 5 | 5 → 5 |
+| sheet | aria-dialog-name (serious) | 1 → 0 | 1 → 0 | 1 → 0 | 1 → 0 |
+| sheet | color-contrast (serious) | 0 → 0 | 1 → 1 | 0 → 0 | 1 → 1 |
+| sheet | empty-table-header (minor) | 15 → 0 | 15 → 0 | 15 → 0 | 15 → 0 |
+| sheet | rater: div.euiDataGridRowCell__content.euiDataGridRowCell__content--defaultHeight.eui-textTruncate | 0 → 0 | 9 → 0 | 0 → 0 | 9 → 0 |
+| sheet | rater: span.euiListItemLayout__text.euiSelectableListItem__text | 0 → 0 | 1 → 1 | 0 → 0 | 1 → 1 |
+| sheet | rater: span.euiSheet__link | 0 → 0 | 1 → 0 | 0 → 0 | 1 → 0 |
+| sheet | region (moderate) | 12 → 7 | 12 → 7 | 12 → 7 | 12 → 7 |
+| sheet | scrollable-region-focusable (serious) | 3 → 2 | 3 → 2 | 3 → 2 | 3 → 2 |
+
+Per page (sheet scope: axe nodes plus rater nodes; light / dark, the hc
+modes are the same as their base mode):
+
+| page | rules before | light | dark |
+| --- | --- | --- | --- |
+| / | empty-table-header 1 | 1 → 0 | 1 → 0 |
+| /data/large-sheet | empty-table-header 1, scrollable-region-focusable 1 | 2 → 1 | 2 → 1 |
+| /data/load-more | empty-table-header 1, scrollable-region-focusable 1 | 2 → 1 | 2 → 1 |
+| /data/record-groups | empty-table-header 1, scrollable-region-focusable 1 | 2 → 1 | 2 → 1 |
+| /data/search-matches | empty-table-header 1, scrollable-region-focusable 1 | 2 → 1 | 2 → 1 |
+| /data/search-ui | aria-allowed-attr 2, empty-table-header 1, scrollable-region-focusable 1 | 5 → 4 | 5 → 4 |
+| /data/sorting | empty-table-header 1, scrollable-region-focusable 1 | 2 → 1 | 2 → 1 |
+| /editing | empty-table-header 1, scrollable-region-focusable 1 | 2 → 1 | 2 → 1 |
+| /editing/keyboard | empty-table-header 1, scrollable-region-focusable 1 | 2 → 1 | 2 → 1 |
+| /editing/read-only | empty-table-header 1, scrollable-region-focusable 1 | 2 → 1 | 2 → 1 |
+| /editing/undo-redo | empty-table-header 1, scrollable-region-focusable 1 | 2 → 1 | 2 → 1 |
+| /example-app | empty-table-header 1, scrollable-region-focusable 1 | 2 → 1 | 2 → 1 |
+| /field-types | empty-table-header 2, role-img-alt 1, scrollable-region-focusable 2 | 14 → 2 | 14 → 2 |
+| /field-types/attachments | empty-table-header 1 | 1 → 0 | 1 → 0 |
+| /field-types/barcode | empty-table-header 1, scrollable-region-focusable 1 | 2 → 1 | 2 → 1 |
+| /field-types/buttons | empty-table-header 1, scrollable-region-focusable 1 | 2 → 1 | 2 → 1 |
+| /field-types/checkbox-and-rating | empty-table-header 1, role-img-alt 2, scrollable-region-focusable 1 | 21 → 1 | 21 → 1 |
+| /field-types/custom-types | empty-table-header 2 | 2 → 0 | 2 → 0 |
+| /field-types/dates | empty-table-header 1 | 1 → 0 | 1 → 0 |
+| /field-types/email-url-phone | empty-table-header 1 | 1 → 0 | 1 → 0 |
+| /field-types/linked-records | empty-table-header 1 | 1 → 0 | 1 → 0 |
+| /field-types/numbers | empty-table-header 1, scrollable-region-focusable 1 | 2 → 1 | 2 → 1 |
+| /field-types/selects | empty-table-header 1 | 1 → 0 | 1 → 0 |
+| /field-types/text-fields | empty-table-header 1, scrollable-region-focusable 1 | 2 → 1 | 2 → 1 |
+| /field-types/users | empty-table-header 1, scrollable-region-focusable 1 | 2 → 1 | 2 → 1 |
+| /fields | empty-table-header 1, scrollable-region-focusable 1 | 2 → 1 | 2 → 1 |
+| /fields/columns | empty-table-header 2, scrollable-region-focusable 1 | 4 → 2 | 4 → 2 |
+| /fields/field-actions | empty-table-header 1 | 1 → 0 | 1 → 0 |
+| /import-export | empty-table-header 2, scrollable-region-focusable 1 | 3 → 1 | 3 → 1 |
+| /import-export/csv-import | empty-table-header 1 | 1 → 0 | 1 → 0 |
+| /import-export/import-screen | empty-table-header 1 | 1 → 0 | 1 → 0 |
+| /more/api-reference |  | 0 → 0 | 0 → 0 |
+| /more/full-screen | empty-table-header 1, scrollable-region-focusable 1 | 2 → 1 | 2 → 1 |
+| /more/theme | empty-table-header 1, scrollable-region-focusable 1 | 2 → 1 | 2 → 1 |
+| /more/translations | empty-table-header 2 | 2 → 0 | 2 → 0 |
+| /own-store | empty-table-header 1 | 1 → 0 | 1 → 0 |
+| /rows | empty-table-header 2, scrollable-region-focusable 1 | 3 → 1 | 3 → 1 |
+| /rows/colours | empty-table-header 1, scrollable-region-focusable 1 | 2 → 1 | 2 → 1 |
+| /rows/drag | empty-table-header 1, scrollable-region-focusable 1 | 2 → 1 | 2 → 1 |
+| /rows/expanded-record | empty-table-header 1 | 1 → 0 | 1 → 0 |
+| /rows/record-footer | empty-table-header 1 | 1 → 0 | 1 → 0 |
+| /rows/row-height | empty-table-header 1 | 1 → 0 | 1 → 0 |
+| /selection | empty-table-header 1, scrollable-region-focusable 1 | 2 → 1 | 2 → 1 |
+| /selection/fill-handle | empty-table-header 1, scrollable-region-focusable 1 | 2 → 1 | 2 → 1 |
+| /selection/paste | empty-table-header 1 | 1 → 0 | 1 → 0 |
+| /selection/summary | empty-table-header 1, scrollable-region-focusable 1 | 2 → 1 | 2 → 1 |
+| /selection/touch | empty-table-header 1, scrollable-region-focusable 1 | 2 → 1 | 2 → 1 |
+| /validation/blocking-and-warnings | empty-table-header 1, scrollable-region-focusable 1 | 2 → 1 | 2 → 1 |
+| /validation/field-rules | empty-table-header 1, scrollable-region-focusable 1 | 2 → 1 | 2 → 1 |
+| /validation/paste-and-import | empty-table-header 1 | 1 → 0 | 1 → 0 |
+| /validation/record-checks | empty-table-header 1, scrollable-region-focusable 1 | 2 → 1 | 2 → 1 |
+| /validation/server-checks | empty-table-header 2, scrollable-region-focusable 2 | 4 → 2 | 4 → 2 |
+
+Per state (sheet scope with rater; every state reached before and after):
+
+| state | reached | before (light) | light | dark |
+| --- | --- | --- | --- | --- |
+| text-editor | y/y | empty-table-header 1 | 1 → 0 | 1 → 0 |
+| select-editor | y/y | empty-table-header 1, region 3 | 4 → 3 | 6 → 5 |
+| multi-select-editor | y/y | empty-table-header 1, region 3 | 4 → 3 | 4 → 3 |
+| date-editor | y/y | empty-table-header 1 | 1 → 0 | 1 → 0 |
+| date-time-editor | y/y | empty-table-header 1 | 1 → 0 | 1 → 0 |
+| row-menu | y/y | empty-table-header 1 | 1 → 1 | 1 → 1 |
+| field-menu | y/y | aria-dialog-name 1, empty-table-header 1 | 2 → 0 | 2 → 0 |
+| field-editor | y/y | empty-table-header 1, region 6 | 7 → 0 | 7 → 0 |
+| expanded-record | y/y | empty-table-header 1 | 1 → 0 | 1 → 0 |
+| import-screen | y/y | empty-table-header 1 | 1 → 0 | 1 → 0 |
+| shortcut-list | y/y | empty-table-header 1, scrollable-region-focusable 1 | 2 → 0 | 2 → 0 |
+| cell-error | y/y | empty-table-header 1 | 1 → 0 | 6 → 0 |
+| tints | y/y | empty-table-header 1 | 1 → 0 | 6 → 0 |
+| search-match | y/y | empty-table-header 1, scrollable-region-focusable 1 | 2 → 1 | 2 → 1 |
+| full-screen | y/y | empty-table-header 1, scrollable-region-focusable 1 | 2 → 1 | 2 → 1 |
+
+What the "after" columns still hold: `scrollable-region-focusable` on
+core's grid scroller (below), `aria-allowed-attr` (critical) on
+ember-power-select's triggers in the EmberSearchUi demo's toolbar
+(`role=presentation` with `aria-autocomplete` / `aria-expanded`: a
+third-party component in the demo, not the sheet), `region` on the
+select editors' EuiSelectable list and search box and on the row menu's
+portal (best practice: a floating layer outside the page's landmarks),
+and, in dark, core's EuiSelectable active option (`#61a2ff` on
+`#123778`, 4.41:1, axe and the rater agree) in the select editor.
+
+### The ARIA review (code and DOM, beyond axe)
+
+Read in the source and checked in the production build's DOM and
+Chromium's accessibility tree (CDP `Accessibility.getPartialAXTree`).
+
+| Part | Found | Done |
+| --- | --- | --- |
+| Grid | `role=grid`, `aria-label` (`@ariaLabel`, default "Sheet"), `aria-rowcount` / `aria-colcount`; rows `role=row`, cells `role=gridcell` with `aria-rowindex` / `aria-colindex`, headers `role=columnheader` with `aria-colindex` | Fine. `aria-grid.js` on d08 (10,000 × 31) at the top and scrolled 2,500 px right and 3,000 px down, unfrozen and frozen (the frozen column window): no problem (every cell's `aria-colindex` is its header's, none twice in a row, one `aria-rowindex` per row). Also on the grouped sheet (d19, group header and add rows) and the summary-footer sheet (d13). |
+| Row and column counts | `aria-rowcount` is the grid's rows (records, add rows, group headers) without the header and footer rows; body rows start at `aria-rowindex=1`; the summary footer's row has `aria-rowindex` = rowcount + 1 | **Left (core):** ARIA counts the header row (and a footer) in `aria-rowcount` and numbers the header row 1. Core's `EuiDataGrid` does it as upstream EUI does; not the sheet's use. Reported, not changed (the task: core's grid roles and indices are core's). A screen reader may say "row 1" on the first record and give a footer row beyond the count. |
+| Row-number column | Cells labelled "Row 3"; the drawn checkbox is `aria-hidden`; a checked row said nothing; the header cell had no text (axe `empty-table-header` on every sheet) | `3bbef3b`: "Row 3, checked" when checked; the header has a visually hidden "Row number". **Left:** the header's "check all" is mouse only (Space on the header does nothing; no shortcut lists one); a key binding is a behaviour change outside this batch. |
+| Group header rows | A cell per row with `aria-label` "Status: To do, 4" and `aria-expanded` | Fine for axe. `aria-expanded` on a `gridcell` is deprecated in ARIA 1.2 (it belongs on the row in a treegrid); the sheet's grid is a `grid`, not a `treegrid`. Left (screen reader checklist). |
+| Add row | Row-number cell labelled "Add record"; the first data cell's text "Add record" | Fine. |
+| Selection | `aria-selected="true"` on selected cells and row numbers, none on the others | Left as is: `aria-selected="false"` on every other cell makes NVDA say "not selected" on each move. Screen reader checklist. |
+| Read-only cells | Nothing said them | `3bbef3b`: `aria-readonly="true"` (field, record or `@readOnly`). |
+| Invalid cells | `aria-invalid="true"`, the messages in `title`; the focused cell's error box is an always-rendered `role=status` region | Reachable: Chromium gives the `title` as the cell's description ("P-42", described "Use PER- and four digits, as PER-0042"), and as its name when the cell is empty ("Required"); the error box is announced when focus lands. No `aria-describedby` (it would go through `setCellProps`, which replaces the attribute and would drop core's focus-trap hint). Possibly read twice (description and live region): screen reader checklist. |
+| Checkbox and rating cells | `role=img` labelled by the copy text: "true" / "false"; an empty rating `role=img` with an empty label (axe `role-img-alt`) | `3bbef3b`: "Checked" / "Not checked" (messages); an empty rating has no role. A rating reads as "3" (not "3 of 5"). |
+| Editors | Each input labelled by its field (`aria-label`); focus moves in on open (text, select and multi-select `combobox`, date, date-time) and back to the cell on Escape | Fine (checked in the DOM for all five). |
+| Row menu | An `EuiContextMenuPanel` of buttons: no `menu` / `menuitem` roles; focus on the first item, Escape back to the cell | `3bbef3b` + `8ef4a6e`: the panel's list is `role=menu` (the focusable panel may not be inside one: axe `aria-required-children` on the first try), items `menuitem`, lines `separator`. Unnamed (a menu name is not required; only a panel title would give one). |
+| Field (column) menu | Core's column actions popover: a `role=dialog` with no name (axe `aria-dialog-name`); **Escape leaves focus on `<body>`** (also on core's own data grid docs page) | Name: `7f27775` (core). **Focus return: core's grid behaviour, reported, not changed.** Picking an item returns focus to the header (the sheet's `afterClose`). |
+| Field actions | Items of the same core popover | As the field menu. |
+| Field editor | A positioned panel in a focus trap, no role or name; Escape and Cancel return focus to the header (or the "+" header) | `3bbef3b`: `role=dialog` named "Edit field" / "Add field" / "Delete field"; the delete confirmation described by its question. |
+| Expanded record | Flyout (`role=dialog`, `aria-modal`, labelled by its title) or modal (EuiModal, labelled by its title); focus trapped, back to the cell on close | Fine. The editable boxes (`role=button`) were named by the label only, so the value was not read: `3bbef3b` names them label + value. The read-only boxes keep `aria-labelledby` on a plain `div` (ignored by screen readers; axe does not flag it): giving them `role=group` breaks RF7's exact assertion (below). |
+| Import screen | Sections labelled by their headings, every select and switch labelled, the totals a `role=status` (says "Checking the lines…" while the first dry run waits), errors `role=alert`, `aria-busy` while busy | Fine. `aria-busy` on the whole screen may hold back the status announcement until it clears (screen reader checklist). |
+| Shortcut list | EuiModal labelled by its title, tables with captions, focus back to the cell on Escape; its scrolling body had nothing focusable (axe `scrollable-region-focusable`) | `3bbef3b`: the sections are in a focusable `region` named by the title. |
+| Live announcements | Only the focused cell's error box; nothing said a paste, an undo, a redo or a rejected text | `535a33c`: a visually hidden `role=status` region: "12 cells pasted", "Undone", "Redone", a rejection's message ('"abc" is not a number') or "3 values could not be read", and "Name: Required" when an edit left its cell invalid and focus moved on. Messages through `messages.ts` (`announce*`), so they translate. |
+| Grid scroller | axe `scrollable-region-focusable` on core's `.euiDataGrid__virtualized` (36 pages): only cells with `tabindex=-1` inside | **Left (core), not a barrier:** checked on d08: Tab from the switch before the sheet lands on the grid (the row-number header), 15 × ArrowDown on gridcell row 15 with `scrollTop` 242, PageDown on a data cell moves focus 10 rows and scrolls. axe does not count a roving tabindex. **But PageDown / PageUp on a row-number cell of an ungrouped sheet scrolls and drops focus to `<body>`** (d08 and d01; a grouped sheet handles those keys itself, `handleGroupedRowNumberKey`). Found, not fixed: a key-handling change (the grouped path for ungrouped sheets, or core's page keys in a control column), for the next batch. |
+
+### Fixed
+
+- `3bbef3b` roles and labels: `aria-readonly`; "Row 3, checked"; the
+  row-number header's name; checkbox cells "Checked" / "Not checked";
+  no empty rating image; the expanded record's boxes named by label and
+  value; the row menu's menuitems and separators; the field editor a
+  named dialog (the delete confirmation described); the shortcut list's
+  focusable region. New messages `rowNumberChecked`, `rowNumberHeader`,
+  `cellChecked`, `cellUnchecked`; cell components get `@messages`
+  (`SheetCellSignature`, additive). Tests A1-A4 (`eui-sheet-a11y-test`),
+  A5-A7 (`eui-sheet-a11y-menus-test`).
+- `535a33c` the live region (messages `announcePasted`,
+  `announcePastedOne`, `announceUndone`, `announceRedone`,
+  `announceRejected`, `announceCellError`). Tests A5, A6.
+- `b204580` contrast: `--euiSheet-starOff` (new theme variable), the dark
+  range tint 16 %, one hover tint per row. Tests C1-C3
+  (`eui-sheet-a11y-contrast-test`, light and dark).
+- `8ef4a6e`, `69b5617` the row menu: the panel's list is the menu, named
+  "Row menu" (message `rowMenu`).
+- `f1cc28d` site: the header's GitHub link named, the header
+  `role="banner"`.
+- `7f27775` **core** (the one core change): the column actions popover
+  (a `role=dialog`) is labelled by its column's title. Clearly a missing
+  label; a new core test; core's full suite 2151 tests, 2149 pass, 2 todo,
+  0 fail; core `lint:types` clean. `column-actions.gts` was not
+  Prettier-clean before (core's drift); only the new line was added.
+
+Every new test was run against the code without its fix and failed
+there (A1-A7 and C1-C3 by stashing the source change, the core test
+likewise).
+
+### Left, and why
+
+- **Core's grid** (reported, not changed: its roles, indices and focus
+  are core's): `aria-rowcount` without the header and footer rows and the
+  first body row at `aria-rowindex=1`; the footer row's index past the
+  count; the scroller's `scrollable-region-focusable`; **Escape in a
+  column (field) menu leaves focus on `<body>`**, on core's own data grid
+  docs page too (an item does return focus to the header: the sheet's
+  `afterClose`); EuiSelectable's active option in dark (4.41:1);
+  EuiPagination's "…" colour.
+- **The sheet, found and not fixed:** PageDown / PageUp on an ungrouped
+  sheet's row-number cell drops focus (above); the row-number header's
+  "check all" is mouse only; `aria-selected="false"` is not set on
+  unselected cells (on purpose, see the review); a group header's
+  `aria-expanded` on a gridcell.
+- **Blocked by an existing test:** giving the expanded record's
+  read-only boxes `role="group"` (so their `aria-labelledby` counts)
+  fails RF7 in `eui-sheet-record-test.gts`:
+  `assert.strictEqual(code.getAttribute('role'), null, 'no button role');`
+  Not changed (no edits to existing tests); the boxes keep
+  `aria-labelledby` on a plain `div`, which screen readers ignore (the
+  label still precedes the value in reading order).
+- **Demos:** `heading-order` (an `<h4>` in eight demos after the demo's
+  `<h2>` title: changing the demos' markup is docs work), the
+  power-select triggers (above).
+- **Site:** `link-in-text-block` (86: prose links are coloured, not
+  underlined: a design choice), the nav's search field outside a
+  landmark (52), four docs tables with an empty header cell, one
+  `landmark-unique`.
+- **Not measured by the rater:** non-text contrast of borders, the
+  focus rings and the drawn checkboxes (WCAG 1.4.11 beyond the stars),
+  hover states other than the row under the mouse after a click, and
+  text inside images.
+
+### For a screen reader on a real device (the user's checklist)
+
+VoiceOver on a Mac (Safari) and NVDA on Windows (Firefox or Chrome), on
+the docs pages:
+
+1. Tab into a sheet (Editing basics): the grid's name ("People") and the
+   first header are read; arrows read each cell with its column header;
+   a read-only field (Read-only cells) says "read only".
+2. A row number: "Row 3"; Space checks it: "Row 3, checked" (VoiceOver
+   may need a move away and back).
+3. Edit a cell (Enter, type, Enter): the editor is read with the field's
+   name; after Enter the next cell is read. Clear a required Name and
+   press Enter: "Name: Required" is announced once (not twice with the
+   cell's own error box).
+4. Paste a block (copy two cells, paste): "2 cells pasted"; Ctrl/Cmd+Z:
+   "Undone"; again "Undone"; Ctrl/Cmd+Shift+Z: "Redone". Type `abc` in a
+   number cell: '"abc" is not a number'.
+5. Move onto an invalid cell (Field rules): its value, "invalid", and its
+   message: once or twice (description and live region)?
+6. Shift+F10 on a cell: "Row menu", the items as menu items, arrows move,
+   Escape returns to the cell.
+7. Space on a cell: the expanded record (a dialog with the record's
+   title); each field read as label and value; Escape back to the cell.
+   Paste or undo there: is the live region heard from inside the modal
+   flyout (`aria-modal`)?
+8. A header: Enter opens the column menu; is it read as a dialog named by
+   the column; Escape (focus lost, a core issue: where does the reader
+   land?).
+9. The field editor (Fields page, "+" header): read as a dialog "Add
+   field"; Delete field: the question is read.
+10. Ctrl/Cmd+/ : the shortcut list, its tables and captions; the list
+    region can be scrolled with the arrows.
+11. The import screen (The import screen page, a file): "Checking the
+    lines…" then the totals announced, despite `aria-busy` on the screen?
+12. Selection: does NVDA say "selected" on cells in a range, and nothing
+    noisy on the others?
+
+### Checks
+
+- Before each commit: sheet `pnpm lint:types`; the tests' ember-tsc at
+  the 19-error baseline (the `error TS` lines identical to
+  `3c-checks/baseline-tests-tsc.log`); eslint and Prettier on the changed
+  files; `node scripts/generate-api-docs.mjs --check`; root
+  `pnpm eui:check` (357/357); the full sheet suite: 773/773 (`3bbef3b`),
+  775/775 (`535a33c`), 780/780 (`b204580`, `8ef4a6e`, `69b5617`), no
+  flake. Site (`f1cc28d`): `pnpm lint`, `pnpm test` (node 21/21, browser
+  15/15), `pnpm build`. Core (`7f27775`): full suite, `lint:types`.
+- Final (at `69b5617`): sheet `lint:js` and `lint:css` clean; `pnpm
+  size`: `sheet` 396.2 KB gzip over Ember (was 395.2; budget 400),
+  `sheet-import` 412.7 (16.5 over `sheet`; budget 17), `sheet-core` -4.9
+  as the script prints it (budget 25); site `pnpm lint`, `pnpm test`
+  (node 21/21, browser 15/15), `pnpm build`.
+- `site/dist` is the production build of `69b5617` (core, sheet, site;
+  rebuilt after the site tests, whose development build writes there).
+- Not verified: Safari, Firefox and real screen readers (the checklist);
+  the pages' "after" run was on `7f27775`'s build (it differs from
+  `69b5617` only in the row menu, re-run as a state); the dark runs rate
+  the demos with their own light provider as light; touch states (the
+  selection handles, the touch menu) were not run through axe.

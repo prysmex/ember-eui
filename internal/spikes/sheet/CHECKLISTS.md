@@ -35,7 +35,7 @@ HTTPS. "Mod" is Cmd on a Mac, Ctrl elsewhere.
    opens; edit a field → the grid shows it; Escape → closed, focus back
    on the cell.
 8. `…/more/full-screen`: Full screen on → the sheet fills the window;
-   Escape → back.
+   Escape on a cell → back.
 9. `…/field-types/dates`: open a date and a date-time cell → the
    browser's picker; pick a value → saved and shown in the field's
    format; type a date by hand → read the same way.
@@ -64,9 +64,9 @@ Hold the phone upright (a sheet under 600 px wide).
    the other corner moves.
 4. Tap a text cell that is already selected → the expanded record opens
    with that field's editor; type, close → saved in the grid.
-5. Tap a **select** cell (`…/field-types/selects`) → the expanded record
-   opens with the field's picker (this is intended); pick an option →
-   saved.
+5. `…/field-types/selects`: tap a **select** cell → selected; tap it
+   again → the expanded record opens with the field's picker (this is
+   intended); pick an option → saved.
 6. Long press a range → a menu with Copy and Paste; Copy, then long
    press another cell, Paste → the text is written (the browser may ask
    permission once). Long press a cell or a row number → the row menu.
@@ -100,8 +100,9 @@ VO+Shift+↓, or use plain arrows after focusing a cell).
 2. A row number → "Row 3"; Space → "Row 3, checked" (VoiceOver may need a
    move away and back).
 3. The row-number header (Tab into the sheet, or Mod+Home, ArrowLeft,
-   ArrowUp) → "Row number, Select all rows"; Space → every row checked, the
-   header says "All rows checked"; Enter → none again. Check one row
+   ArrowUp) → "Row number, Select all rows"; Space → every row checked,
+   the header says "All rows checked" (the reader may need a move away
+   and back to hear the new text); Enter → none again. Check one row
    first → the header says "Some rows checked".
 4. A row number on `…/data/large-sheet`: PageDown, PageUp → focus moves
    a page in the row-number column and is read (not lost to the page).
@@ -167,14 +168,20 @@ VO+Shift+↓, or use plain arrows after focusing a cell).
   click): allow that, or keep the target.
 - **44 of the 52 docs pages have one example** (asked: 2-4 each). More
   examples per page, or merging small pages (the per-type field pages)?
+- **PageUp / PageDown on a row number without groups** are taken only
+  while the grid has rows out of view (then the browser's scroll would
+  lose focus). With every row in view they stay the browser's, as GR11
+  pins ("row-number cells without groups: the page keys are not
+  taken"). Decide: keep, or always take them (GR11's expectation would
+  change).
 - **The row-number column is wider:** it now fits the last record's
   number beside the checkbox and the expand icon (one width for mouse and
   touch): 64 px up to 9 records, 73 px for 10-99, 102 px for 10,000.
 - **Left in the sheet:** no `aria-selected="false"` on unselected cells
   (on purpose: NVDA noise); a group header's `aria-expanded` on a
   gridcell; the expanded record's read-only boxes keep `aria-labelledby`
-  on a plain `div` (a `role=group` breaks RF7's assertion); no warning
-  level for messages (a validation message never blocks but an unreadable
-  text).
+  on a plain `div` (a `role=group` breaks RF7's assertion); messages
+  have no warning level (only a text the field cannot read is refused;
+  every other validation message is shown and never blocks).
 - **Not tried anywhere yet:** real IMEs and dead keys on macOS, the
   StackBlitz playgrounds, Vercel's handling of slashless group URLs.

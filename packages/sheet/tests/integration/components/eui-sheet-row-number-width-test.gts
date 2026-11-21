@@ -11,10 +11,23 @@
 import { module, test } from 'qunit';
 import { setupRenderingTest } from 'ember-qunit';
 import { tracked } from '@glimmer/tracking';
-import { click, render, settled, waitUntil } from '@ember/test-helpers';
+import {
+  click,
+  render,
+  settled,
+  triggerEvent,
+  waitUntil
+} from '@ember/test-helpers';
 
 import EuiSheet from '#src/components/eui-sheet.gts';
-import { cell, el } from '../../helpers/sheet.ts';
+import { localRecords } from '#src/local-records.ts';
+import {
+  cell,
+  el,
+  focusCell,
+  pressed,
+  resizerOf
+} from '../../helpers/sheet.ts';
 
 import type { EuiSheetField, SheetGroup } from '#src/core/index.ts';
 import type EuiEmotionService from '@ember-eui/core/services/eui-emotion';
@@ -351,5 +364,70 @@ module(
         );
       });
     }
+
+    test('RNW6 the tenth record added from the add row: the column grows, focus stays in the grid, a resized field keeps its width', async function (assert) {
+      const store = localRecords<Row>(rows(9), { getRecordId: getId });
+      await render(
+        <template>
+          <div style="width:500px">
+            <EuiSheet
+              @records={{store.records}}
+              @fields={{FIELDS}}
+              @getRecordId={{getId}}
+              @onChange={{store.apply}}
+              @height={{700}}
+            />
+          </div>
+        </template>
+      );
+      const widthOf = (id: string) =>
+        el(`[role=columnheader][data-gridcell-column-id="${id}"]`).offsetWidth;
+      // a drag of Name first: 120 -> 160
+      const resizer = resizerOf(
+        el('[role=columnheader][data-gridcell-column-id="name"]')
+      );
+      await triggerEvent(resizer, 'mousedown', { clientX: 300 });
+      await triggerEvent(window as unknown as Element, 'mousemove', {
+        clientX: 340
+      });
+      await triggerEvent(window as unknown as Element, 'mouseup');
+      const resized = widthOf('name');
+      assert.true(resized > 150, `Name resized (${resized} px)`);
+      const nine = widthOf('euiSheetRow');
+
+      // Enter on the add row (grid row 9): the tenth record
+      await focusCell(9, 0);
+      assert.true(await pressed('Enter'), 'Enter on the add row');
+      await settled();
+      assert.strictEqual(store.records.length, 10, 'a tenth record');
+      assert.true(
+        widthOf('euiSheetRow') > nine,
+        `the column grew (${nine} -> ${widthOf('euiSheetRow')} px)`
+      );
+      assert.strictEqual(widthOf('name'), resized, 'Name keeps its width');
+      const active = document.activeElement as HTMLElement | null;
+      assert.strictEqual(
+        active?.getAttribute('role'),
+        'gridcell',
+        'focus is on a grid cell'
+      );
+      assertFits(assert, 'ten records', numbers(0, 10));
+      // the fill handle on the focused cell's corner
+      const atCorner = () => {
+        const handle = document.querySelector<HTMLElement>(
+          '[data-test-subj=euiSheetFillHandle]'
+        );
+        const focused = document.activeElement;
+        if (!handle || !(focused instanceof HTMLElement)) return false;
+        const box = handle.getBoundingClientRect();
+        const corner = focused.getBoundingClientRect();
+        return (
+          near(box.left + box.width / 2, corner.right) &&
+          near(box.top + box.height / 2, corner.bottom)
+        );
+      };
+      await until(atCorner);
+      assert.true(atCorner(), 'the fill handle on the focused cell');
+    });
   }
 );

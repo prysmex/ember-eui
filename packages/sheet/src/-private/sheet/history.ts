@@ -204,6 +204,8 @@ export default class SheetHistory<T extends object> {
     this.sheet.follow.lastIds = this.sheet.follow.lastIds.map((id) =>
       String(remapId(id, map))
     );
+    // compared as the strings they are now
+    this.sheet.follow.lastRaw = this.sheet.follow.lastIds;
     const deletes = [...this.sheet.changes.pendingOwn.deletes].map((id) =>
       String(remapId(id, map))
     );

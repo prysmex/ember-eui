@@ -1,5 +1,6 @@
 import { module, test } from 'qunit';
 
+import { isOwnChange, sameRenderIds } from '#src/-private/sheet/follow.ts';
 import {
   applyChangeSet,
   undoChangeSet,
@@ -210,6 +211,86 @@ module(
         ['7', 'x'],
         'the records whose String(id) is deleted are gone, the others kept'
       );
+    });
+
+    test('LK9 isOwnChange: the same answers as with a set of every id, raw ids numbers or strings (generated cases)', function (assert) {
+      // the version before the readiness batch's frozen-grid stage
+      const reference = (
+        previous: string[],
+        next: string[],
+        pending: { deletes: Set<string>; inserts: number }
+      ): boolean => {
+        if (!pending.inserts && !pending.deletes.size) return false;
+        const before = new Set(previous);
+        const kept = previous.filter((id) => !pending.deletes.has(id));
+        let k = 0;
+        let added = 0;
+        for (const id of next) {
+          if (!before.has(id)) {
+            added++;
+            continue;
+          }
+          if (kept[k] !== id) return false;
+          k++;
+        }
+        return k === kept.length && added <= pending.inserts;
+      };
+      let seed = 7;
+      const random = (n: number) => {
+        seed = (seed * 1103515245 + 12345) % 2147483648;
+        return seed % n;
+      };
+      let own = 0;
+      let checked = 0;
+      for (let i = 0; i < 3000; i++) {
+        const previous = Array.from({ length: random(7) }, () =>
+          String(random(9))
+        );
+        const deletes = new Set(previous.filter(() => random(4) === 0));
+        let next = previous.filter((id) => !deletes.has(id));
+        // inserts: new ids, ids of previous (duplicates), deleted ids
+        const extra = random(3);
+        for (let j = 0; j < extra; j++) {
+          const id = random(3) === 0 ? String(random(9)) : `n${random(4)}`;
+          next.splice(random(next.length + 1), 0, id);
+        }
+        if (random(5) === 0 && next.length > 1) next = [...next].reverse();
+        const pending = { deletes, inserts: random(4) };
+        const expected = reference(previous, next, pending);
+        if (expected) own++;
+        checked++;
+        // raw ids as a record might give them: a numeric id as a number
+        // or as its string, chosen for each list on its own
+        const asRender = (ids: string[]) => ({
+          raw: ids.map((id) =>
+            /^[0-9]+$/.test(id) && random(2) === 0 ? Number(id) : id
+          ),
+          ids
+        });
+        if (
+          isOwnChange(asRender(previous), asRender(next), pending) !== expected
+        ) {
+          assert.deepEqual(
+            { previous, next, deletes: [...deletes], inserts: pending.inserts },
+            null,
+            `differs (reference ${expected})`
+          );
+          return;
+        }
+      }
+      assert.true(own > 100 && own < checked - 100, `${own} own of ${checked}`);
+    });
+
+    test('LK10 sameRenderIds: the same strings in the same order, raw ids compared first', function (assert) {
+      const render = (raw: unknown[]) => ({ raw, ids: raw.map(String) });
+      assert.true(sameRenderIds(render([1, 2, 3]), render([1, 2, 3])));
+      assert.true(
+        sameRenderIds(render([1, '2', NaN]), render(['1', 2, NaN])),
+        'a number and its string are one id; NaN too'
+      );
+      assert.false(sameRenderIds(render([1, 2]), render([2, 1])), 'order');
+      assert.false(sameRenderIds(render([1, 2]), render([1, 2, 3])), 'length');
+      assert.false(sameRenderIds(render([7]), render(['07'])), '7 is not 07');
     });
   }
 );

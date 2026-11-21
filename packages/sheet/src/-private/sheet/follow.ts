@@ -1,36 +1,76 @@
 /** Following `@records` and `@groups`: keeping the cursor, range and editor on their records (V03C-DESIGN.md 3.2). */
 import { modifier } from 'ember-modifier';
 
-import { afterRender, clamp, sameIds, sameLayout } from './util.ts';
+import { namedBy } from '../../core/record-lookup.ts';
+import { afterRender, clamp, sameLayout } from './util.ts';
 
 import type EuiSheet from '../../components/eui-sheet.gts';
 import type { RowModel, SheetGroup } from '../../core/index.ts';
 import type { PendingOwn } from './types.ts';
 
 /**
+ * A render's record ids: as `getRecordId` gives them (`raw`) and as
+ * strings (`ids`, what the sheet keys records by). Two ids are the same
+ * when their strings are; the raw ones are compared first, so number ids
+ * are not compared as strings (100,000 string comparisons, or a set of
+ * them, cost 10-60 ms in Chromium).
+ */
+export interface RenderIds {
+  raw: readonly unknown[];
+  ids: readonly string[];
+}
+
+const sameAt = (a: RenderIds, i: number, b: RenderIds, j: number): boolean =>
+  a.raw[i] === b.raw[j] || a.ids[i] === b.ids[j];
+
+/** Whether two renders have the same ids in the same order. */
+export function sameRenderIds(a: RenderIds, b: RenderIds): boolean {
+  if (a.ids.length !== b.ids.length) return false;
+  for (let i = 0; i < a.ids.length; i++) if (!sameAt(a, i, b, i)) return false;
+  return true;
+}
+
+/**
  * Whether `next` is `previous` with only what this sheet emitted applied:
  * the ids kept in the same order, the pending deletes gone, and no more
  * new ids than the pending inserts (an owner may give them other ids).
+ *
+ * One walk of both lists, without a set of every id: the kept ids must
+ * come in order, and what else `next` has must be new, which is checked
+ * against `previous` only when there is any.
  */
-function isOwnChange(
-  previous: readonly string[],
-  next: readonly string[],
+export function isOwnChange(
+  previous: RenderIds,
+  next: RenderIds,
   pending: PendingOwn
 ): boolean {
   if (!pending.inserts && !pending.deletes.size) return false;
-  const before = new Set(previous);
-  const kept = previous.filter((id) => !pending.deletes.has(id));
+  const count = previous.ids.length;
+  const deleted = pending.deletes.size ? namedBy(pending.deletes) : null;
   let k = 0;
+  const skipDeleted = () => {
+    if (deleted) while (k < count && deleted(previous.raw[k])) k++;
+  };
   let added = 0;
-  for (const id of next) {
-    if (!before.has(id)) {
-      added++;
+  const others = new Set<string>();
+  for (let i = 0; i < next.ids.length; i++) {
+    skipDeleted();
+    if (k < count && sameAt(previous, k, next, i)) {
+      k++;
       continue;
     }
-    if (kept[k] !== id) return false;
-    k++;
+    if (++added > pending.inserts) return false;
+    others.add(next.ids[i]!);
   }
-  return k === kept.length && added <= pending.inserts;
+  skipDeleted();
+  if (k !== count) return false;
+  // a kept id out of order, a deleted one still there or a duplicate of
+  // one is not new
+  if (others.size) {
+    const known = namedBy(others);
+    for (let i = 0; i < count; i++) if (known(previous.raw[i])) return false;
+  }
+  return true;
 }
 
 export default class SheetFollow<T extends object> {
@@ -43,6 +83,8 @@ export default class SheetFollow<T extends object> {
   /** The `@records` of the last render, and their ids. */
   lastRecords: readonly T[] | null = null;
   lastIds: string[] = [];
+  /** Their ids as `getRecordId` gave them (`remapIds` sets the strings). */
+  lastRaw: readonly unknown[] = [];
   /** The row model of that render: the stored positions are its grid rows. */
   lastRowModel: RowModel | null = null;
   /** `@groups` of that render (V03 4.2): what a stored add row or header row belongs to. */
@@ -80,16 +122,18 @@ export default class SheetFollow<T extends object> {
     }
     const previous = this.lastRecords;
     const previousIds = this.lastIds;
+    const previousRender = { raw: this.lastRaw, ids: previousIds };
     const previousModel = this.lastRowModel;
     const previousGroups = this.lastGroups;
-    const ids = records.map((record) =>
-      String(this.sheet.args.getRecordId(record))
-    );
+    const raw = records.map((record) => this.sheet.args.getRecordId(record));
+    const ids = raw.map(String);
+    const render = { raw, ids };
     const pending = this.sheet.changes.pendingOwn;
     // the rejections of the records the sheet inserted, now they are here
     this.sheet.cells.bindInserted();
     this.lastRecords = records;
     this.lastIds = ids;
+    this.lastRaw = raw;
     this.lastRowModel = this.sheet.rows.rowModel;
     this.lastGroups = this.sheet.rows.groups;
     this.lastGroupsArg = this.sheet.args.groups;
@@ -114,8 +158,8 @@ export default class SheetFollow<T extends object> {
     }
     if (
       previous &&
-      !sameIds(previousIds, ids) &&
-      !isOwnChange(previousIds, ids, pending)
+      !sameRenderIds(previousRender, render) &&
+      !isOwnChange(previousRender, render, pending)
     ) {
       this.followRecords(
         previousIds,
@@ -124,7 +168,7 @@ export default class SheetFollow<T extends object> {
         previousGroups
       );
     } else if (regrouped && previousModel) {
-      if (sameIds(previousIds, ids)) {
+      if (sameRenderIds(previousRender, render)) {
         // a new array of the same records under new groups (a re-query
         // with new headers): the stored positions follow, as on new @groups
         this.followRecords(previousIds, ids, previousModel, previousGroups);
@@ -142,7 +186,11 @@ export default class SheetFollow<T extends object> {
       this.sheet.expanded.setExpanded(null);
     }
     // a menu opened on rows that changed
-    if (this.sheet.rowMenu.menu && previous && !sameIds(previousIds, ids)) {
+    if (
+      this.sheet.rowMenu.menu &&
+      previous &&
+      !sameRenderIds(previousRender, render)
+    ) {
       this.sheet.rowMenu.closeMenu(false);
     }
     this.sheet.records.applyPendingFocus();

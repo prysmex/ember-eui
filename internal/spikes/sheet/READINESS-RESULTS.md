@@ -1835,10 +1835,12 @@ plugin: byte-equal once the spans are removed, every span inside a
 ### Screenshots (not committed)
 
 In `/tmp/claude-0/-home-user-ember-eui/87cd9e5a-212c-54c3-9d47-30ac398aebd2/scratchpad/api-tables/`,
-the production build, 1300 × 900, the header hidden over the table:
-`button-light.png`, `button-dark.png` (EuiButton's API: grey header,
-striped rows, purple `string`/`boolean`, pink `'primary'`, blue `EuiCss`
-and `EuiElementProps`, teal `@color` and `false`), `code-light.png`,
+the production build, 1300 × 900, the page scrolled so the site's fixed
+header is clear of the table, at most 620 px of each table:
+`button-light.png`, `button-dark.png` (EuiButton's API, its first 14
+rows: shaded header, striped rows, purple `string`/`boolean`, pink
+`'primary'` and `'m'`, blue `EuiCss`, teal `@color` and `false`),
+`code-light.png`,
 `code-dark.png` (EuiCodeBlock: `'pre' | 'pre-wrap'` with a grey `|`,
 `boolean | LineNumbersConfig`, `number | string`), `sheet-api-light.png`,
 `sheet-api-dark.png` (the sheet's arguments: teal names, plain
@@ -1915,8 +1917,9 @@ first open and three warm each, nothing else running:
   245-261 ms, against 347-412 ms before on the same page; the old 442 ms
   was the single docs page with 28 demos). The margin is thin: earlier
   rounds of the patched build on this machine (with an edit step, or
-  beside a third build) had warm medians of 234-316 ms, two of five over
-  300, and a last run on the final build gave 268 ms (214-351). The
+  beside a third build) had warm medians of 260, 316, 256, 243, 303, 248
+  and 234 ms, two of seven over 300, and a last run on the final build
+  gave 268 ms (214-351). 350 ms would be the safe target. The
   counts arrive 349-467 ms after the `change` event (warm), with
   "Checking the lines…" until then.
 - **Each column's options on demand: not built (blocked).** An
@@ -1981,7 +1984,8 @@ core lint:types passes. lodash's `merge` untouched.
 - Full sheet suite: 762/762 (`ab168b7`), 766/766 (`5f0460d`); no flaky
   failure in any run.
 - Final: sheet lint:js and lint:css; `pnpm size`; `pnpm size --compat`
-  (all 9, checks pass); core, then sheet, rebuilt; site `pnpm lint`,
+  (all 9, checks pass); sheet (after item 2) and core (after item 6)
+  rebuilt; site `pnpm lint`,
   `pnpm test` (node 16, browser 14/14), `pnpm build`: `site/dist` is that
   production build (no instrumentation; the `TAG_COMPUTE` in a chunk is
   Glimmer's own symbol). Preview servers stopped.
@@ -1995,3 +1999,6 @@ core lint:types passes. lodash's `merge` untouched.
 - That HEAD's core still fails the dynamic probe without the shim was not
   re-run (the earlier stage recorded it); only that it builds now.
 - A classic (non-Embroider) host with core's narrower app-js.
+- The deferred first dry run in a hidden tab: `requestAnimationFrame` is
+  paused there, so the counts (and the test waiter) wait until the tab is
+  shown.

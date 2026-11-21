@@ -562,7 +562,7 @@ first): UH, RI, SA, IG4-IG7, LL, RH, IPL, IVM, VR6.
 - **Cause, found:** a layout change after the render the handles are
   placed on. A scratch copy of TR1 that taps right after the render
   (without the two-frame wait TR1 got in V03 batch 5), 15 runs while
-  another test run loaded the CPU: in 8 the cell moved 1.66 px left and
+  another test run loaded the CPU: in 7 the cell moved 1.66 px left and
   narrowed (197.7 -> 196.0 px) after the handles were placed, and they
   stayed 1.66 px off for every later frame. The grid's body measures its
   scroll bar in the frame after a ResizeObserver callback
@@ -578,10 +578,13 @@ first): UH, RI, SA, IG4-IG7, LL, RH, IPL, IVM, VR6.
   with the last.
 - **Tests:** LL1 (the touch handles) and LL2 (the fill handle and the
   range outline) narrow the sheet's container after the parts are
-  placed; both fail without the fix (the fill handle 146.5 px off in a first draft of LL2). With
-  the fix the scratch copy's 15 runs are all on the corner (5 had the
-  late move); TR1-TR5, TK1-TK4, LL and RH passed 10 targeted runs in a
-  row, and every full run since.
+  placed; both fail without the fix (the fill handle 146.5 px off in a
+  first draft of LL2). With the fix the scratch copy's 15 runs (not under load: no suite was
+  running then) are all on the corner, 4 of them with the late move;
+  TR1-TR5, LL and RH passed 10 targeted runs in a row (TK1-TK4 were not
+  in that loop: one targeted run and every full run since). `587c2e0`'s
+  message says 8 and 5 of 15 and puts TK1-TK4 in the loop; the counts
+  here are the ones in the runs' output.
 
 ### 2. The EmberSearchUi connector (`fa658b6`)
 
@@ -824,6 +827,26 @@ and screen readers.
   `sheet-core` 24.4 KB in all (was 23.8; budget 25). The budget is not
   wired into CI; raising it to 16.5 or trimming is the user's call.
 
+### Decisions the user may overrule
+
+- Item 4: a rejection on an inserted row binds to the value its record
+  arrives with, not the plan's suggested "the value sent, else empty".
+- Item 5: a column of dotted quads now guesses `url`; bracketed IPv6
+  hosts are URLs.
+- Item 8: the value map lists the texts after the transform (the public
+  helpers' order kept), rather than moving the map before the transform.
+- Item 10: a guessed currency takes the code its texts name, where
+  docs/sheet.md said "always `USD`" (beyond the plan's named items).
+- Item 9's patch is committed as a file under `internal/spikes`
+  (as `cell-api.patch` was), not applied.
+
+### Notes for bisecting
+
+- `9d10999` alone overflows the stack for a saved mapping with a
+  transform on a select or checkbox column; `7daf0f9` fixes it.
+- Two pairs of commits shared one suite run each (`587c2e0` with
+  `7d0030e`, `7daf0f9` with `616822c`).
+
 ### Not verified
 
 - Only Chromium (headless, the test runner and one production run); no
@@ -834,6 +857,15 @@ and screen readers.
 - Item 9's numbers are single-machine runs (two alternated rounds of one
   first and three warm opens each); the profile behind "the rest is the
   columns table's controls" is stage 2's, not redone.
+- Scroll performance was not re-measured after `587c2e0` (the observed
+  box should not resize on a scroll; not checked with the harness).
+- Item 9's patch ran only the import tests, on `9d10999`; against this
+  tree it was only checked to apply (`git apply --check`), not run.
+- `@canMove` and `@onButtonPress` through the connector are tested as
+  passed on, not for behaviour (whether `search.apply` handles a change
+  set's `moves` is not known).
+- LL1, LL2, RH1 and RH2 wait up to 1 s for the parts: timing-sensitive,
+  like FZ9 and TR1.
 - Item 1's observer is checked for the late column sizing and a
   container resize; a toolbar that changes height while a part is shown
   (the grid moves without resizing) is not covered by it.

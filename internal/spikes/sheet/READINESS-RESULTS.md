@@ -2002,3 +2002,250 @@ core lint:types passes. lodash's `merge` untouched.
 - The deferred first dry run in a hidden tab: `requestAnimationFrame` is
   paused there, so the counts (and the test waiter) wait until the tab is
   shown.
+
+## Example pages
+
+Done 2026-11-21 on `feat/sheet` after `9869d41`: READINESS.md "Example
+pages" (the user: "many example pages for this sheet component just as
+we had before, but split in pages, validation, field types, etc", and
+"yes go with that list, but where's validation?"). Docs and site only;
+no change to `packages/*/src`, no existing test edited (the site's two
+new tests are new files or new tests in `sheet-docs.test.mjs`).
+
+Commits: `97d4906` (the groups and pages, every demo and section moved,
+nav, old URLs, README, tests), `0a6ce66` (the Validation, Editing and
+Field types examples, the shared data module), and the commit after it
+(the Fields, Selection, Rows, Data, Import and export and More examples,
+written by three helper agents and integrated, fixed and checked here),
+then this section.
+
+### The page tree
+
+The Addons nav's "Sheet" group, in this order (`order` front matter; a
+group sorts by its first page). URLs are
+`/docs/sheet/docs/sheet/<path>`; a group's first page is its folder's
+`index.md` (`<group>/`, also without the slash). "moved" = an existing
+demo, unchanged but for `order` (two of them); "new" = written in this
+stage. 52 pages in the nav (about 40 were asked for: no page held a
+single tiny example worth merging, so none were merged) plus five old
+URLs.
+
+| Group | Page (path) | Examples |
+| --- | --- | --- |
+| Start | Getting started (`` ``) | Tasks (moved) |
+| | Example app (`example-app`) | Products (moved) |
+| | Your own store (`own-store`) | d09 Your own store, server ids (moved) |
+| Validation | Field rules (`validation/field-rules`) | Rules on each field (new) |
+| | Whole-record checks (`validation/record-checks`) | Rules across fields and rows (new) |
+| | Server checks and rejections (`validation/server-checks`) | d03 Validation (moved); Saving: what the server refused, until it is fixed (new) |
+| | Blocking and warnings (`validation/blocking-and-warnings`) | Errors that block your submit, a colour that warns (new, adapted: see below) |
+| | Validation while pasting and importing (`validation/paste-and-import`) | A file with lines that cannot be read (new) |
+| Editing | Editing basics (`editing`) | d01 Basics (moved) |
+| | Keyboard and shortcuts (`editing/keyboard`) | The shortcut list (new) |
+| | Undo and redo (`editing/undo-redo`) | Undo and redo buttons (new) |
+| | Read-only cells and fields (`editing/read-only`) | A locked field, locked records, a locked sheet (new) |
+| Field types | All field types (`field-types`) | d02 Field types, d15 More field types (moved) |
+| | Text and long text (`field-types/text-fields`) | Findings and their notes (new) |
+| | Numbers, currency, percent, duration (`field-types/numbers`) | Stock, prices, discounts and time (new) |
+| | Dates and times (`field-types/dates`) | Incident dates and times (new) |
+| | Select, multi-select, colours (`field-types/selects`) | Status, area and hazards (new) |
+| | Checkbox and rating (`field-types/checkbox-and-rating`) | Checks and conditions (new) |
+| | Email, URL, phone (`field-types/email-url-phone`) | Supplier contacts (new) |
+| | Linked records (`field-types/linked-records`) | d16 Linked records and bulk resolve (moved) |
+| | User (`field-types/users`) | Inspectors and reviewers (new) |
+| | Attachments and upload progress (`field-types/attachments`) | d17 Attachments (moved) |
+| | Barcode and camera scan (`field-types/barcode`) | Scanning products into a count (new, adapted: a stand-in `scan`) |
+| | Buttons (`field-types/buttons`) | Start and escalate an inspection (new) |
+| | Custom field types and editors (`field-types/custom-types`) | d04 Custom cells and editors, d06 Another date picker (moved) |
+| Fields | Field editor (`fields`) | d20 Fields from the grid (moved) |
+| | Field actions and menus (`fields/field-actions`) | Your own column menu items (new) |
+| | Hide, reorder, resize, freeze (`fields/columns`) | d12 View intents (moved); Frozen fields and header lines (new) |
+| Selection | Ranges, copy and paste (`selection`) | Copy with field names (new) |
+| | Paste rules and new records (`selection/paste`) | d05 Paste rules (moved) |
+| | Fill handle (`selection/fill-handle`) | d18 Editing: fill handle, series, cut (moved) |
+| | Touch selection (`selection/touch`) | A narrow sheet and where it edits (new) |
+| | Summary footer (`selection/summary`) | d13 Summary bar (moved) |
+| Rows | Add, delete, duplicate (`rows`) | d10 Records (moved); Add and delete from your own toolbar (new) |
+| | Row drag and order (`rows/drag`) | d21 Row order and colours (moved) |
+| | Row and cell colours (`rows/colours`) | d27 Cell colours (moved) |
+| | Row height (`rows/row-height`) | Row height from a toolbar (new) |
+| | Expanded record (`rows/expanded-record`) | d11 Expanded record (moved) |
+| | Record footer (`rows/record-footer`) | d25 Comments in the expanded record (moved) |
+| Data | Groups (`data/record-groups`) | d19 Group by (moved) |
+| | Sorting (`data/sorting`) | Sort a local array (new) |
+| | Load more (`data/load-more`) | d23 Load more as you scroll (moved) |
+| | Large data (`data/large-sheet`) | d08 Large data (moved, alone) |
+| | Search and match stepping (`data/search-matches`) | d22 Search navigation (moved) |
+| | EmberSearchUi (`data/search-ui`) | d14 Sheet with EmberSearchUi (moved) |
+| Import and export | CSV export (`import-export`) | d26 CSV export and import (moved); CSV export options (new) |
+| | CSV paste and import (`import-export/csv-import`) | Import with aliases and number formats (new) |
+| | The import screen (`import-export/import-screen`) | d28 Import screen (moved) |
+| More | Full screen and fit width (`more/full-screen`) | d24 Full screen and column tools (moved) |
+| | Translations and messages (`more/translations`) | d07 Translations (moved); Messages for one sheet (new) |
+| | Theming and dark mode (`more/theme`) | Dark mode and custom colours (new) |
+| | API reference (`more/api-reference`) | none (prose: arguments, the owner, the blocks, the sheet's API) |
+
+All 30 existing demos are on exactly one page, identical to `9869d41`
+but for `order` (d03 2 → 1, d09 3 → 1; checked file by file). The prose
+of the 13 old pages moved section by section (checked line by line:
+every non-blank line is on a new page, links aside, except the old
+pages' front matter, headers and one-paragraph intros, which the new
+pages replace, two `###` headings that became `##`, the getting-started
+page list and "Where the sections went" table, rewritten, and two
+cross-references fixed: "the connector below" and "per 1,000 rows as
+above", whose targets are now on other pages). Sections were split
+where a page took part of one: Keyboard's last two paragraphs went to
+Editing basics ("Cells and the editor"), the change set's `moves` to Row
+drag, "Your items" (`@fieldActions`) to Field actions, "Fit to content"
+to Full screen and fit width (its own `##`), each type's bullet of the
+old field-types page to that type's page, sorting's paragraph of the old
+search page to Sorting, and Theme to Theming and dark mode. Getting
+started lists every page by group, and its "Where the sections went"
+table points every old section at its final page.
+
+New examples (28): one idea each, data from a small shared module,
+`site/app/utils/sheet-docs-data.js` (inspections, employees, suppliers,
+products, inspectors as users, `wait(ms, signal)`; each function returns
+new records), imported as `site/utils/sheet-docs-data`, which the
+StackBlitz playground copies. Unstarred pages that had no example of
+their own got one too (keyboard, text and long text, CSV paste and
+import). Pages that already had a big multi-idea demo got a small
+focused one beside it (rows, fields/columns, import-export, translations)
+or none where the existing one is that page's idea (fill handle: d18;
+the import screen: d28, which has mapping, transforms, value map and new
+fields).
+
+### Dropped or adapted (for the user)
+
+- **Blocking vs warning: adapted.** The sheet has one kind of message
+  and no severity: a text the type cannot read is not stored (the only
+  thing it blocks); every other rule, `@validate` and `@cellErrors`
+  are shown on stored values and never block. The page says so, and
+  its example shows the closest real thing: the app blocks its own
+  Submit with `validateCell` (the sheet's field rules, exported) and
+  shows a warning as a `@cellColor` `'warning'` bar plus a list (a
+  colour is not read out). A real warning level would be a source
+  change (not made).
+- **Camera scan: adapted.** The barcode example's `scan` is a stand-in
+  that "reads" the next code of a list after a second, labelled as
+  such, so the scan panel runs on any computer; the page says where the
+  real `BarcodeDetector` and camera are used.
+- **Touch selection: honest about desktops.** The handles show on touch
+  screens only; the page says to use devtools touch emulation. Checked
+  in Playwright: a mouse click shows no handles; with `hasTouch` and
+  `isMobile` a tap shows two, and a second tap opens the expanded
+  record (`@editIn` auto, 360 px).
+- **Undo: no can-undo state.** The API has no "is there something to
+  undo", so the example's buttons stay enabled and the page says so.
+- **Duplicate row:** exists (the row menu's Duplicate, d10); no new
+  example was needed. **Sorting** is `@sort` driven only: the example
+  sorts a local array in its `@onSortChange`, as the page says.
+- Nothing was dropped.
+
+### URL changes
+
+- Kept (a group's first page): `editing`, `selection`, `field-types`,
+  `fields`, `rows`, `import-export` (canonical with a trailing slash;
+  without it the page opens and its nav item is selected, also with a
+  `#hash`), and `example-app` and Getting started as before.
+- Moved, with a short page of links left at the old URL (`nav: false`:
+  routed, not in the nav): `groups` → `data/record-groups`,
+  `data/load-more`; `layout` → `fields/columns`, `more/full-screen`;
+  `search` → `data/search-matches`, `data/search-ui`; `large-data` →
+  `data/large-sheet`; `api` → `more/api-reference`, `more/theme`. Every
+  link in the docs and the README points at the new pages. An old
+  `#anchor` on those five lands on the page of links, not the section.
+- Page folders with names other docs pages have were renamed
+  (`text-fields`, `theme`, `record-groups`, `search-matches`,
+  `large-sheet`, `api-reference`): docfy gives a demo to the first page,
+  across every source, named like its folder's parent (core's
+  `display/text` took `field-types/text`'s demo; the `groups` stub took
+  `data/groups`'). A test guards it.
+- Site (`97d4906`): a group inside an addon sorts by its first page's
+  `order` (the addons keep their name order; the other addons' nav is
+  unchanged); `nav: false` hides a page from the nav; the docfy label
+  "Import and export".
+
+### Tests
+
+- `site/lib/sheet-docs.test.mjs` (node, in `pnpm test`), new tests:
+  every markdown file is a page or a demo of one (no orphan demo); no
+  page folder has another docs page's name; every demo has one
+  ```` ```gjs component ```` fence with a `<template>`, a title and an
+  `order`, and no other demo has its file name or its code (a demo is
+  on one page); `site/utils/*` imports exist; every page has a title
+  and a unique `order`, and examples unless listed (only the API
+  reference); the docfy build of the site's config: each page has its
+  demos, each rendered, no `[[demos` marker, and every `/docs` link
+  (307 in the sheet pages' markdown: its page and its `#id`) resolves.
+- `site/tests/acceptance/sheet-docs-test.ts` (browser, new): every sheet
+  page renders, with one `.docfy-demo` per demo heading and a sheet
+  (`.euiSheet [role=grid]` or the import screen) in each.
+
+### Checks
+
+Before each commit: `node scripts/generate-api-docs.mjs --check`; root
+`pnpm eui:check`; site `pnpm lint`, `pnpm test` (node 21/21, browser
+15/15; the every-page groups take 27, 65, 13 and 13 s of their 300 s,
+the sheet test 10 s), `pnpm build`; Prettier on the new files (the new
+pages, demos, data module and tests are clean; the pages of moved prose
+keep the old pages' table and code drift, as before). The new examples
+were driven in Chromium on the production build: each one's text was
+checked against what it does (the field rules' red cells, a rejected
+`abc`, the record rules clearing, a server refusal shown and cleared by
+the next edit, Submit off until the errors are fixed, four rejections
+listed and one undo removing the import, the shortcut list shorter when
+read-only, undo/redo/clear history, locked closed rows, users resolved
+(a cell with an unknown name rejected whole), the stand-in scan writing
+a code, a button's label and error, the date-time zones, options per
+record, the column menus with `@fieldActions` and the field flags,
+"Copy with field names" on the clipboard, add and delete from the
+toolbar, row heights, sorting by score, the CSV options and the
+formula escape, the CSV import with M/D/Y and decimal commas, own
+messages, the theme's custom properties and dark mode). Fixed while
+integrating: the field-actions example's `hideable: false` was on the
+first field (never hideable anyway) and its `manageable: false` showed
+nothing without the field handlers; the dates and users texts promised
+more than the fields do.
+
+Final Playwright pass over the production build (`vite preview`,
+Chromium headless, 1400 × 900): 57 pages (52 + 5 old URLs) load with no
+console error, the 58 demos each render their sheet, no `[[demo` text;
+the 87 distinct `/docs` links on the pages each reach a page with their
+`#id`; each of the 52 nav items, clicked from Getting started (its group
+opened first), lands on its page with its item selected; the old URLs
+(the root with and without the slash, the six kept ones, the five
+stubs, `#anchors`) open. Light and dark screenshots of four new pages
+(`validation/blocking-and-warnings`, `field-types/selects`,
+`data/sorting`, `more/theme`) in
+`/tmp/claude-0/-home-user-ember-eui/87cd9e5a-212c-54c3-9d47-30ac398aebd2/scratchpad/example-pages/`
+(not committed), looked at by the agent: readable in both.
+
+Performance: the new pages hold one or two small sheets (at most 24
+records); no heavy sheet shares a page. `count-tags.js` on an
+instrumented copy of the build: Large data 70,554 re-walks per wheel
+step (69,862 before the stage: the same within 1 %); fields/columns
+(d12, 24 records, beside the new frozen example) 0 re-walks per step
+for either sheet (neither scrolls far in 12 steps). `site/dist` is the
+production build, not instrumented.
+
+### Left, and not verified
+
+- `src/-private/shortcuts.ts`'s comment names `docs/sheet/editing/index.md`
+  "Keyboard"; the table is now on `editing/keyboard/index.md` (source:
+  not changed).
+- The perf harness's default `PAGE` is the `large-data` page of links
+  now; pass `PAGE=/docs/sheet/docs/sheet/data/large-sheet` (not changed:
+  outside docs and site).
+- `llms.txt` lists the five pages of links too (`scripts/` not changed).
+- The nav shows titles through the site's `humanize`, which turns
+  hyphens into spaces: "Read only cells and fields", "Whole record
+  checks", "Select, multi select, colours" (the page headers keep the
+  hyphens).
+- A `#hash` on a page whose sheets render after the scroll lands short
+  (the sheets above it grow): site-wide behaviour of `scrollToHash`,
+  not changed.
+- Vercel's handling of the slashless group URLs was not checked (only
+  `vite preview`); the StackBlitz playgrounds were not opened (no
+  network); Chromium only; the field-type examples' editors were not
+  driven on a real phone.

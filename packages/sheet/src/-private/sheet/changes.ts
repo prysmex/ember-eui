@@ -1,5 +1,6 @@
 /** Emitting change sets: the one path every write takes (V03C-DESIGN.md 3.2). */
 import { cellKey, commitText, planCommit, valueOf } from '../../core/index.ts';
+import { findRecords } from '../../core/record-lookup.ts';
 
 import type EuiSheet from '../../components/eui-sheet.gts';
 import type { ChangeSet, Pos, SheetContext } from '../../core/index.ts';
@@ -85,25 +86,28 @@ export default class SheetChanges<T extends object> {
       }
     }
     if (next.size) {
-      const ids = new Set(
-        this.sheet.args.records.map((record) =>
-          String(this.sheet.args.getRecordId(record))
-        )
+      const found = findRecords(
+        this.sheet.args.records,
+        this.sheet.args.getRecordId,
+        new Set([...next.values()].map((entry) => entry.id))
       );
       for (const [key, entry] of next) {
-        if (!ids.has(entry.id)) {
+        if (!found.has(entry.id)) {
           next.delete(key);
           changed = true;
         }
       }
     }
     const stored: Rejection[] = [];
-    if (changeSet) {
-      const byId = new Map(
-        this.sheet.args.records.map((record) => [
-          String(this.sheet.args.getRecordId(record)),
-          record
-        ])
+    if (changeSet?.rejected.length) {
+      const found = findRecords(
+        this.sheet.args.records,
+        this.sheet.args.getRecordId,
+        new Set(
+          changeSet.rejected.map((rejection) =>
+            String(rejection.recordId ?? rejection.tempId)
+          )
+        )
       );
       for (const rejection of changeSet.rejected) {
         const id = String(rejection.recordId ?? rejection.tempId);
@@ -112,7 +116,7 @@ export default class SheetChanges<T extends object> {
           fieldId: rejection.fieldId,
           text: rejection.text,
           message: rejection.message,
-          seenValue: valueOf(byId.get(id), rejection.fieldId)
+          seenValue: valueOf(found.get(id)?.record, rejection.fieldId)
         };
         next.set(cellKey(id, rejection.fieldId), entry);
         stored.push(entry);

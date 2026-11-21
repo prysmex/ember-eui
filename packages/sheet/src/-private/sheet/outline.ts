@@ -2,6 +2,8 @@
 import { tracked } from '@glimmer/tracking';
 import { isDestroyed, isDestroying } from '@ember/destroyable';
 
+import { findRecords } from '../../core/record-lookup.ts';
+
 import type EuiSheet from '../../components/eui-sheet.gts';
 import type { ChangeSet, Range } from '../../core/index.ts';
 
@@ -188,14 +190,15 @@ export default class SheetOutline<T extends object> {
     const cols = new Map(
       this.sheet.fields.visibleFields.map((field, i) => [field.id, i])
     );
-    const getId = this.sheet.args.getRecordId;
-    const rows = new Map(
-      this.sheet.args.records.map((record, i) => [String(getId(record)), i])
+    const rows = findRecords(
+      this.sheet.args.records,
+      this.sheet.args.getRecordId,
+      new Set(changeSet.patches.map((patch) => String(patch.recordId)))
     );
     let range: Range | null = null;
     for (const patch of changeSet.patches) {
       const col = cols.get(patch.fieldId);
-      const row = rows.get(String(patch.recordId));
+      const row = rows.get(String(patch.recordId))?.row;
       if (col === undefined || row === undefined) continue;
       range = range
         ? {

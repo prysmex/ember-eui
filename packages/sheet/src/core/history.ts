@@ -3,6 +3,7 @@
  * for user actions, and undoing one emits its inverse.
  */
 import { valueOf } from './fields.ts';
+import { findRecords } from './record-lookup.ts';
 
 import type {
   CellPatch,
@@ -125,8 +126,20 @@ export function withoutConflicts<T>(
   } = {}
 ): ChangeSet | null {
   const equals = options.equals ?? sameValue;
-  const byId = new Map<string, T>();
-  for (const record of records) byId.set(String(getRecordId(record)), record);
+  // only the records the change set names (a map of all of them costs more)
+  const named = new Set<string>();
+  for (const patch of changeSet.patches) named.add(String(patch.recordId));
+  for (const recordId of changeSet.deletes ?? []) named.add(String(recordId));
+  for (const insert of changeSet.inserts) {
+    named.add(insert.tempId);
+    if (insert.restore) named.add(String(insert.restore.recordId));
+  }
+  for (const move of changeSet.moves ?? []) named.add(String(move.recordId));
+  const found = findRecords(records, getRecordId, named);
+  const byId = {
+    has: (id: string) => found.has(id),
+    get: (id: string) => found.get(id)?.record
+  };
 
   const patches: CellPatch[] = changeSet.patches.filter((patch) => {
     const id = String(patch.recordId);
@@ -149,14 +162,17 @@ export function withoutConflicts<T>(
     );
   });
 
-  const inserts = placeInserts(
-    changeSet.inserts.filter(
-      (insert) =>
-        !byId.has(insert.tempId) &&
-        !(insert.restore && byId.has(String(insert.restore.recordId)))
-    ),
-    records.map((record) => String(getRecordId(record)))
+  const keptInserts = changeSet.inserts.filter(
+    (insert) =>
+      !byId.has(insert.tempId) &&
+      !(insert.restore && byId.has(String(insert.restore.recordId)))
   );
+  const inserts = keptInserts.length
+    ? placeInserts(
+        keptInserts,
+        records.map((record) => String(getRecordId(record)))
+      )
+    : [];
 
   const moves = (changeSet.moves ?? []).filter(
     (move) => options.keepUnseen || byId.has(String(move.recordId))

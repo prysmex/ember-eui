@@ -6,6 +6,7 @@ import {
   undoChangeSet,
   valueOf
 } from '../../core/index.ts';
+import { findRecords } from '../../core/record-lookup.ts';
 import { composeIdMaps, remapChangeSet, remapId, toIdMap } from '../remap.ts';
 import {
   clearRejections,
@@ -224,17 +225,16 @@ export default class SheetHistory<T extends object> {
    */
   touchesRecords(entry: HistoryEntry): boolean {
     const { changeSet } = entry;
-    const ids = new Set(
-      this.sheet.args.records.map((record) =>
-        String(this.sheet.args.getRecordId(record))
-      )
-    );
+    const named = new Set<string>([
+      ...changeSet.patches.map((patch) => String(patch.recordId)),
+      ...changeSet.inserts.map((insert) => insert.tempId),
+      ...(changeSet.deletes ?? []).map((id) => String(id)),
+      ...(changeSet.moves ?? []).map((move) => String(move.recordId)),
+      ...entry.rejections.map((rejection) => String(rejection.id))
+    ]);
     return (
-      changeSet.patches.some((patch) => ids.has(String(patch.recordId))) ||
-      changeSet.inserts.some((insert) => ids.has(insert.tempId)) ||
-      (changeSet.deletes ?? []).some((id) => ids.has(String(id))) ||
-      (changeSet.moves ?? []).some((move) => ids.has(String(move.recordId))) ||
-      entry.rejections.some((rejection) => ids.has(String(rejection.id)))
+      findRecords(this.sheet.args.records, this.sheet.args.getRecordId, named)
+        .size > 0
     );
   }
 
@@ -271,18 +271,17 @@ export default class SheetHistory<T extends object> {
     }
     if (direction === 'redo' && entry.rejections.length) {
       // after emit: the owner may have put back the rows they are on
-      const byId = new Map(
-        this.sheet.args.records.map((record) => [
-          String(this.sheet.args.getRecordId(record)),
-          record
-        ])
+      const byId = findRecords(
+        this.sheet.args.records,
+        this.sheet.args.getRecordId,
+        new Set(entry.rejections.map((rejection) => String(rejection.id)))
       );
       const next = restoreRejections(
         this.sheet.cells.rejections,
         entry.rejections,
         (id, fieldId) => ({
           found: byId.has(id),
-          value: valueOf(byId.get(id), fieldId)
+          value: valueOf(byId.get(id)?.record, fieldId)
         })
       );
       if (next) {
@@ -327,12 +326,6 @@ export default class SheetHistory<T extends object> {
     // the owner's records after it applied the change set, if it did at once
     const records = this.sheet.args.records;
     const rows = Math.min(rowsBefore, records.length);
-    const indexOf = new Map(
-      records.map((record, i) => [
-        String(this.sheet.args.getRecordId(record)),
-        i
-      ])
-    );
     let box: Range | null = null;
     const cells: Touched = [
       ...changeSet.patches.map((patch) => ({
@@ -341,11 +334,18 @@ export default class SheetHistory<T extends object> {
       })),
       ...extraCells
     ];
+    const indexOf = findRecords(
+      records,
+      this.sheet.args.getRecordId,
+      new Set(cells.map(({ id }) => String(id)))
+    );
+    const cols = new Map<string, number>();
+    this.sheet.fields.visibleFields.forEach((field, i) => {
+      if (!cols.has(field.id)) cols.set(field.id, i);
+    });
     for (const { id, fieldId } of cells) {
-      const row = indexOf.get(String(id));
-      const col = this.sheet.fields.visibleFields.findIndex(
-        (field) => field.id === fieldId
-      );
+      const row = indexOf.get(String(id))?.row;
+      const col = cols.get(fieldId) ?? -1;
       if (row === undefined || row >= rows || col < 0) continue;
       box = box
         ? {

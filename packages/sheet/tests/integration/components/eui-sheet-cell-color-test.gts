@@ -256,16 +256,18 @@ module('Integration | Component | EuiSheet cell colour', function (hooks) {
   test('CC2 a CSS colour is used as given; one that could leave the property is dropped', async function (assert) {
     const state = new State();
     state.cellColor = (record, field) =>
-      field.id !== 'name'
-        ? undefined
-        : (
-            {
-              r0: 'rgb(1, 2, 3)',
-              r1: '#123456',
-              r2: 'red; background: blue',
-              r3: 'oklch(70% 0.1 200)'
-            } as Record<string, string>
-          )[record.id];
+      field.id === 'qty' && record.id === 'r0'
+        ? 'url(https://example.invalid/x.png)'
+        : field.id !== 'name'
+          ? undefined
+          : (
+              {
+                r0: 'rgb(1, 2, 3)',
+                r1: '#123456',
+                r2: 'red; background: blue',
+                r3: 'oklch(70% 0.1 200)'
+              } as Record<string, string>
+            )[record.id];
     await renderSheet(state);
     assert.strictEqual(background(mark(0, 0)), 'rgb(1, 2, 3)');
     assert.strictEqual(
@@ -279,6 +281,11 @@ module('Integration | Component | EuiSheet cell colour', function (hooks) {
     );
     assert.strictEqual(background(mark(1, 0)), 'rgb(18, 52, 86)', '#123456');
     assert.strictEqual(markOf(cell(2, 0)), null, 'dropped: no bar');
+    // not a colour: the bar paints nothing (background-color, so no image
+    // is fetched)
+    const image = getComputedStyle(mark(0, 2));
+    assert.strictEqual(image.backgroundImage, 'none', 'no image');
+    assert.strictEqual(image.backgroundColor, 'rgba(0, 0, 0, 0)');
     assert.ok(
       background(mark(3, 0)).startsWith('oklch'),
       `any CSS colour: ${background(mark(3, 0))}`

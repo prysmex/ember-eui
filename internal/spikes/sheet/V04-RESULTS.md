@@ -962,7 +962,8 @@ renderer, the row-colour module and `styles.ts`.
   style="--euiSheetRowColor: …" aria-hidden="true">` (the style only for
   a CSS colour, through `htmlSafe`). `styles.ts` (9 lines): the span is
   absolute, 3 px high, along the bottom of the cell's padding box,
-  `background: var(--euiSheetRowColor)`, `pointer-events: none`, and
+  `background-color: var(--euiSheetRowColor)` (from the follow-up commit;
+  `background` before), `pointer-events: none`, and
   placed inside the cell's inner frames by two custom properties
   (`--euiSheetMarkInset` for the sides and bottom, `--euiSheetMarkBottom`
   for the bottom alone):
@@ -1076,7 +1077,9 @@ is scaled.
   with gaps 0/0/0, on screen at the cell's bottom; only the two overdue
   cells have one; the cell's text, `aria-label` and `title` as without.
 - **CC2** CSS colours as given (`rgb(1, 2, 3)`, `#123456`, `oklch(…)`),
-  the inline property, no named class; `red; background: blue` dropped.
+  the inline property, no named class; `red; background: blue` dropped;
+  a `url(…)` paints nothing (no image, a transparent colour; added in the
+  follow-up commit).
 - **CC3** no `@cellColor`, then a rule: cells whose colour is
   `undefined` keep exactly their classes, style, title, label and content
   HTML; a coloured cell's classes are unchanged too.
@@ -1180,11 +1183,12 @@ Today on the page: 2026-11-21. Geometry below is layout px (`offset*`
 against the cell's `client*`); "on screen" is the rendered rect.
 
 - **First render** (short rows): bars on Task of the two done tasks
-  (`success`, `rgb(0, 138, 94)`), on Due of the four overdue open tasks
-  (`danger`, `rgb(198, 30, 37)`) and on Spent where it exceeds the
-  estimate (`warning`, `rgb(250, 203, 61)`); each 3 px high, gaps 0/0/0,
-  its `offsetParent` the cell, the bar's bottom 1 px (CSS) above the
-  cell's rect bottom (the cell's bottom border).
+  (`success`, `rgb(0, 138, 94)`), on Due of the three overdue open tasks
+  (rows 2, 3 and 8; `danger`, `rgb(198, 30, 37)`) and on Spent where it
+  exceeds the estimate (`warning`, `rgb(250, 203, 61)`); each 3 px high,
+  gaps 0/0/0, its `offsetParent` the cell, the bar's bottom 1 px (CSS)
+  above the cell's rect bottom: the cell's `border-bottom-width` is 1 px
+  (read in a second run: rect 36, `clientHeight` 35).
 - **Error border:** the two overdue tasks with no owner (rows 3 and 8)
   have the 1 px red inset shadow and the bar 1 px in (gaps 1/1/1);
   clicked (focused, invalid): the 5 px band, the 3 px outline, the bar
@@ -1199,6 +1203,13 @@ against the cell's `client*`); "on screen" is the rendered rect.
   width); the frozen Task cells stay at the same screen x (353) with
   their bars (0/0/0) and the frozen edge's shadow; a click on a frozen
   coloured cell: the outline and the bar 3 px in.
+- **A range ending on coloured cells** (a second, short run on the same
+  build): a click on row 1 Due, Shift+click on row 2 Spent: the range
+  outline's bottom at the cells' bottom (370.2), the bars of row 2 Due
+  and Spent 3 px up (gaps 0/0/3, bottom 366.2), so above the outline
+  (`light-8-range-bottom.png`, looked at by the agent). The range's
+  right edge covers the last 3 px of the Spent bar's right end (the
+  sides are not inset on selected cells); the bar still reads.
 - **Every row height** (a click on each of the toolbar's four buttons):
   Medium, Tall, Extra tall, Short: every bar 3 px high at the cell's
   bottom (gaps unchanged), also on the tall cells.
@@ -1210,11 +1221,12 @@ against the cell's `client*`); "on screen" is the rendered rect.
   `/tmp/claude-0/-home-user-ember-eui/87cd9e5a-212c-54c3-9d47-30ac398aebd2/scratchpad/v04c/`
   `light-1-initial.png` to `light-5-frozen-scrolled.png`,
   `light-6-height-{Medium,Tall,Extratall,Short}.png`,
-  `light-7-done-ticked.png`, `dark-1-initial.png` to
+  `light-7-done-ticked.png`, `light-8-range-bottom.png`,
+  `dark-1-initial.png` to
   `dark-5-frozen-scrolled.png`; the measurements in `results.json`. The
   agent looked at `light-3-range.png`, `dark-4-invalid.png`,
-  `light-5-frozen-scrolled.png` and `light-6-height-Extratall.png`, not a
-  person: the bars read clearly at the bottom of each coloured cell, next
+  `light-5-frozen-scrolled.png`, `light-6-height-Extratall.png` and
+  `light-8-range-bottom.png` (one of them dark), not a person: the bars read clearly at the bottom of each coloured cell, next
   to the red border, inside the focus ring and the range, on the frozen
   cell.
 - **Seen, not this batch's:** in `light-6-height-Extratall.png` the fill
@@ -1229,6 +1241,10 @@ against the cell's `client*`); "on screen" is the rendered rect.
   cell colour too (deviation 6), and whether a selected cell's bar should
   rise 3 px only on a range's bottom row (today every selected cell's
   does, which is simpler; the difference is visible only inside a range).
+- **The EmberSearchUi connector** (`EuiSheetSearch`) forwards its
+  arguments by name and forwards neither `@cellColor` nor `@rowColor` (nor
+  batch D's and A's new arguments). Not changed here; whether it should is
+  a follow-up for all of them.
 - A selection move re-runs `@cellColor` on every rendered cell (the
   existing `cellView` path: 171 calls for one focus, 131 for one
   ArrowDown in the large case). Not new, and not measured in ms here.
@@ -1256,7 +1272,8 @@ against the cell's `client*`); "on screen" is the rendered rect.
 | Commit | Holds | Suite |
 | --- | --- | --- |
 | `32cfe62` | `@cellColor`: `types.ts`, `cells.ts` (`markOf`), `row-colors.ts` (`colorProps`), `CellView.mark`, the span in `sheet-cell.gts`, 9 lines of `styles.ts`; CC1-CC11, CC-perf | 657 / 657 |
-| the docs commit | `docs/sheet.md`, README, d27, these results | 657 / 657 |
+| `a549b15` | `docs/sheet.md`, README, d27, these results | 657 / 657 |
+| the follow-up commit | the bar's `background` → `background-color` (a `url(…)` value is not fetched; CC2's new assertion fails with `background`, checked), corrections to these results (three overdue Due bars, not four; the 1 px is the border, measured), the range-bottom real-input run, the connector note | 657 / 657 |
 
 One commit in this range is the main session's: `4d35560` (the user's
 decisions 10-13 after batch B in `v04/README.md`) before `32cfe62`.

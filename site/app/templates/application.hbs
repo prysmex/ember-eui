@@ -3,7 +3,7 @@
   @highContrastMode={{this.themeManager.highContrast}}
 >
   <div id="guide">
-    <EuiHeader @theme="dark" @position="fixed">
+    <EuiHeader @theme="dark" @position="fixed" role="banner">
       <EuiHeaderSection @side="left">
         <EuiHeaderSectionItem @border="right">
           <EuiHeaderLogo @iconType="/assets/euivector.svg">
@@ -80,6 +80,7 @@
           <EuiHeaderLogo
             class="text-white"
             @iconType="logoGithub"
+            aria-label="GitHub"
             href="https://github.com/prysmex/ember-eui"
             target="_blank"
             rel="noopener noreferrer"

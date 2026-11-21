@@ -314,7 +314,14 @@ const CHECKS = {
       'the import screen'
     ),
     ...absent(r, 'static', /barcode-scan-panel/, 'the barcode scan panel'),
-    ...present(r, 'all', /barcode-scan-panel/, 'the lazy barcode scan panel')
+    ...present(r, 'all', /barcode-scan-panel/, 'the lazy barcode scan panel'),
+    // icons load one by one by import(); never core's whole static set
+    ...absent(
+      r,
+      'all',
+      /\/-private\/all-icons\.js$|\/register-all-icons\.js$/,
+      'the whole icon set'
+    )
   ],
   'sheet-import': (r) =>
     present(

@@ -28,7 +28,7 @@ Import the components in the `.gts` or `.gjs` files that render them:
 package adds nothing to your app's tree (no `app-js`), so your app
 bundles only what it imports: installed and not rendered, the sheet
 costs nothing; `<EuiSheet>` alone does not bring the import screen; and
-the barcode scan panel loads when someone starts a scan.
+the barcode scan panel loads when a barcode editor that can scan opens.
 
 A loose-mode template (`.hbs`) does not find `<EuiSheet />` by name. To
 use it from one, re-export it in your own app tree; only the components

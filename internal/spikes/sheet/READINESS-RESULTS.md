@@ -1372,7 +1372,7 @@ What is in them (module ids in the output):
 | `core-button`                | -           | -                  | -          | 0             | 5 of 377                         |
 | `sheet`                      | static      | no                 | lazy chunk | 126           | 128 of 377                       |
 | `sheet-import`               | static      | static             | lazy chunk | 135           | 131 of 377                       |
-| dynamic `sheet-none`, before | yes         | yes                | yes        | 137           | 377 of 377                       |
+| dynamic `sheet-none`, before | static      | static             | lazy chunk | 137           | 377 of 377                       |
 | dynamic `sheet-none`, after  | no          | no                 | no         | 0             | 377 of 377                       |
 
 (`sheet`'s 1,106 lazy chunks are mostly one per icon; none loads until
@@ -1388,8 +1388,10 @@ an icon of that type renders.)
   `@embroider/core`); a template's `<EuiSheet>` resolves at build time.
   `sheet-none` and `core-none` are byte-identical. The hole was real only
   for `staticInvokables: false` (all app-js components in compatModules:
-  the sheet added 426.6 KB / 91.9 KB gzip, 137 modules, the import
-  screen and the scan panel included, rendered or not) and for classic
+  the sheet added 426.6 KB / 91.9 KB gzip and 137 static modules, the
+  import screen and the two `_app_` re-exports included, rendered or not;
+  the scan panel stayed a lazy chunk, re-checked by rebuilding the
+  parent's package.json and rollup config in the working tree) and for classic
   builds (not measured here: no `ember-auto-import` in this workspace).
 - **The barrel shakes.** `index.ts` re-exports `./core/index.ts`, the
   field types and `EuiSheetImport`; with only `EuiSheet` imported, the
@@ -1422,6 +1424,15 @@ an icon of that type renders.)
   import @embroider/virtual/components/eui-sheet"), it is not silently
   missing. Default-blueprint hosts gain 0 bytes and lose loose-mode
   resolution by name; to undo, revert that one commit.
+- What it buys, plainly: no host configuration that builds today was
+  measured to get smaller. The default blueprint pays 0 before and
+  after; a Vite host with `staticInvokables: false` does not build with
+  core at all (below) without the probe's two shims; a classic build was
+  not measured. It is a defensive change for those hosts (and for core
+  fixing its app-js later), paid for by loose-mode resolution by name.
+- After a clean rebuild `dist/_app_` is not created (`3f753c5`'s message
+  says it is left empty: that was a leftover directory of the earlier
+  build).
 - Nothing else in the sheet defeats shaking (above), so no other change.
 
 ### Guards
@@ -1429,13 +1440,16 @@ an icon of that type renders.)
 - **In the suite:** TS1-TS3 (`tests/unit/tree-shaking-test.ts`): no
   `app-js` and the same `sideEffects` in package.json, no
   `addon.appReexports(` in the rollup config, no top-level call in a
-  source module. TS1 and TS2 fail before `3f753c5`. BS1/BS2 (static
-  imports of `<EuiSheet>`) unchanged.
+  source module. TS1's and TS2's assertions, run on `98fa86d`'s
+  package.json and rollup config, fail (the suite itself was not run on
+  that commit). BS1/BS2 (static imports of `<EuiSheet>`) unchanged.
 - **Script:** `pnpm size --compat` (9 builds, a few minutes here;
   `--only a,b` for some). Exit 1 when: a sheet module is anywhere in
   `sheet-none` or dynamic `sheet-none`; `sheet` lacks `<EuiSheet>` or 50+
   sheet modules, or has the import screen or the scan panel in its
-  static graph, or lacks the panel as a lazy chunk; `sheet-import` lacks
+  static graph, or lacks the panel as a lazy chunk, or has core's whole
+  static icon set (`-private/all-icons`, `register-all-icons`) anywhere
+  (added in the follow-up commit); `sheet-import` lacks
   `<EuiSheetImport>`; `sheet-loose-host` lacks `<EuiSheet>`; dynamic
   `core-none` reaches fewer than 300 of core's app-js components (the
   control that the dynamic mode takes app-js components in, so the
@@ -1464,7 +1478,8 @@ Not changed (core's app-js and exports stay, for loose-mode users of
   ember-provide-consume-context's initializer 12 KB. With one
   `<EuiButton>`, compat costs 99.3 KB / 27.5 KB gzip more than the
   no-compatModules lower bound; much of it (the theme, Emotion) the
-  components need at runtime anyway, as they inject these services.
+  components likely need at runtime anyway, as they inject these
+  services (inferred from the imports: no probe app was booted).
   Making them cheaper would mean lazy theme/Emotion setup or fewer
   services: a behaviour change, not a pure fix (none was made).
 - **`staticInvokables: false` hosts:** all of core, 2,444.1 KB / 626.5 KB
@@ -1487,6 +1502,10 @@ Not changed (core's app-js and exports stay, for loose-mode users of
   after `3f753c5` there are none.
 - Runtime: the probe apps were built, not booted (the no-compatModules
   variant would not boot); bytes and module lists only.
+- The direct `pnpm size` `sheet` entry reads 395.2 KB gzip against
+  394.1 in "Bundle size" (`eff636a`); this work does not touch what it
+  measures (direct imports), so the rise is from commits in between
+  (likely the frozen grid), not measured commit by commit.
 - `pnpm size --compat` on a checkout with real injected copies (here
   `site/node_modules/@ember-eui/*` are symlinks); the path patterns
   cover both.

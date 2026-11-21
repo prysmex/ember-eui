@@ -13,4 +13,5 @@ New package: `EuiSheet`, an Airtable-like data-entry grid built on `EuiDataGrid`
 - **Data at scale:** load more as you scroll (`@onVisibleRangeChange`), the current search match (`@currentMatch`, `findMatches`), the selection for summaries (`@onSelectionChange`, `summarizeCells`).
 - **Import and export:** `toCsv`, `parseCsv`, `importMatrix`, `api.appendRows`, and an import screen (`EuiSheetImport`) that reads a file, maps its columns to fields, guesses types, previews errors and can create fields.
 - **Errors and validation:** cell errors (a text a type cannot read is kept and shown, not saved), `@validate` for record, cross-row and async rules.
+- **Accessibility:** grid roles and labels for screen readers (read-only and checked state, named menus and dialogs), a polite live region that announces pastes, undo, redo and rejections, keyboard check-all, and contrast checked in light, dark and high contrast.
 - **Also:** full screen, touch selection handles and IME input, messages through `eui-i18n`, light and dark themes.

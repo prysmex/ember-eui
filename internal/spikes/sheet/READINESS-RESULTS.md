@@ -1898,7 +1898,7 @@ groups pages. No other existing test changed.
 tests pass. Measured as before (the d28 demo, now on the import-export
 page; a 10,000-line, 20-column file; the input's `change` event to the
 first preview row in the DOM; production builds, Chromium headless,
-1300 × 900); HEAD (`665f6c0`'s parent tree without the patch) and the
+1300 × 900); HEAD (`ab168b7`'s tree, without the patch) and the
 patched tree served side by side and run alternately, three rounds, one
 first open and three warm each, nothing else running:
 

@@ -1,5 +1,5 @@
 /**
- * The import screen `<EuiSheetImport>` (v0.4 10, stage 2), IW1-IW12: the
+ * The import screen `<EuiSheetImport>` (v0.4 10, stage 2), IW1-IW13: the
  * columns proposed and guessed, the preview and the dry run, new fields,
  * errors, saved mappings, rejections, the end-to-end path with a sheet,
  * keyboard reachability, per-column field copies (decision 14), and a
@@ -1002,5 +1002,26 @@ module('Integration | Component | EuiSheetImport', function (hooks) {
     ]);
     assert.strictEqual(textOf(q('euiSheetImportLineCount')), '3 lines');
     assert.deepEqual(previewRows()[0], ['Año'], 'the first line is data');
+  });
+
+  test('IW13 a new source starts from the defaults: no filter, "Import all"', async function (assert) {
+    const screen = new Screen();
+    screen.text = csv(25).replace('3.5', 'abc').replace('7.5', 'xyz');
+    await renderScreen(screen);
+    await click(q('euiSheetImportCantRead', row(1)));
+    assert.strictEqual(previewRows().length, 2, 'filtered to the two lines');
+    await click(q('euiSheetImportErrorChoice').querySelectorAll('input')[1]!);
+    assert.strictEqual(
+      submitText(),
+      'Import 23 lines',
+      '"Skip lines with errors"'
+    );
+
+    // another file in the same screen
+    screen.text = csv(25).replace('5.5', 'nope');
+    await settled();
+    assert.strictEqual(totals(), '24 lines ready, 1 with errors');
+    assert.strictEqual(previewRows().length, 20, 'no filter');
+    assert.strictEqual(submitText(), 'Import 25 lines', '"Import all" again');
   });
 });

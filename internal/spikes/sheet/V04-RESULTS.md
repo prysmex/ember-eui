@@ -2179,3 +2179,19 @@ ArrowDown on the closed select), buttons and links by mouse clicks.
 
 One commit in this range is the main session's: `02f8585` (readiness
 loose ends from stage 1) before `d6d978c`.
+
+## Batch E: checked by the main session (2026-11-21)
+
+- A new source in the same screen kept the last error, the preview
+  filter, the open form and value map, and "Skip lines with errors". The
+  screen's own state is now kept per source, like the delimiter and
+  header choices (`currentUi` in `eui-sheet-import.gts`): a new `@file`,
+  `@text` or `@matrix` starts from the defaults. The fields created on
+  the way stay (they exist in the owner). IW13 checks it, and fails
+  without the change.
+- The site's checks, which no v0.4 batch had run: `pnpm lint` in `site/`
+  (eslint, stylelint, template lint, Prettier, types) passes, and its
+  `pnpm test` passes (`node --test`, 8; testem, 14).
+- Open for the user: `@fieldTypes` (the sheet's name) rather than the
+  design's `@types`; the 300 ms preview target, missed (see
+  `READINESS.md`).

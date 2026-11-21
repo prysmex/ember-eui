@@ -145,6 +145,23 @@ interface RunState {
   run: SheetImportRun;
 }
 
+/** The screen state the user sets for one source (`currentUi`). */
+interface ScreenUi {
+  source: unknown;
+  skipErrors: boolean;
+  filterColumn: number | null;
+  formOpen: number | null;
+  valuesOpen: number | null;
+  error: string | null;
+}
+const UI_DEFAULTS: Omit<ScreenUi, 'source'> = {
+  skipErrors: false,
+  filterColumn: null,
+  formOpen: null,
+  valuesOpen: null,
+  error: null
+};
+
 /** What one row of the columns table shows. */
 export interface ImportColumnView {
   index: number;
@@ -207,13 +224,55 @@ export default class EuiSheetImport<T = any> extends Component<
   /** The created fields not yet given to a successful `@onImport`. */
   unreported: EuiSheetField<T>[] = [];
 
-  @tracked skipErrors = false;
-  /** The column whose unreadable lines the preview shows. */
-  @tracked filterColumn: number | null = null;
-  @tracked formOpen: number | null = null;
-  @tracked valuesOpen: number | null = null;
+  /**
+   * What the user set on the screen for one source, as the delimiter and
+   * header choices are: a new `@file`, `@text` or `@matrix` starts from the
+   * defaults (no filter, no open form or value map, no error, "Import
+   * all"). The created fields stay: they exist in the owner.
+   */
+  @tracked ui: ScreenUi = { source: null, ...UI_DEFAULTS };
   @tracked busy = false;
-  @tracked error: string | null = null;
+
+  /** The screen state of the current source (the defaults for a new one). */
+  get currentUi(): ScreenUi {
+    const source = this.source;
+    return this.ui.source === source ? this.ui : { source, ...UI_DEFAULTS };
+  }
+  setUi(patch: Partial<Omit<ScreenUi, 'source'>>): void {
+    this.ui = { ...this.currentUi, ...patch };
+  }
+
+  get skipErrors(): boolean {
+    return this.currentUi.skipErrors;
+  }
+  set skipErrors(skipErrors: boolean) {
+    this.setUi({ skipErrors });
+  }
+  /** The column whose unreadable lines the preview shows. */
+  get filterColumn(): number | null {
+    return this.currentUi.filterColumn;
+  }
+  set filterColumn(filterColumn: number | null) {
+    this.setUi({ filterColumn });
+  }
+  get formOpen(): number | null {
+    return this.currentUi.formOpen;
+  }
+  set formOpen(formOpen: number | null) {
+    this.setUi({ formOpen });
+  }
+  get valuesOpen(): number | null {
+    return this.currentUi.valuesOpen;
+  }
+  set valuesOpen(valuesOpen: number | null) {
+    this.setUi({ valuesOpen });
+  }
+  get error(): string | null {
+    return this.currentUi.error;
+  }
+  set error(error: string | null) {
+    this.setUi({ error });
+  }
 
   /* the dry run: remembered untracked; the timer bumps `runTick` */
   runState: RunState | null = null;

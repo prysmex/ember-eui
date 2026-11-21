@@ -70,6 +70,15 @@ fixes coming back as commits.
    - A paste from a record row whose lines run past the last record: the
      new records get no `@newRecordValues` (only a paste on an add row
      and `appendRows` do; PNV5 pins it). One call to change.
+   - The import screen's messages have no plural forms ("Import 1
+     lines"); and its value map lists the file's texts but is applied
+     after the column's transform, so with a transform on a select or
+     checkbox column the listed texts may stop matching (shown as
+     errors, not silently).
+   - The import screen opens in 377-446 ms on a 10,000-line, 20-column
+     file (718 ms the first time); the design's target was 300 ms.
+     Decide: defer the first dry run, put each column's options behind a
+     button, or relax the target (v0.4 batch E stage 2, deviation 11).
    - Any open item the v0.4 batches leave.
 
 ## On the user's devices (checklists in the batch's results)

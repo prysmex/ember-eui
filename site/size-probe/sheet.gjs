@@ -2,7 +2,5 @@
 import { EuiSheet } from '@ember-eui/sheet';
 
 console.log(
-  <template>
-    <EuiSheet @fields={{@fields}} @records={{@records}} />
-  </template>,
+  <template><EuiSheet @fields={{@fields}} @records={{@records}} /></template>,
 );

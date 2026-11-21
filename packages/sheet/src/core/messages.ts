@@ -161,6 +161,8 @@ export interface SheetMessages {
   shortcutExpand: () => string;
   /** 'Check the row (on a row number)' */
   shortcutCheckRow: () => string;
+  /** 'Check every row, or none (on the row-number header)' */
+  shortcutCheckAll: () => string;
   /** 'Open the row menu' */
   shortcutRowMenu: () => string;
   /** 'Open the field menu (on a header)' */
@@ -531,6 +533,10 @@ export interface SheetMessages {
   rowNumberChecked: (n: number) => string;
   /** 'Row number': the row-number column's header, for screen readers. */
   rowNumberHeader: () => string;
+  /** 'Some rows checked': after the row-number header's name while some records are checked (Space or Enter checks all). */
+  someRowsChecked: () => string;
+  /** 'All rows checked': after the row-number header's name while every record is checked (Space or Enter unchecks all). */
+  allRowsChecked: () => string;
   /** 'Checked': a checkbox cell's label when checked. */
   cellChecked: () => string;
   /** 'Not checked': a checkbox cell's label when not checked. */
@@ -947,6 +953,11 @@ export const sheetMessageTokens: Readonly<
   shortcutCheckRow: {
     token: 'euiSheet.shortcutCheckRow',
     defaultMessage: 'Check the row (on a row number)',
+    params: []
+  },
+  shortcutCheckAll: {
+    token: 'euiSheet.shortcutCheckAll',
+    defaultMessage: 'Check every row, or none (on the row-number header)',
     params: []
   },
   shortcutRowMenu: {
@@ -1874,6 +1885,16 @@ export const sheetMessageTokens: Readonly<
   rowNumberHeader: {
     token: 'euiSheet.rowNumberHeader',
     defaultMessage: 'Row number',
+    params: []
+  },
+  someRowsChecked: {
+    token: 'euiSheet.someRowsChecked',
+    defaultMessage: 'Some rows checked',
+    params: []
+  },
+  allRowsChecked: {
+    token: 'euiSheet.allRowsChecked',
+    defaultMessage: 'All rows checked',
     params: []
   },
   cellChecked: {

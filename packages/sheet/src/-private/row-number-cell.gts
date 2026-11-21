@@ -187,7 +187,10 @@ interface RowNumberHeaderSignature {
   Args: { sheet: EuiSheet<any> };
 }
 
-/** The control column's header: checks every record of `@records`, or none when all are. */
+/**
+ * The control column's header: checks every record of `@records`, or none
+ * when all are, on a click on its checkbox or Space or Enter on the header.
+ */
 export class RowNumberHeader extends Component<RowNumberHeaderSignature> {
   get state(): 'all' | 'some' | 'none' {
     return this.args.sheet.checked.checkedState;
@@ -202,6 +205,14 @@ export class RowNumberHeader extends Component<RowNumberHeaderSignature> {
     return this.args.sheet.messages.rowNumberHeader();
   }
 
+  /** After the name: what Space or Enter on the header does, or the checked state. */
+  get stateText(): string {
+    const messages = this.args.sheet.messages;
+    if (this.state === 'all') return messages.allRowsChecked();
+    if (this.state === 'some') return messages.someRowsChecked();
+    return messages.selectAllRows();
+  }
+
   <template>
     <span
       class="euiSheet__checkbox euiSheet__rowCheckAll
@@ -211,7 +222,10 @@ export class RowNumberHeader extends Component<RowNumberHeaderSignature> {
       data-test-subj="euiSheetRowCheckAll"
       title={{this.label}}
       aria-hidden="true"
-    ></span><span class="euiSheet__srOnly">{{this.headerName}}</span>
+    ></span><span class="euiSheet__srOnly">{{this.headerName}}</span><span
+      class="euiSheet__srOnly"
+      data-test-subj="euiSheetRowCheckAllState"
+    >{{this.stateText}}</span>
   </template>
 }
 

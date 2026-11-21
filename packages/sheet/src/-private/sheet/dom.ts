@@ -64,6 +64,16 @@ export default class SheetDom<T extends object> {
     return cell;
   }
 
+  /** The row-number column's header an event belongs to, or null. */
+  rowNumberHeader(target: EventTarget | null): HTMLElement | null {
+    if (!this.sheet.colOffset || !(target instanceof Element)) return null;
+    const header = target.closest<HTMLElement>(
+      `[role=columnheader][data-gridcell-column-id="${ROW_COLUMN_ID}"]`
+    );
+    if (!header || !this.sheet.wrapper?.contains(header)) return null;
+    return header;
+  }
+
   /** The data column header an event belongs to, or null (not a control column's). */
   headerCell(target: EventTarget | null): HTMLElement | null {
     if (!(target instanceof Element)) return null;

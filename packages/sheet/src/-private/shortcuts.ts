@@ -121,6 +121,11 @@ export const SHORTCUT_SECTIONS: readonly ShortcutSection[] = [
       { keys: [['Enter']], message: 'shortcutExpand', when: rowNumbers },
       { keys: [['Space']], message: 'shortcutCheckRow', when: rowNumbers },
       {
+        keys: [['Space'], ['Enter']],
+        message: 'shortcutCheckAll',
+        when: rowNumbers
+      },
+      {
         keys: [['Shift', 'F10'], ['Menu'], ['RightClick']],
         message: 'shortcutRowMenu'
       },

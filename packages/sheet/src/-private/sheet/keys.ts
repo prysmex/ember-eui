@@ -135,6 +135,11 @@ export default class SheetKeys<T extends object> {
       this.onRowNumberKeyDown(event, this.sheet.dom.rowIndexOf(rowCell));
       return;
     }
+    const rowHeader = this.sheet.dom.rowNumberHeader(target);
+    if (rowHeader && target === rowHeader) {
+      this.onRowNumberHeaderKeyDown(event);
+      return;
+    }
     // the "+" header (V03 6.3): Enter or Space opens the field editor
     const addHeader = this.sheet.dom.addFieldHeader(target);
     if (addHeader && target === addHeader) {
@@ -573,30 +578,41 @@ export default class SheetKeys<T extends object> {
   }
 
   /**
-   * Grouped, on a row-number cell: the page keys and Ctrl+Home/End land
-   * as on a data cell, never on a header (V03 8.5, 3.2a). PageUp and
-   * PageDown move by the rows in view and Ctrl+Home goes to the first
-   * record, both staying in the row-number column; with Shift a page key
-   * lands on a record and extends whole rows. Ctrl+End is the data
+   * On a row-number cell: PageUp and PageDown move by the rows in view,
+   * staying in the row-number column; with Shift a page key lands on a
+   * record and extends whole rows. Grouped they never land on a header
+   * (V03 8.5, 3.2a). Without groups they are taken only while the grid
+   * scrolls: the browser's page scroll would take the focused row out of
+   * the rendered rows, and focus with it. True when handled.
+   */
+  handleRowNumberPageKey(event: KeyboardEvent, row: number): boolean {
+    const { key } = event;
+    if (key !== 'PageDown' && key !== 'PageUp') return false;
+    if (event.altKey || event.metaKey || event.ctrlKey) return false;
+    if (!this.sheet.rows.isGrouped && !this.sheet.scroll.scrollsVertically())
+      return false;
+    stop(event);
+    const step = key === 'PageDown' ? 1 : -1;
+    const target = this.sheet.rows.landingRow(
+      row + step * this.sheet.scroll.pageRows(),
+      step,
+      event.shiftKey
+    );
+    if (target >= 0 && target !== row)
+      this.sheet.dom.focusRowNumberCell(target);
+    return true;
+  }
+
+  /**
+   * Grouped, on a row-number cell: Ctrl+Home and Ctrl+End land as on a
+   * data cell, never on a header (V03 8.5, 3.2a). Ctrl+Home goes to the
+   * first record, staying in the row-number column; Ctrl+End is the data
    * cells' (`handleGroupedEndKey`). True when handled.
    */
-  handleGroupedRowNumberKey(event: KeyboardEvent, row: number): boolean {
+  handleGroupedRowNumberKey(event: KeyboardEvent): boolean {
     if (!this.sheet.rows.isGrouped || event.altKey || event.metaKey)
       return false;
-    const { key } = event;
-    if ((key === 'PageDown' || key === 'PageUp') && !event.ctrlKey) {
-      stop(event);
-      const step = key === 'PageDown' ? 1 : -1;
-      const target = this.sheet.rows.landingRow(
-        row + step * this.sheet.scroll.pageRows(),
-        step,
-        event.shiftKey
-      );
-      if (target >= 0 && target !== row)
-        this.sheet.dom.focusRowNumberCell(target);
-      return true;
-    }
-    if (key === 'Home' && event.ctrlKey && !event.shiftKey) {
+    if (event.key === 'Home' && event.ctrlKey && !event.shiftKey) {
       stop(event);
       const first = this.sheet.rows.firstLandingRow();
       if (first >= 0) this.sheet.dom.focusRowNumberCell(first);
@@ -605,11 +621,24 @@ export default class SheetKeys<T extends object> {
     return this.handleGroupedEndKey(event);
   }
 
+  /**
+   * The row-number column's header: Space or Enter checks every record,
+   * or none when all are checked, as its checkbox's click does.
+   */
+  onRowNumberHeaderKeyDown(event: KeyboardEvent): void {
+    const plain =
+      !event.ctrlKey && !event.metaKey && !event.altKey && !event.shiftKey;
+    if (!plain || (event.key !== ' ' && event.key !== 'Enter')) return;
+    stop(event);
+    this.sheet.checked.toggleAllChecked();
+  }
+
   /** Keys of a row-number cell (V02-DESIGN.md 5.5). */
   onRowNumberKeyDown(event: KeyboardEvent, row: number): void {
     if (this.handleCommandKey(event)) return;
     if (this.handleLastFieldKey(event, row, null)) return;
-    if (this.handleGroupedRowNumberKey(event, row)) return;
+    if (this.handleRowNumberPageKey(event, row)) return;
+    if (this.handleGroupedRowNumberKey(event)) return;
     if (this.sheet.rows.isAddRow(row)) {
       this.onAddRowKeyDown(event, row);
       return;

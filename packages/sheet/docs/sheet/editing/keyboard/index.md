@@ -58,10 +58,15 @@ it (with `@onGroupToggle`), the arrows go on through it, and nothing
 else is taken.
 
 On a row number: Space toggles the checkbox, Enter expands the record,
-Shift+ArrowUp/Down selects rows, Shift+F10 opens the menu, and Delete
+Shift+ArrowUp/Down selects rows, PageUp/PageDown move by the rows in view
+(Shift selects them), Shift+F10 opens the menu, and Delete
 clears the selected rows. Reached with the arrows, a row number has no
 selection, so Delete, copy and paste do nothing there. On the add row,
-Enter adds a record; typing, Space and Delete do nothing.
+Enter adds a record; typing, Space and Delete do nothing. On the
+row-number column's header: Space or Enter checks every record, or none
+when all are checked, as a click on its checkbox does; a screen reader
+hears "Row number" and "Select all rows", "Some rows checked" or "All
+rows checked".
 
 ## IME and dead keys
 

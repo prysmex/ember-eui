@@ -256,6 +256,12 @@ export default class SheetScroll<T extends object> {
     afterRender(this.sheet, () => this.scrollToCell(match));
   });
 
+  /** Whether the grid has rows out of view (its body scrolls up or down). */
+  scrollsVertically(): boolean {
+    const outer = this.scrollElement();
+    return !!outer && outer.scrollHeight > outer.clientHeight + 1;
+  }
+
   /** The rows fully in view: what PageUp and PageDown move by (at least 1). */
   pageRows(): number {
     const bounds = this.scrollBounds();

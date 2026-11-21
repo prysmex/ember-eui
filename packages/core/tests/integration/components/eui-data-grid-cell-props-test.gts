@@ -188,4 +188,80 @@ module('Integration | Component | EuiDataGrid setCellProps', function (hooks) {
     assert.dom(first).doesNotHaveAttribute('data-custom');
     assert.strictEqual(getComputedStyle(first).backgroundColor, 'rgb(0, 0, 255)');
   });
+
+  test('SCP5 a cell that shows another column drops the props of the one before, and takes its own', async function (assert) {
+    class Columns {
+      @tracked columns: EuiDataGridColumn[] = COLUMNS;
+    }
+    const state = new Columns();
+    await render(
+      <template>
+        <div style="width:600px">
+          <EuiDataGrid aria-label="Grid" @columns={{state.columns}} @rowCount={{3}} @toolbarVisibility={{false}}>
+            <:cell as |c|>
+              {{c.setCellProps (propsFor c.rowIndex c.columnId 1)}}
+              {{c.columnId}}{{c.rowIndex}}
+            </:cell>
+          </EuiDataGrid>
+        </div>
+      </template>
+    );
+    const first = cell(0, 0);
+    assert.dom(first).hasClass('one-cell').hasAttribute('data-custom', 'yes');
+    state.columns = [COLUMNS[1]!, COLUMNS[0]!];
+    await settled();
+    assert.strictEqual(cell(0, 0), first, 'the same element, now column b');
+    assert.dom(first).hasAttribute('data-gridcell-column-id', 'b');
+    assert.dom(first).doesNotHaveClass('one-cell');
+    assert.dom(first).doesNotHaveAttribute('data-custom');
+    assert.dom(first).doesNotHaveAttribute('title');
+    assert.dom(first).hasAttribute('data-test-subj', 'dataGridRowCell');
+    assert.notStrictEqual(getComputedStyle(first).backgroundColor, 'rgb(255, 0, 0)');
+    const moved = cell(0, 1);
+    assert.dom(moved).hasAttribute('data-gridcell-column-id', 'a');
+    assert.dom(moved).hasClass('one-cell').hasAttribute('data-custom', 'yes');
+    assert.dom(moved).hasAttribute('data-test-subj', 'dataGridRowCell one');
+    assert.strictEqual(getComputedStyle(moved).backgroundColor, 'rgb(255, 0, 0)');
+
+    // and back
+    state.columns = COLUMNS;
+    await settled();
+    assert.dom(first).hasClass('one-cell').hasAttribute('data-custom', 'yes');
+    assert.dom(cell(0, 1)).doesNotHaveClass('one-cell');
+    assert.dom(cell(0, 1)).doesNotHaveAttribute('data-custom');
+  });
+
+  test('SCP6 a cell that shows another column whose renderer sets no props drops the old ones', async function (assert) {
+    class Columns {
+      @tracked columns: EuiDataGridColumn[] = COLUMNS;
+    }
+    const state = new Columns();
+    const isA = (columnId: string) => columnId === 'a';
+    await render(
+      <template>
+        <div style="width:600px">
+          <EuiDataGrid aria-label="Grid" @columns={{state.columns}} @rowCount={{3}} @toolbarVisibility={{false}}>
+            <:cell as |c|>
+              {{#if (isA c.columnId)}}
+                {{c.setCellProps (propsFor c.rowIndex c.columnId 1)}}
+              {{/if}}
+              {{c.columnId}}{{c.rowIndex}}
+            </:cell>
+          </EuiDataGrid>
+        </div>
+      </template>
+    );
+    const first = cell(0, 0);
+    assert.dom(first).hasClass('one-cell').hasAttribute('data-test-subj', 'dataGridRowCell one');
+    state.columns = [COLUMNS[1]!, COLUMNS[0]!];
+    await settled();
+    assert.strictEqual(cell(0, 0), first, 'the same element, now column b');
+    assert.dom(first).hasAttribute('data-gridcell-column-id', 'b');
+    assert.dom(first).doesNotHaveClass('one-cell');
+    assert.dom(first).hasAttribute('data-test-subj', 'dataGridRowCell');
+    assert.dom(first).doesNotHaveAttribute('data-custom');
+    assert.dom(first).doesNotHaveAttribute('title');
+    assert.notStrictEqual(getComputedStyle(first).backgroundColor, 'rgb(255, 0, 0)');
+    assert.dom(cell(0, 1)).hasClass('one-cell').hasAttribute('data-test-subj', 'dataGridRowCell one');
+  });
 });

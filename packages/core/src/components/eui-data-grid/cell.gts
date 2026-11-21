@@ -291,6 +291,8 @@ export default class EuiDataGridCell extends Component<EuiDataGridCellSignature>
   private propsElement: HTMLElement | null = null;
   /** Whether the cell alone sets its `class`, `style` and `data-test-subj` (no `...attributes` of the same). */
   private ownsPropsAttributes = true;
+  /** What `applyCellProps` last wrote to `class`, `style` and `data-test-subj`. */
+  private writtenPropsAttributes = new Map<string, string>();
   /** The attributes `applyCellProps` set from the props, removed when they go. */
   private propsAttributeNames: string[] = [];
 
@@ -336,9 +338,10 @@ export default class EuiDataGridCell extends Component<EuiDataGridCellSignature>
     const element = this.propsElement;
     if (!element) return;
     if (this.ownsPropsAttributes) {
-      setAttributeIfChanged(element, 'class', this.classes);
-      setAttributeIfChanged(element, 'style', String(this.style));
-      setAttributeIfChanged(element, 'data-test-subj', this.dataTestSubj);
+      for (const [name, value] of this.ownAttributes()) {
+        setAttributeIfChanged(element, name, value);
+        this.writtenPropsAttributes.set(name, value);
+      }
     }
     const names: string[] = [];
     for (const [name, value] of Object.entries(this.cellProps)) {
@@ -353,18 +356,28 @@ export default class EuiDataGridCell extends Component<EuiDataGridCellSignature>
     this.propsAttributeNames = names;
   }
 
+  /** The cell's own `class`, `style` and `data-test-subj`, the props included. */
+  ownAttributes(): Array<[string, string]> {
+    return [
+      ['class', this.classes],
+      ['style', String(this.style)],
+      ['data-test-subj', this.dataTestSubj]
+    ];
+  }
+
   /**
    * On the cell element: whether its invoker sets `class`, `style` or
-   * `data-test-subj` too (the rendered value is then not the cell's own),
-   * and the props for the row and column it shows (`key`).
+   * `data-test-subj` too (each holds neither the cell's own value nor what
+   * `applyCellProps` last wrote), and the props for the row and column it
+   * shows (`key`: a cell that shows another one drops the old props).
    */
   cellPropsElement = modifier((element: HTMLElement, [key]: [string]) => {
     void key;
     this.propsElement = element;
-    this.ownsPropsAttributes =
-      element.getAttribute('class') === this.classes &&
-      element.getAttribute('style') === String(this.style) &&
-      element.getAttribute('data-test-subj') === this.dataTestSubj;
+    this.ownsPropsAttributes = this.ownAttributes().every(([name, value]) => {
+      const current = element.getAttribute(name);
+      return current === value || current === this.writtenPropsAttributes.get(name);
+    });
     this.applyCellProps();
     return () => {
       if (this.propsElement === element) this.propsElement = null;

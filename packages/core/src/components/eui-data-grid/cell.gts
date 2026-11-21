@@ -110,6 +110,10 @@ function shallowEqual(
   return true;
 }
 
+function setAttributeIfChanged(element: HTMLElement, name: string, value: string): void {
+  if (element.getAttribute(name) !== value) element.setAttribute(name, value);
+}
+
 const toKebab = (property: string) =>
   property.startsWith('--')
     ? property
@@ -272,9 +276,23 @@ export default class EuiDataGridCell extends Component<EuiDataGridCellSignature>
   /* setCellProps                                                          */
   /* -------------------------------------------------------------------- */
 
-  // props set by the cell renderer, reset when the cell shows another row/column
-  @tracked private cellPropsState: { key: string; props: EuiDataGridSetCellProps } | null =
-    null;
+  // Props set by the cell renderer, reset when the cell shows another
+  // row/column. Not tracked: after the render that set them they are applied
+  // to the cell's element directly (`applyCellProps`), because a tracked
+  // write after a render makes the next render pass revalidate every
+  // rendered cell. Only `isExpandable`, which changes what the cell renders,
+  // is tracked (`expandableState`); and a cell whose `class`, `style` or
+  // `data-test-subj` its invoker sets too (`...attributes`) renders them
+  // again (`propsRevision`), as before.
+  private cellPropsState: { key: string; props: EuiDataGridSetCellProps } | null = null;
+  @tracked private expandableState: { key: string; value: boolean | undefined } | null = null;
+  @tracked private propsRevision = 0;
+  /** The cell element while it is rendered, for `applyCellProps`. */
+  private propsElement: HTMLElement | null = null;
+  /** Whether the cell alone sets its `class`, `style` and `data-test-subj` (no `...attributes` of the same). */
+  private ownsPropsAttributes = true;
+  /** The attributes `applyCellProps` set from the props, removed when they go. */
+  private propsAttributeNames: string[] = [];
 
   get cellPropsKey(): string {
     return `${this.columnId}:${this.rowIndex}`;
@@ -283,6 +301,11 @@ export default class EuiDataGridCell extends Component<EuiDataGridCellSignature>
   get cellProps(): EuiDataGridSetCellProps {
     const state = this.cellPropsState;
     return state && state.key === this.cellPropsKey ? state.props : {};
+  }
+
+  get cellPropsIsExpandable(): boolean | undefined {
+    const state = this.expandableState;
+    return state && state.key === this.cellPropsKey ? state.value : undefined;
   }
 
   /** Renderers may call this during render; the update is applied after rendering. */
@@ -294,22 +317,59 @@ export default class EuiDataGridCell extends Component<EuiDataGridCellSignature>
       if (current && current.key === key && shallowEqual(current.props, props)) return;
       if (!current && Object.keys(props).length === 0) return;
       this.cellPropsState = { key, props };
+      const expandable = this.expandableState;
+      const wasExpandable = expandable && expandable.key === key ? expandable.value : undefined;
+      if (wasExpandable !== props.isExpandable) {
+        this.expandableState = { key, value: props.isExpandable };
+      }
+      if (!this.ownsPropsAttributes) this.propsRevision++;
+      this.applyCellProps();
     });
   };
 
-  /** Arbitrary attributes from setCellProps (other than class/style/data-test-subj). */
-  cellPropsAttributes = modifier(
-    (element: HTMLElement, [props]: [EuiDataGridSetCellProps]) => {
-      const names: string[] = [];
-      for (const [name, value] of Object.entries(props)) {
-        if (['className', 'style', 'isExpandable', 'data-test-subj'].includes(name)) continue;
-        if (value == null || value === false || typeof value === 'function') continue;
-        element.setAttribute(name, String(value as string | number | boolean));
-        names.push(name);
-      }
-      return () => names.forEach((name) => element.removeAttribute(name));
+  /**
+   * Puts the props on the cell element: `className`, `style` and
+   * `data-test-subj` within the cell's own (the same strings its template
+   * renders), the other attributes as they are.
+   */
+  applyCellProps(): void {
+    const element = this.propsElement;
+    if (!element) return;
+    if (this.ownsPropsAttributes) {
+      setAttributeIfChanged(element, 'class', this.classes);
+      setAttributeIfChanged(element, 'style', String(this.style));
+      setAttributeIfChanged(element, 'data-test-subj', this.dataTestSubj);
     }
-  );
+    const names: string[] = [];
+    for (const [name, value] of Object.entries(this.cellProps)) {
+      if (['className', 'style', 'isExpandable', 'data-test-subj'].includes(name)) continue;
+      if (value == null || value === false || typeof value === 'function') continue;
+      setAttributeIfChanged(element, name, String(value as string | number | boolean));
+      names.push(name);
+    }
+    for (const name of this.propsAttributeNames) {
+      if (!names.includes(name)) element.removeAttribute(name);
+    }
+    this.propsAttributeNames = names;
+  }
+
+  /**
+   * On the cell element: whether its invoker sets `class`, `style` or
+   * `data-test-subj` too (the rendered value is then not the cell's own),
+   * and the props for the row and column it shows (`key`).
+   */
+  cellPropsElement = modifier((element: HTMLElement, [key]: [string]) => {
+    void key;
+    this.propsElement = element;
+    this.ownsPropsAttributes =
+      element.getAttribute('class') === this.classes &&
+      element.getAttribute('style') === String(this.style) &&
+      element.getAttribute('data-test-subj') === this.dataTestSubj;
+    this.applyCellProps();
+    return () => {
+      if (this.propsElement === element) this.propsElement = null;
+    };
+  });
 
   /* -------------------------------------------------------------------- */
   /* Expansion & popover                                                   */
@@ -328,7 +388,7 @@ export default class EuiDataGridCell extends Component<EuiDataGridCellSignature>
     // and screen reader users can't access them
     // ember-eui extension (row-tree): `!isGroupRow`: group rows have no value
     if (this.column?.cellActions?.length && !this.rowTree.isGroupRow) return true;
-    return this.cellProps.isExpandable ?? this.defaultIsExpandable;
+    return this.cellPropsIsExpandable ?? this.defaultIsExpandable;
   }
 
   get isPopoverOpen(): boolean {
@@ -731,6 +791,7 @@ export default class EuiDataGridCell extends Component<EuiDataGridCellSignature>
   }
 
   get classes(): string {
+    void this.propsRevision;
     const columnType = this.columnType;
     return [
       'euiDataGridRowCell',
@@ -750,6 +811,7 @@ export default class EuiDataGridCell extends Component<EuiDataGridCellSignature>
   }
 
   get dataTestSubj(): string {
+    void this.propsRevision;
     return ['dataGridRowCell', this.cellProps['data-test-subj']].filter(Boolean).join(' ');
   }
 
@@ -777,6 +839,7 @@ export default class EuiDataGridCell extends Component<EuiDataGridCellSignature>
   }
 
   get style() {
+    void this.propsRevision;
     const { body, colIndex, visibleRowIndex, isFooter } = this.args;
     const width = this.width;
     const parts: string[] = [];
@@ -937,7 +1000,7 @@ export default class EuiDataGridCell extends Component<EuiDataGridCellSignature>
       {{on "blur" this.onBlur}}
       {{on "mouseenter" this.onMouseEnter}}
       {{on "mouseleave" this.onMouseLeave}}
-      {{this.cellPropsAttributes this.cellProps}}
+      {{this.cellPropsElement this.cellPropsKey}}
       {{this.registerFocus @colIndex @visibleRowIndex}}
       {{this.setupCell}}
       ...attributes

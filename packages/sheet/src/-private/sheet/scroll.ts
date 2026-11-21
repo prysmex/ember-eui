@@ -38,10 +38,48 @@ export default class SheetScroll<T extends object> {
    */
   placers = new Set<() => void>();
 
-  /** Registers a part's placing for the grid's scrolls; returns its removal. */
+  /** Registers a part's placing for the grid's scrolls and late layout changes; returns its removal. */
   placeOnScroll(place: () => void): () => void {
     this.placers.add(place);
-    return () => this.placers.delete(place);
+    this.watchLayout();
+    return () => {
+      this.placers.delete(place);
+      if (!this.placers.size) this.unwatchLayout();
+    };
+  }
+
+  /**
+   * While a part is shown: the grid's content box (its columns' widths and
+   * its rows' heights), observed. The grid changes it after the render the
+   * parts were placed on (READINESS.md item 5): it sizes its columns again
+   * a frame later (the scroll bar measured), and gives the rows a new
+   * `@rowHeight` after a render too, so a part placed on that render was a
+   * pixel or two off (TR1's one failure) or a row-height difference above
+   * its cell (the fill handle). A resize places every part again, without
+   * a tracked write.
+   */
+  layoutObserver: ResizeObserver | null = null;
+  observedContent: Element | null = null;
+
+  watchLayout(): void {
+    if (typeof ResizeObserver === 'undefined') return;
+    // the grid's inner box, sized to its columns and rows
+    const content = this.scrollElement()?.firstElementChild ?? null;
+    if (content === this.observedContent) return;
+    this.layoutObserver ??= new ResizeObserver(() => {
+      if (isDestroying(this.sheet) || isDestroyed(this.sheet)) return;
+      this.placeAll();
+    });
+    if (this.observedContent) {
+      this.layoutObserver.unobserve(this.observedContent);
+    }
+    this.observedContent = content;
+    if (content) this.layoutObserver.observe(content);
+  }
+
+  unwatchLayout(): void {
+    this.layoutObserver?.disconnect();
+    this.observedContent = null;
   }
 
   /** Places every registered part again. */

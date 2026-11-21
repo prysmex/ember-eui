@@ -12,6 +12,8 @@ const CSS = `
 .euiSheet--fullScreen > .euiSheet__grid { flex: 1 1 auto; min-height: 0; }
 .euiSheet--dragging, .euiSheet--dragging * { user-select: none; -webkit-user-select: none; }
 .euiSheet .euiDataGridRow:hover .euiDataGridRowCell { background-color: var(--euiSheet-hover, rgba(105, 112, 125, 0.06)); }
+/* one hover tint, as on frozen cells: not the grid's row hover under the cells' (two lightened dark rows until coloured text fell under 4.5:1) */
+.euiSheet .euiDataGridRow:hover { background-color: var(--euiSheet-plain, #FFF); }
 /* the selection wins over the row hover, so a range shows while it is dragged in one row */
 /* checked rows (V03 batch 1): a light tint, before the selection rules so a range wins */
 .euiSheet .euiDataGridRowCell.euiSheet__cell--checked { background-color: var(--euiSheet-checked, rgba(11, 100, 221, 0.06)); }
@@ -199,7 +201,7 @@ li:has([data-test-subj^="euiSheetEditField-"]), li:has([data-test-subj^="euiShee
 .euiSheet__file { display: inline-flex; align-items: center; gap: 2px; min-width: 0; max-width: 120px; }
 .euiSheet__rating { display: inline-flex; gap: 1px; line-height: 1; }
 /* an empty star (V03 batch 2): the subdued text at half strength; the border colour was 1.2:1 on white */
-.euiSheet__star { color: var(--euiSheet-textSubdued, #69707D); opacity: 0.45; font-size: 16px; cursor: pointer; }
+.euiSheet__star { color: var(--euiSheet-starOff, rgba(81, 99, 129, 0.75)); font-size: 16px; cursor: pointer; }
 .euiSheet__star.euiSheet__star--on { opacity: 1; }
 .euiSheet__star--on { color: var(--euiSheet-star, #F5A700); }
 .euiSheet__link { color: var(--euiSheet-link, #0B64DD); text-decoration: underline; cursor: pointer; }

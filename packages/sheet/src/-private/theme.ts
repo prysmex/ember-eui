@@ -28,11 +28,13 @@ export const sheetThemeVars = ({
   return {
     label: 'euiSheetTheme',
     '--euiSheet-primary': colors.primary,
-    // V03 batch 1: the range tint is the primary at 12 % (light) / 20 %
+    // V03 batch 1: the range tint is the primary at 12 % (light) / 16 %
     // (dark); EUI's backgroundBaseInteractiveSelect (about rgb(241, 246,
     // 255) on white) was barely visible. Borealis' backgroundLightPrimary
-    // is the same token in dark, so it is not stronger.
-    '--euiSheet-selected': withAlpha(colors.primary, dark ? 0.2 : 0.12),
+    // is the same token in dark, so it is not stronger. Dark was 20 %
+    // until the accessibility batch: an invalid cell's danger text on it
+    // was 4.3:1; at 16 % it is 4.7:1 (WCAG 1.4.3 asks 4.5).
+    '--euiSheet-selected': withAlpha(colors.primary, dark ? 0.16 : 0.12),
     // checked rows: lighter than a range, about hover strength
     '--euiSheet-checked': withAlpha(colors.primary, dark ? 0.1 : 0.06),
     // the open cell editor's elevation (dark needs a stronger shadow)
@@ -58,6 +60,9 @@ export const sheetThemeVars = ({
     // batch 5: link text (url, email, phone, file names) and rating stars
     '--euiSheet-link': colors.textPrimary,
     '--euiSheet-star': colors.textWarning,
+    // a rating's empty stars: 3:1 or more on the cell, selected included
+    // (WCAG 1.4.11; they were textSubdued at 45 % opacity, 2:1)
+    '--euiSheet-starOff': withAlpha(colors.textSubdued, 0.75),
     // V03 10.3.1: a 'success' button's text
     '--euiSheet-textSuccess': colors.textSuccess,
     // V03 10.2: row colour bars, by name

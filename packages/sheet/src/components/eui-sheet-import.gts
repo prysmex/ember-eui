@@ -49,6 +49,7 @@ import {
   parseCsv,
   previewImport,
   runImport,
+  sheetMessageTokens,
   suggestValueMap
 } from '../core/index.ts';
 import { builtInSheetFieldTypes } from '../field-types.ts';
@@ -63,13 +64,15 @@ import {
   MAP_TYPES,
   TARGET_NEW,
   TARGET_SKIP,
+  countText,
   draftFromGuess,
   editorTypes,
   errorMessage,
   isWritable,
   targetValue,
   typeText,
-  valueChoices
+  valueChoices,
+  withSingulars
 } from '../-private/import/model.ts';
 
 import type {
@@ -102,6 +105,9 @@ const waiter = buildWaiter('@ember-eui/sheet:import');
 
 /** The dry run waits this long after the last change of the plan (v0.4 10, "Large files"). */
 export const IMPORT_DRY_RUN_DEBOUNCE = 250;
+
+/** The value map's table size (`suggestValueMap` lists up to 50 texts). */
+const VALUE_MAP_TEXTS = 50;
 
 /** No `@transforms` (one array, so the dry run sees no change). */
 const NO_TRANSFORMS: SheetImportTransform[] = [];
@@ -310,7 +316,14 @@ export default class EuiSheetImport<T = any> extends Component<
 
   @cached
   get messages(): SheetMessages {
-    return { ...this.translatedMessages, ...this.args.messages };
+    const own = this.args.messages ?? {};
+    const mapping = (this.euiI18n.mapping ?? {}) as Record<string, unknown>;
+    return withSingulars(
+      { ...this.translatedMessages, ...own },
+      (key) =>
+        own[key] !== undefined ||
+        mapping[sheetMessageTokens[key].token] !== undefined
+    );
   }
 
   @cached
@@ -536,14 +549,96 @@ export default class EuiSheetImport<T = any> extends Component<
   /* The plan                                                              */
   /* -------------------------------------------------------------------- */
 
+  /** Per file: each column's value-map texts by its trim and transform (`mapTexts`). */
+  @cached
+  get mapTextsCache(): Map<string, string[]> {
+    void this.dataLines;
+    void this.headerTexts;
+    void this.transforms;
+    return new Map();
+  }
+
+  /**
+   * A column's texts as its value map lists them and the import looks them
+   * up (READINESS.md item 5): after its trim and its transform, as
+   * `runImport` applies the map; a text whose transform throws is left
+   * out. Read until the value map's 50 distinct texts, so a transform runs
+   * on the whole file only when it has fewer.
+   */
+  mapTexts(column: SheetImportColumn): string[] {
+    const texts = this.columnData[column.index]?.texts ?? [];
+    const transform = column.transform
+      ? this.transforms.find((t) => t.id === column.transform)
+      : undefined;
+    if (!transform) return texts;
+    const key = `${column.index}\u0000${column.transform}\u0000${column.trim !== false}`;
+    const cache = this.mapTextsCache;
+    const cached = cache.get(key);
+    if (cached) return cached;
+    const matrix = this.parsed?.matrix ?? [];
+    const plan = this.proposed;
+    const out: string[] = [];
+    const distinct = new Set<string>();
+    for (const i of this.dataLines) {
+      const cells = matrix[i]!;
+      let row: Record<string, string> | undefined;
+      const rowOf = () => {
+        if (!row) {
+          row = {};
+          for (const other of plan) {
+            if (!(other.header in row)) {
+              row[other.header] = cells[other.index] ?? '';
+            }
+          }
+        }
+        return row;
+      };
+      let text = cells[column.index] ?? '';
+      if (column.trim !== false) text = text.trim();
+      try {
+        text =
+          transform.apply(text, {
+            line: i,
+            header: column.header,
+            row: rowOf()
+          }) ?? '';
+      } catch {
+        continue;
+      }
+      out.push(text);
+      distinct.add(text.trim());
+      if (distinct.size >= VALUE_MAP_TEXTS) break;
+    }
+    cache.set(key, out);
+    return out;
+  }
+
   /** The value map's prefill for a column going to `field`, or `undefined`. */
   prefill(
-    index: number,
+    column: SheetImportColumn,
     field: EuiSheetField | null
   ): Record<string, unknown> | undefined {
     if (!field || !MAP_TYPES.has(field.type ?? 'text')) return undefined;
-    const texts = this.columnData[index]?.texts ?? [];
-    const { map } = suggestValueMap(texts, field);
+    const { map } = suggestValueMap(this.mapTexts(column), field);
+    return Object.keys(map).length ? map : undefined;
+  }
+
+  /**
+   * After a transform or trim change: the value map keeps every choice and
+   * gets the prefill of the texts it did not list before.
+   */
+  refill(
+    before: SheetImportColumn,
+    after: SheetImportColumn
+  ): Record<string, unknown> | undefined {
+    const field = this.fieldOf(after);
+    if (!field || !MAP_TYPES.has(field.type ?? 'text')) return before.valueMap;
+    const listed = new Set(suggestValueMap(this.mapTexts(before), field).texts);
+    const prefill = this.prefill(after, field) ?? {};
+    const map: Record<string, unknown> = { ...before.valueMap };
+    for (const [text, value] of Object.entries(prefill)) {
+      if (!listed.has(text) && !(text in map)) map[text] = value;
+    }
     return Object.keys(map).length ? map : undefined;
   }
 
@@ -591,7 +686,7 @@ export default class EuiSheetImport<T = any> extends Component<
         next = { ...column, target: { newField: this.draftFor(column.index) } };
       }
       if (next.valueMap === undefined) {
-        const valueMap = this.prefill(next.index, this.fieldOf(next));
+        const valueMap = this.prefill(next, this.fieldOf(next));
         if (valueMap) next = { ...next, valueMap };
       }
       return next;
@@ -813,6 +908,30 @@ export default class EuiSheetImport<T = any> extends Component<
     return { ...preview, cells };
   }
 
+  get lineCountText(): string {
+    const n = this.dataLines.length;
+    const { importLineCountOne, importLineCount } = this.messages;
+    return countText(n, importLineCountOne, importLineCount, n);
+  }
+
+  get linesReadyText(): string {
+    const n = this.linesReady;
+    const { importLinesReadyOne, importLinesReady } = this.messages;
+    return countText(n, importLinesReadyOne, importLinesReady, n);
+  }
+
+  get linesWithErrorsText(): string {
+    const n = this.linesWithErrors;
+    const { importLinesWithErrorsOne, importLinesWithErrors } = this.messages;
+    return countText(n, importLinesWithErrorsOne, importLinesWithErrors, n);
+  }
+
+  get importLinesText(): string {
+    const n = this.importCount;
+    const { importLinesOne, importLines } = this.messages;
+    return countText(n, importLinesOne, importLines, n);
+  }
+
   get previewCaption(): string {
     const filter = this.filterColumn;
     if (filter !== null) {
@@ -820,7 +939,10 @@ export default class EuiSheetImport<T = any> extends Component<
         this.columnData[filter]?.name ?? ''
       );
     }
-    return this.messages.importPreviewOf(
+    return countText(
+      this.dataLines.length,
+      this.messages.importPreviewOfOne,
+      this.messages.importPreviewOf,
       this.preview?.lines.length ?? 0,
       this.dataLines.length
     );
@@ -917,7 +1039,8 @@ export default class EuiSheetImport<T = any> extends Component<
 
       let valueMap: ImportColumnView['valueMap'] = null;
       if (field && typeName && MAP_TYPES.has(typeName)) {
-        const texts = suggestValueMap(data?.texts ?? [], field).texts;
+        // the texts the map is applied to: after the trim and the transform
+        const texts = suggestValueMap(this.mapTexts(column), field).texts;
         const map = column.valueMap ?? {};
         valueMap = {
           texts,
@@ -1024,7 +1147,7 @@ export default class EuiSheetImport<T = any> extends Component<
     patches[index] = {
       target,
       taken: undefined,
-      valueMap: this.prefill(index, field)
+      valueMap: column ? this.prefill({ ...column, target }, field) : undefined
     };
     if (this.formOpen === index) this.formOpen = null;
     if (this.valuesOpen === index) this.valuesOpen = null;
@@ -1033,12 +1156,20 @@ export default class EuiSheetImport<T = any> extends Component<
   };
 
   setTransform = (index: number, value: string): void => {
-    this.edit({ [index]: { transform: value === '' ? undefined : value } });
+    const transform = value === '' ? undefined : value;
+    const column = this.columns.find((c) => c.index === index);
+    if (!column) return;
+    const after = { ...column, transform };
+    this.edit({ [index]: { transform, valueMap: this.refill(column, after) } });
   };
 
   toggleTrim = (index: number): void => {
     const column = this.columns.find((c) => c.index === index);
-    this.edit({ [index]: { trim: column?.trim === false } });
+    if (!column) return;
+    const after = { ...column, trim: column.trim === false };
+    this.edit({
+      [index]: { trim: after.trim, valueMap: this.refill(column, after) }
+    });
   };
 
   toggleEmptyIsNull = (index: number): void => {
@@ -1074,10 +1205,14 @@ export default class EuiSheetImport<T = any> extends Component<
 
   saveDraft = (index: number, draft: SheetImportFieldDraft): void => {
     const field: EuiSheetField = { ...draft, id: importFieldId(index) };
+    const column = this.columns.find((c) => c.index === index);
+    const target = { newField: draft };
     this.edit({
       [index]: {
-        target: { newField: draft },
-        valueMap: this.prefill(index, field)
+        target,
+        valueMap: column
+          ? this.prefill({ ...column, target }, field)
+          : undefined
       }
     });
     this.formOpen = null;
@@ -1325,7 +1460,7 @@ export default class EuiSheetImport<T = any> extends Component<
               data-test-subj="euiSheetImportHeaders"
             />
             <span data-test-subj="euiSheetImportLineCount">
-              {{this.messages.importLineCount this.dataLines.length}}
+              {{this.lineCountText}}
             </span>
           </div>
         {{/if}}
@@ -1397,11 +1532,11 @@ export default class EuiSheetImport<T = any> extends Component<
               data-test-subj="euiSheetImportTotals"
             >
               <span role="status" data-test-subj="euiSheetImportTotalsText">
-                {{this.messages.importLinesReady this.linesReady}},
+                {{this.linesReadyText}},
                 <span
                   class={{if this.linesWithErrors "euiSheetImport__danger"}}
                 >
-                  {{this.messages.importLinesWithErrors this.linesWithErrors}}
+                  {{this.linesWithErrorsText}}
                 </span>
               </span>
               {{#if this.linesWithErrors}}
@@ -1463,7 +1598,7 @@ export default class EuiSheetImport<T = any> extends Component<
           title={{if this.hasTarget undefined (this.messages.importNoTarget)}}
           data-test-subj="euiSheetImportSubmit"
           {{on "click" this.import}}
-        >{{this.messages.importLines this.importCount}}</EuiButton>
+        >{{this.importLinesText}}</EuiButton>
       </div>
     </div>
   </template>

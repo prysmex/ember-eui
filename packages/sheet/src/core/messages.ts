@@ -405,6 +405,8 @@ export interface SheetMessages {
   importHeaderLine: () => string;
   /** '3 lines': the file's data lines */
   importLineCount: (n: number) => string;
+  /** '1 line': `importLineCount` for one line */
+  importLineCountOne: (n: number) => string;
   /** 'Reading the file…': while a file is read */
   importReading: () => string;
   /** 'The file has no lines to import' */
@@ -453,6 +455,8 @@ export interface SheetMessages {
   importDecimalComma: () => string;
   /** 'Values (3 mapped)': the value map's button */
   importValues: (n: number) => string;
+  /** 'Values (1 mapped)': `importValues` for one text */
+  importValuesOne: (n: number) => string;
   /** 'Values of "Precio"': the value map table's caption */
   importValueMapFor: (header: string) => string;
   /** 'In the file': the value map's first header */
@@ -475,14 +479,20 @@ export interface SheetMessages {
   importStatus: () => string;
   /** '197 of 200 read': a column's status */
   importRead: (read: number, total: number) => string;
+  /** '1 of 1 read': `importRead` for a column of one line */
+  importReadOne: (read: number, total: number) => string;
   /** '3 can’t be read': a column's status, a link that filters the preview */
   importCantRead: (n: number) => string;
+  /** '1 can’t be read': `importCantRead` for one */
+  importCantReadOne: (n: number) => string;
   /** 'Single select · 98%': the guessed type's badge */
   importGuess: (type: string, percent: number) => string;
   /** 'Preview': the third part */
   importPreview: () => string;
   /** 'The first 3 of 200 lines': the preview's caption */
   importPreviewOf: (n: number, total: number) => string;
+  /** 'The only line': `importPreviewOf` for a file of one line */
+  importPreviewOfOne: (n: number, total: number) => string;
   /** 'Lines where "Precio" can’t be read': the filtered preview's caption */
   importPreviewErrors: (header: string) => string;
   /** 'Show the first lines': clears the filter */
@@ -495,8 +505,12 @@ export interface SheetMessages {
   importNewOption: () => string;
   /** '3 lines ready': the dry run's total */
   importLinesReady: (n: number) => string;
+  /** '1 line ready': `importLinesReady` for one line */
+  importLinesReadyOne: (n: number) => string;
   /** '3 with errors' */
   importLinesWithErrors: (n: number) => string;
+  /** '1 with errors': `importLinesWithErrors` for one line */
+  importLinesWithErrorsOne: (n: number) => string;
   /** 'Download the lines with errors' */
   importDownloadErrors: () => string;
   /** 'Import all (errors stay as rejections)' */
@@ -505,6 +519,8 @@ export interface SheetMessages {
   importSkipErrors: () => string;
   /** 'Import 3 lines': the import button */
   importLines: (n: number) => string;
+  /** 'Import 1 line': `importLines` for one line */
+  importLinesOne: (n: number) => string;
   /** 'No column goes to a field': why Import is disabled */
   importNoTarget: () => string;
   /** 'The new fields could not be created': `@onCreateFields` resolved with another number of fields */
@@ -1521,6 +1537,11 @@ export const sheetMessageTokens: Readonly<
     defaultMessage: '{n} lines',
     params: ['n']
   },
+  importLineCountOne: {
+    token: 'euiSheet.importLineCountOne',
+    defaultMessage: '{n} line',
+    params: ['n']
+  },
   importReading: {
     token: 'euiSheet.importReading',
     defaultMessage: 'Reading the file…',
@@ -1641,6 +1662,11 @@ export const sheetMessageTokens: Readonly<
     defaultMessage: 'Values ({n} mapped)',
     params: ['n']
   },
+  importValuesOne: {
+    token: 'euiSheet.importValuesOne',
+    defaultMessage: 'Values ({n} mapped)',
+    params: ['n']
+  },
   importValueMapFor: {
     token: 'euiSheet.importValueMapFor',
     defaultMessage: 'Values of "{header}"',
@@ -1696,8 +1722,18 @@ export const sheetMessageTokens: Readonly<
     defaultMessage: '{read} of {total} read',
     params: ['read', 'total']
   },
+  importReadOne: {
+    token: 'euiSheet.importReadOne',
+    defaultMessage: '{read} of {total} read',
+    params: ['read', 'total']
+  },
   importCantRead: {
     token: 'euiSheet.importCantRead',
+    defaultMessage: '{n} can’t be read',
+    params: ['n']
+  },
+  importCantReadOne: {
+    token: 'euiSheet.importCantReadOne',
     defaultMessage: '{n} can’t be read',
     params: ['n']
   },
@@ -1714,6 +1750,11 @@ export const sheetMessageTokens: Readonly<
   importPreviewOf: {
     token: 'euiSheet.importPreviewOf',
     defaultMessage: 'The first {n} of {total} lines',
+    params: ['n', 'total']
+  },
+  importPreviewOfOne: {
+    token: 'euiSheet.importPreviewOfOne',
+    defaultMessage: 'The only line',
     params: ['n', 'total']
   },
   importPreviewErrors: {
@@ -1746,8 +1787,18 @@ export const sheetMessageTokens: Readonly<
     defaultMessage: '{n} lines ready',
     params: ['n']
   },
+  importLinesReadyOne: {
+    token: 'euiSheet.importLinesReadyOne',
+    defaultMessage: '{n} line ready',
+    params: ['n']
+  },
   importLinesWithErrors: {
     token: 'euiSheet.importLinesWithErrors',
+    defaultMessage: '{n} with errors',
+    params: ['n']
+  },
+  importLinesWithErrorsOne: {
+    token: 'euiSheet.importLinesWithErrorsOne',
     defaultMessage: '{n} with errors',
     params: ['n']
   },
@@ -1769,6 +1820,11 @@ export const sheetMessageTokens: Readonly<
   importLines: {
     token: 'euiSheet.importLines',
     defaultMessage: 'Import {n} lines',
+    params: ['n']
+  },
+  importLinesOne: {
+    token: 'euiSheet.importLinesOne',
+    defaultMessage: 'Import {n} line',
     params: ['n']
   },
   importNoTarget: {

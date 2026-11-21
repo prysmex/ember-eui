@@ -802,7 +802,16 @@ field (`{ ...field, dateOrder: 'mdy' }`); the field itself does not
 change, and `result.fields` carries the copy for `appendRows`. **Values**
 (select and checkbox targets): the column's distinct texts (up to 50)
 and what each becomes, prefilled where a text is an option's label or a
-yes/no word (`sí`, `yes`, `true`, `1`, `x`; `no`, `false`, `0`).
+yes/no word (`sí`, `yes`, `true`, `1`, `x`; `no`, `false`, `0`). The
+texts are the column's after its trim and transform, the ones the map is
+applied to; a change of the transform keeps the choices made and
+prefills the texts it brings.
+
+The count messages have a form for one (`importLinesOne`, "Import 1
+line"; `importLineCountOne`, `importLinesReadyOne`,
+`importLinesWithErrorsOne`, `importValuesOne`, `importCantReadOne`,
+`importReadOne` and `importPreviewOfOne` for a one-line file). An app
+that overrides or translates only the plural one keeps it for one too.
 
 **The result** (`SheetImportResult`):
 

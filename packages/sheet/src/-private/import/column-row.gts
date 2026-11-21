@@ -17,6 +17,7 @@ import EuiLink from '@ember-eui/core/components/eui-link';
 import EuiSelect from '@ember-eui/core/components/eui-select';
 import EuiSwitch from '@ember-eui/core/components/eui-switch';
 
+import { countText } from './model.ts';
 import ImportNewFieldForm from './new-field-form.gts';
 import ImportValueMap from './value-map.gts';
 
@@ -46,6 +47,24 @@ export default class ImportColumnRow extends Component<ImportColumnRowSignature>
 
   get messages(): SheetMessages {
     return this.args.messages;
+  }
+
+  get valuesText(): string {
+    const n = this.args.view.valueMap?.mapped ?? 0;
+    const { importValuesOne, importValues } = this.messages;
+    return countText(n, importValuesOne, importValues, n);
+  }
+
+  get cantReadText(): string {
+    const n = this.args.view.status?.errors ?? 0;
+    const { importCantReadOne, importCantRead } = this.messages;
+    return countText(n, importCantReadOne, importCantRead, n);
+  }
+
+  get readText(): string {
+    const { read = 0, total = 0 } = this.args.view.status ?? {};
+    const { importReadOne, importRead } = this.messages;
+    return countText(total, importReadOne, importRead, read, total);
   }
 
   get busy(): boolean {
@@ -292,9 +311,7 @@ export default class ImportColumnRow extends Component<ImportColumnRowSignature>
                 aria-controls="{{this.id}}-values"
                 data-test-subj="euiSheetImportValuesToggle"
                 {{on "click" this.toggleValues}}
-              >{{this.messages.importValues
-                  @view.valueMap.mapped
-                }}</EuiButtonEmpty>
+              >{{this.valuesText}}</EuiButtonEmpty>
             {{/if}}
           </div>
         {{/unless}}
@@ -307,10 +324,10 @@ export default class ImportColumnRow extends Component<ImportColumnRowSignature>
               aria-pressed={{if this.filtered "true" "false"}}
               data-test-subj="euiSheetImportCantRead"
               {{on "click" this.showErrors}}
-            >{{this.messages.importCantRead @view.status.errors}}</EuiLink>
+            >{{this.cantReadText}}</EuiLink>
           {{else}}
             <span data-test-subj="euiSheetImportRead">
-              {{this.messages.importRead @view.status.read @view.status.total}}
+              {{this.readText}}
             </span>
           {{/if}}
         {{/if}}

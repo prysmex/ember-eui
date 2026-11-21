@@ -169,3 +169,51 @@ export function errorMessage(error: unknown): string {
   if (error instanceof Error) return error.message;
   return typeof error === 'string' ? error : String(error);
 }
+
+/**
+ * The import screen's count messages with a form for one (READINESS.md
+ * item 5): each singular key and the key it is the singular of.
+ */
+export const IMPORT_SINGULARS = {
+  importLineCountOne: 'importLineCount',
+  importValuesOne: 'importValues',
+  importReadOne: 'importRead',
+  importCantReadOne: 'importCantRead',
+  importPreviewOfOne: 'importPreviewOf',
+  importLinesReadyOne: 'importLinesReady',
+  importLinesWithErrorsOne: 'importLinesWithErrors',
+  importLinesOne: 'importLines'
+} as const satisfies Partial<Record<keyof SheetMessages, keyof SheetMessages>>;
+
+type Singular = keyof typeof IMPORT_SINGULARS;
+
+/**
+ * The messages with each singular form that the owner did not give
+ * (in `@messages`, or as an `eui-i18n` token) taken from its plural when
+ * the owner gave that one: an app that translated `importLines` only
+ * keeps its translation for one line too.
+ */
+export function withSingulars(
+  merged: SheetMessages,
+  given: (key: keyof SheetMessages) => boolean
+): SheetMessages {
+  let result: SheetMessages | null = null;
+  for (const [one, many] of Object.entries(IMPORT_SINGULARS) as Array<
+    [Singular, (typeof IMPORT_SINGULARS)[Singular]]
+  >) {
+    if (given(one) || !given(many)) continue;
+    result ??= { ...merged };
+    (result as unknown as Record<string, unknown>)[one] = merged[many];
+  }
+  return result ?? merged;
+}
+
+/** `one(...args)` when `count` is 1, else `many(...args)`. */
+export function countText<A extends unknown[]>(
+  count: number,
+  one: (...args: A) => string,
+  many: (...args: A) => string,
+  ...args: A
+): string {
+  return count === 1 ? one(...args) : many(...args);
+}

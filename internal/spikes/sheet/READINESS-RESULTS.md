@@ -553,6 +553,14 @@ over Ember (now 394.1), `sheet-import` at most 15.5 KB gzip more than
 neither `eui-sheet-import` nor `barcode-scan-panel` among `sheet`'s static
 modules (BS1 checks the second part in the suite). Not wired into CI here.
 
+**Budget, as decided** (the user, 2026-11-21, READINESS.md decision 3:
+raise rather than trim): `sheet-import` at most **17 KB gzip** more than
+`sheet` (was the proposed 15.5); the others as above. This file is the
+only place it is recorded: `scripts/measure-bundle-size.mjs` prints the
+sizes and checks no budget. After the deferred first dry run
+(`5f0460d`): `sheet` 395.2 KB gzip over Ember, `sheet-import` 411.7, so
+16.5 KB more (fits 17), `sheet-core` 24.5 KB in all.
+
 ## Loose ends
 
 Done 2026-11-21, on `feat/sheet` after `0882057`, READINESS.md item 5.

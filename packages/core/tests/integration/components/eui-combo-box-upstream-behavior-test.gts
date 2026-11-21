@@ -487,6 +487,31 @@ module('Integration | Component | eui-combo-box upstream behavior', function (ho
       assert.deepEqual(grouped.changes, [[{ label: 'Blue' }]]);
     });
 
+    test('Enter selects the @search result the text matches, not only @options', async function (assert) {
+      // as a server-side user picker: the results come from @search, and
+      // @options is empty (or holds other options)
+      const search = (term: string) =>
+        Promise.resolve(
+          MOONS.filter((m) => m.label.toLowerCase().includes(term.toLowerCase()))
+        );
+      const state = new State([]);
+
+      await render(
+        <template>
+          <EuiComboBox @options={{state.options}} @search={{search}} @selectedOptions={{state.selected}} @onChange={{state.onChange}} />
+        </template>
+      );
+      await focus(INPUT);
+      await fillIn(INPUT, 'Ti');
+      await triggerKeyEvent(INPUT, 'keydown', 'Enter');
+      assert.deepEqual(state.changes, [], 'a partial match adds nothing (upstream)');
+
+      await fillIn(INPUT, 'titan');
+      await triggerKeyEvent(INPUT, 'keydown', 'Enter');
+      assert.deepEqual(state.changes, [[MOONS.find((m) => m.label === 'Titan')]], 'the exact label adds that result');
+      assert.dom(INPUT).hasValue('', 'and clears the text');
+    });
+
     test('Enter with @onCreateOption: fires with input, not without, once per duplicated value', async function (assert) {
       const plain = new State(MOONS, [MOONS[2]]);
       const delimited = new State(MOONS, [MOONS[2]]);

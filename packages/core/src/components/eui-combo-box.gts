@@ -2189,9 +2189,14 @@ export default class EuiComboBoxComponent extends Component<EuiComboBoxSignature
    */
   onlyMatchingOption(value: string, selection: unknown[]): unknown {
     const { isCaseSensitive, searchField } = this.args;
-    const matches = this.matchingEntriesFor(value, selection).filter(
-      (entry) => !isComboBoxGroupLabel(entry)
-    );
+    const matches = this.args.search
+      ? // `@search`'s options are its results (already filtered, the
+        // selection removed), not `@options`: upstream's async combo box
+        // passes its results as `options`
+        this.searchResultRows()
+      : this.matchingEntriesFor(value, selection).filter(
+          (entry) => !isComboBoxGroupLabel(entry)
+        );
 
     if (matches.length !== 1) return undefined;
 
@@ -2203,6 +2208,13 @@ export default class EuiComboBoxComponent extends Component<EuiComboBoxSignature
     ) === transformForCaseSensitivity(value, isCaseSensitive)
       ? option
       : undefined;
+  }
+
+  /** The options the last `@search` listed, without group labels. */
+  searchResultRows(): unknown[] {
+    const { rows } = selectableRows(toList(this.select?.results));
+
+    return rows.filter((row) => !emberPowerSelectIsGroup(row));
   }
 
   /**

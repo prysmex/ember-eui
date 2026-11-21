@@ -2869,3 +2869,30 @@ Preview servers stopped; the working tree is clean.
 - `@records` replaced by new objects with the same ids clears the range
   outline (seen while writing RNW5, also before this stage): not looked
   into.
+
+## Verified by the sandbox session (2026-11-21)
+
+Bundles `feat-sheet-readiness-1` and `-2` fast-forwarded onto
+`feat/sheet` (`68aad5a6`, then `8a549054`, docs only). Checked in the
+sandbox on `8a549054`:
+
+- The sheet: `pnpm lint:types` clean; the tests' `ember-tsc` has the
+  baseline's 19 errors and no other; ESLint and Prettier clean on every
+  added or changed file; the API docs check passes. The suite: 766 tests,
+  766 pass.
+- Core (`packages/core/src` changed under the user's rule): `pnpm
+  lint:types` and ESLint clean; core's suite: 2150 tests, 2148 pass, 2
+  `todo`, 0 fail.
+- The docs site: `node --test lib/*.test.mjs` 21/21; testem 15/15; the
+  production build passes.
+- Real input in Chromium on a production docs build with the rebuilt
+  sheet and core: on the Large data page with "Freeze the first field",
+  a real sideways wheel keeps the row numbers and the first field at the
+  left edge (0 and 64 px) and renders only them besides the columns in
+  view (9 cells at rest; columns 0-1 and 12-22 at `scrollLeft` 1500;
+  0-1 and 22-30 at the end), each header aligned with its cells. Two
+  checked rows copy as TSV and paste; the groups demo collapses and
+  expands (22 → 17 → 22 grid rows) and a paste on a group's add row
+  inserts into that group; scrolled sideways at 420 px each header shows
+  one label at the left edge; a header under the column header stays
+  below it. No page errors.

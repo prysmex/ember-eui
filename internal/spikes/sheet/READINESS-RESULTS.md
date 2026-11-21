@@ -1255,12 +1255,12 @@ without a set (self time 63-70 -> 42-53 ms, the paste's total not moved:
   116.1 ms, undo 85.8 -> 69.0 ms (runs overlap; not changed on purpose).
 - Sort, filter and group toggles at 100,000: the d08 demo and the harness
   page have none (d19 has groups over a small list); not measured.
-- Step 4 (fewer tracked reads per `cellView`): not tried. On the harness
-  page a plain `EuiDataGrid` with a trivial cell re-walks about 250 tags
-  per cell per pass, the sheet about 470; for step 4 alone to reach -25 %
-  of the sheet's re-walks, the sheet's own ~220 per cell would have to
-  lose more than half, and no quick experiment was found that shows such
-  a path (the scrolling stage reached the same conclusion).
+- Step 4 (fewer tracked reads per `cellView`): not attempted, and no
+  experiment was run for it. The reason is the numbers already at hand: on
+  the harness page a plain `EuiDataGrid` with a trivial cell re-walks
+  about 250 tags per cell per pass, the sheet about 470; for step 4 alone
+  to reach -25 % of the sheet's re-walks, the sheet's own ~220 per cell
+  would have to lose more than half.
 - Plain `EuiDataGrid` with the mouse over it (5 render passes per scroll
   step, 1,492,837 re-walks / 10 steps and 171 writes, from the hovered
   cell's state and its actions' popover and tooltip): a core matter, not
@@ -1301,3 +1301,7 @@ without a set (self time 63-70 -> 42-53 ms, the paste's total not moved:
   overhead is in both builds alike).
 - The cell edit at 100,000 and the 100,000-record first render were not
   changed and not profiled in depth.
+- Item 1 was measured plain at 10,000 ×1 and 100,000 ×1 and ×4, not plain
+  at 10,000 ×4 (frozen: all four).
+- After the results commit the full sheet suite ran again on its tree:
+  735/735.

@@ -258,7 +258,7 @@ module('Integration | Component | EuiSheet appendRows', function (hooks) {
     assert.strictEqual(owner.log.length, 3);
   });
 
-  test('APR4 with @canInsert={{false}} nothing is emitted and it returns false', async function (assert) {
+  test('APR4 with @canInsert={{false}} nothing is emitted and it returns false; a read-only field is skipped', async function (assert) {
     const owner = new Owner();
     owner.canInsert = false;
     await renderSheet(owner);
@@ -274,6 +274,15 @@ module('Integration | Component | EuiSheet appendRows', function (hooks) {
     );
     assert.deepEqual(owner.log, [], 'nothing emitted');
     assert.true(owner.api!.appendRows([['x']], ['name']));
+    // a read-only field is skipped, as in a paste
+    owner.fields = [
+      ...FIELDS,
+      { id: 'locked', label: 'Locked', readOnly: true }
+    ];
+    await settled();
+    owner.api!.appendRows([['y', 'z']], ['name', 'locked']);
+    await settled();
+    assert.deepEqual(owner.log[1]!.inserts[0]!.values, { name: 'y' });
   });
 
   test('APR5 columns in another order and a hidden field: each value lands in its own field; grouped, the group field takes the last group’s value', async function (assert) {

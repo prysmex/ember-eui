@@ -603,3 +603,328 @@ Two commits in this range are the main session's, not this batch's:
 nothing of batch A changed) before `fa2dc2b`, and `3979f3d` (the
 readiness plan, `internal/spikes/sheet/READINESS.md`) between `55f8f4c`
 and `5ebb56d`.
+
+## Batch B: CSV in and out (06, 07)
+
+Built 2026-11-21 on `d6b7720` (batch A done), in this checkout. Designs:
+`v04/06-csv-export.md`, `v04/07-csv-import.md`, and the section "Changes
+to feature 07 (batch B), made when B is built" of
+`v04/10-import-screen.md` (with its "Matching" rules). Nothing else of
+feature 10 was built. The pure parts are in `src/core/csv.ts` (new) and
+`src/core/delimited.ts` (new, internal); `appendRows` is in the
+clipboard module next to the paste it reuses. The component did not
+change (605 lines).
+
+### What was built
+
+- **06 `toCsv(ctx, records, fields, { delimiter = ',', headers = true,
+  escapeFormulas = true })`.** `ctx` is `summarize`'s `{ types, messages
+  }`. The cells are `rangeMatrix`'s (the type's `copyText`, else
+  `format`), the header line `headerLine` (label, else id). RFC 4180
+  quoting: a cell with the delimiter, `"`, `\r` or `\n` is quoted, `"`
+  doubled; lines joined with `\r\n`, none after the last. With
+  `escapeFormulas` a text starting with `=`, `@`, a tab or `\r`, or with
+  `+`/`-` and not matching `/^[+-]?[\d.,\s]+%?$/`, gets a leading `'`,
+  escaped first and then quoted; header labels go through the same rule.
+  The rule is a private function (not exported).
+- **07 `parseCsv(text, { delimiter? })`.** A leading U+FEFF is dropped.
+  Without `delimiter`, the first line is scanned up to the first line
+  break outside quotes (a `"` toggles), counting `,` `;` and tab; the most
+  frequent wins, `,` on a tie or when none appears. The reader is
+  `parseTsv`'s, moved to `src/core/delimited.ts` as
+  `parseDelimited(text, delimiter)` (deviation 1); `parseTsv` is now
+  `parseDelimited(text, '\t')` and its tests (U2, U3, Q…) pass unchanged.
+- **07 `importMatrix(matrix, fields, { headers = true, mapping? })`** →
+  `{ rows, fieldIds, unmatched }`. Columns are scanned left to right over
+  the widest of the header line and the data lines. The fields `mapping`
+  names (known ids only; a field mapped twice keeps its first column) are
+  taken first; every other column goes to `matchHeader`'s field unless it
+  is taken (then it is unmatched: a field takes at most one column, the
+  first). Without `headers`, the columns go to `fields` by position
+  (deviation 2). `unmatched` lists the header texts of the header line's
+  dropped columns. `rows` has one text per kept column, in file order; a
+  short line gives a short row (no `''` padding, so `@newRecordValues`
+  is not overwritten), and lines whose cells are all blank are dropped
+  (deviation 3).
+- **`api.appendRows(rows, fieldIds, { fields? })`** (`SheetApi`,
+  `src/types.ts`; `clipboard.appendRows`, wired in `api.ts`). It returns
+  `false` without `canInsert`, without rows, or when no column has a
+  field. The context fields are, per column, `options.fields`' field of
+  that id, else `@fields`'/`@hiddenFields`' (`fields.allFields`); a column
+  with neither is removed from every row. Then exactly the add row's
+  paste: `planPaste` (with `@onResolve`) or `pasteMatrix`, anchored at
+  `records.length`, column 0, with `nextTempId`; grouped, with
+  `pasteInsert(-1)` (the last record's group: its values and
+  `groupKey`). The emitted change set is the paste's (source `'paste'`,
+  the inserts chained after the last record, rejections for the new
+  rows' temp ids), with `touched` `[]` and no selection or focus change;
+  an open editor is committed first, as `insertOne` does. The only
+  addition is `@newRecordValues` (deviation 4).
+- **Batch E's three additions** (below).
+
+### The three additions for batch E
+
+1. **`appendRows(rows, fieldIds, { fields })`.** `fields` win over
+   `@fields` by id, for reading only: an id `@fields` does not have yet,
+   or a per-column copy (`{ ...field, dateOrder: 'mdy' }`,
+   `{ ...field, decimalSeparator: ',' }`). Nothing stores them; the
+   inserts are keyed by field id. **The resolve path needed a change to
+   honour this**: `resolve.finishResolve` built its context from
+   `fields.allFields` and `resolveCells` skips a cell whose field it does
+   not find, so a user or linked-record column of a field given only in
+   `fields` lost its resolved value silently. `startResolve(plan, entry,
+   fields?)` now keeps the call's fields on the `PendingCall`
+   (`fields?`), and `finishResolve` puts them before `allFields`. APR6's
+   last part fails without it (checked by removing the argument:
+   "Cannot read properties of undefined (reading 'patches')", no resolve
+   change set).
+2. **`importAliases?: string[]` on `EuiSheetField`** (`src/core/types.ts`).
+3. **`matchHeader(header, fields)` → `{ field, by: 'alias' | 'label' |
+   'id' } | null`, and `normalizeHeader(text)`**, both exported from
+   `@ember-eui/sheet/core`. `normalizeHeader`: NFD with the combining
+   marks removed (so `ñ` is `n`), lower case, `_` and `-` as spaces,
+   whitespace runs as one space, trimmed. `matchHeader` tries every
+   field's aliases, then every label, then every id (the first field in
+   `fields` wins within a pass, so an alias beats another field's
+   label); an empty or separator-only header matches nothing. It does not
+   know which fields are taken: `importMatrix` keeps "a field takes at
+   most one column, the first", and batch E's `matchColumns` should do
+   the same around it (the saved mapping first, as `importMatrix`'s
+   `mapping`). `normalizeHeader` is exported because batch E's mapping
+   `signature` is "the file's normalised header line".
+
+### Tests
+
+New files; no existing test changed. IDs checked first (`grep -rnoE`):
+`CI` and `CX` were unused; **`AR1`-`AR9` are taken** (the add row's, in
+`eui-sheet-rows-test.gts`), so the append tests are **APR1-APR8**.
+
+`tests/unit/csv-test.ts`:
+
+- **CX1** text, number, date (ISO) and multi-select (labels, quoted for
+  their `, `) with a header line; a label-less field headed by its id;
+  no records gives the header only. **CX2** a comma, a quote, `\n` and
+  `\r\n` quoted; a `;` not quoted with `,`. **CX3** `;` quotes `a;b`, not
+  `1,5`; a decimal-comma number stays unquoted. **CX4** `=SUM(A1)`, `@x`,
+  `-a`, `+cmd|calc` and a leading tab get `'`; `-5`, a phone
+  `+52 81 1234 5678` and a percent `-12.5%` do not; `a=b` does not; a
+  header label `=Total` is escaped; `escapeFormulas: false`; escaped then
+  quoted (`"'=a,b"`). **CX5** `headers: false` (and empty with no
+  records). **CX6** an app type's `copyText`, and `format` without it.
+- **CI1** quoted cells with commas and `\r\n` line breaks, `""`, `\r\n`
+  line ends, one trailing empty line dropped (two: one kept), empty
+  cells, a BOM, an unclosed quote as text, a mid-cell quote, `''`.
+  **CI2** `,`, `;` (a decimal comma stays in its cell) and tab files;
+  delimiters inside quotes not counted; a quoted line break in the
+  header; one column; an explicit delimiter; a tie is `,`. **CI3** labels
+  in other case and spacing, an id, an extra column in `unmatched`,
+  `fieldIds` in file order; the same field three times (the first wins);
+  a short line, a blank line, a cell past the header; an empty header;
+  `headers: false` by position. **CI4** `mapping` with `null`; a mapped
+  field not matched again by its own header; an unknown id and a field
+  mapped twice; `mapping` without headers. **CI5** the round trip for
+  `,`, `;` and tab, through `importMatrix`, equal to `rangeMatrix`'s
+  texts (a comma, quotes and a line break in a cell, a negative number,
+  a multi-select, empty cells); with escaping on, the escaped cell keeps
+  its `'`. **CI6** `matchHeader`: an alias with `_` and spaces, with `-`
+  and upper case, a label, accents both ways (`ano`, `AÑO` for `Año`),
+  an id, an alias over another field's label, the `by` of each, empty and
+  separator-only headers; `normalizeHeader`; `importMatrix` uses it and
+  leaves a second alias of a taken field unmatched.
+
+`tests/integration/components/eui-sheet-append-rows-test.gts` (an owner
+applying with `applyChangeSet`, so a change set is applied at once):
+
+- **APR1** three rows: `true`, one change set, source `paste`, three
+  inserts with their values, indexes 2-4 and chained anchors; shown;
+  focus and the selection unchanged; one Ctrl+Z removes all three.
+- **APR2** `abc` for a number: `rejected` with the temp id and
+  `notANumber`, the cell invalid and showing `abc`; undo.
+- **APR3** a user field without options, `@onResolve`: the inserts at
+  once without the pending cells, one call with both texts and temp ids;
+  the answer patches one row and rejects the other (shown invalid); one
+  undo removes both change sets.
+- **APR4** `@canInsert={{false}}`: `false`, nothing emitted; no rows and
+  only unknown ids: `false`; and (added with the docs, in the last
+  commit) a read-only field is left out of the insert.
+- **APR5** columns `code` (hidden), an unknown id, `qty`, `name`, `due`:
+  each value in its field, the unknown column dropped, a short row with
+  only its cells; then grouped by status: both rows get `status: 'Done'`
+  (the last group's, over the file's `Open` and `Later`), its `groupKey`,
+  anchored after its last record.
+- **APR6** `fields` with a number field `size` not in `@fields`
+  (decimal comma) and an M/D/Y copy of the D/M/Y `due`: `12,5` → 12.5,
+  `1.234,5` → 1234.5, `11/19/2026` → `2026-11-19`; `@fields` and the
+  field object unchanged, the cell shown D/M/Y; without `fields`, `size`
+  dropped and `11/19/2026` rejected; a user field given only in
+  `fields`, through `@onResolve`: requested and patched.
+- **APR7** `@newRecordValues` (`name`, `qty`, `code`): `code` added,
+  `name` from the file, `qty` absent on the row whose `qty` was rejected
+  (the file's column wins) and read on the other; called once per line
+  with `above` the last record.
+- **APR8** two calls in a row (chunks): the records in file order, two
+  undo steps.
+
+Suite: **645 tests, 645 pass** for the 07 commit (631 for 06), one full
+run each, no retries. The docs commit's tree (APR4's added read-only
+assertion, no new test): **645 tests, 645 pass**, one full run.
+
+### Checks (before each code commit, on its tree)
+
+- `pnpm lint:types`: no error. The tests' `ember-tsc --noEmit -p
+  tsconfig.eslint.json`: the baseline errors and no other (`diff` with
+  `3c-checks/baseline-tests-tsc.log` empty).
+- `eslint` and `prettier --check` on the changed `.ts`/`.gts` files:
+  clean (after `prettier --write` on the new test files).
+- Owner gate: OK (38 module classes).
+- `node scripts/generate-api-docs.mjs --check`: exit 0.
+- Before the docs commit, on its tree, also: `pnpm lint:js` and
+  `pnpm lint:css` in `packages/sheet` (exit 0), `pnpm eui:check` at the
+  root (exit 0), and the checks above again (same results).
+- `packages/core/src` unchanged; no dependency added.
+
+### Deviations
+
+1. **The reader is in `src/core/delimited.ts`**, not inside `parseCsv`
+   with `parseTsv` calling it: `csv.ts` imports `headerLine` from
+   `tsv.ts`, so `tsv.ts` importing `parseCsv` would be an import cycle.
+   Same rules, same code, the delimiter a parameter; `parseTsv` and
+   `parseCsv` both call it. Not exported from the core's index.
+2. **`importMatrix` without `headers`** (and without `mapping`): the
+   design does not say. The columns go to `fields` by position (a file
+   written with `headers: false` in the fields' order reads back), CI3
+   pins it.
+3. **`importMatrix` drops lines whose every cell is blank** (whitespace
+   only), not in the design: a spreadsheet's CSV often ends with `,,,`
+   lines, which would otherwise be empty records. It also does not pad
+   short lines (APR5, CI3).
+4. **`@newRecordValues` in `appendRows`.** 07 says "a field the file
+   does not have is left out of the insert, so `@newRecordValues` gives
+   it a value", but the add row's paste (`pasteText`/`buildPaste`) never
+   calls `@newRecordValues`. To keep the design's promise, `appendRows`
+   (only it; the paste is unchanged) calls it once per line with
+   `{ above: <last record>, below: undefined }` and puts its values under
+   the line's, for the fields with no column in the file; the file's
+   columns win even when their text is rejected or pending, and a group's
+   values win over both (APR7). **The user's decision** whether a paste
+   on the add row should do the same (today it does not).
+5. **`appendRows` is in the clipboard module** (`clipboard.ts`), not the
+   API module: it is the paste path and reuses `pasteInsert`; `api.ts`
+   has the one-line entry, as for the other methods.
+6. **The resolve change** (addition 1 above): `startResolve` takes the
+   call's fields; not in the design, needed for `fields` to work with
+   `@onResolve`.
+7. **`matchHeader`'s shape** (`{ field, by }`) and the extra export
+   `normalizeHeader` are this batch's choice (10 only names the
+   matcher). A header whose best field is taken is unmatched; it does not
+   fall back to a lower-priority match on another field.
+8. **`escapeFormulas` also escapes header labels.** A negative value
+   whose text is not a plain number gets the `'` too (a negative
+   duration `-1:30`, or `-1e-7` as `String` writes it); the rule looks
+   only at the text, as 06 says. Not tested for those types.
+
+### Found (not changed)
+
+- **A rejection on an inserted row is hidden when the owner's
+  `createRecord` gives that field a value.** A rejection is shown while
+  the cell's value equals the one the sheet saw when it emitted it
+  (`cells.liveRejection`, `seenValue`); for a new row that is
+  `undefined`, so a store that creates records with defaults (`qty:
+  null`) hides it. Found when APR2's first owner did that; the same holds
+  for a paste on the add row. `localRecords`' default `createRecord`
+  (`{ id: tempId, ...values }`) is not affected. The tests' owner uses
+  no defaults.
+
+### Real input in Chromium
+
+Production build of this checkout (the sheet's `pnpm build`, then
+`site`'s `pnpm build`), served with `vite preview`, Playwright's
+Chromium (headless, 1300 × 900), real `page.mouse` and `page.keyboard`,
+`setInputFiles` on the demo's file input, on the new demo d26 ("CSV
+export and import", `localRecords`) on `/docs/sheet/docs/sheet`. The
+tree was the 07 commit plus the docs and demo of the last commit. No
+page errors, no console errors.
+
+- **Export** (a mouse click on "Export CSV", the download saved and
+  read): `inventory.csv`, starting with a UTF-8 BOM (the demo's
+  `download` adds it), then
+  `Item,Unit price,Stock,Next count,Active,Notes` /
+  `Bolt M8,0.35,1200,2026-12-01,true,Box of 100` /
+  `"Washer, 8 mm",0.05,5400,2026-12-01,true,` /
+  `"Cable ""flex"" 2 m",4.2,80,,false,"'=HYPERLINK(""http://example.com"")"`.
+- **Import** of a `;` file with a BOM and Spanish headers
+  `PRODUCTO;Precio;existencias ;Fecha;Activo;Proveedor` (aliases in
+  another case and with a trailing space), three lines, `doce` as a
+  price, `Sí`/`No`/`sí`, an empty date, a quoted `"Broca 3/8, cobalto"`:
+  the footer "importar.csv: 3 lines into 5 fields; not imported:
+  Proveedor"; rows 4-6 Tuerca M8 / Taquete 1/4 / Broca 3/8, cobalto;
+  prices 0.12, **`doce` invalid with the title `"doce" is not a
+  number`** (the red frame, `rejection.png`), 18.5; stock 900, 300, 40;
+  dates 15/12/2026, 20/12/2026, empty; Active checked, unchecked,
+  checked.
+- **Ctrl+Z** after a mouse click on the first Item cell (focused,
+  `item:0`): the three rows gone, no invalid cell left.
+- **Round trip**: the exported `inventory.csv` imported back: "3 lines
+  into 6 fields", the same items and prices, and the escaped note kept
+  as the text `'=HYPERLINK("http://example.com")` (by design); Ctrl+Z
+  after a click removed them.
+- **Sample file** (a mouse click; a separate short run): `inventario.csv`
+  with the BOM and the Spanish lines, which imports as "3 lines into 5
+  fields; not imported: Proveedor".
+- **windows-1252: not run.** The demo reads the file with `file.text()`
+  (UTF-8), so a windows-1252 file would show replacement characters;
+  decoding bytes is batch E's `decodeText`. The docs say how to decode
+  with `TextDecoder('windows-1252')`.
+- Screenshots (not in the repo):
+  `/tmp/claude-0/-home-user-ember-eui/87cd9e5a-212c-54c3-9d47-30ac398aebd2/scratchpad/v04b/`
+  `before-import.png`, `after-import.png`, `rejection.png`,
+  `after-undo.png`, `round-trip.png`; the downloads `inventory.csv`,
+  `inventario.csv`; the script's output in `results.json`. The agent
+  looked at `rejection.png`, not a person.
+
+### Open items
+
+- **Deviation 4 is the user's decision** (should a paste on the add row
+  also get `@newRecordValues`?). So is deviation 3 (blank lines dropped)
+  if a blank line should be a record.
+- **Chunks need the owner to apply each change set before the next
+  call**: each chunk is anchored after the last record of `@records`; an
+  owner that applies later would get the second chunk before the first.
+  APR8 tests the synchronous case only; the docs say to apply first.
+- **The EmberSearchUi connector** has no way to reach `appendRows`
+  other than its `@registerApi`, which it forwards (not tested here).
+- **Not verified:** a 10,000-line import's time (no measurement; the
+  design gives none for 07); Excel's own handling of the exported file
+  (only re-read by `parseCsv`); a real Excel or Google Sheets file; the
+  formula rule against a real spreadsheet; Firefox, Safari, a screen
+  reader, dark mode.
+
+### Files
+
+- New: `packages/sheet/src/core/csv.ts`,
+  `packages/sheet/src/core/delimited.ts`,
+  `packages/sheet/tests/unit/csv-test.ts`,
+  `packages/sheet/tests/integration/components/eui-sheet-append-rows-test.gts`,
+  `packages/sheet/docs/sheet-demo/d26-csv.md`.
+- Changed: `src/core/index.ts` (the export), `src/core/tsv.ts`
+  (`parseTsv` calls the shared reader), `src/core/types.ts`
+  (`importAliases`), `src/types.ts` (`SheetApi.appendRows`),
+  `src/-private/sheet/clipboard.ts` (`appendRows`), `api.ts`,
+  `resolve.ts` and `types.ts` (`PendingCall.fields`) in
+  `src/-private/sheet/`; `docs/sheet.md` (new sections "Export to CSV"
+  and "Import from CSV" after "Summary bar", the API table, the
+  `@fields` keys); `README.md` (a section "CSV export and import", the
+  API table, the `@fields` keys; prettier-clean, which realigned the
+  Arguments and API tables). `docs/sheet.md` and d26 are in the docs'
+  existing style (not prettier-formatted, as before).
+
+### Commits
+
+| Commit | Holds | Suite |
+| --- | --- | --- |
+| `9610c0f` | 06 `toCsv`, CX1-CX6 | 631 / 631 |
+| `a354acc` | 07 `parseCsv`, `importMatrix`, `appendRows`, and the three additions (`fields`, `importAliases`, `matchHeader`/`normalizeHeader`), CI1-CI6, APR1-APR8 | 645 / 645 |
+| the docs commit | docs, README, d26, APR4's read-only check, these results | 645 / 645 |
+
+One commit in this range is the main session's: `c773cae` (the user's
+decisions 7-9 after batch A in `v04/README.md`) before `9610c0f`.

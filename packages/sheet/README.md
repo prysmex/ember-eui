@@ -92,43 +92,43 @@ export default class Tasks extends Component {
 
 Arguments of `EuiSheet`:
 
-| Argument                                                          |                                                                                                                                                                                                                        |
-| ----------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `@fields`                                                         | The visible columns, in order: `{ id, label?, type?, readOnly?, required?, validate?, description?, width?, sortable?, hideable?, ...options of the type }`. `readOnly` and `required` can be functions of the record. |
-| `@records`                                                        | The rows. Pass a new array when they change.                                                                                                                                                                           |
-| `@getRecordId`                                                    | `(record) => id`.                                                                                                                                                                                                      |
-| `@onChange`                                                       | `(changeSet) => void`. Apply it to your records.                                                                                                                                                                       |
-| `@cellErrors`                                                     | Your own errors: `{ [recordId]: { [fieldId]: message \| messages } }`. Shown last.                                                                                                                                     |
-| `@validate`                                                       | Record, cross-row and server rules (below).                                                                                                                                                                            |
-| `@fieldTypes`                                                     | Your field types, merged over the built-in ones. Keep the object stable.                                                                                                                                               |
-| `@readOnly`                                                       | Every cell read-only (copy still works).                                                                                                                                                                               |
-| `@messages`                                                       | Overrides of the built-in messages (below).                                                                                                                                                                            |
-| `@height`, `@ariaLabel`                                           | The grid's height; its accessible name (default `Sheet`).                                                                                                                                                              |
-| `@registerApi`                                                    | `(api) => void`: the sheet's API, once, after the first render (below).                                                                                                                                                |
-| `@hiddenFields`                                                   | Fields that are not columns: listed in the expanded record, copied by duplicate.                                                                                                                                       |
-| `@onHiddenFieldsChange`, `@onFieldOrderChange`                    | The new hidden ids after a hide or show; the visible ids after a move or a header drag. With them, update `@fields` / `@hiddenFields`; without them the sheet keeps its own.                                           |
-| `@fieldDrag`, `@headerLines`                                      | Drag a header to reorder (default `true`; also Space, the arrows and Space on a focused header); `1` (default), `2` or `3` lines a header label may wrap to.                                                           |
-| `@fieldWidths`, `@onFieldWidthChange`                             | Widths by field id; `(fieldId, width)` after a resize or a fit to content (without it the sheet keeps the width itself).                                                                                               |
-| `@fullScreen`, `@onFullScreenChange`                              | The sheet fills the window (below); controlled with the handler, local without it.                                                                                                                                     |
-| `@rowHeight`, `@onRowHeightChange`                                | `'short'` (default), `'medium'`, `'tall'`, `'extraTall'`; controlled with the handler, local without.                                                                                                                  |
-| `@sort`, `@onSortChange`                                          | Your sort (`[{ field, direction }]`), drawn as arrows; the column menu's sort items call the handler. No handler: no sort items. The sheet never sorts.                                                                |
-| `@onFilterByField`                                                | Adds "Filter by this field" to the column menu: `(fieldId) => void`.                                                                                                                                                   |
-| `@highlight`, `@isLoading`                                        | A searched term, marked in cells; a progress bar over the grid.                                                                                                                                                        |
-| `@currentMatch`                                                   | `{ recordId, fieldId }` or `null`: your current search match, scrolled into view and ringed; focus stays in your search box.                                                                                           |
-| `@onSelectionChange`                                              | `(selection or null) => void`: the selected records and fields, after render, when they change.                                                                                                                        |
-| `@onVisibleRangeChange`                                           | `({ first, last, count }) => void`: the records on screen (positions in `@records`), after render, when they change. For loading more as the user scrolls.                                                             |
-| `@summary`                                                        | `{ [fieldId]: text }` (`''`: the row-number column): the summary bar.                                                                                                                                                  |
-| `@frozenFields`                                                   | Leading fields kept in view on horizontal scroll, with the row numbers. Default `0` (off); `1` freezes the first field.                                                                                                |
-| `@rowNumbers`, `@rowLabel`, `@rowNumberOffset`                    | The row-number column (default on); `(record, position) => text` to show something else than the position; the first record's position on a page.                                                                      |
-| `@canInsert`, `@canDelete`                                        | Adding (add row, Shift+Enter, menu) and deleting (menu) records. Default `!@readOnly`.                                                                                                                                 |
-| `@newRecordValues`                                                | `({ above, below }) => values` of a new record.                                                                                                                                                                        |
-| `@checkedRecordIds`, `@onCheckedChange`                           | Checked rows; controlled with the handler, local without it.                                                                                                                                                           |
-| `@expandedRecordId`, `@onExpandedRecordChange`, `@expandedRecord` | The expanded record (controlled the same way), in a `'flyout'` (default) or a `'modal'`.                                                                                                                               |
-| `@rowActions`                                                     | Your row menu items: `{ id, label, icon?, color?, isDisabled?(records), onSelect(records) }`.                                                                                                                          |
-| `@fieldActions`                                                   | Your header menu items, on every visible field before "Delete field": `{ id, label, icon?, color?, isDisabled?(field), onSelect(field) }`. Keep the array stable.                                                      |
-| `@copyWithFieldNames`                                             | Adds "Copy with field names" to the row menu (default `false`).                                                                                                                                                        |
-| `@onResolve`                                                      | `(requests, { signal }) => Promise<{ [fieldId]: { [text]: value \| null } }>`: bulk resolve of typed or pasted text (linked records, users, your types). Without it such text is rejected.                             |
-| `@editIn`                                                         | Where a click on the selected cell, or Enter, edits: `'cell'`, `'record'` (the expanded record with that field's editor open) or `'auto'` (default: the record on a touch screen narrower than 600 px, else the cell). |
+| Argument                                                          |                                                                                                                                                                                                                                        |
+| ----------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `@fields`                                                         | The visible columns, in order: `{ id, label?, type?, readOnly?, required?, validate?, description?, width?, sortable?, hideable?, importAliases?, ...options of the type }`. `readOnly` and `required` can be functions of the record. |
+| `@records`                                                        | The rows. Pass a new array when they change.                                                                                                                                                                                           |
+| `@getRecordId`                                                    | `(record) => id`.                                                                                                                                                                                                                      |
+| `@onChange`                                                       | `(changeSet) => void`. Apply it to your records.                                                                                                                                                                                       |
+| `@cellErrors`                                                     | Your own errors: `{ [recordId]: { [fieldId]: message \| messages } }`. Shown last.                                                                                                                                                     |
+| `@validate`                                                       | Record, cross-row and server rules (below).                                                                                                                                                                                            |
+| `@fieldTypes`                                                     | Your field types, merged over the built-in ones. Keep the object stable.                                                                                                                                                               |
+| `@readOnly`                                                       | Every cell read-only (copy still works).                                                                                                                                                                                               |
+| `@messages`                                                       | Overrides of the built-in messages (below).                                                                                                                                                                                            |
+| `@height`, `@ariaLabel`                                           | The grid's height; its accessible name (default `Sheet`).                                                                                                                                                                              |
+| `@registerApi`                                                    | `(api) => void`: the sheet's API, once, after the first render (below).                                                                                                                                                                |
+| `@hiddenFields`                                                   | Fields that are not columns: listed in the expanded record, copied by duplicate.                                                                                                                                                       |
+| `@onHiddenFieldsChange`, `@onFieldOrderChange`                    | The new hidden ids after a hide or show; the visible ids after a move or a header drag. With them, update `@fields` / `@hiddenFields`; without them the sheet keeps its own.                                                           |
+| `@fieldDrag`, `@headerLines`                                      | Drag a header to reorder (default `true`; also Space, the arrows and Space on a focused header); `1` (default), `2` or `3` lines a header label may wrap to.                                                                           |
+| `@fieldWidths`, `@onFieldWidthChange`                             | Widths by field id; `(fieldId, width)` after a resize or a fit to content (without it the sheet keeps the width itself).                                                                                                               |
+| `@fullScreen`, `@onFullScreenChange`                              | The sheet fills the window (below); controlled with the handler, local without it.                                                                                                                                                     |
+| `@rowHeight`, `@onRowHeightChange`                                | `'short'` (default), `'medium'`, `'tall'`, `'extraTall'`; controlled with the handler, local without.                                                                                                                                  |
+| `@sort`, `@onSortChange`                                          | Your sort (`[{ field, direction }]`), drawn as arrows; the column menu's sort items call the handler. No handler: no sort items. The sheet never sorts.                                                                                |
+| `@onFilterByField`                                                | Adds "Filter by this field" to the column menu: `(fieldId) => void`.                                                                                                                                                                   |
+| `@highlight`, `@isLoading`                                        | A searched term, marked in cells; a progress bar over the grid.                                                                                                                                                                        |
+| `@currentMatch`                                                   | `{ recordId, fieldId }` or `null`: your current search match, scrolled into view and ringed; focus stays in your search box.                                                                                                           |
+| `@onSelectionChange`                                              | `(selection or null) => void`: the selected records and fields, after render, when they change.                                                                                                                                        |
+| `@onVisibleRangeChange`                                           | `({ first, last, count }) => void`: the records on screen (positions in `@records`), after render, when they change. For loading more as the user scrolls.                                                                             |
+| `@summary`                                                        | `{ [fieldId]: text }` (`''`: the row-number column): the summary bar.                                                                                                                                                                  |
+| `@frozenFields`                                                   | Leading fields kept in view on horizontal scroll, with the row numbers. Default `0` (off); `1` freezes the first field.                                                                                                                |
+| `@rowNumbers`, `@rowLabel`, `@rowNumberOffset`                    | The row-number column (default on); `(record, position) => text` to show something else than the position; the first record's position on a page.                                                                                      |
+| `@canInsert`, `@canDelete`                                        | Adding (add row, Shift+Enter, menu) and deleting (menu) records. Default `!@readOnly`.                                                                                                                                                 |
+| `@newRecordValues`                                                | `({ above, below }) => values` of a new record.                                                                                                                                                                                        |
+| `@checkedRecordIds`, `@onCheckedChange`                           | Checked rows; controlled with the handler, local without it.                                                                                                                                                                           |
+| `@expandedRecordId`, `@onExpandedRecordChange`, `@expandedRecord` | The expanded record (controlled the same way), in a `'flyout'` (default) or a `'modal'`.                                                                                                                                               |
+| `@rowActions`                                                     | Your row menu items: `{ id, label, icon?, color?, isDisabled?(records), onSelect(records) }`.                                                                                                                                          |
+| `@fieldActions`                                                   | Your header menu items, on every visible field before "Delete field": `{ id, label, icon?, color?, isDisabled?(field), onSelect(field) }`. Keep the array stable.                                                                      |
+| `@copyWithFieldNames`                                             | Adds "Copy with field names" to the row menu (default `false`).                                                                                                                                                                        |
+| `@onResolve`                                                      | `(requests, { signal }) => Promise<{ [fieldId]: { [text]: value \| null } }>`: bulk resolve of typed or pasted text (linked records, users, your types). Without it such text is rejected.                                             |
+| `@editIn`                                                         | Where a click on the selected cell, or Enter, edits: `'cell'`, `'record'` (the expanded record with that field's editor open) or `'auto'` (default: the record on a touch screen narrower than 600 px, else the cell).                 |
 
 Blocks: `<:toolbar as |sheet|>` (above the grid) and `<:footer as |sheet|>`
 (below it) take your own controls. Both yield `{ api, fields, hiddenFields,
@@ -252,6 +252,39 @@ if you need one.
   >{{if sheet.isFullScreen 'Exit full screen' 'Full screen'}}</EuiButtonEmpty>
 </:toolbar>
 ```
+
+## CSV export and import
+
+Both are helpers your toolbar calls; the sheet draws no button.
+`toCsv(ctx, records, fields, { delimiter?, headers?, escapeFormulas? })`
+writes the records as CSV: each cell is the text a copy gives, quoted
+as RFC 4180 says, a first line of labels, and a leading `'` on a cell a
+spreadsheet would run as a formula (`=SUM(A1)`, `@x`, `-cmd`; numbers
+such as `-5` stay). `ctx` is `{ types, messages }`, as for `summarize`.
+
+An import takes three steps and goes through the paste path of the add
+row: types read the texts, `@onResolve` resolves linked records and
+users, unreadable texts show as rejections, and one Ctrl/Cmd+Z removes
+it.
+
+```js
+const matrix = parseCsv(await file.text()); // `,` `;` or tab, detected
+const { rows, fieldIds, unmatched } = importMatrix(matrix, [
+  ...sheet.fields,
+  ...sheet.hiddenFields
+]);
+api.appendRows(rows, fieldIds); // false with @canInsert={{false}}
+```
+
+Headers match a field's `importAliases`, then its label, then its id,
+ignoring case, accents, spaces, `_` and `-` (`matchHeader`); `mapping`
+overrides the match. Columns go to their fields by id, also hidden
+ones; fields with no column get `@newRecordValues`. `appendRows`'
+`fields` option reads columns with fields `@fields` does not have yet or
+with a per-column copy (`{ ...field, dateOrder: 'mdy' }`), never stored.
+`appendRows` does not chunk: call it per 1,000 lines for large files
+(each chunk is one undo step), and import with no group by (the last
+group's values would win).
 
 ## EmberSearchUi
 
@@ -408,22 +441,23 @@ row menu emit).
 
 `@registerApi={{this.registerApi}}` receives one object:
 
-| Method                                |                                                                                                                       |
-| ------------------------------------- | --------------------------------------------------------------------------------------------------------------------- |
-| `undo()`, `redo()`                    | As Ctrl/Cmd+Z and Ctrl/Cmd+Shift+Z.                                                                                   |
-| `focusCell({ recordId, fieldId })`    | Focuses that cell; nothing when the record is not in `@records` or the field is not shown.                            |
-| `scrollToCell({ recordId, fieldId })` | Scrolls that cell into view without focusing it.                                                                      |
-| `getSelection()`                      | The selection now, or `null`.                                                                                         |
-| `remapIds({ [tempId]: id })`          | The ids your store gave to inserted or restored records: the undo history, rejected texts and a pending focus follow. |
-| `clearHistory()`                      | Drops the undo and redo history.                                                                                      |
-| `expandRecord(id)`                    | Opens the expanded record (`null` closes it).                                                                         |
-| `insertRecord({ anchor?, values? })`  | Emits the insert of one record, next to `anchor` or at the end.                                                       |
-| `deleteRecords(ids)`                  | Emits the delete of those records.                                                                                    |
-| `showShortcuts()`                     | Opens the shortcut list (as Ctrl/Cmd+/).                                                                              |
-| `addField({ index? })`                | Opens the field editor to add a field (with `@onFieldCreate`).                                                        |
-| `editField(fieldId)`                  | Opens the field editor on a field, also a hidden one (with `@onFieldUpdate`).                                         |
-| `fitField(fieldId)`, `fitFields()`    | Fits one visible field's width, or every one's, to its content.                                                       |
-| `setFullScreen(on)`                   | Full screen on or off.                                                                                                |
+| Method                                    |                                                                                                                       |
+| ----------------------------------------- | --------------------------------------------------------------------------------------------------------------------- |
+| `undo()`, `redo()`                        | As Ctrl/Cmd+Z and Ctrl/Cmd+Shift+Z.                                                                                   |
+| `focusCell({ recordId, fieldId })`        | Focuses that cell; nothing when the record is not in `@records` or the field is not shown.                            |
+| `scrollToCell({ recordId, fieldId })`     | Scrolls that cell into view without focusing it.                                                                      |
+| `getSelection()`                          | The selection now, or `null`.                                                                                         |
+| `remapIds({ [tempId]: id })`              | The ids your store gave to inserted or restored records: the undo history, rejected texts and a pending focus follow. |
+| `clearHistory()`                          | Drops the undo and redo history.                                                                                      |
+| `expandRecord(id)`                        | Opens the expanded record (`null` closes it).                                                                         |
+| `insertRecord({ anchor?, values? })`      | Emits the insert of one record, next to `anchor` or at the end.                                                       |
+| `deleteRecords(ids)`                      | Emits the delete of those records.                                                                                    |
+| `showShortcuts()`                         | Opens the shortcut list (as Ctrl/Cmd+/).                                                                              |
+| `addField({ index? })`                    | Opens the field editor to add a field (with `@onFieldCreate`).                                                        |
+| `editField(fieldId)`                      | Opens the field editor on a field, also a hidden one (with `@onFieldUpdate`).                                         |
+| `fitField(fieldId)`, `fitFields()`        | Fits one visible field's width, or every one's, to its content.                                                       |
+| `setFullScreen(on)`                       | Full screen on or off.                                                                                                |
+| `appendRows(rows, fieldIds, { fields? })` | Adds the rows as records after the last one, as a paste on the add row (CSV export and import, above).                |
 
 When you replace `@records` with records the sheet did not change (a new
 sort, another page, a reload), the selection collapses to the focused

@@ -23,6 +23,9 @@ groups you pass.
 
 **New to the sheet?** Start with [Getting started](https://ember-eui.vercel.app/docs/sheet/docs/sheet): a working
 sheet in five minutes, with a link to each topic page of the docs.
+Then [the example app](https://ember-eui.vercel.app/docs/sheet/docs/sheet/example-app)
+uses groups, editing, import, CSV export, loading more and the expanded
+record together.
 
 ## Install
 

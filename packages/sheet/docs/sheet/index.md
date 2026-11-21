@@ -17,8 +17,9 @@ built-in field types for text, numbers, checkboxes, selects, dates,
 linked records, users, attachments, currency, percent, duration, rating,
 links and long text, and you can add your own cells and editors.
 
-This page gets a working sheet on screen in five minutes; the pages
-listed under [Next](#next) explain each part.
+This page gets a working sheet on screen in five minutes. [The example
+app](/docs/sheet/docs/sheet/example-app) then uses the main features
+together, and the pages listed under [Next](#next) explain each part.
 
 ## Install
 
@@ -209,7 +210,12 @@ whole change set, undo and the errors a cell can show.
 
 ## Next
 
-Each page explains one part of the sheet, with its examples after
+[The example app](/docs/sheet/docs/sheet/example-app) puts the main
+features together in one screen: groups, editing, CSV import and
+export, loading more as you scroll and the expanded record, with its
+code.
+
+Then each page explains one part of the sheet, with its examples after
 its introduction:
 
 | Page                                                          | What it covers                                                                                | Examples                                                                                       |

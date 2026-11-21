@@ -9,6 +9,11 @@ const docs = resolve(
   '../../packages/sheet/docs/sheet',
 );
 const read = (path) => readFileSync(resolve(docs, path), 'utf8');
+const site = (path) =>
+  readFileSync(
+    resolve(dirname(fileURLToPath(import.meta.url)), '..', path),
+    'utf8',
+  );
 
 /** The body of the first fence whose info string is `info`. */
 function fence(markdown, info) {
@@ -25,5 +30,12 @@ test('the getting-started demo runs exactly the code the page shows', () => {
   assert.equal(
     fence(read('demo/d01-getting-started.md'), 'gts component'),
     fence(read('index.md'), 'gts'),
+  );
+});
+
+test('the example app page shows its data module as it is', () => {
+  assert.equal(
+    fence(read('example-app/index.md'), 'js'),
+    site('app/utils/sheet-example-products.js').trimEnd(),
   );
 });

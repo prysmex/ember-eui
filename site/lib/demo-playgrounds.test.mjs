@@ -100,6 +100,25 @@ test('custom SVG demos include the plugin and assets only when needed', () => {
   assert.ok(files['app/routes/application.js'].includes('iconsFromGlob'));
 });
 
+test('demos that import site helpers carry them into the playground', () => {
+  const files = playgroundOverrides(
+    [
+      {
+        ext: 'gjs',
+        code: "import { FIELDS } from 'site/utils/sheet-example-products';",
+      },
+    ],
+    starterFiles(),
+  );
+  assert.ok(files['app/utils/sheet-example-products.js'].includes('FIELDS'));
+  assert.equal(
+    playgroundOverrides([{ ext: 'gjs', code: '' }], starterFiles())[
+      'app/utils/sheet-example-products.js'
+    ],
+    undefined,
+  );
+});
+
 test('template-only demos get a component and preserve their source literally', () => {
   const code = '<EuiText>\n  {{@title}}\n</EuiText>';
   const files = demoFiles([{ ext: 'hbs', code }]);

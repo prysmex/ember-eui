@@ -204,6 +204,11 @@ export function playgroundOverrides(chunks, starter) {
     files['app/routes/application.js'] =
       `${setupImports.join('\n')}\nexport default class ApplicationRoute extends Route {\n${services.join('\n')}\n  beforeModel() {\n${setup.join('\n')}\n  }\n}\n`;
   }
+  // a demo's own helpers in the site (e.g. the sheet's example app data)
+  for (const [, name] of source.matchAll(
+    /from\s*['"]site\/utils\/([\w-]+)['"]/g,
+  ))
+    files[`app/utils/${name}.js`] = read(`app/utils/${name}.js`);
   if (/TodoText/.test(source))
     files['app/components/todo-text.hbs'] = read(
       'app/components/todo-text.hbs',

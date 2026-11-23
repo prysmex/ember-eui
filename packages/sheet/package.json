@@ -1,6 +1,6 @@
 {
   "name": "@ember-eui/sheet",
-  "version": "16.3.0",
+  "version": "16.4.0",
   "description": "Airtable-like data-entry grid for @ember-eui/core",
   "keywords": [
     "ember-addon",

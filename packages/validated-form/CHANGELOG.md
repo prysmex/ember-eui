@@ -1,5 +1,11 @@
 # @ember-eui/validated-form
 
+## 16.4.0
+
+### Minor Changes
+
+- c43f088: Released with `@ember-eui/core` and `@ember-eui/sheet` 16.4.0 to keep all packages on the same version; no changes in this package.
+
 ## 16.3.0
 
 ### Minor Changes

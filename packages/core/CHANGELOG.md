@@ -1,5 +1,15 @@
 # @ember-eui/core
 
+## 16.4.0
+
+### Minor Changes
+
+- c43f088: Released as 16.4.0 with `@ember-eui/sheet` to keep all packages on the same version.
+
+### Patch Changes
+
+- 8bc7329: `EuiDataGrid`: a column's actions popover (a dialog) is named by the column's title, so screen readers announce which column's menu opened.
+
 ## 16.3.0
 
 ### Minor Changes

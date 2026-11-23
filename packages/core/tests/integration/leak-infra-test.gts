@@ -1,5 +1,5 @@
 /*
- * Memory-leak audit (leak-infra): infrastructure outside the components —
+ * Memory-leak audit (leak-infra): infrastructure outside the components:
  * modifiers, services, the Emotion cache, the focus-trap registry and the
  * flyout manager. Each test mounts and unmounts N times and checks that
  * long-lived roots return to their baseline.

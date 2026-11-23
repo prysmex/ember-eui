@@ -1,7 +1,6 @@
-// Memory-leak audit (leak-components): teardown checks for component families.
-// Tests marked `skip` document a confirmed/suspected finding in
-// internal/memory-leak-audit/leak-components.md and fail today.
-import { module, test, skip } from 'qunit';
+// Memory-leak audit (leak-components): teardown checks for component families
+// (findings in internal/memory-leak-audit/leak-components.md).
+import { module, test } from 'qunit';
 import { setupRenderingTest } from 'ember-qunit';
 import { on } from '@ember/modifier';
 import { tracked } from '@glimmer/tracking';

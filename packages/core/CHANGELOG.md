@@ -1,5 +1,19 @@
 # @ember-eui/core
 
+## 16.3.0
+
+### Minor Changes
+
+- ee12323: `EuiDataGrid`:
+
+  - New `virtualizationOptions.leadingColumnCount`: the first N columns are always rendered, besides the column window, so columns kept in view with `position: sticky` (frozen columns) never unmount while the others stay virtualized.
+  - `setCellProps` applies a cell's props without a tracked write after render, and drops the props of a column the cell no longer shows. Scrolling a large grid re-renders less.
+  - The package's `app-js` no longer lists the four modules that are not components. They re-exported a default that does not exist, which broke a host built with `staticInvokables: false`.
+
+### Patch Changes
+
+- 62eaeaf: `EuiComboBox` with `@search`: pressing Enter after typing an option's exact label adds that option again. It looked for the label in `@options` instead of the search results, so with a server-side search (an empty or different `@options`) Enter did nothing and the typed text stayed in the input. As in upstream, a partial match still adds nothing until an option is highlighted with the arrow keys.
+
 ## 16.1.4
 
 ### Patch Changes

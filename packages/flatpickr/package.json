@@ -1,6 +1,6 @@
 {
   "name": "@ember-eui/flatpickr",
-  "version": "16.1.4",
+  "version": "16.3.0",
   "description": "flatpickr date picker for @ember-eui/core",
   "keywords": [
     "ember-addon",

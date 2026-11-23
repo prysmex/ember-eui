@@ -7,8 +7,6 @@ real app does, and measures what survives a forced GC. No dependencies: Node
 > = 22 (built-in `WebSocket`) and a Chromium binary (Playwright's is found
 > automatically, or set `CHROME=/path/to/chrome`).
 
-Findings from the 2026-10 audit: `internal/memory-leak-audit/leak-site.md`.
-
 ## Files
 
 - `serve.mjs` static server for `site/dist` with an SPA fallback.

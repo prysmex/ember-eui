@@ -1,7 +1,7 @@
 /*
  * Memory-leak audit (leak-infra): the pikaday modifier destroys its
  * instance, so the calendar (appended to <body>) and document listeners go
- * with the component. See internal/memory-leak-audit/leak-infra.md.
+ * with the component.
  */
 import { module, test } from 'qunit';
 import { setupRenderingTest } from 'ember-qunit';

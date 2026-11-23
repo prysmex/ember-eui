@@ -182,7 +182,7 @@ if (LEAKS_ENABLED) {
           await click('.euiComboBox__inputWrap');
           await waitUntil(() => document.querySelector('.euiComboBoxOptionsList'), { timeout: 2000 }).catch(() => {});
           // close first: unmounting while the list is open trips an
-          // autotracking assertion (LH-06 in internal/memory-leak-audit/leak-harness.md)
+          // autotracking assertion
           await triggerKeyEvent('.euiComboBox input', 'keydown', 'Escape');
         })
       );

@@ -1,6 +1,6 @@
 /**
  * Regression tests for the leaks found by the leak-mode run
- * (internal/memory-leak-audit/leak-harness.md). They demonstrate each leak and
+ * (`scripts/leaks.sh`). They demonstrate each leak and
  * are marked `todo` so the suite stays green while the leak exists; a todo
  * test turns red once its leak is fixed, which is the cue to make it a
  * regular `test`.

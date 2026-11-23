@@ -3,8 +3,7 @@
  * hooks in the ported upstream data grid files. Each hook in those files is
  * a single call into this module (or `row-model.ts`), marked with
  * `ember-eui extension (row-tree)`, so re-porting upstream only means
- * re-applying the marked lines. See
- * `internal/spikes/eui-latest/data-grid-extensions.md`.
+ * re-applying the marked lines. See `EXTENSIONS.md` beside this file.
  */
 import { modifier } from 'ember-modifier';
 

@@ -1,8 +1,7 @@
 /*
  * Memory-leak audit (leak-infra): fields register with their form on
  * construction and unregister on destruction, so a form never keeps
- * references to fields (or nested forms) that are gone. See
- * internal/memory-leak-audit/leak-infra.md.
+ * references to fields (or nested forms) that are gone.
  */
 import { module, test } from 'qunit';
 import { setupRenderingTest } from 'ember-qunit';

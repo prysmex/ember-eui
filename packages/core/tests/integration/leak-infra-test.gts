@@ -6,7 +6,6 @@
  *
  * `todo` tests document a confirmed leak: they pass while the assertion
  * fails, and start failing (to be promoted to `test`) once it is fixed.
- * See internal/memory-leak-audit/leak-infra.md.
  */
 import { module, test, todo } from 'qunit';
 import { setupRenderingTest } from 'ember-qunit';

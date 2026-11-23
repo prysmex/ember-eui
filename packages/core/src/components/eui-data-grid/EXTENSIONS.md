@@ -17,7 +17,6 @@ lists them all.
 ## `row-tree`: nested rows (`@rowTree`) and row grouping (`@grouping`)
 
 Docs: `packages/core/docs/tabular/data-grid/{grouping,tree-expansion,group-by,tree-features,tree-recipes}/`.
-Handoff: [data-grid-grouping-handoff.md](data-grid-grouping-handoff.md).
 
 ### Extension files (own code, no upstream counterpart)
 

@@ -532,7 +532,7 @@ const provenance = {
 const targets = new Map([
   ...[...generated].map(([path, content]) => [`packages/core/${path}`, content]),
   [
-    'internal/spikes/eui-latest/upstream-sources.json',
+    'scripts/eui-upstream-sources.json',
     JSON.stringify(provenance, null, 2) + '\n'
   ]
 ]);

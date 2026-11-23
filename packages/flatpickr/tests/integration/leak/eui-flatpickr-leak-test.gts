@@ -1,8 +1,7 @@
 /*
  * Memory-leak audit (leak-infra): flatpickr instances must be destroyed
  * with the component, so their calendar (appended to <body>) and their
- * window/document listeners go too. See
- * internal/memory-leak-audit/leak-infra.md.
+ * window/document listeners go too.
  */
 import { module, test } from 'qunit';
 import { setupRenderingTest } from 'ember-qunit';

@@ -1,5 +1,4 @@
-// Regression tests for the modifier / popover leak fixes
-// (internal/memory-leak-audit/README.md rows 1, 4, 11, 12, 13, 14 and LH-06).
+// Regression tests for the modifier / popover leak fixes.
 import { module, test } from 'qunit';
 import { setupRenderingTest } from 'ember-qunit';
 import { on } from '@ember/modifier';

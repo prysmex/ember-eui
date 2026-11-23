@@ -1,5 +1,4 @@
-// Memory-leak audit (leak-components): teardown checks for component families
-// (findings in internal/memory-leak-audit/leak-components.md).
+// Memory-leak audit (leak-components): teardown checks for component families.
 import { module, test } from 'qunit';
 import { setupRenderingTest } from 'ember-qunit';
 import { on } from '@ember/modifier';

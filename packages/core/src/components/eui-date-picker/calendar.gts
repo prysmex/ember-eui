@@ -87,9 +87,10 @@ interface View {
   year: number;
   month: number;
   focused: string;
-  /** The `@selected` and `@openToDate` this view was made for: it is dropped when they change (9 #29). */
+  /** The `@selected`, `@openToDate` and `@preview` this view was made for: it is dropped when they change (9 #29). */
   forSelected: string | null;
   forOpenTo: string | null;
+  forPreview: string | null;
 }
 
 export interface EuiDatePickerCalendarSignature {
@@ -99,6 +100,14 @@ export interface EuiDatePickerCalendarSignature {
     selected?: string | null;
     /** Called with the chosen day; never with a disabled one, nor with the selected one. */
     onSelect?: (date: string, event: Event) => void;
+    /** Called with every day picked (click, Enter, Space), the selected one too; never a disabled one. After `@onSelect`. */
+    onPick?: (date: string, event: Event) => void;
+    /**
+     * A day to show instead of the selected one, e.g. typed text that reads
+     * as a date: its month is shown and it holds the tab stop. Nothing is
+     * selected by it.
+     */
+    preview?: string | null;
     /** The month shown when there is no selected day. */
     openToDate?: string | null;
     minDate?: string | null;
@@ -191,6 +200,10 @@ export default class EuiDatePickerCalendar extends Component<EuiDatePickerCalend
     return validIsoDate(this.args.openToDate);
   }
 
+  get preview(): string | null {
+    return validIsoDate(this.args.preview);
+  }
+
   @cached
   get limits(): DayLimits {
     return dayLimits(
@@ -210,15 +223,16 @@ export default class EuiDatePickerCalendar extends Component<EuiDatePickerCalend
     const view = this.view;
     return view &&
       view.forSelected === this.selected &&
-      view.forOpenTo === this.openTo
+      view.forOpenTo === this.openTo &&
+      view.forPreview === this.preview
       ? view
       : null;
   }
 
-  /** The day the calendar opens on: the selected day, else `@openToDate`, else today within the limits. */
+  /** The day the calendar opens on: `@preview`, else the selected day, else `@openToDate`, else today within the limits. */
   get opening(): string {
     return openingDate(
-      this.selected,
+      this.preview ?? this.selected,
       this.openTo,
       clampDate(this.today, this.limits)
     );
@@ -245,7 +259,7 @@ export default class EuiDatePickerCalendar extends Component<EuiDatePickerCalend
     return tabStopDate({
       year,
       month,
-      focused: this.currentView?.focused ?? this.openToFocus,
+      focused: this.currentView?.focused ?? this.preview ?? this.openToFocus,
       selected: this.selected,
       today: this.today,
       limits: this.limits
@@ -270,7 +284,8 @@ export default class EuiDatePickerCalendar extends Component<EuiDatePickerCalend
       month,
       focused: date,
       forSelected: this.selected,
-      forOpenTo: this.openTo
+      forOpenTo: this.openTo,
+      forPreview: this.preview
     };
   }
 
@@ -464,6 +479,7 @@ export default class EuiDatePickerCalendar extends Component<EuiDatePickerCalend
     this.moveTo(day.date);
     this.focusRequest++;
     if (day.date !== this.selected) this.args.onSelect?.(day.date, event);
+    this.args.onPick?.(day.date, event);
   }
 
   @action

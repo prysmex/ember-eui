@@ -161,6 +161,14 @@ export interface EuiDatePickerCalendarSignature {
     onPickTime?: (day: string | null, entry: TimeEntry, event: Event) => void;
     /** Called with the focused day after a key, a month or year change or a navigation button moved it (upstream `adjustDateOnChange`). */
     onMove?: (date: string) => void;
+    /** This calendar picks a range's start: a hovered or focused day previews the range from it to `@rangeEnd` (upstream `selectsStart`). */
+    selectsStart?: boolean;
+    /** This calendar picks a range's end: a hovered or focused day previews the range from `@rangeStart` to it (upstream `selectsEnd`). */
+    selectsEnd?: boolean;
+    /** The range's first day, `YYYY-MM-DD` (upstream `startDate`). With `@rangeEnd`, the days between are highlighted. */
+    rangeStart?: string | null;
+    /** The range's last day, `YYYY-MM-DD` (upstream `endDate`). */
+    rangeEnd?: string | null;
     /** @private The clock, for tests. Read when the calendar is made and when the month changes. */
     now?: () => number;
   };
@@ -180,6 +188,9 @@ export default class EuiDatePickerCalendar extends Component<EuiDatePickerCalend
   @tracked private focusRequest = 0;
   private handledFocusRequest = 0;
   private headingId = `${guidFor(this)}-month`;
+  /** The day under the mouse, and whether focus is in the grid: what the range preview runs to (upstream `selectingDate`). */
+  @tracked private hovered: string | null = null;
+  @tracked private gridHasFocus = false;
 
   constructor(owner: Owner, args: EuiDatePickerCalendarSignature['Args']) {
     super(owner, args);
@@ -404,6 +415,91 @@ export default class EuiDatePickerCalendar extends Component<EuiDatePickerCalend
     return short.map((name, i) => ({ short: name, long: long[i]! }));
   }
 
+  /* Range (upstream `day.js`: `isInRange`, `isInSelectingRange`) */
+
+  get rangeStart(): string | null {
+    return validIsoDate(this.args.rangeStart);
+  }
+
+  get rangeEnd(): string | null {
+    return validIsoDate(this.args.rangeEnd);
+  }
+
+  get selectsRange(): boolean {
+    return Boolean(this.args.selectsStart || this.args.selectsEnd);
+  }
+
+  /** The day a pick would set, previewed: the hovered day, else the focused one while the grid has focus. */
+  get selectingDate(): string | null {
+    if (!this.interactive || !this.selectsRange) return null;
+    return this.hovered ?? (this.gridHasFocus ? this.focused : null);
+  }
+
+  /** The previewed range, as upstream: from the selecting day to the end, or from the start to it; none when it would be reversed. */
+  get selectingRange(): { from: string; to: string } | null {
+    const selecting = this.selectingDate;
+    if (selecting === null) return null;
+    const { rangeStart, rangeEnd } = this;
+    if (this.args.selectsStart && rangeEnd !== null && selecting <= rangeEnd) {
+      return { from: selecting, to: rangeEnd };
+    }
+    if (
+      this.args.selectsEnd &&
+      rangeStart !== null &&
+      selecting >= rangeStart
+    ) {
+      return { from: rangeStart, to: selecting };
+    }
+    return null;
+  }
+
+  /** The classes of a day for the range and its preview. */
+  private rangeClasses(date: string, disabled: boolean): string[] {
+    const classes: string[] = [];
+    const { rangeStart, rangeEnd } = this;
+    if (rangeStart !== null && rangeEnd !== null) {
+      if (date === rangeStart)
+        classes.push('react-datepicker__day--range-start');
+      if (date === rangeEnd) classes.push('react-datepicker__day--range-end');
+      if (date >= rangeStart && date <= rangeEnd) {
+        classes.push('react-datepicker__day--in-range');
+      }
+    }
+    const selecting = this.selectingRange;
+    if (
+      selecting &&
+      !disabled &&
+      date >= selecting.from &&
+      date <= selecting.to
+    ) {
+      classes.push('react-datepicker__day--in-selecting-range');
+      if (date === selecting.from) {
+        classes.push('react-datepicker__day--selecting-range-start');
+      }
+      if (date === selecting.to) {
+        classes.push('react-datepicker__day--selecting-range-end');
+      }
+    }
+    return classes;
+  }
+
+  @action
+  hoverDay(date: string | null) {
+    if (this.hovered !== date) this.hovered = date;
+  }
+
+  @action
+  onGridFocusIn() {
+    this.gridHasFocus = true;
+  }
+
+  @action
+  onGridFocusOut(event: FocusEvent) {
+    const next = event.relatedTarget as Node | null;
+    if (next && (event.currentTarget as HTMLElement).contains(next)) return;
+    this.gridHasFocus = false;
+  }
+
   /* Grid */
 
   @cached
@@ -439,6 +535,7 @@ export default class EuiDatePickerCalendar extends Component<EuiDatePickerCalend
         classes.push(`react-datepicker__day--${DAY_CODES[weekday]}`);
         if (disabled) classes.push('react-datepicker__day--disabled');
         if (isSelected) classes.push('react-datepicker__day--selected');
+        classes.push(...this.rangeClasses(date, disabled));
         if (isToday) classes.push('react-datepicker__day--today');
         if (weekday === 0 || weekday === 6) {
           classes.push('react-datepicker__day--weekend');
@@ -656,9 +753,16 @@ export default class EuiDatePickerCalendar extends Component<EuiDatePickerCalend
           >{{this.monthYear}}</h2>
           <table
             role="grid"
-            class="react-datepicker__month react-datepicker__month--accessible"
+            class="react-datepicker__month react-datepicker__month--accessible
+              {{if
+                this.selectingRange
+                'react-datepicker__month--selecting-range'
+              }}"
             aria-labelledby={{this.headingId}}
             {{on "keydown" this.onGridKeyDown}}
+            {{on "mouseleave" (fn this.hoverDay null)}}
+            {{on "focusin" this.onGridFocusIn}}
+            {{on "focusout" this.onGridFocusOut}}
             {{this.focusDay this.focused this.focusRequest}}
           >
             <thead role="rowgroup">
@@ -686,6 +790,7 @@ export default class EuiDatePickerCalendar extends Component<EuiDatePickerCalend
                         aria-selected={{if day.selected "true"}}
                         data-date={{day.date}}
                         {{on "click" (fn this.selectDay day)}}
+                        {{on "mouseenter" (fn this.hoverDay day.date)}}
                       ><button
                           type="button"
                           class="react-datepicker__day-button"

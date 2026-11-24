@@ -1,6 +1,10 @@
 import Component from '@glimmer/component';
-import { cached } from '@glimmer/tracking';
+import { cached, tracked } from '@glimmer/tracking';
+import { schedule } from '@ember/runloop';
 
+import { provide } from 'ember-provide-consume-context';
+
+import { EUI_DATE_PICKER_RANGE_CONTEXT } from '../-private/eui-date-picker-range-context.ts';
 import { getEuiThemeContext } from '../utils/emotion/consume.ts';
 import {
   euiDatePickerRangeInlineStyles,
@@ -9,16 +13,22 @@ import {
 import { euiClass, useEuiBorealisStyles } from '../utils/eui/styles.ts';
 import EuiFormControlLayoutDelimited from './eui-form-control-layout-delimited.gts';
 
+import type { EuiDatePickerRangeContext } from '../-private/eui-date-picker-range-context.ts';
+
 const START = 'euiDatePicker euiDatePickerRange__start';
 const END = 'euiDatePicker euiDatePickerRange__end';
 
 /**
  * Two date inputs joined in one field with an arrow between them, for a
  * start and end date (upstream `EuiDatePickerRange`, built on
- * `EuiFormControlLayoutDelimited`). It only does the layout: put any date
- * input in the blocks (`EuiPikaday`, `EuiFlatpickr`, or
- * `<EuiFieldText type="date">`), rendered without their own frame
- * (`@controlOnly={{true}}`) and with the class each block yields.
+ * `EuiFormControlLayoutDelimited`). An `EuiDatePicker` in the `<:start>`
+ * or `<:end>` block takes the range's states by itself, as upstream's
+ * `startDateControl` and `endDateControl`: no frame of its own, no icon,
+ * `@inline`, `@compressed`, `@fullWidth`, `@readOnly`, `@disabled` and
+ * `@isInvalid`, and the end opens its calendar `downRight`. Any other date
+ * input works too (`EuiFlatpickr`, `EuiPikaday`,
+ * `<EuiFieldText type="date">`): render it with `@controlOnly={{true}}`
+ * and the class its block yields.
  */
 export interface EuiDatePickerRangeSignature {
   Element: HTMLDivElement;
@@ -47,26 +57,26 @@ export interface EuiDatePickerRangeSignature {
     iconSide?: 'left' | 'right';
     /**
      * Custom controls: the `<:start>` / `<:end>` blocks yield only the
-     * delimited input class, without the date picker range classes
-     * (upstream doesn't add its props to the controls).
+     * delimited input class, without the date picker range classes, and an
+     * `EuiDatePicker` in them takes nothing from the range (upstream
+     * doesn't add its props to the controls).
      */
     isCustom?: boolean;
     /** Text between the inputs. Defaults to an arrow icon labelled "to". */
     delimiter?: string;
     /**
-     * For two calendars displayed in the page (e.g. inline flatpickr or
-     * pikaday calendars in the blocks): drops the field frame, the icon
+     * Two calendars displayed in the page: drops the field frame, the icon
      * and `@fullWidth`/`@compressed`, lays the blocks out side by side and
-     * stacks them when the container is too narrow. Pass the inline option
-     * to your calendars too.
+     * stacks them when the container is too narrow. An `EuiDatePicker` in
+     * a block becomes inline by itself; pass the inline option to other
+     * calendars (`EuiFlatpickr`, `EuiPikaday`).
      */
     inline?: boolean;
     /**
-     * With `@inline`: tells the range that the calendars show a time list
-     * (react-datepicker's `showTimeSelect`), so they stack below a wider
-     * container (2 × 374px + the delimiter instead of 2 × 268px). Upstream
-     * reads `showTimeSelect` from its start and end controls; blocks can't
-     * be inspected, so pass it here.
+     * With `@inline`: the calendars show a time list, so they stack below
+     * a wider container (2 × 374px + the delimiter instead of 2 × 268px).
+     * An `EuiDatePicker` with `@showTimeSelect` tells the range by itself,
+     * as upstream reads it from its controls; pass it for other calendars.
      */
     showTimeSelect?: boolean;
     /** With `@inline`: a shadow around both calendars. Defaults to `true`. */
@@ -92,7 +102,71 @@ export interface EuiDatePickerRangeSignature {
   };
 }
 
+/**
+ * Provides the range context to the pickers of one block (DESIGN 4.5).
+ * Renders nothing of its own.
+ */
+class EuiDatePickerRangeSide extends Component<{
+  Args: { range: EuiDatePickerRange; side: 'start' | 'end' };
+  Blocks: { default: [] };
+}> {
+  @provide(EUI_DATE_PICKER_RANGE_CONTEXT)
+  get rangeContext(): EuiDatePickerRangeContext {
+    const { range, side } = this.args;
+    return {
+      side,
+      controlOnly: true,
+      showIcon: false,
+      get inline() {
+        return Boolean(range.args.inline);
+      },
+      get compressed() {
+        return Boolean(range.compressed);
+      },
+      get fullWidth() {
+        return Boolean(range.fullWidth);
+      },
+      get readOnly() {
+        return Boolean(range.args.readOnly);
+      },
+      get disabled() {
+        return Boolean(range.args.disabled);
+      },
+      get isInvalid() {
+        return Boolean(range.args.isInvalid);
+      },
+      reportTimeSelect: range.reportTimeSelect
+    };
+  }
+
+  <template>{{yield}}</template>
+}
+
 export default class EuiDatePickerRange extends Component<EuiDatePickerRangeSignature> {
+  /** The pickers in the blocks that show a time list (DESIGN 4.5). */
+  private timeSelectPickers = new Set<object>();
+  @tracked private timeSelectCount = 0;
+
+  /**
+   * A picker's `showTimeSelect`, reported while it renders: the count the
+   * classes read is written after the render, never during it.
+   */
+  reportTimeSelect = (picker: object, showTimeSelect: boolean) => {
+    if (showTimeSelect === this.timeSelectPickers.has(picker)) return;
+    if (showTimeSelect) this.timeSelectPickers.add(picker);
+    else this.timeSelectPickers.delete(picker);
+    schedule('afterRender', () => {
+      if (this.isDestroying || this.isDestroyed) return;
+      const count = this.timeSelectPickers.size;
+      if (count !== this.timeSelectCount) this.timeSelectCount = count;
+    });
+  };
+
+  /** `@showTimeSelect`, or a picker in a block with a time list. */
+  get showTimeSelect(): boolean {
+    return Boolean(this.args.showTimeSelect) || this.timeSelectCount > 0;
+  }
+
   get shadow() {
     return this.args.shadow ?? true;
   }
@@ -137,9 +211,7 @@ export default class EuiDatePickerRange extends Component<EuiDatePickerRangeSign
       { boxSizing: 'border-box' },
       inline.euiDatePickerRangeInline,
       // Upstream: the container query depends on the time list's width.
-      this.args.showTimeSelect
-        ? inline.responsiveWithTimeSelect
-        : inline.responsive,
+      this.showTimeSelect ? inline.responsiveWithTimeSelect : inline.responsive,
       this.shadow && inline.shadow,
       formLayout
     )}`;
@@ -189,10 +261,22 @@ export default class EuiDatePickerRange extends Component<EuiDatePickerRangeSign
             {{yield prependClass to="prepend"}}
           </:prepend>
           <:startControl as |inputClass|>
-            {{yield (this.startClass inputClass) to="start"}}
+            {{#if @isCustom}}
+              {{yield (this.startClass inputClass) to="start"}}
+            {{else}}
+              <EuiDatePickerRangeSide @range={{this}} @side="start">
+                {{yield (this.startClass inputClass) to="start"}}
+              </EuiDatePickerRangeSide>
+            {{/if}}
           </:startControl>
           <:endControl as |inputClass|>
-            {{yield (this.endClass inputClass) to="end"}}
+            {{#if @isCustom}}
+              {{yield (this.endClass inputClass) to="end"}}
+            {{else}}
+              <EuiDatePickerRangeSide @range={{this}} @side="end">
+                {{yield (this.endClass inputClass) to="end"}}
+              </EuiDatePickerRangeSide>
+            {{/if}}
           </:endControl>
           <:append as |appendClass|>
             {{yield appendClass to="append"}}

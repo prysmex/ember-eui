@@ -21,10 +21,10 @@ const EuiDatePickerNativeInput: TOC<{
       @controlOnly={{true}}
       @id={{@picker.inputId}}
       @value={{native.value}}
-      @compressed={{@picker.args.compressed}}
-      @fullWidth={{@picker.args.fullWidth}}
+      @compressed={{@picker.compressed}}
+      @fullWidth={{@picker.fullWidth}}
       @isInvalid={{@picker.isInvalid}}
-      @disabled={{@picker.args.disabled}}
+      @disabled={{@picker.disabled}}
       @inputRef={{@picker.registerInput}}
       class="euiDatePicker euiDatePicker--native
         {{@picker.nativeClass}}

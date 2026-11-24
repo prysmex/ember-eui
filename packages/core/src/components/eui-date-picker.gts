@@ -28,6 +28,7 @@ import { modifier } from 'ember-modifier';
 import { or } from 'ember-truth-helpers';
 import { tabbable } from 'tabbable';
 
+import { datePickerRangeContext } from '../-private/eui-date-picker-range-context.ts';
 import {
   choosesNative,
   markEmpty,
@@ -179,7 +180,7 @@ export interface EuiDatePickerSignature {
     shouldCloseOnSelect?: boolean;
     /** Arrow keys and the month and year selects change the value at once, not only show another day (upstream's default is `true`). Defaults to `false`. */
     adjustDateOnChange?: boolean;
-    /** Where the popover opens, any `EuiPopover` `@anchorPosition`. Defaults to `'downLeft'`. */
+    /** Where the popover opens, any `EuiPopover` `@anchorPosition`. Defaults to `'downLeft'`; `'downRight'` in the `<:end>` block of an `EuiDatePickerRange`. */
     popoverPlacement?: PopoverAnchorPosition;
 
     /** `'local'`, `'utc'`, an IANA name (`'America/New_York'`) or a fixed offset (`'-03:00'`, upstream's `utcOffset`): the zone instants are shown and chosen in, the zone of "today", and of a `Date` or a moment. Defaults to `'local'`. */
@@ -211,6 +212,15 @@ export interface EuiDatePickerSignature {
     /** Extra classes on the popover panel (upstream `popperClassName`). */
     popoverClass?: string;
 
+    /** This picker chooses the start of a range: hovering a day previews the range from it to `@endDate` (upstream `selectsStart`). */
+    selectsStart?: boolean;
+    /** This picker chooses the end of a range: hovering a day previews the range from `@startDate` to it (upstream `selectsEnd`). */
+    selectsEnd?: boolean;
+    /** The range's start, for the highlight: `YYYY-MM-DD`, an instant (its day in `@timeZone`), a `Date` or a moment. The days from `@startDate` to `@endDate` are highlighted when both are given. */
+    startDate?: DateInput | null;
+    /** The range's end, for the highlight; as `@startDate`. */
+    endDate?: DateInput | null;
+
     /** Id of the input, e.g. to match an `EuiFormRow`'s `@id`. Defaults to a random id. */
     id?: string;
     /** Placeholder text. Defaults to the display format spelled out (`DD/MM/YYYY`). */
@@ -231,7 +241,7 @@ export interface EuiDatePickerSignature {
     showIcon?: boolean;
     /** The icon's type, anything `EuiIcon`'s `@type` accepts. Defaults to `'calendar'`, or `'clock'` with `@showTimeSelectOnly`. */
     iconType?: string;
-    /** Renders the input and its popover without the form control layout (no icon, clear button, prepend or append), e.g. inside `EuiDatePickerRange`. */
+    /** Renders the input and its popover without the form control layout (no icon, clear button, prepend or append); with `@inline`, the calendar without its frame. Set for you inside `EuiDatePickerRange`, which also passes its `@inline`, `@compressed`, `@fullWidth`, `@readOnly`, `@disabled` and `@isInvalid` (the picker's own `@disabled` and `@isInvalid` add to the range's; its other own arguments win). */
     controlOnly?: boolean;
     /** Called with the `<input>` element once rendered. */
     inputRef?: (element: HTMLInputElement | null) => void;
@@ -243,7 +253,8 @@ export interface EuiDatePickerSignature {
      * the primary pointer is coarse (a phone, a tablet), unless an argument
      * the OS cannot honour is given (`@filterDate`, `@excludeDates`,
      * `@includeDates`, `@excludeTimes`, `@injectTimes`, `@dayClassName`).
-     * `true` and `false` force a path; `@inline` always shows the calendar.
+     * `true` and `false` force a path; `@inline` and a `<:trigger>` block
+     * always show the calendar.
      * Chosen once, when the picker is created. Every value the OS returns is
      * checked as typed text is. Defaults to
      * `componentDefaults.EuiDatePicker.native` in `euiConfig`, then `'auto'`.
@@ -255,13 +266,33 @@ export interface EuiDatePickerSignature {
     prepend: [className: string, inputId: string];
     /** Content after the input; yields the class to put on it and the input id. */
     append: [className: string, inputId: string];
+    /**
+     * A trigger of your own instead of the text input (upstream
+     * `customInput`), e.g. an `EuiButton`: call `open` on its click. It
+     * yields `open`, `isOpen` and `text`, the value in the display format.
+     * The calendar takes focus when it opens and gives it back to the
+     * trigger when it closes; there is no typed input, icon or native path.
+     * `...attributes` go to the element around the trigger.
+     */
+    trigger: [EuiDatePickerTrigger];
   };
 }
 
-/** The input and its popover: the control, with or without the layout (`@controlOnly`). */
+/** What `<:trigger>` yields. */
+export interface EuiDatePickerTrigger {
+  /** Opens the calendar and moves focus into it. */
+  open: () => void;
+  /** The calendar is open. */
+  isOpen: boolean;
+  /** The value in the display format (`24/11/2026`), or `''`. */
+  text: string;
+}
+
+/** The input (or `<:trigger>`) and its popover: the control, with or without the layout (`@controlOnly`). */
 const DatePickerControl: TOC<{
-  Element: HTMLInputElement;
-  Args: { picker: EuiDatePicker };
+  Element: HTMLInputElement | HTMLDivElement;
+  Args: { picker: EuiDatePicker; hasTrigger?: boolean };
+  Blocks: { trigger: [EuiDatePickerTrigger] };
 }> = <template>
   <EuiPopover
     @isOpen={{@picker.isOpen}}
@@ -282,31 +313,42 @@ const DatePickerControl: TOC<{
     @onTrapDeactivation={{@picker.onTrapDeactivation}}
   >
     <:button>
-      <div class="react-datepicker__input-container">
-        <EuiFieldText
-          @controlOnly={{true}}
-          @id={{@picker.inputId}}
-          @value={{@picker.text}}
-          @placeholder={{@picker.placeholder}}
-          @compressed={{@picker.args.compressed}}
-          @fullWidth={{@picker.args.fullWidth}}
-          @isInvalid={{@picker.isInvalid}}
-          @disabled={{@picker.args.disabled}}
-          @readOnly={{@picker.args.readOnly}}
-          @inputRef={{@picker.registerInput}}
-          class="euiDatePicker {{@picker.inputErrorClass}}"
-          autocomplete="off"
-          aria-haspopup="dialog"
-          aria-expanded={{if @picker.isOpen "true" "false"}}
-          aria-controls={{if @picker.isOpen @picker.panelId}}
+      {{#if @hasTrigger}}
+        <div
+          class="react-datepicker__input-container euiDatePicker__trigger"
           ...attributes
-          {{on "input" @picker.onInput}}
-          {{on "focus" @picker.onInputFocus}}
-          {{on "click" @picker.onInputClick}}
-          {{on "keydown" @picker.onInputKeyDown}}
+          {{@picker.registerAnchor}}
           {{on "focusout" @picker.onFocusOut}}
-        />
-      </div>
+        >
+          {{yield @picker.triggerApi to="trigger"}}
+        </div>
+      {{else}}
+        <div class="react-datepicker__input-container">
+          <EuiFieldText
+            @controlOnly={{true}}
+            @id={{@picker.inputId}}
+            @value={{@picker.text}}
+            @placeholder={{@picker.placeholder}}
+            @compressed={{@picker.compressed}}
+            @fullWidth={{@picker.fullWidth}}
+            @isInvalid={{@picker.isInvalid}}
+            @disabled={{@picker.disabled}}
+            @readOnly={{@picker.readOnly}}
+            @inputRef={{@picker.registerInput}}
+            class="euiDatePicker {{@picker.inputErrorClass}}"
+            autocomplete="off"
+            aria-haspopup="dialog"
+            aria-expanded={{if @picker.isOpen "true" "false"}}
+            aria-controls={{if @picker.isOpen @picker.panelId}}
+            ...attributes
+            {{on "input" @picker.onInput}}
+            {{on "focus" @picker.onInputFocus}}
+            {{on "click" @picker.onInputClick}}
+            {{on "keydown" @picker.onInputKeyDown}}
+            {{on "focusout" @picker.onFocusOut}}
+          />
+        </div>
+      {{/if}}
     </:button>
     <:content>
       {{! template-lint-disable no-pointer-down-event-binding }}
@@ -321,6 +363,10 @@ const DatePickerControl: TOC<{
         <EuiDatePickerCalendar
           @selected={{@picker.selectedDay}}
           @preview={{@picker.preview}}
+          @selectsStart={{@picker.args.selectsStart}}
+          @selectsEnd={{@picker.args.selectsEnd}}
+          @rangeStart={{@picker.rangeStart}}
+          @rangeEnd={{@picker.rangeEnd}}
           @onPick={{@picker.onPick}}
           @openToDate={{@picker.openToDate}}
           @minDate={{@picker.minDate}}
@@ -344,6 +390,44 @@ const DatePickerControl: TOC<{
       </div>
     </:content>
   </EuiPopover>
+</template>;
+
+/** The inline calendar: in its frame (`@inline`), or bare (`@inline` and `@controlOnly`, e.g. in an inline `EuiDatePickerRange`). */
+const DatePickerInlineCalendar: TOC<{
+  Element: HTMLDivElement;
+  Args: { picker: EuiDatePicker };
+}> = <template>
+  <EuiDatePickerCalendar
+    role="group"
+    aria-label={{@picker.calendarLabel}}
+    @selected={{@picker.selectedDay}}
+    @onSelect={{@picker.onSelect}}
+    @openToDate={{@picker.openToDate}}
+    @minDate={{@picker.minDate}}
+    @maxDate={{@picker.maxDate}}
+    @excludeDates={{@picker.excludeDates}}
+    @includeDates={{@picker.includeDates}}
+    @filterDate={{@picker.args.filterDate}}
+    @timeZone={{@picker.zone}}
+    @locale={{@picker.localeDefaults.locale}}
+    @firstDayOfWeek={{@picker.firstDayOfWeek}}
+    @dayClassName={{@picker.args.dayClassName}}
+    @calendarClass={{@picker.args.calendarClass}}
+    @disabled={{@picker.disabled}}
+    @readOnly={{@picker.readOnly}}
+    @showTimeSelect={{@picker.showTimeSelect}}
+    @showTimeSelectOnly={{@picker.timeOnly}}
+    @timeOptions={{@picker.timeOptions}}
+    @selectedTime={{@picker.selectedTime}}
+    @hour12={{@picker.hour12}}
+    @onPickTime={{@picker.onPickTime}}
+    @onMove={{@picker.onMove}}
+    @selectsStart={{@picker.args.selectsStart}}
+    @selectsEnd={{@picker.args.selectsEnd}}
+    @rangeStart={{@picker.rangeStart}}
+    @rangeEnd={{@picker.rangeEnd}}
+    ...attributes
+  />
 </template>;
 
 /**
@@ -370,6 +454,9 @@ export default class EuiDatePicker extends Component<EuiDatePickerSignature> {
 
   private input: HTMLInputElement | null = null;
   private panel: HTMLElement | null = null;
+  /** With `<:trigger>`: the element around the trigger, and the element that had focus when it opened the calendar. */
+  private anchor: HTMLElement | null = null;
+  private triggerFocus: HTMLElement | null = null;
   /** The next focus event is the picker's own (returning focus): it does not open the popover. */
   private ownFocus = false;
   /** A press in the panel is under way: the input's blur is not a commit (Safari does not focus buttons on click). */
@@ -405,8 +492,9 @@ export default class EuiDatePicker extends Component<EuiDatePickerSignature> {
       : { browser: false, nativePlatform: false, coarsePointer: false };
     return choosesNative(
       {
-        inline: this.args.inline,
-        // batch 6: a `<:trigger>` block takes the calendar too
+        inline: this.inline,
+        // a `<:trigger>` block takes the calendar too (rule 1), but
+        // has-block is only known to the template, which applies it
         trigger: false,
         native: this.args.native,
         config: this.configDefaults?.native,
@@ -418,11 +506,71 @@ export default class EuiDatePicker extends Component<EuiDatePickerSignature> {
 
   /** The OS input renders: native was chosen, and the picker is neither inline nor read-only (read-only shows the text input, DESIGN 6.3). */
   get nativeInput(): boolean {
-    return this.nativeChosen && !this.args.inline && !this.args.readOnly;
+    return this.nativeChosen && !this.inline && !this.readOnly;
   }
 
   get context() {
     return getEuiThemeContext(this);
+  }
+
+  /* The range (DESIGN 4.5) */
+
+  /** The `EuiDatePickerRange` block this picker is in, or null. */
+  get range() {
+    return datePickerRangeContext(this);
+  }
+
+  /** `@inline`, else the range's. */
+  get inline(): boolean {
+    return this.args.inline ?? this.range?.inline ?? false;
+  }
+
+  /** `@controlOnly`, else true in a range: the range draws the frame. */
+  get controlOnly(): boolean {
+    return this.args.controlOnly ?? this.range?.controlOnly ?? false;
+  }
+
+  get compressed(): boolean {
+    return this.args.compressed ?? this.range?.compressed ?? false;
+  }
+
+  get fullWidth(): boolean {
+    return this.args.fullWidth ?? this.range?.fullWidth ?? false;
+  }
+
+  get readOnly(): boolean {
+    return this.args.readOnly ?? this.range?.readOnly ?? false;
+  }
+
+  /** `@disabled`, or the range's (upstream ORs them). */
+  get disabled(): boolean {
+    return Boolean(this.args.disabled || this.range?.disabled);
+  }
+
+  /** Tells the range whether this picker shows a time list; read by the template. */
+  get rangeReport(): null {
+    this.range?.reportTimeSelect(this, this.showTimeSelect);
+    return null;
+  }
+
+  /** A range argument as a day: `YYYY-MM-DD`, or the day of an instant in the zone. */
+  private rangeDay(value: unknown): string | null {
+    if (value == null || value === '') return null;
+    const read = toDateValue(value, this.zone, this.limitMode);
+    const day = validIsoDate(read);
+    if (day !== null) return day;
+    const ms = parseInstant(read);
+    return ms === null ? null : dayAt(ms, this.zone);
+  }
+
+  /** `@startDate` as a day, for the range highlight. */
+  get rangeStart(): string | null {
+    return this.rangeDay(this.args.startDate);
+  }
+
+  /** `@endDate` as a day, for the range highlight. */
+  get rangeEnd(): string | null {
+    return this.rangeDay(this.args.endDate);
   }
 
   /* Values (DESIGN 4.2, 18) */
@@ -730,6 +878,7 @@ export default class EuiDatePicker extends Component<EuiDatePickerSignature> {
   get isInvalid(): boolean {
     return Boolean(
       this.args.isInvalid ||
+      this.range?.isInvalid ||
       this.hasUnreadableValue ||
       this.hasUnknownZone ||
       (this.inputError !== null && this.shownTyped !== null)
@@ -746,7 +895,7 @@ export default class EuiDatePicker extends Component<EuiDatePickerSignature> {
   }
 
   get interactive(): boolean {
-    return !this.args.disabled && !this.args.readOnly;
+    return !this.disabled && !this.readOnly;
   }
 
   /** What a readable value looks like, for the warnings. */
@@ -812,7 +961,7 @@ export default class EuiDatePicker extends Component<EuiDatePickerSignature> {
     );
     warn(
       'EuiDatePicker: @native={{true}} has no effect with @inline: there is no native inline calendar; the calendar is shown.',
-      !(this.args.native === true && this.args.inline),
+      !(this.args.native === true && this.inline),
       { id: 'ember-eui.eui-date-picker.native-inline' }
     );
     const unsupported = this.nativeInput ? unsupportedByNative(this.args) : [];
@@ -835,7 +984,7 @@ export default class EuiDatePicker extends Component<EuiDatePickerSignature> {
   @cached
   get rootClass() {
     const styles = useEuiBorealisStyles(this.context, euiDatePickerStyles);
-    const { disabled, readOnly, inline } = this.args;
+    const { disabled, readOnly, inline } = this;
     return euiClass(
       this.context,
       { boxSizing: 'border-box' },
@@ -860,7 +1009,9 @@ export default class EuiDatePicker extends Component<EuiDatePickerSignature> {
   }
 
   get icon(): string | undefined {
-    if (this.args.showIcon === false) return undefined;
+    if ((this.args.showIcon ?? this.range?.showIcon) === false) {
+      return undefined;
+    }
     return this.args.iconType ?? (this.timeOnly ? 'clock' : 'calendar');
   }
 
@@ -873,7 +1024,7 @@ export default class EuiDatePicker extends Component<EuiDatePickerSignature> {
       type,
       side: 'left' as const,
       onClick: this.showNativePicker,
-      disabled: Boolean(this.args.disabled),
+      disabled: this.disabled,
       'aria-label': this.calendarLabel,
       // the input itself is the keyboard's way in
       tabIndex: -1
@@ -885,7 +1036,10 @@ export default class EuiDatePicker extends Component<EuiDatePickerSignature> {
   }
 
   get anchorPosition(): PopoverAnchorPosition {
-    return this.args.popoverPlacement ?? 'downLeft';
+    return (
+      this.args.popoverPlacement ??
+      (this.range?.side === 'end' ? 'downRight' : 'downLeft')
+    );
   }
 
   /** The inline calendar's name, and the popover dialog's (DESIGN 7.3); `aria-label` or `aria-labelledby` on the picker win inline. */
@@ -902,7 +1056,7 @@ export default class EuiDatePicker extends Component<EuiDatePickerSignature> {
   }
 
   private fieldLabel(): string {
-    const input = this.input;
+    const input = this.input ?? this.triggerTarget();
     if (!input) return '';
     const own = input.getAttribute('aria-label');
     if (own) return own;
@@ -912,7 +1066,8 @@ export default class EuiDatePicker extends Component<EuiDatePickerSignature> {
       (id) => document.getElementById(id)?.textContent?.trim() ?? ''
     );
     if (texts.some(Boolean)) return texts.filter(Boolean).join(' ');
-    return [...(input.labels ?? [])]
+    const labels = (input as HTMLInputElement).labels;
+    return [...(labels ?? [])]
       .map((label) => label.textContent?.trim() ?? '')
       .filter(Boolean)
       .join(' ');
@@ -937,8 +1092,8 @@ export default class EuiDatePicker extends Component<EuiDatePickerSignature> {
   focusTrapOptions = { escapeDeactivates: false };
 
   get clear() {
-    const { onClear, disabled, readOnly } = this.args;
-    return this.value !== null && onClear && !disabled && !readOnly
+    const { onClear } = this.args;
+    return this.value !== null && onClear && this.interactive
       ? this.onClear
       : undefined;
   }
@@ -947,7 +1102,7 @@ export default class EuiDatePicker extends Component<EuiDatePickerSignature> {
 
   /** EUI's icon is rendered and opens the OS picker: the browser's own indicator can go. */
   get nativeIconOpens(): boolean {
-    return !this.args.controlOnly && typeof this.layoutIcon === 'object';
+    return !this.controlOnly && typeof this.layoutIcon === 'object';
   }
 
   /** What the native input is checked and converted with. */
@@ -1091,7 +1246,7 @@ export default class EuiDatePicker extends Component<EuiDatePickerSignature> {
   /* Opening and closing */
 
   private open() {
-    if (!this.interactive || this.args.inline) return;
+    if (!this.interactive || this.inline) return;
     this.isOpen = true;
   }
 
@@ -1110,7 +1265,7 @@ export default class EuiDatePicker extends Component<EuiDatePickerSignature> {
    */
   private focusInputAfterRender() {
     const refocus = (onlyIfTaken: boolean) => {
-      const input = this.input;
+      const input = this.input ?? this.triggerTarget();
       if (!input || this.isDestroying || this.isDestroyed) return;
       const active = document.activeElement;
       if (active === input) return;
@@ -1224,6 +1379,45 @@ export default class EuiDatePicker extends Component<EuiDatePickerSignature> {
     this.args.inputRef?.(element);
   }
 
+  /** With `<:trigger>`: the element around the trigger. */
+  registerAnchor = modifier((element: HTMLElement) => {
+    this.anchor = element;
+    return () => {
+      if (this.anchor === element) this.anchor = null;
+    };
+  });
+
+  /** Where focus goes back to with `<:trigger>`: what opened the calendar, else the first focusable element of the trigger. */
+  private triggerTarget(): HTMLElement | null {
+    const anchor = this.anchor;
+    if (!anchor) return null;
+    const opener = this.triggerFocus;
+    if (opener?.isConnected && anchor.contains(opener)) return opener;
+    const first = tabbable(anchor)[0];
+    return first instanceof HTMLElement ? first : null;
+  }
+
+  /** What `<:trigger>` yields. */
+  get triggerApi(): EuiDatePickerTrigger {
+    return { open: this.openFromTrigger, isOpen: this.isOpen, text: this.text };
+  }
+
+  /**
+   * `<:trigger>`'s `open`: the calendar opens with focus in it, held by its
+   * trap, as upstream does for a custom input that is not an `<input>`.
+   */
+  @action
+  openFromTrigger() {
+    if (!this.interactive) return;
+    const active = document.activeElement;
+    this.triggerFocus =
+      active instanceof HTMLElement && this.anchor?.contains(active)
+        ? active
+        : null;
+    this.open();
+    this.gridFocusRequest++;
+  }
+
   @action
   registerPanel(panel: HTMLElement | null) {
     this.panel = panel;
@@ -1291,7 +1485,10 @@ export default class EuiDatePicker extends Component<EuiDatePickerSignature> {
     const next = event.relatedTarget as Node | null;
     const inPicker = (node: Node | null) =>
       Boolean(
-        node && (this.input?.contains(node) || this.panel?.contains(node))
+        node &&
+        (this.input?.contains(node) ||
+          this.anchor?.contains(node) ||
+          this.panel?.contains(node))
       );
     if (inPicker(next) || this.pressInPanel) return;
     if (
@@ -1309,6 +1506,7 @@ export default class EuiDatePicker extends Component<EuiDatePickerSignature> {
         if (this.isDestroying || this.isDestroyed || !this.isOpen) return;
         const active = document.activeElement;
         if (active === this.input || this.panel?.contains(active)) return;
+        if (active && this.anchor?.contains(active)) return;
         this.close(true);
       });
       return;
@@ -1471,7 +1669,7 @@ export default class EuiDatePicker extends Component<EuiDatePickerSignature> {
         );
       }
     }
-    if (this.args.shouldCloseOnSelect !== false && !this.args.inline) {
+    if (this.args.shouldCloseOnSelect !== false && !this.inline) {
       this.close(true);
     }
   }
@@ -1511,68 +1709,51 @@ export default class EuiDatePicker extends Component<EuiDatePickerSignature> {
 
   <template>
     {{this.warnings}}
-    {{#if @inline}}
-      <div class="euiDatePicker {{this.rootClass}}">
-        <EuiFormControlLayout
-          @isDelimited={{true}}
-          @iconsPosition="static"
-          @clear={{this.clear}}
-          @isLoading={{@isLoading}}
-          @isInvalid={{this.isInvalid}}
-          @isDisabled={{@disabled}}
-          @readOnly={{@readOnly}}
-        >
-          <EuiDatePickerCalendar
-            role="group"
-            aria-label={{this.calendarLabel}}
-            @selected={{this.selectedDay}}
-            @onSelect={{this.onSelect}}
-            @openToDate={{this.openToDate}}
-            @minDate={{this.minDate}}
-            @maxDate={{this.maxDate}}
-            @excludeDates={{this.excludeDates}}
-            @includeDates={{this.includeDates}}
-            @filterDate={{@filterDate}}
-            @timeZone={{this.zone}}
-            @locale={{this.localeDefaults.locale}}
-            @firstDayOfWeek={{this.firstDayOfWeek}}
-            @dayClassName={{@dayClassName}}
-            @calendarClass={{@calendarClass}}
-            @disabled={{@disabled}}
-            @readOnly={{@readOnly}}
-            @showTimeSelect={{this.showTimeSelect}}
-            @showTimeSelectOnly={{this.timeOnly}}
-            @timeOptions={{this.timeOptions}}
-            @selectedTime={{this.selectedTime}}
-            @hour12={{this.hour12}}
-            @onPickTime={{this.onPickTime}}
-            @onMove={{this.onMove}}
-            ...attributes
-          />
-        </EuiFormControlLayout>
-      </div>
-    {{else if @controlOnly}}
-      {{#if this.nativeInput}}
+    {{this.rangeReport}}
+    {{#if this.inline}}
+      {{#if this.controlOnly}}
+        <DatePickerInlineCalendar @picker={{this}} ...attributes />
+      {{else}}
+        <div class="euiDatePicker {{this.rootClass}}">
+          <EuiFormControlLayout
+            @isDelimited={{true}}
+            @iconsPosition="static"
+            @clear={{this.clear}}
+            @isLoading={{@isLoading}}
+            @isInvalid={{this.isInvalid}}
+            @isDisabled={{this.disabled}}
+            @readOnly={{this.readOnly}}
+          >
+            <DatePickerInlineCalendar @picker={{this}} ...attributes />
+          </EuiFormControlLayout>
+        </div>
+      {{/if}}
+    {{else if this.controlOnly}}
+      {{#if (has-block "trigger")}}
+        <DatePickerControl @picker={{this}} @hasTrigger={{true}} ...attributes>
+          <:trigger as |trigger|>{{yield trigger to="trigger"}}</:trigger>
+        </DatePickerControl>
+      {{else if this.nativeInput}}
         <EuiDatePickerNativeInput @picker={{this}} ...attributes />
       {{else}}
         <DatePickerControl @picker={{this}} ...attributes />
       {{/if}}
     {{else}}
       {{#let
-        (has-block "prepend") (has-block "append")
-        as |hasPrepend hasAppend|
+        (has-block "prepend") (has-block "append") (has-block "trigger")
+        as |hasPrepend hasAppend hasTrigger|
       }}
         <div class="euiDatePicker {{this.rootClass}}">
           <EuiFormControlLayout
-            @inputId={{this.inputId}}
-            @icon={{this.layoutIcon}}
+            @inputId={{unless hasTrigger this.inputId}}
+            @icon={{unless hasTrigger this.layoutIcon}}
             @clear={{this.clear}}
             @isLoading={{@isLoading}}
             @isInvalid={{this.isInvalid}}
-            @isDisabled={{@disabled}}
-            @readOnly={{@readOnly}}
-            @fullWidth={{@fullWidth}}
-            @compressed={{@compressed}}
+            @isDisabled={{this.disabled}}
+            @readOnly={{this.readOnly}}
+            @fullWidth={{this.fullWidth}}
+            @compressed={{this.compressed}}
             @isPrependProvided={{hasPrepend}}
             @isAppendProvided={{hasAppend}}
             @css={{if (or hasPrepend hasAppend) this.inGroupCss}}
@@ -1581,7 +1762,18 @@ export default class EuiDatePicker extends Component<EuiDatePickerSignature> {
               {{yield className this.inputId to="prepend"}}
             </:prepend>
             <:field>
-              {{#if this.nativeInput}}
+              {{#if hasTrigger}}
+                <DatePickerControl
+                  @picker={{this}}
+                  @hasTrigger={{true}}
+                  ...attributes
+                >
+                  <:trigger as |trigger|>{{yield
+                      trigger
+                      to="trigger"
+                    }}</:trigger>
+                </DatePickerControl>
+              {{else if this.nativeInput}}
                 <EuiDatePickerNativeInput @picker={{this}} ...attributes />
               {{else}}
                 <DatePickerControl @picker={{this}} ...attributes />

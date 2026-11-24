@@ -70,6 +70,7 @@ export default class DatePickerTimeSelectionDemo extends Component {
     <EuiFormRow @label="Every 15 minutes" @id="d03-intervals">
       <EuiDatePicker
         @id="d03-intervals"
+        @native={{false}}
         @value={{this.meetingAt}}
         @onChange={{this.setMeetingAt}}
         @showTimeSelect={{true}}

@@ -12,6 +12,11 @@ title: Flatpickr
 [flatpickr](https://flatpickr.js.org), styled as an EUI text field. It
 supports single dates, ranges, multiple dates and times.
 
+`@ember-eui/core` also has a date picker of its own,
+[`EuiDatePicker`](/docs/core/docs/forms/date-picker): a port of upstream
+EUI's, with a calendar popover, a time list, and the device's own picker
+on phones. It needs no extra package.
+
 ```bash
 pnpm add @ember-eui/flatpickr flatpickr
 ```

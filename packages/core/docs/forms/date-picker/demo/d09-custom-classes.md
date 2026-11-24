@@ -64,6 +64,7 @@ export default class DatePickerCustomClassesDemo extends Component {
     <EuiFormRow @label="calendarClass example" @id="d09-calendar">
       <EuiDatePicker
         @id="d09-calendar"
+        @native={{false}}
         @value={{this.startDate}}
         @onChange={{this.handleChange}}
         @calendarClass="d09-background"
@@ -86,6 +87,7 @@ export default class DatePickerCustomClassesDemo extends Component {
     <EuiFormRow @label="popoverClass example" @id="d09-popover">
       <EuiDatePicker
         @id="d09-popover"
+        @native={{false}}
         @value={{this.startDate}}
         @onChange={{this.handleChange}}
         @popoverClass="d09-outline"

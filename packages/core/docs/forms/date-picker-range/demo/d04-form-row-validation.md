@@ -6,17 +6,18 @@ order: 4
 
 <EuiText>
 
-Two native date inputs. The end date must not be before the start date:
-the inputs are marked invalid and the error is shown below.
+Two date pickers in an `EuiFormRow`. The range does not check that the end is after the start; here the app does: the end date must not be before the start date, so the range is marked invalid and the error is shown below.
 
 </EuiText>
 
 ```gjs component
 import Component from '@glimmer/component';
 import { tracked } from '@glimmer/tracking';
-import { action } from '@ember/object';
-import { EuiFormRow, EuiDatePickerRange, EuiFieldText } from '@ember-eui/core/components';
-import { on } from '@ember/modifier';
+import {
+  EuiDatePicker,
+  EuiDatePickerRange,
+  EuiFormRow,
+} from '@ember-eui/core/components';
 
 export default class DateRangeDemo extends Component {
   @tracked start = '2026-03-01';
@@ -26,15 +27,13 @@ export default class DateRangeDemo extends Component {
     return Boolean(this.start && this.end && this.end < this.start);
   }
 
-  @action
-  setStart(event) {
-    this.start = event.target.value;
-  }
+  setStart = (date) => {
+    this.start = date;
+  };
 
-  @action
-  setEnd(event) {
-    this.end = event.target.value;
-  }
+  setEnd = (date) => {
+    this.end = date;
+  };
 
   <template>
     <EuiFormRow
@@ -42,27 +41,27 @@ export default class DateRangeDemo extends Component {
       @isInvalid={{this.isInvalid}}
       @error="The end date is before the start date."
     >
-      <EuiDatePickerRange>
+      <EuiDatePickerRange @isInvalid={{this.isInvalid}}>
         <:start as |className|>
-          <EuiFieldText
-            @controlOnly={{true}}
-            @value={{this.start}}
-            @isInvalid={{this.isInvalid}}
-            type="date"
+          <EuiDatePicker
             class={{className}}
             aria-label="Start date"
-            {{on "input" this.setStart}}
+            @value={{this.start}}
+            @onChange={{this.setStart}}
+            @selectsStart={{true}}
+            @startDate={{this.start}}
+            @endDate={{this.end}}
           />
         </:start>
         <:end as |className|>
-          <EuiFieldText
-            @controlOnly={{true}}
-            @value={{this.end}}
-            @isInvalid={{this.isInvalid}}
-            type="date"
+          <EuiDatePicker
             class={{className}}
             aria-label="End date"
-            {{on "input" this.setEnd}}
+            @value={{this.end}}
+            @onChange={{this.setEnd}}
+            @selectsEnd={{true}}
+            @startDate={{this.start}}
+            @endDate={{this.end}}
           />
         </:end>
       </EuiDatePickerRange>

@@ -6,9 +6,7 @@ order: 1
 
 <EuiText>
 
-To create a single date range control, use `EuiDatePickerRange` and put the individual date inputs in its `<:start>` and `<:end>` blocks. Each block yields the class to put on the control. You can control the state of both inputs as direct arguments on `EuiDatePickerRange` as well as control each individually.
-
-Ember EUI's core package has no `EuiDatePicker` (calendar popover); the examples use native date inputs. The calendar engines live in the `@ember-eui/flatpickr` and `@ember-eui/pikaday` packages.
+To create a single date range control, use `EuiDatePickerRange` and put an `EuiDatePicker` in each of its `<:start>` and `<:end>` blocks, with the class the block yields. The pickers take the range's states by themselves: set `@fullWidth`, `@compressed`, `@isInvalid`, `@isLoading`, `@readOnly` and `@disabled` on the range, or `@disabled` and `@isInvalid` on one picker. Give both pickers `@startDate` and `@endDate` to highlight the range in their calendars, and `@selectsStart` or `@selectsEnd` to preview it while you hover.
 
 If you need even more functionality such as relative time, suggested date ranges, and refresh intervals, consider using `EuiSuperDatePicker`.
 
@@ -20,20 +18,21 @@ The switches above the control are docs-only helpers that toggle its display arg
 import Component from '@glimmer/component';
 import { tracked } from '@glimmer/tracking';
 import { action } from '@ember/object';
-import { on } from '@ember/modifier';
 import { fn, get } from '@ember/helper';
 import {
+  EuiDatePicker,
   EuiDatePickerRange,
-  EuiFieldText,
   EuiFlexGroup,
   EuiFlexItem,
   EuiSpacer,
   EuiSwitch,
 } from '@ember-eui/core/components';
 
-const toInput = (date) => date.toISOString().slice(0, 10);
+const pad = (n) => String(n).padStart(2, '0');
+const dayOf = (date) =>
+  `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}`;
 const today = new Date();
-const later = new Date(today.getTime() + 11 * 24 * 60 * 60 * 1000);
+const later = new Date(today.getFullYear(), today.getMonth(), today.getDate() + 11);
 
 export default class DatePickerRangeDemo extends Component {
   toggles = [
@@ -46,23 +45,21 @@ export default class DatePickerRangeDemo extends Component {
   ];
 
   @tracked flags = {};
-  @tracked startDate = toInput(today);
-  @tracked endDate = toInput(later);
+  @tracked startDate = dayOf(today);
+  @tracked endDate = dayOf(later);
 
   @action
   toggle(key, event) {
     this.flags = { ...this.flags, [key]: event.target.checked };
   }
 
-  @action
-  setStart(event) {
-    this.startDate = event.target.value;
-  }
+  setStart = (date) => {
+    if (date) this.startDate = date;
+  };
 
-  @action
-  setEnd(event) {
-    this.endDate = event.target.value;
-  }
+  setEnd = (date) => {
+    if (date) this.endDate = date;
+  };
 
   <template>
     <EuiFlexGroup @wrap={{true}} @gutterSize="m" @responsive={{false}}>
@@ -87,25 +84,25 @@ export default class DatePickerRangeDemo extends Component {
       @disabled={{this.flags.disabled}}
     >
       <:start as |className|>
-        <EuiFieldText
-          @controlOnly={{true}}
-          @value={{this.startDate}}
-          type="date"
+        <EuiDatePicker
           class={{className}}
-          max={{this.endDate}}
           aria-label="Start date"
-          {{on "input" this.setStart}}
+          @value={{this.startDate}}
+          @onChange={{this.setStart}}
+          @selectsStart={{true}}
+          @startDate={{this.startDate}}
+          @endDate={{this.endDate}}
         />
       </:start>
       <:end as |className|>
-        <EuiFieldText
-          @controlOnly={{true}}
-          @value={{this.endDate}}
-          type="date"
+        <EuiDatePicker
           class={{className}}
-          min={{this.startDate}}
           aria-label="End date"
-          {{on "input" this.setEnd}}
+          @value={{this.endDate}}
+          @onChange={{this.setEnd}}
+          @selectsEnd={{true}}
+          @startDate={{this.startDate}}
+          @endDate={{this.endDate}}
         />
       </:end>
     </EuiDatePickerRange>

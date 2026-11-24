@@ -12,6 +12,11 @@ title: Pikaday
 [Pikaday](https://github.com/Pikaday/Pikaday) calendar (through
 ember-pikaday), styled as an EUI text field.
 
+`@ember-eui/core` also has a date picker of its own,
+[`EuiDatePicker`](/docs/core/docs/forms/date-picker): a port of upstream
+EUI's, with a calendar popover, a time list, and the device's own picker
+on phones. It needs no extra package.
+
 ```bash
 pnpm add @ember-eui/pikaday moment
 ```

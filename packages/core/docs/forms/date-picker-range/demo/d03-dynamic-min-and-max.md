@@ -2,31 +2,31 @@
 order: 3
 ---
 
-# Dynamic min and max dates
+# Dynamic `minDate` and `maxDate`
 
 <EuiText>
 
-By using `min` and `max` on the date inputs, and updating the values based on the start and end dates, users get immediate feedback on what range values are allowed.
+By using `@minDate` and `@maxDate`, and updating the values based on the start and end dates, users get immediate feedback on what range values are allowed: the start picker cannot go past the end, the end picker cannot go before the start, and neither can leave the last two years.
 
 </EuiText>
 
 ```gjs component
 import Component from '@glimmer/component';
 import { tracked } from '@glimmer/tracking';
-import { action } from '@ember/object';
-import { on } from '@ember/modifier';
-import { EuiDatePickerRange, EuiFieldText } from '@ember-eui/core/components';
+import { EuiDatePicker, EuiDatePickerRange } from '@ember-eui/core/components';
 
-const toInput = (date) => date.toISOString().slice(0, 10);
+const pad = (n) => String(n).padStart(2, '0');
+const dayOf = (date) =>
+  `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}`;
 const now = new Date();
 const twoYearsAgo = new Date(now.getFullYear() - 2, now.getMonth(), now.getDate());
 
 export default class DatePickerRangeMinMaxDemo extends Component {
-  minDate = toInput(twoYearsAgo);
-  maxDate = toInput(now);
+  minDate = dayOf(twoYearsAgo);
+  maxDate = dayOf(now);
 
-  @tracked startDate = toInput(twoYearsAgo);
-  @tracked endDate = toInput(now);
+  @tracked startDate = dayOf(twoYearsAgo);
+  @tracked endDate = dayOf(now);
 
   get isInvalid() {
     return (
@@ -36,42 +36,40 @@ export default class DatePickerRangeMinMaxDemo extends Component {
     );
   }
 
-  @action
-  setStart(event) {
-    this.startDate = event.target.value;
-  }
+  setStart = (date) => {
+    if (date) this.startDate = date;
+  };
 
-  @action
-  setEnd(event) {
-    this.endDate = event.target.value;
-  }
+  setEnd = (date) => {
+    if (date) this.endDate = date;
+  };
 
   <template>
     <EuiDatePickerRange @isInvalid={{this.isInvalid}}>
       <:start as |className|>
-        <EuiFieldText
-          @controlOnly={{true}}
-          @value={{this.startDate}}
-          @isInvalid={{this.isInvalid}}
-          type="date"
+        <EuiDatePicker
           class={{className}}
-          min={{this.minDate}}
-          max={{this.endDate}}
           aria-label="Start date"
-          {{on "input" this.setStart}}
+          @value={{this.startDate}}
+          @onChange={{this.setStart}}
+          @selectsStart={{true}}
+          @startDate={{this.startDate}}
+          @endDate={{this.endDate}}
+          @minDate={{this.minDate}}
+          @maxDate={{this.endDate}}
         />
       </:start>
       <:end as |className|>
-        <EuiFieldText
-          @controlOnly={{true}}
-          @value={{this.endDate}}
-          @isInvalid={{this.isInvalid}}
-          type="date"
+        <EuiDatePicker
           class={{className}}
-          min={{this.startDate}}
-          max={{this.maxDate}}
           aria-label="End date"
-          {{on "input" this.setEnd}}
+          @value={{this.endDate}}
+          @onChange={{this.setEnd}}
+          @selectsEnd={{true}}
+          @startDate={{this.startDate}}
+          @endDate={{this.endDate}}
+          @minDate={{this.startDate}}
+          @maxDate={{this.maxDate}}
         />
       </:end>
     </EuiDatePickerRange>

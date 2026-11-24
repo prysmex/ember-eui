@@ -34,6 +34,7 @@ export default class DatePickerLocaleDemo extends Component {
     <EuiFormRow @label="US" @id="d05-us">
       <EuiDatePicker
         @id="d05-us"
+        @native={{false}}
         @value={{this.startDate}}
         @onChange={{this.handleChange}}
         @locale="en-US"
@@ -45,6 +46,7 @@ export default class DatePickerLocaleDemo extends Component {
     <EuiFormRow @label="China" @id="d05-cn">
       <EuiDatePicker
         @id="d05-cn"
+        @native={{false}}
         @value={{this.startDate}}
         @onChange={{this.handleChange}}
         @locale="zh-CN"
@@ -56,6 +58,7 @@ export default class DatePickerLocaleDemo extends Component {
     <EuiFormRow @label="Korea" @id="d05-ko">
       <EuiDatePicker
         @id="d05-ko"
+        @native={{false}}
         @value={{this.startDate}}
         @onChange={{this.handleChange}}
         @locale="ko"
@@ -67,6 +70,7 @@ export default class DatePickerLocaleDemo extends Component {
     <EuiFormRow @label="Germany, week from Monday" @id="d05-de">
       <EuiDatePicker
         @id="d05-de"
+        @native={{false}}
         @value={{this.startDate}}
         @onChange={{this.handleChange}}
         @locale="de"
@@ -78,6 +82,7 @@ export default class DatePickerLocaleDemo extends Component {
     <EuiFormRow @label="Mexico, typed as year-month-day, week from Sunday" @id="d05-mx">
       <EuiDatePicker
         @id="d05-mx"
+        @native={{false}}
         @value={{this.startDate}}
         @onChange={{this.handleChange}}
         @locale="es-MX"

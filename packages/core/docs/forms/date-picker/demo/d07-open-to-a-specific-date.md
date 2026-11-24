@@ -26,6 +26,7 @@ export default class DatePickerOpenToDateDemo extends Component {
     <EuiFormRow @label="Select a date" @id="d07-date">
       <EuiDatePicker
         @id="d07-date"
+        @native={{false}}
         @value={{this.startDate}}
         @onChange={{this.handleChange}}
         @openToDate="1993-09-28"

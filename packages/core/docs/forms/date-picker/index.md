@@ -26,6 +26,13 @@ With `@showTimeSelect={{true}}` a time list sits beside the calendar and
 the value is an instant; with `@showTimeSelectOnly={{true}}` the picker
 chooses a time of day only.
 
+For a start and an end date, put two pickers in an
+[`EuiDatePickerRange`](/docs/core/docs/forms/date-picker-range).
+
+On phones the picker shows the operating system's own input by default
+(see "Phones and Capacitor" below); the demos of calendar-only features
+pass `@native={{false}}`, so a phone shows their calendar too.
+
 </EuiText>
 
 <EuiHorizontalRule />
@@ -181,7 +188,8 @@ control layout. The template does not change.
 
 The path is chosen once, when the picker is created, in this order:
 
-1. `@inline={{true}}` shows the calendar: there is no native inline picker.
+1. `@inline={{true}}` and a `<:trigger>` block show the calendar: there is
+   no native inline picker, and a trigger of your own opens the calendar.
 2. `@native={{true}}` or `@native={{false}}`.
 3. `componentDefaults.EuiDatePicker.native` in `euiConfig`, when `true` or
    `false`.
@@ -312,7 +320,7 @@ calendar with `@inline`.
 | `@shadow` | `boolean` | `true` | With `@inline`: the raised frame. |
 | `@shouldCloseOnSelect` | `boolean` | `true` | Closes the popover after a day is picked (with `@showTimeSelect`, after a time is). |
 | `@adjustDateOnChange` | `boolean` | `false` | Arrow keys and the month and year selects change the value at once, not only show another day (upstream's default is `true`). |
-| `@popoverPlacement` | `PopoverAnchorPosition` | `'downLeft'` | Where the popover opens, any `EuiPopover` `@anchorPosition`. |
+| `@popoverPlacement` | `PopoverAnchorPosition` | `'downLeft'`; `'downRight'` in the `<:end>` block of an `EuiDatePickerRange` | Where the popover opens, any `EuiPopover` `@anchorPosition`. |
 | `@timeZone` | `'local' \| 'utc' \| (string & {})` | `'local'` | `'local'`, `'utc'`, an IANA name (`'America/New_York'`) or a fixed offset (`'-03:00'`, upstream's `utcOffset`): the zone instants are shown and chosen in, the zone of "today", and of a `Date` or a moment. |
 | `@locale` | `string` | `componentDefaults.EuiDatePicker.locale` in `euiConfig`, then the document's language, then the browser's | BCP 47 tag for names and defaults. |
 | `@dateOrder` | `DateOrder` | the order of `@locale` | The order typed and shown: `'dmy'` (`24/11/2026`), `'mdy'` (`11/24/2026`) or `'ymd'` (`2026-11-24`). |
@@ -326,6 +334,10 @@ calendar with `@inline`.
 | `@dayClassName` | `(date: string) => string \| null \| undefined` |  | Extra classes for a day, called with `YYYY-MM-DD` (upstream `dayClassName`). |
 | `@calendarClass` | `string` |  | Extra classes on the calendar (upstream `calendarClassName`). |
 | `@popoverClass` | `string` |  | Extra classes on the popover panel (upstream `popperClassName`). |
+| `@selectsStart` | `boolean` |  | This picker chooses the start of a range: hovering a day previews the range from it to `@endDate` (upstream `selectsStart`). |
+| `@selectsEnd` | `boolean` |  | This picker chooses the end of a range: hovering a day previews the range from `@startDate` to it (upstream `selectsEnd`). |
+| `@startDate` | `DateInput \| null` |  | The range's start, for the highlight: `YYYY-MM-DD`, an instant (its day in `@timeZone`), a `Date` or a moment. The days from `@startDate` to `@endDate` are highlighted when both are given. |
+| `@endDate` | `DateInput \| null` |  | The range's end, for the highlight; as `@startDate`. |
 | `@id` | `string` | a random id | Id of the input, e.g. to match an `EuiFormRow`'s `@id`. |
 | `@placeholder` | `string` | the display format spelled out (`DD/MM/YYYY`) | Placeholder text. |
 | `@fullWidth` | `boolean` |  | Stretches the input to its container's width. |
@@ -336,14 +348,15 @@ calendar with `@inline`.
 | `@readOnly` | `boolean` |  | Read-only input; nothing opens. |
 | `@showIcon` | `boolean` | `true` | The icon in the input. |
 | `@iconType` | `string` | `'calendar'`, or `'clock'` with `@showTimeSelectOnly` | The icon's type, anything `EuiIcon`'s `@type` accepts. |
-| `@controlOnly` | `boolean` |  | Renders the input and its popover without the form control layout (no icon, clear button, prepend or append), e.g. inside `EuiDatePickerRange`. |
+| `@controlOnly` | `boolean` |  | Renders the input and its popover without the form control layout (no icon, clear button, prepend or append); with `@inline`, the calendar without its frame. Set for you inside `EuiDatePickerRange`, which also passes its `@inline`, `@compressed`, `@fullWidth`, `@readOnly`, `@disabled` and `@isInvalid` (the picker's own `@disabled` and `@isInvalid` add to the range's; its other own arguments win). |
 | `@inputRef` | `(element: HTMLInputElement \| null) => void` |  | Called with the `<input>` element once rendered. |
-| `@native` | `EuiDatePickerNative` | `componentDefaults.EuiDatePicker.native` in `euiConfig`, then `'auto'` | The OS picker instead of the calendar: `<input type="date">`, `datetime-local` (the wall clock in `@timeZone`) or `time`, with the same values. `'auto'` takes it in a Capacitor app on a device and when the primary pointer is coarse (a phone, a tablet), unless an argument the OS cannot honour is given (`@filterDate`, `@excludeDates`, `@includeDates`, `@excludeTimes`, `@injectTimes`, `@dayClassName`). `true` and `false` force a path; `@inline` always shows the calendar. Chosen once, when the picker is created. Every value the OS returns is checked as typed text is. |
+| `@native` | `EuiDatePickerNative` | `componentDefaults.EuiDatePicker.native` in `euiConfig`, then `'auto'` | The OS picker instead of the calendar: `<input type="date">`, `datetime-local` (the wall clock in `@timeZone`) or `time`, with the same values. `'auto'` takes it in a Capacitor app on a device and when the primary pointer is coarse (a phone, a tablet), unless an argument the OS cannot honour is given (`@filterDate`, `@excludeDates`, `@includeDates`, `@excludeTimes`, `@injectTimes`, `@dayClassName`). `true` and `false` force a path; `@inline` and a `<:trigger>` block always show the calendar. Chosen once, when the picker is created. Every value the OS returns is checked as typed text is. |
 
 | Block | Description |
 | --- | --- |
 | `<:prepend>` | Content before the input, e.g. an `EuiFormLabel`; yields the class to put on it and the input id. |
 | `<:append>` | Content after the input; yields the class to put on it and the input id. |
+| `<:trigger>` | A trigger of your own instead of the text input (upstream `customInput`), e.g. an `EuiButton`: call `open` on its click. It yields `open`, `isOpen` and `text`, the value in the display format. The calendar takes focus when it opens and gives it back to the trigger when it closes; there is no typed input, icon or native path. `...attributes` go to the element around the trigger. |
 
 HTML attributes and modifiers (`class`, `data-test-*`, `{{on …}}`) are applied to its `<input>` / `<div>`.
 

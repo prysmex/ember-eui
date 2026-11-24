@@ -334,6 +334,8 @@
       "./components/eui-data-grid/toolbar.js": "./dist/_app_/components/eui-data-grid/toolbar.js",
       "./components/eui-data-grid/tree-cell.js": "./dist/_app_/components/eui-data-grid/tree-cell.js",
       "./components/eui-date-picker-range.js": "./dist/_app_/components/eui-date-picker-range.js",
+      "./components/eui-date-picker.js": "./dist/_app_/components/eui-date-picker.js",
+      "./components/eui-date-picker/calendar.js": "./dist/_app_/components/eui-date-picker/calendar.js",
       "./components/eui-delay-hide.js": "./dist/_app_/components/eui-delay-hide.js",
       "./components/eui-delay-render.js": "./dist/_app_/components/eui-delay-render.js",
       "./components/eui-described-form-group.js": "./dist/_app_/components/eui-described-form-group.js",

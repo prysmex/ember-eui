@@ -50,6 +50,7 @@ class State {
     this.changes.push(value);
     this.value = value;
   };
+  clear = () => this.onChange(null);
 }
 
 module('Integration | Component | eui-date-picker | inline', function (hooks) {
@@ -290,7 +291,7 @@ module('Integration | Component | eui-date-picker | inline', function (hooks) {
       )
     ];
     assert.strictEqual(years[0]!.value, '1926');
-    assert.strictEqual(years.at(-1)!.value, '2046');
+    assert.strictEqual(years[years.length - 1]!.value, '2046');
   });
 
   test('excluded, included and filtered days are disabled (9 #12)', async function (assert) {
@@ -537,7 +538,8 @@ module('Integration | Component | eui-date-picker | inline', function (hooks) {
   test('an unreadable @value: invalid, nothing selected, opens on today, a development warning (9 #1, #2)', async function (assert) {
     warnings = [];
     const today = todayIn('local', Date.now());
-    const asDate = new Date();
+    // what an app might pass by habit: the type says string
+    const asDate = new Date() as unknown as string;
     await render(
       <template>
         <div data-p="text"><EuiDatePicker
@@ -658,7 +660,7 @@ module('Integration | Component | eui-date-picker | inline', function (hooks) {
           @disabled={{true}}
           @value={{state.value}}
           @onChange={{state.onChange}}
-          @onClear={{state.onChange}}
+          @onClear={{state.clear}}
           @locale="en-US"
           @firstDayOfWeek={{0}}
         />

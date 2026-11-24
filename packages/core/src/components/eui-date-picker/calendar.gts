@@ -67,6 +67,9 @@ import type EuiI18n from '../../services/eui-i18n.ts';
 /** react-datepicker's `react-datepicker__day--{code}` classes, by `getUTCDay`. */
 const DAY_CODES = ['sun', 'mon', 'tue', 'wed', 'thu', 'fri', 'sat'] as const;
 
+/** The longest short weekday name shown as is, in characters. */
+const MAX_SHORT_WEEKDAY = 4;
+
 export interface CalendarDay {
   /** `YYYY-MM-DD`; null for a cell outside 0001 to 9999. */
   date: string | null;
@@ -342,7 +345,13 @@ export default class EuiDatePickerCalendar extends Component<EuiDatePickerCalend
   @cached
   get weekdays() {
     const { locale, firstDayOfWeek } = this.args;
-    const short = weekdayNames(locale, 'short', firstDayOfWeek);
+    let short = weekdayNames(locale, 'short', firstDayOfWeek);
+    // A 32px column fits about four letters. Some locales' short names are
+    // whole words (ar, fa, he): those get the narrow names. The long name
+    // is still read out and kept in `abbr`.
+    if (short.some((name) => [...name].length > MAX_SHORT_WEEKDAY)) {
+      short = weekdayNames(locale, 'narrow', firstDayOfWeek);
+    }
     const long = weekdayNames(locale, 'long', firstDayOfWeek);
     return short.map((name, i) => ({ short: name, long: long[i]! }));
   }

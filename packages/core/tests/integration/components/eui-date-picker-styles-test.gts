@@ -1,9 +1,11 @@
 import { module, test } from 'qunit';
 import { setupRenderingTest } from 'ember-qunit';
+import moment from 'moment';
 import { focus, render, triggerKeyEvent } from '@ember/test-helpers';
 
 import EuiDatePicker from '#src/components/eui-date-picker.gts';
 import EuiEmotionProvider from '#src/components/eui-emotion-provider.gts';
+import DatetimePicker from '#src/components/eui-super-date-picker/date-popover/datetime-picker.gts';
 import {
   euiButtonColor,
   euiButtonFillColor
@@ -398,6 +400,129 @@ module('Integration | Component | eui-date-picker | styles', function (hooks) {
     assert.strictEqual(
       getComputedStyle(el('td[data-date="2026-11-10"]')).color,
       rgb(theme.colors.textHeading)
+    );
+  });
+
+  test('weekday headers fit their column in every locale; long short names fall back to narrow', async function (assert) {
+    const locales = [
+      'en-US',
+      'fr',
+      'de',
+      'es-MX',
+      'pt-BR',
+      'vi',
+      'ar',
+      'fa',
+      'he',
+      'hi',
+      'zh'
+    ];
+    await render(
+      <template>
+        <EuiEmotionProvider @colorMode="light">
+          {{#each locales as |locale|}}
+            <div data-locale={{locale}}>
+              <EuiDatePicker
+                @inline={{true}}
+                @value="2026-11-24"
+                @locale={{locale}}
+                @firstDayOfWeek={{0}}
+              />
+            </div>
+          {{/each}}
+        </EuiEmotionProvider>
+      </template>
+    );
+    for (const locale of locales) {
+      for (const th of document.querySelectorAll<HTMLElement>(
+        `[data-locale="${locale}"] .react-datepicker__day-name`
+      )) {
+        const shown = el('[aria-hidden="true"]', th);
+        assert.true(
+          shown.offsetWidth <= th.clientWidth,
+          `${locale}: "${shown.textContent}" fits`
+        );
+      }
+    }
+    assert.strictEqual(
+      el('[data-locale="ar"] .react-datepicker__day-name [aria-hidden]')
+        .textContent,
+      'ح',
+      'ar: narrow'
+    );
+    assert.strictEqual(
+      el('[data-locale="ar"] .react-datepicker__day-name').getAttribute('abbr'),
+      'الأحد',
+      'the long name stays'
+    );
+    assert.strictEqual(
+      el('[data-locale="fr"] .react-datepicker__day-name [aria-hidden]')
+        .textContent,
+      'dim.',
+      'fr: short'
+    );
+  });
+
+  test('the table lays out as the Absolute tab calendar: same day pitch, headers over their days', async function (assert) {
+    const selected = moment('2026-11-24T10:00:00');
+    await render(
+      <template>
+        <EuiEmotionProvider @colorMode="light">
+          <div data-p="old"><DatetimePicker
+              @selected={{selected}}
+              @onChange={{noop}}
+            /></div>
+          <div data-p="new"><EuiDatePicker
+              @inline={{true}}
+              @value="2026-11-24"
+              @locale="en-US"
+              @firstDayOfWeek={{0}}
+            /></div>
+        </EuiEmotionProvider>
+      </template>
+    );
+    const geometry = (root: string) => {
+      const week = el(`[data-p="${root}"] .react-datepicker__week`);
+      const days = [
+        ...week.querySelectorAll<HTMLElement>('.react-datepicker__day')
+      ];
+      const origin = week.getBoundingClientRect().left;
+      return {
+        offsets: days.map((d) =>
+          Math.round(d.getBoundingClientRect().left - origin)
+        ),
+        sizes: days.map((d) => size(d))
+      };
+    };
+    const old = geometry('old');
+    const now = geometry('new');
+    assert.deepEqual(now.sizes, old.sizes, 'same day size');
+    const pitch = (offsets: number[]) =>
+      offsets.slice(1).map((x, i) => x - offsets[i]!);
+    assert.deepEqual(
+      pitch(now.offsets),
+      pitch(old.offsets),
+      'same distance between days'
+    );
+
+    const headers = [
+      ...document.querySelectorAll<HTMLElement>(
+        '[data-p="new"] .react-datepicker__day-name'
+      )
+    ];
+    const firstWeek = [
+      ...document.querySelectorAll<HTMLElement>(
+        '[data-p="new"] .react-datepicker__week:first-child td'
+      )
+    ];
+    const center = (e: HTMLElement) => {
+      const r = e.getBoundingClientRect();
+      return Math.round(r.left + r.width / 2);
+    };
+    assert.deepEqual(
+      headers.map(center),
+      firstWeek.map(center),
+      'each header is centred over its day'
     );
   });
 });

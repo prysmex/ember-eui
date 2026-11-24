@@ -33,6 +33,7 @@ const EuiDatePickerNativeInput: TOC<{
       min={{native.min}}
       max={{native.max}}
       step={{native.step}}
+      data-picker-icon={{if @picker.nativeIconOpens ""}}
       ...attributes
       {{on "input" @picker.onNativeInput}}
       {{on "change" @picker.onNativeChange}}

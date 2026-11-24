@@ -738,6 +738,24 @@ module('Integration | Component | eui-date-picker | native', function (hooks) {
     assert.dom(input()).isFocused('a refused showPicker is ignored');
   });
 
+  test("the browser's indicator is hidden only while EUI's icon opens the picker", async function (assert) {
+    stubPointer(true);
+    await render(
+      <template>
+        <div data-p="icon"><EuiDatePicker /></div>
+        <div data-p="no-icon"><EuiDatePicker @showIcon={{false}} /></div>
+        <div data-p="control"><EuiDatePicker @controlOnly={{true}} /></div>
+      </template>
+    );
+    assert.dom(input(el('[data-p="icon"]'))).hasAttribute('data-picker-icon');
+    assert
+      .dom(input(el('[data-p="no-icon"]')))
+      .doesNotHaveAttribute('data-picker-icon');
+    assert
+      .dom(input(el('[data-p="control"]')))
+      .doesNotHaveAttribute('data-picker-icon');
+  });
+
   test('clear: the clear button empties the native input', async function (assert) {
     stubPointer(true);
     const state = new State();

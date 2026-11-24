@@ -567,7 +567,9 @@ export const euiDatePickerInputErrorStyles =
  * - `color-scheme` follows EUI's colour mode, so the browser's own parts
  *   (the segments, the OS picker where the engine draws it) match the theme,
  *   as upstream's `EuiFieldNumber` does.
- * - The browser's picker indicator is hidden: EUI's icon opens the picker.
+ * - The browser's picker indicator is hidden while EUI's icon opens the
+ *   picker (`data-picker-icon`); without the icon (`@showIcon={{false}}`,
+ *   `@controlOnly`) it stays, the only pointer way in on a desktop.
  * - WebKit (iOS) centres the value and gives an empty input no line box:
  *   the value starts at the inline start and keeps a line's height.
  * - The segments' own padding is dropped, so the text sits where
@@ -586,7 +588,7 @@ export const euiDatePickerNativeStyles = function euiDatePickerNativeStyles(
     'color-scheme:',
     dark ? 'dark' : 'light',
     ';',
-    '&::-webkit-calendar-picker-indicator{display:none;}',
+    '&[data-picker-icon]::-webkit-calendar-picker-indicator{display:none;}',
     '&::-webkit-inner-spin-button{display:none;}',
     '&::-webkit-date-and-time-value{margin:0;text-align:start;min-block-size:1lh;}',
     '&::-webkit-datetime-edit{padding:0;}',

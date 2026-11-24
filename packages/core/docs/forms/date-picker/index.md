@@ -216,7 +216,39 @@ What differs on the native path:
 | `@onInputError` | on commit | when focus leaves the input, for the value left in it; the invalid look shows at once |
 | A half-filled field | an input error on commit | an input error (`'unreadable'`) when focus leaves; nothing while editing |
 | `@readOnly` | a read-only text input | the same read-only text input, with the value formatted, since some engines open the OS picker on a read-only date input |
-| Icon | EUI's | EUI's, a button that opens the OS picker (`showPicker()`); the browser's own indicator is hidden |
+| Icon | EUI's | EUI's, a button that opens the OS picker (`showPicker()`), and the browser's own indicator is hidden; without EUI's icon (`@showIcon={{false}}`, `@controlOnly`) the browser's indicator stays |
+
+### Checking on devices
+
+The OS pickers differ by system and version, and none of them runs in a
+desktop browser's test run. Before relying on the native path, check it on
+a real iPhone (WKWebView) and a real Android phone (Android System WebView),
+in the Capacitor app and in the mobile browser:
+
+- **The picker opens** from a tap anywhere in the field, and from EUI's icon
+  (`showPicker()`); in a flyout and in a modal too.
+- **Looks:** the empty field has the height of a text field, its
+  `mm/dd/yyyy` (or the OS's empty text) sits at the start in the placeholder
+  colour, the value is aligned like a text field's, and the disabled and
+  invalid states read clearly; in light and dark mode, and the OS picker
+  follows the dark mode.
+- **A value round-trips:** pick a date, a date and time, a time; `@onChange`
+  gets the same strings as on a desktop, and the field shows the value after
+  a re-render. With `@seconds`, the picker offers seconds.
+- **Clear:** EUI's clear button empties the field; the OS picker's own clear
+  or reset gives `@onChange(null)`.
+- **`min` and `max`:** the OS picker greys out or refuses days outside the
+  limits (the default range is the years 0001 to 9999); a value outside them
+  that the OS lets through shows the invalid look and does not change the
+  value.
+- **When `@onInputError` fires:** it is called when focus leaves the input.
+  Check that closing the OS picker (Done, or a tap outside) moves focus away;
+  if it does not, the error comes only when the user leaves the field.
+- **Time zones:** with `@showTimeSelect` and a `@timeZone` other than the
+  phone's, the field shows the wall clock in that zone, and a chosen time is
+  stored as the instant in that zone; also on a DST change day.
+- **A screen reader** (VoiceOver, TalkBack) announces the field's label, its
+  value, the invalid state, and EUI's icon button as "Choose date".
 
 ## Upstream differences
 

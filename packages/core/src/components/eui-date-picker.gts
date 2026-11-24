@@ -945,6 +945,11 @@ export default class EuiDatePicker extends Component<EuiDatePickerSignature> {
 
   /* The native path (DESIGN 6) */
 
+  /** EUI's icon is rendered and opens the OS picker: the browser's own indicator can go. */
+  get nativeIconOpens(): boolean {
+    return !this.args.controlOnly && typeof this.layoutIcon === 'object';
+  }
+
   /** What the native input is checked and converted with. */
   get nativeContext(): NativeContext {
     return {

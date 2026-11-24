@@ -50,6 +50,41 @@ notice and those license texts with it.
   adapted from EUI's documentation site (`packages/website` in the EUI
   repository).
 
+## Parts derived from react-datepicker
+
+EUI's date picker calendar is a fork of react-datepicker 2.0.0, which is
+available under the MIT license (EUI's `NOTICE.txt` says so as well). The
+calendars of this package port that fork's markup, class names, behaviour
+and styles: `src/utils/eui/date-pickers.ts`,
+`src/components/eui-super-date-picker/date-popover/datetime-picker.gts` and
+`src/components/eui-date-picker/` (built into `dist/`). The MIT terms below
+cover what comes from react-datepicker; what EUI added stays under Elastic's
+license, as above.
+
+```
+The MIT License (MIT)
+
+Copyright (c) 2018 HackerOne Inc and individual contributors
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+```
+
 ## Dependencies
 
 `@elastic/eui-theme-borealis` and `@elastic/eui-theme-common`, which provide

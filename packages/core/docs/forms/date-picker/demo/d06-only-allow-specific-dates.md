@@ -6,7 +6,7 @@ order: 6
 
 <EuiText>
 
-Use `@minDate` and `@maxDate` to specify the range the value must fall into, `@excludeDates` to disallow specific days, `@includeDates` to allow only some, and `@filterDate` to decide per day. They take `YYYY-MM-DD` strings (or a `Date` or a moment); `@filterDate` is called with each day as a string. Days that cannot be chosen are dimmed, and typed text naming one is an input error. The time limits (`@minTime`, `@maxTime`, `@excludeTimes`) come with time selection.
+Use `@minDate` and `@maxDate` to specify the range the value must fall into, `@excludeDates` to disallow specific days, `@includeDates` to allow only some, and `@filterDate` to decide per day. They take `YYYY-MM-DD` strings (or a `Date` or a moment); `@filterDate` is called with each day as a string. Days that cannot be chosen are dimmed, and typed text naming one is an input error. With time selection, `@minTime` and `@maxTime` limit the wall times of every day and `@excludeTimes` disallows some (`HH:mm`); with `@showTimeSelect`, `@minDate` and `@maxDate` may also be instants, which disable the times before or after them.
 
 </EuiText>
 
@@ -32,7 +32,13 @@ export default class DatePickerSpecificDatesDemo extends Component {
   @tracked startDate2 = day(1);
   @tracked startDate3 = day(1);
   @tracked startDate4 = null;
+  @tracked startsAt = null;
+  @tracked startsAt2 = null;
   @tracked lastError = null;
+
+  lunch = ['12:00', '12:30'];
+  setStartsAt = (value) => (this.startsAt = value);
+  setStartsAt2 = (value) => (this.startsAt2 = value);
 
   minDate = day(-2);
   maxDate = day(5);
@@ -108,6 +114,31 @@ export default class DatePickerSpecificDatesDemo extends Component {
         @value={{this.startDate4}}
         @onChange={{this.setStartDate4}}
         @includeDates={{this.included}}
+      />
+    </EuiFormRow>
+
+    <EuiSpacer />
+
+    <EuiFormRow @label="Only allow times between 09:00 and 17:30" @id="d06-times">
+      <EuiDatePicker
+        @id="d06-times"
+        @value={{this.startsAt}}
+        @onChange={{this.setStartsAt}}
+        @showTimeSelect={{true}}
+        @minTime="09:00"
+        @maxTime="17:30"
+      />
+    </EuiFormRow>
+
+    <EuiSpacer />
+
+    <EuiFormRow @label="Exclude 12:00 and 12:30" @id="d06-exclude-times">
+      <EuiDatePicker
+        @id="d06-exclude-times"
+        @value={{this.startsAt2}}
+        @onChange={{this.setStartsAt2}}
+        @showTimeSelect={{true}}
+        @excludeTimes={{this.lunch}}
       />
     </EuiFormRow>
   </template>

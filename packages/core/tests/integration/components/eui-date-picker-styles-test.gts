@@ -105,6 +105,7 @@ const classesOf = (element: Element) =>
   );
 
 const minDate = '2026-11-05';
+const injected = ['12:45'];
 const noop = () => {};
 
 module('Integration | Component | eui-date-picker | styles', function (hooks) {
@@ -378,6 +379,105 @@ module('Integration | Component | eui-date-picker | styles', function (hooks) {
         getComputedStyle(el('[data-p="off"] .react-datepicker')).pointerEvents,
         'none'
       );
+    });
+  }
+
+  for (const mode of ['light', 'dark'] as Mode[]) {
+    const context = resolveBorealisTheme(mode);
+    const theme = context.euiTheme;
+    const fill = euiButtonFillColor(context, 'primary') as Colors;
+    const hover = euiButtonColor(context, 'primary') as Colors;
+
+    test(`${mode}: the time list: selected filled, hover tinted, disabled dimmed without a pointer, keyboard focus ringed`, async function (assert) {
+      await render(
+        <template>
+          <EuiEmotionProvider @colorMode={{mode}}>
+            <EuiDatePicker
+              @inline={{true}}
+              @value="2026-11-24T12:00:00.000Z"
+              @onChange={{noop}}
+              @showTimeSelect={{true}}
+              @timeZone="utc"
+              @minTime="09:00"
+              @injectTimes={{injected}}
+              @locale="en-US"
+            />
+          </EuiEmotionProvider>
+        </template>
+      );
+      const item = (time: string) => el(`li[data-time="${time}"]`);
+      const selected = getComputedStyle(item('12:00'));
+      assert.strictEqual(
+        selected.backgroundColor,
+        rgb(fill.backgroundColor),
+        'selected: the primary fill'
+      );
+      assert.true(
+        contrast(selected.color, selected.backgroundColor) >= 4.5,
+        `selected text readable (${contrast(selected.color, selected.backgroundColor).toFixed(2)})`
+      );
+      const off = getComputedStyle(item('08:30'));
+      assert.strictEqual(off.cursor, 'not-allowed', 'disabled: no pointer');
+      assert.notStrictEqual(
+        off.color,
+        getComputedStyle(item('10:00')).color,
+        'disabled: another colour than an enabled time'
+      );
+      const calendar = el('.react-datepicker');
+      const hoverRule = classesOf(calendar)
+        .map((c) =>
+          ruleStyle(
+            `.${c}`,
+            '.react-datepicker__time-list-item:not(.react-datepicker__time-list-item--disabled)',
+            ':hover'
+          )
+        )
+        .find(Boolean);
+      assert.ok(hoverRule, 'a hover rule for enabled times');
+      assert.strictEqual(
+        rgb(hoverRule!.backgroundColor),
+        rgb(hover.backgroundColor),
+        "hover: the days' tint"
+      );
+      const disabledHover = classesOf(calendar)
+        .map((c) =>
+          ruleStyle(
+            `.${c}`,
+            '.react-datepicker__time-list-item--disabled:hover'
+          )
+        )
+        .find(Boolean);
+      assert.strictEqual(
+        disabledHover?.textDecorationLine || disabledHover?.textDecoration,
+        'none',
+        'a disabled time is not underlined on hover'
+      );
+      assert.strictEqual(
+        disabledHover?.cursor,
+        'not-allowed',
+        "nor a pointer (upstream's :not(:disabled) never matches an li)"
+      );
+      assert
+        .dom(item('12:45'))
+        .hasClass('react-datepicker__time-list-item--injected');
+      assert.notStrictEqual(
+        getComputedStyle(item('12:45')).backgroundColor,
+        getComputedStyle(item('13:00')).backgroundColor,
+        'an injected time is marked'
+      );
+      const ring = classesOf(calendar)
+        .map((c) =>
+          ruleStyle(
+            `.${c}`,
+            '.react-datepicker__time-list:focus-visible .react-datepicker__time-list-item[data-active]'
+          )
+        )
+        .find(Boolean);
+      assert.ok(ring, 'a ring for the active time of a focused list');
+      assert.strictEqual(rgb(ring!.outlineColor), rgb(theme.colors.primary));
+      assert
+        .dom(item('12:00'))
+        .hasAttribute('data-active', 'true', 'the active time is the selected');
     });
   }
 

@@ -35,6 +35,7 @@ interface TimeOption {
   className: string;
   selected: boolean;
   disabled: boolean;
+  active: boolean;
 }
 
 export interface EuiDatePickerTimeListSignature {
@@ -137,7 +138,8 @@ export default class EuiDatePickerTimeList extends Component<EuiDatePickerTimeLi
         label: formatTime(entry.time, { hour12 }),
         className: classes.join(' '),
         selected: isSelected,
-        disabled
+        disabled,
+        active: entry.value === active
       };
     });
   }
@@ -284,6 +286,7 @@ export default class EuiDatePickerTimeList extends Component<EuiDatePickerTimeLi
                 aria-selected={{if option.selected "true" "false"}}
                 aria-disabled={{if option.disabled "true"}}
                 data-time={{option.entry.value}}
+                data-active={{if option.active "true"}}
                 {{on "click" (fn this.pick option)}}
               >{{option.label}}</li>
             {{/each}}

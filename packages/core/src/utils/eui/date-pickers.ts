@@ -46,7 +46,7 @@ import type { EuiBorealisContext } from './theme.ts';
 import type { SerializedStyles } from '@emotion/serialize';
 
 type Ctx = EuiBorealisContext;
- 
+
 type Vars = any;
 
 // The generated module is untyped (`@ts-nocheck`); this port is upstream's
@@ -484,11 +484,20 @@ const _timeSelectStyles = function _timeSelectStyles(
  *   `.euiFormControlLayout` rules for shadow, invalid, disabled and
  *   read-only, written for the outer layout) must not reach them, or each
  *   select gets the frame's shadow and the invalid outline.
+ * - The time list: a hovered time gets the days' hover tint (upstream only
+ *   underlines it, which is hard to see on a short label); a disabled time
+ *   is neither underlined nor a pointer on hover (upstream's
+ *   `:not(:disabled)` never matches a list item); the list's focus is
+ *   EUI's focus ring instead of the browser's `outline-style: auto`, and
+ *   the active time of a focused list (`data-active`) gets a ring of its
+ *   own, so the keyboard position shows also on the selected (filled)
+ *   time.
  */
 export const euiDatePickerCalendarStyles = function euiDatePickerCalendarStyles(
   euiThemeContext: Ctx
 ) {
   const euiTheme: Vars = euiThemeContext.euiTheme;
+  const colors = euiDatePickerVariables(euiThemeContext).colors;
   return css(
     '.react-datepicker__month{display:block;margin:0;border-collapse:collapse;border-spacing:0;}',
     '.react-datepicker__month>thead,.react-datepicker__month>tbody{display:block;}',
@@ -514,6 +523,20 @@ export const euiDatePickerCalendarStyles = function euiDatePickerCalendarStyles(
     ';}',
     '.react-datepicker__day{-webkit-text-fill-color:currentColor;}',
     '.react-datepicker__header .euiFormControlLayout{background-color:transparent;background-image:none;box-shadow:none;outline:none;border:none;--euiFormControlStateColor:initial;}',
+    '.react-datepicker__time-list .react-datepicker__time-list-item:not(.react-datepicker__time-list-item--disabled):not(.react-datepicker__time-list-item--selected):hover{',
+    colors.hover,
+    '}',
+    '.react-datepicker__time-list .react-datepicker__time-list-item--disabled{cursor:not-allowed;&:hover{text-decoration:none;cursor:not-allowed;}}',
+    '.react-datepicker__time-list:focus-visible{',
+    euiFocusRing(euiThemeContext, 'inset'),
+    '}',
+    '.react-datepicker__time-list:focus-visible .react-datepicker__time-list-item[data-active]{outline:',
+    euiTheme.border.width.thick,
+    ' solid ',
+    euiTheme.colors.primary,
+    ';outline-offset:',
+    euiTheme.border.width.thick,
+    ';}',
     ';label:euiDatePickerCalendar;'
   );
 };
@@ -525,15 +548,14 @@ export const euiDatePickerCalendarStyles = function euiDatePickerCalendarStyles(
  * without this, only the small warning icon would show it. The input keeps
  * the invalid border while focused; other invalid inputs are unchanged.
  */
-export const euiDatePickerInputErrorStyles = function euiDatePickerInputErrorStyles(
-  euiThemeContext: Ctx
-) {
-  return css(
-    '&&:focus{',
-    euiFormControlStyles(euiThemeContext).invalid,
-    '};label:euiDatePickerInputError;'
-  );
-};
+export const euiDatePickerInputErrorStyles =
+  function euiDatePickerInputErrorStyles(euiThemeContext: Ctx) {
+    return css(
+      '&&:focus{',
+      euiFormControlStyles(euiThemeContext).invalid,
+      '};label:euiDatePickerInputError;'
+    );
+  };
 
 /**
  * `quick_select.js` module-level styles: the panel lets the previous/next

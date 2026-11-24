@@ -1,5 +1,11 @@
 # @ember-eui/changeset-form
 
+## 16.5.0
+
+### Minor Changes
+
+- c852384: Released with `@ember-eui/core` 16.5.0 to keep all packages on the same version; no changes in this package.
+
 ## 16.4.0
 
 ### Minor Changes

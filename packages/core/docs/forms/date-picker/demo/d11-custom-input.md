@@ -6,7 +6,7 @@ order: 7.5
 
 <EuiText>
 
-Use the `<:trigger>` block to open the calendar from an element of your own instead of the text input (upstream's `customInput`). It yields `open`, to call from the element's click, `isOpen`, and `text`, the value in the display format. The calendar takes focus when it opens and gives it back to the trigger when it closes. There is no typed input, no icon and no native path: phones get the calendar too.
+Use the `<:trigger>` block to open the calendar from an element of your own instead of the text input (upstream's `customInput`). It yields `open`, to call from the element's click, `isOpen`, and `text`, the value in the display format. The calendar takes focus when it opens and gives it back to the trigger when it closes. There is no typed input, no icon and no native path: phones get the calendar too, with or without `@native={{false}}`.
 
 </EuiText>
 
@@ -28,7 +28,11 @@ export default class DatePickerCustomInputDemo extends Component {
   };
 
   <template>
-    <EuiDatePicker @value={{this.startDate}} @onChange={{this.handleChange}}>
+    <EuiDatePicker
+      @value={{this.startDate}}
+      @onChange={{this.handleChange}}
+      @native={{false}}
+    >
       <:trigger as |picker|>
         <EuiButton
           class="example-custom-input"

@@ -429,10 +429,16 @@ export default class EuiDatePickerCalendar extends Component<EuiDatePickerCalend
     return Boolean(this.args.selectsStart || this.args.selectsEnd);
   }
 
-  /** The day a pick would set, previewed: the hovered day, else the focused one while the grid has focus. */
+  /**
+   * The day a pick would set, previewed: the hovered day, else the focused
+   * one while the grid has focus. None on the selected day: that preview
+   * is the range itself, and the mouse (or a tap, with no mouseleave after
+   * it) or focus stays there after a pick.
+   */
   get selectingDate(): string | null {
     if (!this.interactive || !this.selectsRange) return null;
-    return this.hovered ?? (this.gridHasFocus ? this.focused : null);
+    const date = this.hovered ?? (this.gridHasFocus ? this.focused : null);
+    return date === this.selected ? null : date;
   }
 
   /** The previewed range, as upstream: from the selecting day to the end, or from the start to it; none when it would be reversed. */

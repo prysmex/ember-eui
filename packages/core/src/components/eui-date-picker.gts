@@ -552,9 +552,20 @@ export default class EuiDatePicker extends Component<EuiDatePickerSignature> {
 
   /** Tells the range whether this picker shows a time list; read by the template. */
   get rangeReport(): null {
-    this.range?.reportTimeSelect(this, this.showTimeSelect);
+    this.reportToRange(this.range, this.showTimeSelect);
     return null;
   }
+
+  private reportToRange(
+    range: ReturnType<typeof datePickerRangeContext>,
+    showTimeSelect: boolean
+  ) {
+    range?.reportTimeSelect(this, showTimeSelect);
+    this.reportedRange = range;
+  }
+
+  /** The range told last, told again when the picker goes. */
+  private reportedRange: ReturnType<typeof datePickerRangeContext> = null;
 
   /** A range argument as a day: `YYYY-MM-DD`, or the day of an instant in the zone. */
   private rangeDay(value: unknown): string | null {
@@ -1555,6 +1566,8 @@ export default class EuiDatePicker extends Component<EuiDatePickerSignature> {
 
   willDestroy() {
     super.willDestroy();
+    // a picker with a time list leaves the range: it stops widening it
+    this.reportedRange?.reportTimeSelect(this, false);
     // a press under way when the picker goes
     document.removeEventListener('pointerup', this.releasePress, {
       capture: true

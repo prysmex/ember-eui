@@ -784,5 +784,77 @@ module(
         .hasAttribute('type', 'text')
         .hasValue('11/10/2026');
     });
+
+    test('no preview on the selected day: after a pick the mouse (or a tap) and focus stay there, the range shows at rest', async function (assert) {
+      const state = new Range();
+      await render(
+        <template>
+          <EuiDatePicker
+            @inline={{true}}
+            @value={{state.start}}
+            @onChange={{state.setStart}}
+            @selectsStart={{true}}
+            @startDate={{state.start}}
+            @endDate={{state.end}}
+          />
+        </template>
+      );
+      const root = el('.react-datepicker');
+      await triggerEvent(dayIn(root, '2026-11-08'), 'mouseenter');
+      assert
+        .dom('.react-datepicker__day--in-selecting-range', root)
+        .exists('a preview before the pick');
+      await click(el('button', dayIn(root, '2026-11-08')));
+      assert.strictEqual(state.start, '2026-11-08');
+      assert
+        .dom('.react-datepicker__day--in-selecting-range', root)
+        .doesNotExist('the picked day under the mouse previews nothing');
+      assert.deepEqual(
+        classesOf(root, '2026-11-01', '2026-11-30', 'in-range').length,
+        7,
+        'the range at rest'
+      );
+      await triggerEvent(dayIn(root, '2026-11-09'), 'mouseenter');
+      assert
+        .dom('.react-datepicker__day--in-selecting-range', root)
+        .exists('another day previews again');
+    });
+
+    test('a picker with a time list that leaves an inline range stops widening it', async function (assert) {
+      const state = new Range();
+      state.timeSelect = true;
+      await render(
+        <template>
+          <div data-p="pickers">
+            <EuiDatePickerRange @inline={{true}}>
+              <:start as |className|>
+                {{#if state.timeSelect}}
+                  <EuiDatePicker class={{className}} @showTimeSelect={{true}} />
+                {{/if}}
+              </:start>
+              <:end as |className|><EuiDatePicker class={{className}} /></:end>
+            </EuiDatePickerRange>
+          </div>
+          <div data-p="with-arg"><EuiDatePickerRange
+              @inline={{true}}
+              @showTimeSelect={{true}}
+            ><:start>x</:start><:end>y</:end></EuiDatePickerRange></div>
+          <div data-p="without-arg"><EuiDatePickerRange @inline={{true}}><:start
+              >x</:start><:end>y</:end></EuiDatePickerRange></div>
+        </template>
+      );
+      const rangeClass = (selector: string) =>
+        el(`${selector} .euiDatePickerRange`).className;
+      assert.strictEqual(
+        rangeClass('[data-p="pickers"]'),
+        rangeClass('[data-p="with-arg"]')
+      );
+      state.timeSelect = false;
+      await settled();
+      assert.strictEqual(
+        rangeClass('[data-p="pickers"]'),
+        rangeClass('[data-p="without-arg"]')
+      );
+    });
   }
 );

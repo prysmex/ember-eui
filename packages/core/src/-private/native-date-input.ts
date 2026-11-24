@@ -287,6 +287,18 @@ export function nativeAttributes(context: NativeContext): NativeAttributes {
   }
 }
 
+/**
+ * Mark a native input that holds nothing (`data-empty`): no value and no
+ * half-filled field. CSS cannot tell an empty date input from a full one,
+ * and its empty segments (`mm/dd/yyyy`) look like a value otherwise.
+ */
+export function markEmpty(input: HTMLInputElement): void {
+  input.toggleAttribute(
+    'data-empty',
+    input.value === '' && !input.validity?.badInput
+  );
+}
+
 /** What a native input's value means for the picker. */
 export type NativeReading =
   /** Empty: no value. */

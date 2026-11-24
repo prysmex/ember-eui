@@ -171,6 +171,53 @@ guesses. Text names exactly one day, or it is an error.
   `3:30 pm` (`@hour12`, by default from `@locale`), with seconds when
   `@seconds`. The default placeholder spells it: `DD/MM/YYYY HH:mm`.
 
+## Phones and Capacitor
+
+On a phone the calendar's 32 px days are small targets, and the operating
+system's own picker is the one people know. So the picker renders the OS
+input there: `<input type="date">`, `datetime-local` with
+`@showTimeSelect`, `time` with `@showTimeSelectOnly`, inside the same form
+control layout. The template does not change.
+
+The path is chosen once, when the picker is created, in this order:
+
+1. `@inline={{true}}` shows the calendar: there is no native inline picker.
+2. `@native={{true}}` or `@native={{false}}`.
+3. `componentDefaults.EuiDatePicker.native` in `euiConfig`, when `true` or
+   `false`.
+4. Auto: the OS input in a Capacitor app on a device
+   (`window.Capacitor.isNativePlatform()`; core does not import Capacitor)
+   and when the primary pointer is coarse (`(pointer: coarse)`: a phone or
+   a tablet, not a laptop with a touch screen); the calendar otherwise, and
+   always when `@filterDate`, `@excludeDates`, `@includeDates`,
+   `@excludeTimes`, `@injectTimes` or `@dayClassName` is given, since the
+   OS picker cannot show them. A server-rendered page renders the calendar
+   path's text input, and the OS input takes its place once the page is
+   running in the browser.
+
+```js
+// every picker of the app on the calendar, phones included
+this.euiConfig.updateConfig({
+  componentDefaults: { EuiDatePicker: { native: false } }
+});
+```
+
+What differs on the native path:
+
+| | Calendar | Native |
+| --- | --- | --- |
+| Values | strings | the same strings; a date and time is the wall clock in `@timeZone`, converted with the same DST rules |
+| Display | `@dateOrder`, `@hour12`, `@locale`, `@placeholder` | the OS decides; no placeholder |
+| `@minDate`, `@maxDate`, `@minTime`, `@maxTime` | disabled days and times | `min` and `max` on the input; the picker checks every value itself, since not every OS enforces them |
+| `@filterDate`, `@excludeDates`, `@includeDates`, `@excludeTimes` | disabled days and times | only with `@native={{true}}`, with a development warning: a value they refuse is an input error |
+| `@timeIntervals` | the list's entries | no effect: `step` is a minute (a second with `@seconds`). A time off the step would be invalid to the browser (the invalid look, a form that does not submit) while the picker accepts it, as it accepts it typed |
+| `@injectTimes`, `@dayClassName`, `@openToDate`, `@popoverPlacement`, `@shouldCloseOnSelect`, `@adjustDateOnChange` | applied | no effect |
+| `@onChange` | on Enter, blur or a pick | on the input's `change`. Keyboard entry in a desktop browser changes the value per segment: typing a year emits `0002`, `0020`, `0202`, then `2026` |
+| `@onInputError` | on commit | when focus leaves the input, for the value left in it; the invalid look shows at once |
+| A half-filled field | an input error on commit | an input error (`'unreadable'`) when focus leaves; nothing while editing |
+| `@readOnly` | a read-only text input | the same read-only text input, with the value formatted, since some engines open the OS picker on a read-only date input |
+| Icon | EUI's | EUI's, a button that opens the OS picker (`showPicker()`); the browser's own indicator is hidden |
+
 ## Upstream differences
 
 | | Upstream | Ember EUI |

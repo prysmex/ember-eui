@@ -34,7 +34,9 @@ const EuiDatePickerNativeInput: TOC<{
       max={{native.max}}
       step={{native.step}}
       ...attributes
+      {{on "input" @picker.onNativeInput}}
       {{on "change" @picker.onNativeChange}}
+      {{@picker.markNativeEmpty native.value}}
       {{on "focusout" @picker.onNativeFocusOut}}
     />
   {{/let}}

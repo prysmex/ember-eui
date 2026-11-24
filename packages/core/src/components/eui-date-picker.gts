@@ -30,6 +30,7 @@ import { tabbable } from 'tabbable';
 
 import {
   choosesNative,
+  markEmpty,
   nativeAttributes,
   nativeEnvironment,
   readNative,
@@ -398,7 +399,10 @@ export default class EuiDatePicker extends Component<EuiDatePickerSignature> {
 
   /** DESIGN 6.2: `@inline`, then `@native`, then the config, then auto. Server rendering takes the calendar. */
   private chooseNative(interactive: boolean): boolean {
-    const environment = nativeEnvironment();
+    // on the server nothing of the browser is read (9 #48)
+    const environment = interactive
+      ? nativeEnvironment()
+      : { browser: false, nativePlatform: false, coarsePointer: false };
     return choosesNative(
       {
         inline: this.args.inline,
@@ -408,7 +412,7 @@ export default class EuiDatePicker extends Component<EuiDatePickerSignature> {
         config: this.configDefaults?.native,
         unsupported: unsupportedByNative(this.args).length > 0
       },
-      interactive ? environment : { ...environment, browser: false }
+      environment
     );
   }
 
@@ -987,6 +991,19 @@ export default class EuiDatePicker extends Component<EuiDatePickerSignature> {
     }
   }
 
+  /** `data-empty` follows what the native input holds: after each render of its value, and on each edit. */
+  markNativeEmpty = modifier(
+    // reads the value, so that it runs again when the value changes
+    (input: HTMLInputElement, [value]: [value: string]) => {
+      if (value !== undefined) markEmpty(input);
+    }
+  );
+
+  @action
+  onNativeInput(event: Event) {
+    markEmpty(event.target as HTMLInputElement);
+  }
+
   /**
    * The native input's `change`: its value is read and checked as typed
    * text is (DESIGN 6.3). A half-filled field (bad input) is still being
@@ -995,19 +1012,38 @@ export default class EuiDatePicker extends Component<EuiDatePickerSignature> {
   @action
   onNativeChange(event: Event) {
     const input = event.target as HTMLInputElement;
+    markEmpty(input);
     const badInput = Boolean(input.validity?.badInput);
     const reading = readNative(input.value, badInput, this.nativeContext);
     if (reading.kind === 'problem' && badInput) return;
     this.settleNative(input, reading);
   }
 
-  /** Focus leaves a half-filled native input: an unreadable value. */
+  /**
+   * Focus leaves the native input: a half-filled field is unreadable; a
+   * value refused while it had focus is reported now.
+   */
   @action
   onNativeFocusOut(event: FocusEvent) {
     const input = event.target as HTMLInputElement;
-    if (!input.validity?.badInput) return;
-    this.settleNative(input, { kind: 'problem', problem: 'unreadable' });
+    if (input.validity?.badInput) {
+      this.settleNative(input, { kind: 'problem', problem: 'unreadable' });
+    }
+    const pending = this.pendingNativeError;
+    this.pendingNativeError = null;
+    // still refused and shown (not replaced by a value from outside)
+    if (pending && this.inputError !== null && this.shownTyped !== null) {
+      this.args.onInputError?.(pending);
+    }
   }
+
+  /**
+   * A value refused while the input has focus, reported to `@onInputError`
+   * when focus leaves: keyboard entry changes the value per segment
+   * (typing a year passes 0002, 0020, 0202), so only what is left counts,
+   * as typed text is committed on blur. The invalid look shows at once.
+   */
+  private pendingNativeError: EuiDatePickerInputError | null = null;
 
   private settleNative(input: HTMLInputElement, reading: NativeReading) {
     if (reading.kind === 'problem') {
@@ -1015,11 +1051,18 @@ export default class EuiDatePicker extends Component<EuiDatePickerSignature> {
       // typed text does; the value does not change
       this.typed = { text: input.value, over: this.value };
       this.inputError = reading.problem;
-      this.args.onInputError?.({ text: input.value, reason: reading.problem });
+      const error = { text: input.value, reason: reading.problem };
+      if (document.activeElement === input) {
+        this.pendingNativeError = error;
+      } else {
+        this.pendingNativeError = null;
+        this.args.onInputError?.(error);
+      }
       return;
     }
     this.typed = null;
     this.inputError = null;
+    this.pendingNativeError = null;
     if (reading.kind === 'empty') {
       if (this.value !== null || this.args.value != null) {
         this.args.onChange?.(null);
@@ -1036,6 +1079,7 @@ export default class EuiDatePicker extends Component<EuiDatePickerSignature> {
       if (this.inputError !== null) return;
       const { value } = this.nativeAttributes;
       if (input.value !== value) input.value = value;
+      markEmpty(input);
     });
   }
 

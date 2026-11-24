@@ -1,6 +1,7 @@
 import { module, test } from 'qunit';
 import { setupRenderingTest } from 'ember-qunit';
 import {
+  blur,
   click,
   fillIn,
   render,
@@ -18,6 +19,7 @@ import EuiDatePicker from '#src/components/eui-date-picker.gts';
 
 import type { EuiDatePickerInputError } from '#src/components/eui-date-picker.gts';
 import type EuiConfigService from '#src/services/eui-config.ts';
+import type Owner from '@ember/owner';
 
 let warnings: string[] | null = null;
 registerWarnHandler((message, options, next) => {
@@ -74,9 +76,10 @@ function stubCapacitor(capacitor: unknown) {
   (window as CapacitorWindow).Capacitor = capacitor;
 }
 
-/** What the OS input would report: a value, and a half-filled field. */
+/** What the OS input would report: a value (then focus leaves, as when the OS picker closes), and a half-filled field. */
 async function osSets(target: HTMLInputElement, value: string) {
   await fillIn(target, value);
+  await blur(target);
 }
 
 async function osHalfFills(target: HTMLInputElement) {
@@ -347,6 +350,44 @@ module('Integration | Component | eui-date-picker | native', function (hooks) {
     assert.dom(input()).hasValue('2026-11-25', 'the value still follows');
   });
 
+  /** The boot environment the picker reads (`-environment:main`), as on a server or a rehydrating client. */
+  function bootAs(owner: Owner, overrides: object) {
+    const environment = owner.lookup('-environment:main') as object;
+    // an application instance's registry (not on the Owner type)
+    (owner as unknown as { unregister(name: string): void }).unregister(
+      '-environment:main'
+    );
+    owner.register(
+      '-environment:main',
+      { ...environment, ...overrides },
+      { instantiate: false }
+    );
+  }
+
+  test('9 #48: not interactive (server rendering): the calendar path, also on a phone', async function (assert) {
+    stubPointer(true);
+    stubCapacitor({ isNativePlatform: () => true });
+    bootAs(this.owner, { isInteractive: false });
+    await render(<template><EuiDatePicker @value="2026-11-24" /></template>);
+    assert.dom(input()).hasAttribute('type', 'text');
+  });
+
+  test('a rehydrating page: the first render is the calendar path, as the server rendered it; then the native input, once', async function (assert) {
+    stubPointer(true);
+    bootAs(this.owner, { _renderMode: 'rehydrate' });
+    const rendered: string[] = [];
+    const inputRef = (element: HTMLInputElement | null) => {
+      if (element) rendered.push(element.type);
+    };
+    await render(
+      <template>
+        <EuiDatePicker @value="2026-11-24" @inputRef={{inputRef}} />
+      </template>
+    );
+    assert.deepEqual(rendered, ['text', 'date']);
+    assert.dom(input()).hasAttribute('type', 'date').hasValue('2026-11-24');
+  });
+
   /* Date */
 
   test("date: the native input inside EUI's field, its attributes, min and max", async function (assert) {
@@ -467,6 +508,42 @@ module('Integration | Component | eui-date-picker | native', function (hooks) {
       .dom(input())
       .doesNotHaveAttribute('aria-invalid')
       .doesNotHaveClass('euiDatePicker--inputError');
+  });
+
+  test('a value refused while the input has focus shows at once and is reported when focus leaves (keyboard entry passes years 0002, 0020…)', async function (assert) {
+    stubPointer(true);
+    const state = new State();
+    state.value = '2026-11-24';
+    await render(
+      <template>
+        <EuiDatePicker
+          @value={{state.value}}
+          @onChange={{state.onChange}}
+          @onInputError={{state.onInputError}}
+          @minDate="2026-11-02"
+        />
+      </template>
+    );
+    await fillIn(input(), '0002-11-27');
+    await fillIn(input(), '0202-11-27');
+    assert.deepEqual(state.errors, [], 'not yet reported');
+    assert.dom(input()).hasAttribute('aria-invalid', 'true');
+    await fillIn(input(), '2026-11-27');
+    assert.deepEqual(state.changes, ['2026-11-27']);
+    assert.dom(input()).doesNotHaveAttribute('aria-invalid');
+    await blur(input());
+    assert.deepEqual(
+      state.errors,
+      [],
+      'what was left is allowed: nothing to report'
+    );
+
+    await fillIn(input(), '2026-10-01');
+    assert.deepEqual(state.errors, []);
+    await blur(input());
+    assert.deepEqual(state.errors, [{ text: '2026-10-01', reason: 'min' }]);
+    await triggerEvent(input(), 'focusout');
+    assert.strictEqual(state.errors.length, 1, 'reported once');
   });
 
   test('a refused value goes when the value changes from outside', async function (assert) {
@@ -610,6 +687,31 @@ module('Integration | Component | eui-date-picker | native', function (hooks) {
   });
 
   /* The icon, clear, states */
+
+  test('data-empty marks a native input that holds nothing, for the placeholder colour', async function (assert) {
+    stubPointer(true);
+    const state = new State();
+    await render(
+      <template>
+        <EuiDatePicker @value={{state.value}} @onChange={{state.onChange}} />
+      </template>
+    );
+    assert.dom(input()).hasAttribute('data-empty');
+    await osSets(input(), '2026-11-24');
+    assert.dom(input()).doesNotHaveAttribute('data-empty');
+    state.value = null;
+    await settled();
+    assert
+      .dom(input())
+      .hasAttribute('data-empty', '', 'the value cleared from outside');
+    state.value = '2026-11-25';
+    await settled();
+    assert.dom(input()).doesNotHaveAttribute('data-empty');
+    await osHalfFills(input());
+    assert
+      .dom(input())
+      .doesNotHaveAttribute('data-empty', 'a half-filled field is not empty');
+  });
 
   test("EUI's icon opens the OS picker (showPicker), focusing the input; it is out of the tab order", async function (assert) {
     stubPointer(true);

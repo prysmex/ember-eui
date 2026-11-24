@@ -34,6 +34,7 @@ import {
   euiFormControlDefaultShadow as _euiFormControlDefaultShadow,
   euiFormControlStyles as _euiFormControlStyles,
   euiFormControlText as _euiFormControlText,
+  euiFormVariables as _euiFormVariables,
   euiMaxBreakpoint as _euiMaxBreakpoint,
   euiYScroll as _euiYScroll,
   highContrastModeStyles as _highContrastModeStyles,
@@ -63,6 +64,7 @@ const {
   euiFormControlDefaultShadow,
   euiFormControlStyles,
   euiFormControlText,
+  euiFormVariables,
   euiMaxBreakpoint,
   euiYScroll,
   highContrastModeStyles,
@@ -79,6 +81,7 @@ const {
   euiFormControlDefaultShadow: _euiFormControlDefaultShadow,
   euiFormControlStyles: _euiFormControlStyles,
   euiFormControlText: _euiFormControlText,
+  euiFormVariables: _euiFormVariables,
   euiMaxBreakpoint: _euiMaxBreakpoint,
   euiYScroll: _euiYScroll,
   highContrastModeStyles: _highContrastModeStyles,
@@ -569,13 +572,15 @@ export const euiDatePickerInputErrorStyles =
  *   the value starts at the inline start and keeps a line's height.
  * - The segments' own padding is dropped, so the text sits where
  *   `EuiFieldText`'s does.
+ * - An empty input (`data-empty`, set by the picker: CSS cannot tell) shows
+ *   its segments (`mm/dd/yyyy`) in EUI's placeholder colour, not as a value.
  * - A disabled input's segments take EUI's disabled text colour (Chromium
  *   paints them with its own).
  */
 export const euiDatePickerNativeStyles = function euiDatePickerNativeStyles(
   euiThemeContext: Ctx
 ) {
-  const euiTheme: Vars = euiThemeContext.euiTheme;
+  const form: Vars = euiFormVariables(euiThemeContext);
   const dark = (euiThemeContext as { colorMode?: string }).colorMode === 'DARK';
   return css(
     'color-scheme:',
@@ -585,10 +590,15 @@ export const euiDatePickerNativeStyles = function euiDatePickerNativeStyles(
     '&::-webkit-inner-spin-button{display:none;}',
     '&::-webkit-date-and-time-value{margin:0;text-align:start;min-block-size:1lh;}',
     '&::-webkit-datetime-edit{padding:0;}',
-    '&:disabled::-webkit-datetime-edit{color:',
-    euiTheme.colors.textDisabled,
+    '&[data-empty]::-webkit-datetime-edit{color:',
+    form.controlPlaceholderText,
     ';-webkit-text-fill-color:',
-    euiTheme.colors.textDisabled,
+    form.controlPlaceholderText,
+    ';}',
+    '&:disabled::-webkit-datetime-edit{color:',
+    form.textColorDisabled,
+    ';-webkit-text-fill-color:',
+    form.textColorDisabled,
     ';}',
     ';label:euiDatePickerNative;'
   );

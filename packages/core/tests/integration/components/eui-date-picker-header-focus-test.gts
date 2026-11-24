@@ -8,11 +8,12 @@
  */
 import { module, test } from 'qunit';
 import { setupRenderingTest } from 'ember-qunit';
-import { click, render, triggerKeyEvent } from '@ember/test-helpers';
+import { click, render, triggerKeyEvent, waitUntil } from '@ember/test-helpers';
 import { on } from '@ember/modifier';
 
 import EuiButton from '#src/components/eui-button.gts';
 import EuiDatePicker from '#src/components/eui-date-picker.gts';
+import EuiSuperDatePicker from '#src/components/eui-super-date-picker.gts';
 
 function el<T extends Element = HTMLElement>(
   selector: string,
@@ -95,6 +96,44 @@ module(
         }
       });
     }
+
+    test("in the super date picker's wider header the selects fill their 2:1 shares, side by side, text whole", async function (assert) {
+      const noop = () => {};
+      await render(
+        <template>
+          <EuiSuperDatePicker
+            @start="2026-11-24T14:00:00.000Z"
+            @end="now"
+            @onTimeChange={{noop}}
+          />
+        </template>
+      );
+      await click('.euiDatePopoverButton--start');
+      await waitUntil(() => document.querySelector('.euiAbsoluteTab'));
+      const month = el<HTMLSelectElement>(
+        '.euiAbsoluteTab select[aria-label="Month"]'
+      );
+      const year = el<HTMLSelectElement>(
+        '.euiAbsoluteTab select[aria-label="Year"]'
+      );
+      for (const select of [month, year]) {
+        const share = select.closest<HTMLElement>(
+          '.react-datepicker__month-dropdown-container, .react-datepicker__year-dropdown-container'
+        )!;
+        assert.true(
+          Math.abs(select.offsetWidth - share.offsetWidth) <= 1,
+          `${select.getAttribute('aria-label')} fills its share (${select.offsetWidth} of ${share.offsetWidth})`
+        );
+        assert.true(
+          textWidth(select) <= textRoom(select) + 0.5,
+          `${select.getAttribute('aria-label')} text whole`
+        );
+      }
+      assert.true(
+        month.offsetWidth > year.offsetWidth,
+        'the month gets the larger share'
+      );
+    });
 
     test('opening from a trigger, moving with a key and closing never scroll the page', async function (assert) {
       await render(

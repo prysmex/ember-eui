@@ -521,6 +521,11 @@ export const euiDatePickerCalendarStyles = function euiDatePickerCalendarStyles(
     // least its widest option (stable while paging months), and still
     // stretches to its share where the header is wider.
     '&& .react-datepicker__header__dropdown .euiSelect{inline-size:auto;min-inline-size:100%;}',
+    // and the layout around each select fills its share too (a percentage
+    // counts as auto for the content size, so the select still sets the
+    // minimum): month and year sit side by side 2:1, as upstream draws them,
+    // also in the super date picker's wider header
+    '&& .react-datepicker__header__dropdown :is(.euiFormControlLayout,.euiFormControlLayout__childrenWrapper){inline-size:100%;}',
     '.react-datepicker__day--range-start:not(.react-datepicker__day--selected):not(.react-datepicker__day--in-selecting-range),',
     '.react-datepicker__day--range-end:not(.react-datepicker__day--selected):not(.react-datepicker__day--in-selecting-range){outline:',
     euiTheme.border.width.thin,

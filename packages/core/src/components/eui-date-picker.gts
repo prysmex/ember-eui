@@ -41,7 +41,8 @@ import { randomId } from '../-private/random-id.ts';
 import { getEuiThemeContext } from '../utils/emotion/consume.ts';
 import {
   euiDatePickerInputErrorStyles,
-  euiDatePickerNativeStyles
+  euiDatePickerNativeStyles,
+  euiDatePickerRangeInputStyles
 } from '../utils/eui/date-pickers.ts';
 import { euiDatePickerStyles } from '../utils/eui/styles.generated.ts';
 import { euiClass, useEuiBorealisStyles } from '../utils/eui/styles.ts';
@@ -335,7 +336,9 @@ const DatePickerControl: TOC<{
             @disabled={{@picker.disabled}}
             @readOnly={{@picker.readOnly}}
             @inputRef={{@picker.registerInput}}
-            class="euiDatePicker {{@picker.inputErrorClass}}"
+            class="euiDatePicker
+              {{@picker.rangeInputClass}}
+              {{@picker.inputErrorClass}}"
             autocomplete="off"
             aria-haspopup="dialog"
             aria-expanded={{if @picker.isOpen "true" "false"}}
@@ -892,6 +895,15 @@ export default class EuiDatePicker extends Component<EuiDatePickerSignature> {
       this.context,
       useEuiBorealisStyles(this.context, euiDatePickerInputErrorStyles)
     )}`;
+  }
+
+  /** In a range: the input stays without a frame of its own, whatever `EuiFieldText`'s class says. */
+  get rangeInputClass(): string | undefined {
+    if (!this.range || this.inline) return undefined;
+    return euiClass(
+      this.context,
+      useEuiBorealisStyles(this.context, euiDatePickerRangeInputStyles)
+    );
   }
 
   get interactive(): boolean {

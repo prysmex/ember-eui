@@ -495,6 +495,17 @@ const _timeSelectStyles = function _timeSelectStyles(
  *   the active time of a focused list (`data-active`) gets a ring of its
  *   own, so the keyboard position shows also on the selected (filled)
  *   time.
+ * - A range (`@startDate`, `@endDate`): its first and last day get a
+ *   primary outline and bold text when they are not the selected day
+ *   (upstream marks them only in forced colours), so the other end shows
+ *   in each calendar. The preview of a pick (`--in-selecting-range`) is
+ *   filled as upstream's, also on the days it adds to the range, which
+ *   upstream paints in the danger colour of a selected disabled day.
+ * - A bare calendar in an inline `EuiDatePickerRange` carries the class
+ *   its block yields, made for an input: its centred text must not reach
+ *   the month and year selects. Nor must the inline range's grid, which
+ *   upstream writes for the delimited layout's children wrapper and which
+ *   also matches the selects' (upstream's calendar has no such controls).
  */
 export const euiDatePickerCalendarStyles = function euiDatePickerCalendarStyles(
   euiThemeContext: Ctx
@@ -502,6 +513,21 @@ export const euiDatePickerCalendarStyles = function euiDatePickerCalendarStyles(
   const euiTheme: Vars = euiThemeContext.euiTheme;
   const colors = euiDatePickerVariables(euiThemeContext).colors;
   return css(
+    '&&.euiFormControlLayoutDelimited__input{text-align:inherit;}',
+    '&& .react-datepicker__header .euiFormControlLayout__childrenWrapper{display:block;}',
+    '.react-datepicker__day--range-start:not(.react-datepicker__day--selected):not(.react-datepicker__day--in-selecting-range),',
+    '.react-datepicker__day--range-end:not(.react-datepicker__day--selected):not(.react-datepicker__day--in-selecting-range){outline:',
+    euiTheme.border.width.thin,
+    ' solid ',
+    euiTheme.colors.primary,
+    ';outline-offset:-',
+    euiTheme.border.width.thin,
+    ';font-weight:',
+    euiTheme.font.weight.bold,
+    ';}',
+    '.react-datepicker__day--in-selecting-range:not(.react-datepicker__day--in-range):not(.react-datepicker__day--disabled){&,&:hover{',
+    colors.selected,
+    '}}',
     '.react-datepicker__month{display:block;margin:0;border-collapse:collapse;border-spacing:0;}',
     '.react-datepicker__month>thead,.react-datepicker__month>tbody{display:block;}',
     '.react-datepicker__day-name,.react-datepicker__day{padding:0;text-align:center;}',
@@ -557,6 +583,21 @@ export const euiDatePickerInputErrorStyles =
       '&&:focus{',
       euiFormControlStyles(euiThemeContext).invalid,
       '};label:euiDatePickerInputError;'
+    );
+  };
+
+/**
+ * Not a port: `EuiDatePicker`'s input in an `EuiDatePickerRange`. The class
+ * the block yields takes the input's frame off (no border, no shadow), but
+ * `EuiFieldText`'s own class can be inserted later and win at equal
+ * specificity, e.g. its `@compressed` one, generated when the range is
+ * first compressed. Upstream merges the class into the field's, last.
+ */
+export const euiDatePickerRangeInputStyles =
+  function euiDatePickerRangeInputStyles() {
+    return css(
+      '&&.euiFormControlLayoutDelimited__input{box-shadow:none;border:none;}',
+      ';label:euiDatePickerRangeInput;'
     );
   };
 

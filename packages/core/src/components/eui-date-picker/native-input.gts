@@ -28,6 +28,7 @@ const EuiDatePickerNativeInput: TOC<{
       @inputRef={{@picker.registerInput}}
       class="euiDatePicker euiDatePicker--native
         {{@picker.nativeClass}}
+        {{@picker.rangeInputClass}}
         {{@picker.inputErrorClass}}"
       type={{native.type}}
       min={{native.min}}

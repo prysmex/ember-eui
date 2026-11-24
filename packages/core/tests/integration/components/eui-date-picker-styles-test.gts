@@ -381,6 +381,91 @@ module('Integration | Component | eui-date-picker | styles', function (hooks) {
     });
   }
 
+  for (const mode of ['light', 'dark'] as Mode[]) {
+    test(`${mode}: the inline frame's states do not reach the month and year selects; a disabled calendar's selected day stays readable`, async function (assert) {
+      await render(
+        <template>
+          <EuiEmotionProvider @colorMode={{mode}}>
+            <div data-p="shadow"><EuiDatePicker
+                @inline={{true}}
+                @value="2026-11-24"
+              /></div>
+            <div data-p="invalid"><EuiDatePicker
+                @inline={{true}}
+                @value="2026-11-24"
+                @isInvalid={{true}}
+              /></div>
+            <div data-p="disabled"><EuiDatePicker
+                @inline={{true}}
+                @value="2026-11-24"
+                @disabled={{true}}
+              /></div>
+            <div data-p="readOnly"><EuiDatePicker
+                @inline={{true}}
+                @value="2026-11-24"
+                @readOnly={{true}}
+              /></div>
+          </EuiEmotionProvider>
+        </template>
+      );
+      for (const state of ['shadow', 'invalid', 'disabled', 'readOnly']) {
+        const outer = getComputedStyle(
+          el(`[data-p="${state}"] .euiDatePicker > .euiFormControlLayout`)
+        );
+        for (const select of document.querySelectorAll(
+          `[data-p="${state}"] .react-datepicker__header .euiFormControlLayout`
+        )) {
+          const style = getComputedStyle(select);
+          assert.strictEqual(
+            style.boxShadow,
+            'none',
+            `${state}: no frame shadow on a select`
+          );
+          assert.strictEqual(
+            style.backgroundColor,
+            'rgba(0, 0, 0, 0)',
+            `${state}: no frame background`
+          );
+          assert.strictEqual(
+            style.outlineStyle,
+            'none',
+            `${state}: no invalid outline`
+          );
+        }
+        if (state === 'shadow') {
+          assert.notStrictEqual(
+            outer.boxShadow,
+            'none',
+            'the frame itself keeps its shadow'
+          );
+        }
+        if (state === 'invalid') {
+          assert.strictEqual(
+            outer.outlineStyle,
+            'solid',
+            'the frame itself keeps the invalid outline'
+          );
+        }
+      }
+      const selected = el(
+        '[data-p="disabled"] td[data-date="2026-11-24"] > button'
+      );
+      const style = getComputedStyle(selected);
+      assert.strictEqual(
+        style.getPropertyValue('-webkit-text-fill-color'),
+        style.color,
+        'the text is painted in its own colour'
+      );
+      assert.true(
+        contrast(
+          style.color,
+          getComputedStyle(selected.parentElement!).backgroundColor
+        ) >= 4.5,
+        'readable on the fill'
+      );
+    });
+  }
+
   test('read-only keeps normal text contrast', async function (assert) {
     const theme = resolveBorealisTheme('light').euiTheme;
     await render(

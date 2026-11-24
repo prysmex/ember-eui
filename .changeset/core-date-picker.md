@@ -1,0 +1,5 @@
+---
+'@ember-eui/core': minor
+---
+
+New `EuiDatePicker`: a port of upstream's date picker, without moment. A text input opens a calendar in a popover, or `@inline={{true}}` shows the calendar in the page. The value is a `YYYY-MM-DD` string (a `Date` or a moment is read too; `@onChange` always gets a string). Typed text is committed on Enter, on blur or on a pick, never while typing; text that is not a date, or names a day that cannot be chosen, stays in the input with the invalid look and calls `@onInputError`. The calendar is a keyboard-accessible grid with month and year selects; names, the first day of the week and the date order come from `@locale` through the browser's `Intl`. Supports `@minDate`, `@maxDate`, `@excludeDates`, `@includeDates`, `@filterDate`, `@openToDate`, `@dayClassName`, `@onClear`, the form states, `<:prepend>` and `<:append>`, and `@controlOnly`; it works inside modals and flyouts. Time selection is not part of this version. Also: a press in a popover opened from a flyout that closes on outside clicks no longer closes the flyout.

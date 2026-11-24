@@ -213,6 +213,7 @@ import type EuiFacetGroup from './components/eui-facet-group';
 import type EuiTextDiff from './components/eui-text-diff';
 import type EuiDelayRender from './components/eui-delay-render';
 import type EuiDelayHide from './components/eui-delay-hide';
+import type EuiDatePicker from './components/eui-date-picker';
 import type EuiDatePickerRange from './components/eui-date-picker-range';
 import type EuiI18nNumber from './components/eui-i18n-number';
 import type EuiFilterGroup from './components/eui-filter-group';
@@ -711,6 +712,8 @@ export default interface EmberEuiRegistry {
   'eui-delay-render': typeof EuiDelayRender;
   EuiDelayHide: typeof EuiDelayHide;
   'eui-delay-hide': typeof EuiDelayHide;
+  EuiDatePicker: typeof EuiDatePicker;
+  'eui-date-picker': typeof EuiDatePicker;
   EuiDatePickerRange: typeof EuiDatePickerRange;
   'eui-date-picker-range': typeof EuiDatePickerRange;
   EuiI18nNumber: typeof EuiI18nNumber;

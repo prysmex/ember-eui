@@ -16,7 +16,7 @@ import { cached, tracked } from '@glimmer/tracking';
 import { warn } from '@ember/debug';
 import { on } from '@ember/modifier';
 import { action } from '@ember/object';
-import { schedule } from '@ember/runloop';
+import { later, schedule } from '@ember/runloop';
 import { service } from '@ember/service';
 
 import { modifier } from 'ember-modifier';
@@ -76,6 +76,13 @@ export interface EuiDatePickerInputError {
   reason: EuiDatePickerInputErrorReason;
 }
 
+/**
+ * A date picker (upstream `EuiDatePicker`): a text input that opens a
+ * calendar in a popover, or the calendar alone with `@inline`. Values are
+ * `YYYY-MM-DD` strings; a `Date` or a moment is read too. Typed text is
+ * committed on Enter, on blur and on a pick. Attributes go to the input, or
+ * to the calendar with `@inline`.
+ */
 export interface EuiDatePickerSignature {
   /** `...attributes` go to the text input; with `@inline`, to the calendar's root (`div.react-datepicker`, `role="group"`). */
   Element: HTMLInputElement | HTMLDivElement;
@@ -91,20 +98,20 @@ export interface EuiDatePickerSignature {
 
     /** Shows the calendar in the page instead of the text input and the popover. */
     inline?: boolean;
-    /** With `@inline`: the raised frame. Default true. */
+    /** With `@inline`: the raised frame. Defaults to `true`. */
     shadow?: boolean;
-    /** Closes the popover after a day is picked. Default true. */
+    /** Closes the popover after a day is picked. Defaults to `true`. */
     shouldCloseOnSelect?: boolean;
-    /** Where the popover opens, any `EuiPopover` `@anchorPosition`. Default `'downLeft'`. */
+    /** Where the popover opens, any `EuiPopover` `@anchorPosition`. Defaults to `'downLeft'`. */
     popoverPlacement?: PopoverAnchorPosition;
 
-    /** 'local' (default), 'utc' or an IANA name: the zone of "today", and the day of a `Date` or a moment. */
+    /** `'local'`, `'utc'` or an IANA name: the zone of "today", and the day of a `Date` or a moment. Defaults to `'local'`. */
     timeZone?: 'local' | 'utc' | (string & {});
-    /** BCP 47 tag for names and defaults. Default: the document's language, then the browser's. */
+    /** BCP 47 tag for names and defaults. Defaults to the document's language, then the browser's. */
     locale?: string;
-    /** The order typed and shown: `'dmy'` (`24/11/2026`), `'mdy'` (`11/24/2026`) or `'ymd'` (`2026-11-24`). Default from `@locale`. */
+    /** The order typed and shown: `'dmy'` (`24/11/2026`), `'mdy'` (`11/24/2026`) or `'ymd'` (`2026-11-24`). Defaults to the order of `@locale`. */
     dateOrder?: DateOrder;
-    /** 0 (Sunday) to 6. Default from `@locale`. */
+    /** The first day of the week, 0 (Sunday) to 6. Defaults to `@locale`'s. */
     firstDayOfWeek?: Weekday;
 
     /** Days before are disabled (`YYYY-MM-DD`, a `Date` or a moment). */
@@ -127,21 +134,25 @@ export interface EuiDatePickerSignature {
     /** Extra classes on the popover panel (upstream `popperClassName`). */
     popoverClass?: string;
 
-    /** Id of the input, e.g. to match an `EuiFormRow`'s label. Defaults to a random id. */
+    /** Id of the input, e.g. to match an `EuiFormRow`'s `@id`. Defaults to a random id. */
     id?: string;
-    /** Placeholder text. Default: the display format spelled out (`DD/MM/YYYY`). */
+    /** Placeholder text. Defaults to the display format spelled out (`DD/MM/YYYY`). */
     placeholder?: string;
     /** Stretches the input to its container's width. */
     fullWidth?: boolean;
     /** Shorter input (32px instead of 40px). */
     compressed?: boolean;
+    /** The invalid look; also shown for typed text that was refused and for a value that cannot be read. */
     isInvalid?: boolean;
+    /** Shows a spinner. */
     isLoading?: boolean;
+    /** Disables the input; nothing opens. */
     disabled?: boolean;
+    /** Read-only input; nothing opens. */
     readOnly?: boolean;
-    /** The icon in the input. Default true. */
+    /** The icon in the input. Defaults to `true`. */
     showIcon?: boolean;
-    /** The icon's type. Default `'calendar'`. */
+    /** The icon's type, anything `EuiIcon`'s `@type` accepts. Defaults to `'calendar'`. */
     iconType?: string;
     /** Renders the input and its popover without the form control layout (no icon, clear button, prepend or append), e.g. inside `EuiDatePickerRange`. */
     controlOnly?: boolean;
@@ -592,25 +603,35 @@ export default class EuiDatePicker extends Component<EuiDatePickerSignature> {
     const focusInPanel = Boolean(this.panel?.contains(document.activeElement));
     this.isOpen = false;
     this.trapActive = false;
-    if (returnFocus || focusInPanel) this.focusInputAfterRender(returnFocus);
+    if (returnFocus || focusInPanel) this.focusInputAfterRender();
   }
 
-  private focusInputAfterRender(always: boolean) {
-    schedule('afterRender', () => {
+  /**
+   * Focus back to the input once the calendar's trap is off. Again a tick
+   * later when an outer trap (a modal, a flyout) took it for its own
+   * container on resuming: focus-trap delays that focus.
+   */
+  private focusInputAfterRender() {
+    const refocus = (onlyIfTaken: boolean) => {
       const input = this.input;
       if (!input || this.isDestroying || this.isDestroyed) return;
       const active = document.activeElement;
-      const lost =
+      if (active === input) return;
+      const taken =
         !active ||
         active === document.body ||
+        !active.isConnected ||
         Boolean(this.panel?.contains(active)) ||
-        !active.isConnected;
-      if (!always && !lost) return;
-      if (active === input) return;
+        active.contains(input);
+      if (onlyIfTaken && !taken) return;
       this.ownFocus = true;
       input.focus();
       // a focus event that did not come (the input was focused already)
       this.ownFocus = false;
+    };
+    schedule('afterRender', () => {
+      refocus(false);
+      later(() => refocus(true), 0);
     });
   }
 
@@ -706,9 +727,14 @@ export default class EuiDatePicker extends Component<EuiDatePickerSignature> {
         return;
       }
       case 'Escape':
-        // open: the popover closes itself (`onEscapeKey`), and keeps the
-        // Escape from an outer modal or flyout
-        if (this.isOpen) return;
+        // open: close, and keep the Escape from an outer modal or flyout
+        // (they listen on their own element, above the input)
+        if (this.isOpen) {
+          event.preventDefault();
+          event.stopPropagation();
+          this.close();
+          return;
+        }
         if (this.restore()) event.stopPropagation();
         return;
     }

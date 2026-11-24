@@ -147,6 +147,9 @@
   "packages/core/docs/forms/combo-box/index.md": [
     "EuiComboBox"
   ],
+  "packages/core/docs/forms/date-picker/index.md": [
+    "EuiDatePicker"
+  ],
   "packages/core/docs/forms/date-picker-range/index.md": [
     "EuiDatePickerRange"
   ],

@@ -476,7 +476,14 @@ const _timeSelectStyles = function _timeSelectStyles(
  * - Today also gets a dot under the number, so it does not rely on colour
  *   alone and stays visible when selected or disabled.
  * - A disabled calendar dims its days (upstream keeps their colour; only the
- *   frame changes); the selected day keeps its fill.
+ *   frame changes); the selected day keeps its fill and its readable text
+ *   (the disabled frame's inherited `-webkit-text-fill-color` would paint
+ *   it in the disabled colour on the fill).
+ * - The month and year selects are form controls with their own
+ *   `.euiFormControlLayout`: the inline frame's styles (upstream's
+ *   `.euiFormControlLayout` rules for shadow, invalid, disabled and
+ *   read-only, written for the outer layout) must not reach them, or each
+ *   select gets the frame's shadow and the invalid outline.
  */
 export const euiDatePickerCalendarStyles = function euiDatePickerCalendarStyles(
   euiThemeContext: Ctx
@@ -505,6 +512,8 @@ export const euiDatePickerCalendarStyles = function euiDatePickerCalendarStyles(
     '&.euiDatePickerCalendar--disabled .react-datepicker__day:not(.react-datepicker__day--selected){color:',
     euiTheme.colors.textDisabled,
     ';}',
+    '.react-datepicker__day{-webkit-text-fill-color:currentColor;}',
+    '.react-datepicker__header .euiFormControlLayout{background-color:transparent;background-image:none;box-shadow:none;outline:none;border:none;--euiFormControlStateColor:initial;}',
     ';label:euiDatePickerCalendar;'
   );
 };

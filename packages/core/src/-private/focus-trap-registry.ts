@@ -87,6 +87,22 @@ export function attachToFocusTraps(
 export const focusTrapFactory =
   createRegisteredFocusTrap as unknown as () => void;
 
+/**
+ * Whether `target` is in a portalled surface attached to an active trap
+ * whose own containers hold `element`: a press there counts as inside
+ * `element` (upstream: React portals bubble to their parents), e.g. a click
+ * in a date picker's calendar does not close the flyout it was opened from.
+ */
+export function inAttachedSurface(element: Element, target: Node): boolean {
+  for (const entry of active) {
+    if (!entry.base.some((container) => element.contains(container))) continue;
+    for (const surface of entry.extra) {
+      if (!element.contains(surface) && surface.contains(target)) return true;
+    }
+  }
+  return false;
+}
+
 /** Every container (base, shards and attached surfaces) of a registered trap. */
 export function focusTrapContains(trap: FocusTrap, target: Node): boolean {
   const entry = entries.get(trap);

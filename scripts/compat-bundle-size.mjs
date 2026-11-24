@@ -1,7 +1,8 @@
 /**
  * `pnpm size --compat`: what ember-eui costs an app built the way the
- * standard blueprint (@ember/app-blueprint) builds one, and a check that
- * the sheet stays out of a host's bundle until the host imports it.
+ * standard blueprint (@ember/app-blueprint) builds one, and checks that
+ * the sheet and core's date picker stay out of a host's bundle until the
+ * host imports them, and that the date picker brings no moment.
  *
  * measure-bundle-size.mjs builds entries that import a module directly; an
  * app from the blueprint also boots through `@embroider/virtual/compat-
@@ -58,6 +59,21 @@ const CASES = {
     gts: [
       "import EuiButton from '@ember-eui/core/components/eui-button';",
       '<EuiButton>hi</EuiButton>'
+    ]
+  },
+  'core-date-picker': {
+    deps: eui,
+    gts: [
+      "import EuiDatePicker from '@ember-eui/core/components/eui-date-picker';",
+      '<EuiDatePicker />'
+    ]
+  },
+  // positive control for the moment pattern: this one uses moment
+  'core-super-date-picker': {
+    deps: eui,
+    gts: [
+      "import EuiSuperDatePicker from '@ember-eui/core/components/eui-super-date-picker';",
+      '<EuiSuperDatePicker />'
     ]
   },
   'sheet-none': { deps: sheet, gts: ['', ''] },
@@ -292,6 +308,26 @@ ${c.gts[0]}
 
 /** The checks: each returns a list of failures. */
 const CHECKS = {
+  // the date picker is in an app only when the app imports it, and it
+  // brings no moment (DESIGN 8.5); core's own services do not either
+  'core-none': (r) => [
+    ...absent(r, 'all', DATE_PICKER, 'the date picker'),
+    ...absent(r, 'all', MOMENT, 'moment')
+  ],
+  'core-button': (r) => absent(r, 'all', DATE_PICKER, 'the date picker'),
+  'core-date-picker': (r) => [
+    ...present(
+      r,
+      'static',
+      /\/components\/eui-date-picker\.js$/,
+      '<EuiDatePicker>'
+    ),
+    ...present(r, 'static', /\/utils\/date\/parse\.js$/, 'utils/date'),
+    ...absent(r, 'all', MOMENT, 'moment'),
+    ...absent(r, 'all', /@elastic\/datemath/, '@elastic/datemath')
+  ],
+  'core-super-date-picker': (r) =>
+    present(r, 'static', MOMENT, 'moment (positive control)'),
   // installing the sheet adds nothing to an app that does not use it
   'sheet-none': (r) => absent(r, 'all', SHEET, 'sheet modules'),
   'dynamic-sheet-none': (r) => absent(r, 'all', SHEET, 'sheet modules'),
@@ -338,6 +374,10 @@ const CHECKS = {
 // (node_modules/@ember-eui/sheet) resolves them
 const SHEET = /(?:packages\/sheet|@ember-eui\/sheet)\/dist\//;
 const CORE = /(?:packages\/core|@ember-eui\/core)\/dist\//;
+const DATE_PICKER =
+  /(?:packages\/core|@ember-eui\/core)\/dist\/(?:components\/eui-date-picker(?:\.js|\/)|utils\/date\/)/;
+const MOMENT =
+  /\/node_modules\/(?:\.pnpm\/moment@[^/]+\/node_modules\/)?moment\//;
 
 function absent(r, where, re, what) {
   const found = r.modules[where].filter((id) => re.test(id));

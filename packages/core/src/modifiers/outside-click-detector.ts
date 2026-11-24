@@ -4,6 +4,8 @@ import { guidFor } from '@ember/object/internals';
 
 import Modifier from 'ember-modifier';
 
+import { inAttachedSurface } from '../-private/focus-trap-registry.ts';
+
 import type Owner from '@ember/owner';
 import type { ArgsFor } from 'ember-modifier';
 
@@ -60,6 +62,13 @@ export default class OutsideClickDetector extends Modifier<OutsideClickDetectorM
     }
 
     this.capturedDownIds = [];
+
+    // a portalled surface opened from inside (a popover panel attached to
+    // this element's focus trap) is inside
+    const target = e.target as Node | null;
+    if (this.element && target && inAttachedSurface(this.element, target)) {
+      return;
+    }
 
     return onOutsideClick(event);
   }

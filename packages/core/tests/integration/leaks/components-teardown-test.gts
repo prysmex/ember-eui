@@ -8,6 +8,7 @@ import { clearRender, click, render, settled, triggerEvent, waitUntil } from '@e
 import EuiAspectRatio from '#src/components/eui-aspect-ratio.gts';
 import EuiAvatar from '#src/components/eui-avatar.gts';
 import EuiButton from '#src/components/eui-button.gts';
+import EuiDatePicker from '#src/components/eui-date-picker.gts';
 import EuiFlyout from '#src/components/eui-flyout.gts';
 import EuiGlobalToastList from '#src/components/eui-global-toast-list.gts';
 import EuiPopover from '#src/components/eui-popover.gts';
@@ -169,6 +170,40 @@ module('Integration | Leaks | components teardown', function (hooks) {
       assert.strictEqual(win.count('scroll', true), 0, 'scroll (capture)');
     } finally {
       win.restore();
+    }
+  });
+
+  test('date picker: unmounting while open, focus in the calendar, leaves no listeners, trap or portal (9 #54)', async function (assert) {
+    const win = trackListeners(window);
+    const doc = trackListeners(document);
+    class S {
+      @tracked show = true;
+    }
+    const mounted = new S();
+
+    try {
+      await render(
+        <template>
+          {{#if mounted.show}}
+            <EuiDatePicker @value="2026-11-24" />
+          {{/if}}
+        </template>
+      );
+      await click('input.euiDatePicker');
+      await triggerEvent('input.euiDatePicker', 'keydown', { key: 'ArrowDown' });
+      await waitUntil(() => document.activeElement?.closest('[data-popover-panel]'));
+      await triggerEvent(document.activeElement!, 'pointerdown');
+      assert.true(doc.count('focusin', true) > 0, 'the trap listens while active');
+      mounted.show = false;
+      await settled();
+      assert.strictEqual(document.querySelector('[data-popover-panel]'), null, 'panel removed');
+      assert.strictEqual(win.count('resize'), 0, 'resize');
+      assert.strictEqual(win.count('scroll', true), 0, 'scroll (capture)');
+      assert.strictEqual(doc.count('focusin', true), 0, 'no focus trap left');
+      assert.strictEqual(doc.count('keydown', true), 0, 'no trap key handler left');
+    } finally {
+      win.restore();
+      doc.restore();
     }
   });
 

@@ -45,6 +45,7 @@ import EuiControlBar from './components/eui-control-bar.gts';
 import EuiCopy from './components/eui-copy.gts';
 import EuiDataGrid from './components/eui-data-grid.gts';
 import EuiDataGridToolbarControl from './components/eui-data-grid-toolbar-control.gts';
+import EuiDatePicker from './components/eui-date-picker.gts';
 import EuiDatePickerRange from './components/eui-date-picker-range.gts';
 import EuiDelayHide from './components/eui-delay-hide.gts';
 import EuiDelayRender from './components/eui-delay-render.gts';
@@ -313,6 +314,7 @@ export {
   EuiCopy,
   EuiDataGrid,
   EuiDataGridToolbarControl,
+  EuiDatePicker,
   EuiDatePickerRange,
   EuiDelayHide,
   EuiDelayRender,

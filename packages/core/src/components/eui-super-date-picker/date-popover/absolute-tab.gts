@@ -42,9 +42,15 @@ function limitDay(m: Moment | null | undefined): string | null {
   return dayOf(moment(m.valueOf()));
 }
 
-/** A moment locale as a BCP 47 tag for the calendar's names and first day of the week; `'en'` when unset or unknown to `Intl`. */
+/**
+ * A moment locale as a BCP 47 tag for the calendar's names and first day
+ * of the week: `@locale`, else moment's global locale (where the old
+ * calendar took its month names), else `'en'`.
+ */
 function calendarLocale(locale: LocaleSpecifier | null | undefined): string {
-  const tag = Array.isArray(locale) ? locale[0] : locale;
+  const given = Array.isArray(locale) ? locale[0] : locale;
+  const tag =
+    typeof given === 'string' && given.trim() !== '' ? given : moment.locale();
   if (typeof tag !== 'string' || tag.trim() === '') return 'en';
   try {
     return Intl.getCanonicalLocales(tag)[0] ?? 'en';
@@ -155,7 +161,7 @@ export default class AbsoluteTab extends Component<AbsoluteTabSignature> {
 
   /* The calendar (`EuiDatePickerCalendar`): moments are converted here, at its edge. */
 
-  /** The calendar's names and first day of the week follow `@locale` (`'en'` when unset, as the text). */
+  /** The calendar's names and first day of the week follow `@locale`, else moment's global locale. */
   @cached
   get calendarLocale() {
     return localeDefaults(calendarLocale(this.args.locale));
@@ -218,9 +224,10 @@ export default class AbsoluteTab extends Component<AbsoluteTabSignature> {
     this.args.onChange(date.toISOString(), e);
 
     this.valueAsMoment = date;
+    // in moment's global locale, as before: typed text is parsed in it
     this.textInputValue = date
       .clone()
-      .locale(this.args.locale || 'en')
+      .locale(moment.locale())
       .format(this.args.dateFormat);
     this.isTextInvalid = false;
   }

@@ -181,7 +181,7 @@ module(
       );
     });
 
-    test('locale: names and the first day of the week follow @locale; English and Sunday without one', async function (assert) {
+    test("locale: names and the first day of the week follow @locale; without one, moment's global locale (English and Sunday here)", async function (assert) {
       class LocaleState {
         @tracked locale: string | undefined = 'fr';
       }
@@ -519,6 +519,65 @@ module(
       await click(cell('2027-01-01'));
       assert.strictEqual(last(state.changes), iso('2027-01-01T14:30:00.000'));
       assert.dom(field()).hasValue('Jan 1, 2027 @ 14:30:00.000');
+    });
+    test("without @locale the calendar follows moment's global locale, and the text written after a pick can be edited", async function (assert) {
+      // as an app with `moment/locale/es` and `moment.locale('es')` (Prysmex's short months)
+      moment.defineLocale('es', {
+        parentLocale: 'en',
+        monthsShort: [
+          'Ene',
+          'Feb',
+          'Mar',
+          'Abr',
+          'May',
+          'Jun',
+          'Jul',
+          'Ago',
+          'Sep',
+          'Oct',
+          'Nov',
+          'Dic'
+        ]
+      });
+      moment.locale('es');
+      try {
+        const state = new State('2026-01-20T10:30:00.000');
+        await render(
+          <template>
+            <EuiSuperDatePicker
+              @start={{state.start}}
+              @end={{state.end}}
+              @onTimeChange={{state.onTimeChange}}
+              @showUpdateButton={{false}}
+            />
+          </template>
+        );
+        await openStart();
+        assert.strictEqual(
+          el('.euiAbsoluteTab .react-datepicker__day-name').getAttribute(
+            'abbr'
+          ),
+          'lunes'
+        );
+        assert.strictEqual(
+          monthSelect().selectedOptions[0]!.textContent!.trim(),
+          'enero'
+        );
+
+        await click(cell('2026-01-12'));
+        assert.dom(textInput()).hasValue('Ene 12, 2026 @ 10:30:00.000');
+        await fillIn(textInput(), 'Ene 13, 2026 @ 10:30:00.000');
+        assert.dom(textInput()).doesNotHaveAttribute('aria-invalid');
+        assert.strictEqual(
+          last(state.changes).start,
+          iso('2026-01-13T10:30:00.000'),
+          'the edited text is read'
+        );
+        assert.deepEqual(selectedDates(), ['2026-01-13']);
+      } finally {
+        moment.locale('en');
+        moment.defineLocale('es', null);
+      }
     });
   }
 );

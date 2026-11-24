@@ -1,5 +1,5 @@
 /**
- * Two fixes found by real use of the docs (2026-11-25):
+ * Two fixes found by real use of the docs (2026-11-24):
  * - the calendar header's month and year selects cut "2026" and long
  *   month names in the popover's narrow header;
  * - opening the calendar from a custom trigger scrolled the page down to

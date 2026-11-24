@@ -29,6 +29,13 @@ export interface EuiComponentDefaults {
      * `lang`, then the browser's language.
      */
     locale?: string;
+    /**
+     * The OS picker (`<input type="date">`, `datetime-local`, `time`)
+     * instead of the calendar: `'auto'` (the default: on phones and in a
+     * Capacitor app), `true` or `false`. A picker's own `@native` wins;
+     * `@inline` always shows the calendar.
+     */
+    native?: 'auto' | boolean;
   };
 }
 

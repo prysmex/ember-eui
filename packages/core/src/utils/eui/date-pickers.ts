@@ -558,6 +558,43 @@ export const euiDatePickerInputErrorStyles =
   };
 
 /**
+ * Not a port: `EuiDatePicker`'s native input (DESIGN 6.1), an
+ * `EuiFieldText` of `type="date"`, `datetime-local` or `time`.
+ *
+ * - `color-scheme` follows EUI's colour mode, so the browser's own parts
+ *   (the segments, the OS picker where the engine draws it) match the theme,
+ *   as upstream's `EuiFieldNumber` does.
+ * - The browser's picker indicator is hidden: EUI's icon opens the picker.
+ * - WebKit (iOS) centres the value and gives an empty input no line box:
+ *   the value starts at the inline start and keeps a line's height.
+ * - The segments' own padding is dropped, so the text sits where
+ *   `EuiFieldText`'s does.
+ * - A disabled input's segments take EUI's disabled text colour (Chromium
+ *   paints them with its own).
+ */
+export const euiDatePickerNativeStyles = function euiDatePickerNativeStyles(
+  euiThemeContext: Ctx
+) {
+  const euiTheme: Vars = euiThemeContext.euiTheme;
+  const dark = (euiThemeContext as { colorMode?: string }).colorMode === 'DARK';
+  return css(
+    'color-scheme:',
+    dark ? 'dark' : 'light',
+    ';',
+    '&::-webkit-calendar-picker-indicator{display:none;}',
+    '&::-webkit-inner-spin-button{display:none;}',
+    '&::-webkit-date-and-time-value{margin:0;text-align:start;min-block-size:1lh;}',
+    '&::-webkit-datetime-edit{padding:0;}',
+    '&:disabled::-webkit-datetime-edit{color:',
+    euiTheme.colors.textDisabled,
+    ';-webkit-text-fill-color:',
+    euiTheme.colors.textDisabled,
+    ';}',
+    ';label:euiDatePickerNative;'
+  );
+};
+
+/**
  * `quick_select.js` module-level styles: the panel lets the previous/next
  * time window buttons overflow it, and they sit above the inputs, aligned
  * with the panel title.

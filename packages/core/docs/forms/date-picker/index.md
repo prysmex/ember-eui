@@ -259,6 +259,7 @@ calendar with `@inline`.
 | `@iconType` | `string` | `'calendar'`, or `'clock'` with `@showTimeSelectOnly` | The icon's type, anything `EuiIcon`'s `@type` accepts. |
 | `@controlOnly` | `boolean` |  | Renders the input and its popover without the form control layout (no icon, clear button, prepend or append), e.g. inside `EuiDatePickerRange`. |
 | `@inputRef` | `(element: HTMLInputElement \| null) => void` |  | Called with the `<input>` element once rendered. |
+| `@native` | `EuiDatePickerNative` | `componentDefaults.EuiDatePicker.native` in `euiConfig`, then `'auto'` | The OS picker instead of the calendar: `<input type="date">`, `datetime-local` (the wall clock in `@timeZone`) or `time`, with the same values. `'auto'` takes it in a Capacitor app on a device and when the primary pointer is coarse (a phone, a tablet), unless an argument the OS cannot honour is given (`@filterDate`, `@excludeDates`, `@includeDates`, `@excludeTimes`, `@injectTimes`, `@dayClassName`). `true` and `false` force a path; `@inline` always shows the calendar. Chosen once, when the picker is created. Every value the OS returns is checked as typed text is. |
 
 | Block | Description |
 | --- | --- |

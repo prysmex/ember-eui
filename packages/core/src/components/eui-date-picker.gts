@@ -12,6 +12,8 @@
  * committed on Enter, blur and pick, never per keystroke (DESIGN 5.3).
  * Times follow DESIGN 5.2: an instant is shown and chosen as a wall clock
  * in `@timeZone`, and only a different wall clock changes the value.
+ * On phones and in Capacitor apps the OS input takes the place of the text
+ * input and the popover (DESIGN 6), with the same arguments and values.
  */
 import Component from '@glimmer/component';
 import { cached, tracked } from '@glimmer/tracking';
@@ -26,9 +28,19 @@ import { modifier } from 'ember-modifier';
 import { or } from 'ember-truth-helpers';
 import { tabbable } from 'tabbable';
 
+import {
+  choosesNative,
+  nativeAttributes,
+  nativeEnvironment,
+  readNative,
+  unsupportedByNative
+} from '../-private/native-date-input.ts';
 import { randomId } from '../-private/random-id.ts';
 import { getEuiThemeContext } from '../utils/emotion/consume.ts';
-import { euiDatePickerInputErrorStyles } from '../utils/eui/date-pickers.ts';
+import {
+  euiDatePickerInputErrorStyles,
+  euiDatePickerNativeStyles
+} from '../utils/eui/date-pickers.ts';
 import { euiDatePickerStyles } from '../utils/eui/styles.generated.ts';
 import { euiClass, useEuiBorealisStyles } from '../utils/eui/styles.ts';
 import { validIsoDate } from '../utils/date/calendar-date.ts';
@@ -75,10 +87,17 @@ import {
   withDay
 } from '../utils/date/zone.ts';
 import EuiDatePickerCalendar from './eui-date-picker/calendar.gts';
+import EuiDatePickerNativeInput from './eui-date-picker/native-input.gts';
 import EuiFieldText from './eui-field-text.gts';
 import EuiFormControlLayout from './eui-form-control-layout.gts';
 import EuiPopover from './eui-popover.gts';
 
+import type {
+  EuiDatePickerNative,
+  NativeAttributes,
+  NativeContext,
+  NativeReading
+} from '../-private/native-date-input.ts';
 import type { Weekday } from '../utils/date/calendar-date.ts';
 import type { DayLimits, LimitProblem } from '../utils/date/calendar-nav.ts';
 import type { DateOrder, TimeOfDay } from '../utils/date/parse.ts';
@@ -92,6 +111,7 @@ import type {
   PopoverAnchorPosition
 } from './eui-popover.gts';
 import type { TOC } from '@ember/component/template-only';
+import type Owner from '@ember/owner';
 
 /** Why typed text was refused (`@onInputError`). */
 export type EuiDatePickerInputErrorReason = 'unreadable' | LimitProblem;
@@ -214,6 +234,20 @@ export interface EuiDatePickerSignature {
     controlOnly?: boolean;
     /** Called with the `<input>` element once rendered. */
     inputRef?: (element: HTMLInputElement | null) => void;
+
+    /**
+     * The OS picker instead of the calendar: `<input type="date">`,
+     * `datetime-local` (the wall clock in `@timeZone`) or `time`, with the
+     * same values. `'auto'` takes it in a Capacitor app on a device and when
+     * the primary pointer is coarse (a phone, a tablet), unless an argument
+     * the OS cannot honour is given (`@filterDate`, `@excludeDates`,
+     * `@includeDates`, `@excludeTimes`, `@injectTimes`, `@dayClassName`).
+     * `true` and `false` force a path; `@inline` always shows the calendar.
+     * Chosen once, when the picker is created. Every value the OS returns is
+     * checked as typed text is. Defaults to
+     * `componentDefaults.EuiDatePicker.native` in `euiConfig`, then `'auto'`.
+     */
+    native?: EuiDatePickerNative;
   };
   Blocks: {
     /** Content before the input, e.g. an `EuiFormLabel`; yields the class to put on it and the input id. */
@@ -340,6 +374,48 @@ export default class EuiDatePicker extends Component<EuiDatePickerSignature> {
   /** A press in the panel is under way: the input's blur is not a commit (Safari does not focus buttons on click). */
   private pressInPanel = false;
   fallbackId = randomId();
+  /** The native path is taken (DESIGN 6.2), chosen once; see the constructor. */
+  @tracked private nativeChosen = false;
+
+  constructor(owner: Owner, args: EuiDatePickerSignature['Args']) {
+    super(owner, args);
+    const environment = owner.lookup('-environment:main') as
+      { isInteractive?: boolean; _renderMode?: string } | undefined;
+    if (environment?._renderMode === 'rehydrate') {
+      // the server rendered the calendar path's markup: the first render
+      // here matches it, and the native input takes its place once after
+      // (DESIGN 6.2, 13)
+      schedule('afterRender', () => {
+        if (this.isDestroying || this.isDestroyed) return;
+        this.nativeChosen = this.chooseNative(true);
+      });
+    } else {
+      this.nativeChosen = this.chooseNative(
+        environment?.isInteractive !== false
+      );
+    }
+  }
+
+  /** DESIGN 6.2: `@inline`, then `@native`, then the config, then auto. Server rendering takes the calendar. */
+  private chooseNative(interactive: boolean): boolean {
+    const environment = nativeEnvironment();
+    return choosesNative(
+      {
+        inline: this.args.inline,
+        // batch 6: a `<:trigger>` block takes the calendar too
+        trigger: false,
+        native: this.args.native,
+        config: this.configDefaults?.native,
+        unsupported: unsupportedByNative(this.args).length > 0
+      },
+      interactive ? environment : { ...environment, browser: false }
+    );
+  }
+
+  /** The OS input renders: native was chosen, and the picker is neither inline nor read-only (read-only shows the text input, DESIGN 6.3). */
+  get nativeInput(): boolean {
+    return this.nativeChosen && !this.args.inline && !this.args.readOnly;
+  }
 
   get context() {
     return getEuiThemeContext(this);
@@ -731,6 +807,17 @@ export default class EuiDatePicker extends Component<EuiDatePickerSignature> {
       { id: 'ember-eui.eui-date-picker.time-intervals' }
     );
     warn(
+      'EuiDatePicker: @native={{true}} has no effect with @inline: there is no native inline calendar; the calendar is shown.',
+      !(this.args.native === true && this.args.inline),
+      { id: 'ember-eui.eui-date-picker.native-inline' }
+    );
+    const unsupported = this.nativeInput ? unsupportedByNative(this.args) : [];
+    warn(
+      `EuiDatePicker: the OS picker cannot show ${unsupported.map((name) => `@${name}`).join(', ')}. A value @filterDate, @excludeDates, @includeDates or @excludeTimes refuses is an input error; @injectTimes and @dayClassName have no effect. Leave @native to 'auto' for the calendar.`,
+      unsupported.length === 0,
+      { id: 'ember-eui.eui-date-picker.native-unsupported' }
+    );
+    warn(
       'EuiDatePicker: @minDate is after @maxDate; every day is disabled.',
       !limitsConflict(this.limits),
       { id: 'ember-eui.eui-date-picker.limits-conflict' }
@@ -771,6 +858,22 @@ export default class EuiDatePicker extends Component<EuiDatePickerSignature> {
   get icon(): string | undefined {
     if (this.args.showIcon === false) return undefined;
     return this.args.iconType ?? (this.timeOnly ? 'clock' : 'calendar');
+  }
+
+  /** The layout's icon: on the native path a button that opens the OS picker (the browser's own indicator is hidden). */
+  @cached
+  get layoutIcon() {
+    const type = this.icon;
+    if (!type || !this.nativeInput) return type;
+    return {
+      type,
+      side: 'left' as const,
+      onClick: this.showNativePicker,
+      disabled: Boolean(this.args.disabled),
+      'aria-label': this.calendarLabel,
+      // the input itself is the keyboard's way in
+      tabIndex: -1
+    };
   }
 
   get inputId(): string {
@@ -834,6 +937,106 @@ export default class EuiDatePicker extends Component<EuiDatePickerSignature> {
     return this.value !== null && onClear && !disabled && !readOnly
       ? this.onClear
       : undefined;
+  }
+
+  /* The native path (DESIGN 6) */
+
+  /** What the native input is checked and converted with. */
+  get nativeContext(): NativeContext {
+    return {
+      mode: this.mode,
+      zone: this.zone,
+      seconds: this.seconds,
+      value: this.value,
+      valueMs: this.valueMs,
+      minDate: this.minDate,
+      maxDate: this.maxDate,
+      limits: this.limits,
+      instantRules: this.instantRules,
+      timeLimits: {
+        minTime: this.args.minTime,
+        maxTime: this.args.maxTime,
+        excludeTimes: this.args.excludeTimes
+      }
+    };
+  }
+
+  /** The native input's type, value, `min`, `max` and `step`. */
+  @cached
+  get nativeAttributes(): NativeAttributes {
+    return nativeAttributes(this.nativeContext);
+  }
+
+  get nativeClass(): string {
+    return euiClass(
+      this.context,
+      useEuiBorealisStyles(this.context, euiDatePickerNativeStyles)
+    );
+  }
+
+  /** The icon: focus the input and open the OS picker where the engine can (`showPicker`). */
+  @action
+  showNativePicker() {
+    const input = this.input;
+    if (!input || !this.interactive) return;
+    input.focus();
+    try {
+      input.showPicker();
+    } catch {
+      // no showPicker, or not allowed here (a cross-origin frame)
+    }
+  }
+
+  /**
+   * The native input's `change`: its value is read and checked as typed
+   * text is (DESIGN 6.3). A half-filled field (bad input) is still being
+   * edited: it is judged when focus leaves.
+   */
+  @action
+  onNativeChange(event: Event) {
+    const input = event.target as HTMLInputElement;
+    const badInput = Boolean(input.validity?.badInput);
+    const reading = readNative(input.value, badInput, this.nativeContext);
+    if (reading.kind === 'problem' && badInput) return;
+    this.settleNative(input, reading);
+  }
+
+  /** Focus leaves a half-filled native input: an unreadable value. */
+  @action
+  onNativeFocusOut(event: FocusEvent) {
+    const input = event.target as HTMLInputElement;
+    if (!input.validity?.badInput) return;
+    this.settleNative(input, { kind: 'problem', problem: 'unreadable' });
+  }
+
+  private settleNative(input: HTMLInputElement, reading: NativeReading) {
+    if (reading.kind === 'problem') {
+      // the value stays in the input, with the invalid look, as refused
+      // typed text does; the value does not change
+      this.typed = { text: input.value, over: this.value };
+      this.inputError = reading.problem;
+      this.args.onInputError?.({ text: input.value, reason: reading.problem });
+      return;
+    }
+    this.typed = null;
+    this.inputError = null;
+    if (reading.kind === 'empty') {
+      if (this.value !== null || this.args.value != null) {
+        this.args.onChange?.(null);
+      }
+    } else if (reading.changes) {
+      this.args.onChange?.(reading.value);
+    }
+    // the input shows the value, also when it did not change (a gap time
+    // resolved to the value) or the app kept its own (9 #30)
+    schedule('afterRender', () => {
+      if (this.isDestroying || this.isDestroyed || this.input !== input) {
+        return;
+      }
+      if (this.inputError !== null) return;
+      const { value } = this.nativeAttributes;
+      if (input.value !== value) input.value = value;
+    });
   }
 
   /* Opening and closing */
@@ -1300,7 +1503,11 @@ export default class EuiDatePicker extends Component<EuiDatePickerSignature> {
         </EuiFormControlLayout>
       </div>
     {{else if @controlOnly}}
-      <DatePickerControl @picker={{this}} ...attributes />
+      {{#if this.nativeInput}}
+        <EuiDatePickerNativeInput @picker={{this}} ...attributes />
+      {{else}}
+        <DatePickerControl @picker={{this}} ...attributes />
+      {{/if}}
     {{else}}
       {{#let
         (has-block "prepend") (has-block "append")
@@ -1309,7 +1516,7 @@ export default class EuiDatePicker extends Component<EuiDatePickerSignature> {
         <div class="euiDatePicker {{this.rootClass}}">
           <EuiFormControlLayout
             @inputId={{this.inputId}}
-            @icon={{this.icon}}
+            @icon={{this.layoutIcon}}
             @clear={{this.clear}}
             @isLoading={{@isLoading}}
             @isInvalid={{this.isInvalid}}
@@ -1325,7 +1532,11 @@ export default class EuiDatePicker extends Component<EuiDatePickerSignature> {
               {{yield className this.inputId to="prepend"}}
             </:prepend>
             <:field>
-              <DatePickerControl @picker={{this}} ...attributes />
+              {{#if this.nativeInput}}
+                <EuiDatePickerNativeInput @picker={{this}} ...attributes />
+              {{else}}
+                <DatePickerControl @picker={{this}} ...attributes />
+              {{/if}}
             </:field>
             <:append as |className|>
               {{yield className this.inputId to="append"}}

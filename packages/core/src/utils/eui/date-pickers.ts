@@ -519,6 +519,23 @@ export const euiDatePickerCalendarStyles = function euiDatePickerCalendarStyles(
 };
 
 /**
+ * Not a port: `EuiDatePicker`'s input while it shows typed text that was
+ * refused (DESIGN 5.3). EUI's invalid border yields to the focus border
+ * (`:not(:focus)`), but this error is made while the input has focus (Enter):
+ * without this, only the small warning icon would show it. The input keeps
+ * the invalid border while focused; other invalid inputs are unchanged.
+ */
+export const euiDatePickerInputErrorStyles = function euiDatePickerInputErrorStyles(
+  euiThemeContext: Ctx
+) {
+  return css(
+    '&&:focus{',
+    euiFormControlStyles(euiThemeContext).invalid,
+    '};label:euiDatePickerInputError;'
+  );
+};
+
+/**
  * `quick_select.js` module-level styles: the panel lets the previous/next
  * time window buttons overflow it, and they sit above the inputs, aligned
  * with the panel title.

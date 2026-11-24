@@ -1,7 +1,7 @@
 import { module, test } from 'qunit';
 import { setupRenderingTest } from 'ember-qunit';
 import moment from 'moment';
-import { focus, render, triggerKeyEvent } from '@ember/test-helpers';
+import { fillIn, focus, render, triggerKeyEvent } from '@ember/test-helpers';
 
 import EuiDatePicker from '#src/components/eui-date-picker.gts';
 import EuiEmotionProvider from '#src/components/eui-emotion-provider.gts';
@@ -462,6 +462,52 @@ module('Integration | Component | eui-date-picker | styles', function (hooks) {
           getComputedStyle(selected.parentElement!).backgroundColor
         ) >= 4.5,
         'readable on the fill'
+      );
+    });
+  }
+
+  for (const mode of ['light', 'dark'] as Mode[]) {
+    test(`${mode}: typed text refused while focused keeps the invalid border; other inputs keep EUI's focus border`, async function (assert) {
+      await render(
+        <template>
+          <EuiEmotionProvider @colorMode={{mode}}>
+            <div data-p="typed"><EuiDatePicker @dateOrder="dmy" /></div>
+            <div data-p="invalid"><EuiDatePicker @isInvalid={{true}} /></div>
+          </EuiEmotionProvider>
+        </template>
+      );
+      const typed = el<HTMLInputElement>('[data-p="typed"] input');
+      const state = (input: Element) =>
+        getComputedStyle(input)
+          .getPropertyValue('--euiFormControlStateColor')
+          .trim();
+      const invalidBlurred = state(el('[data-p="invalid"] input'));
+      await fillIn(typed, '31/02');
+      const focused = state(typed);
+      await triggerKeyEvent(typed, 'keydown', 'Enter');
+      assert.dom(typed).isFocused();
+      assert.dom(typed).hasClass('euiDatePicker--inputError');
+      assert.strictEqual(
+        state(typed),
+        invalidBlurred,
+        'the invalid colour while focused'
+      );
+      assert.notStrictEqual(focused, invalidBlurred, 'not the focus colour');
+      await triggerKeyEvent(typed, 'keydown', 'Escape');
+      assert.dom(typed).doesNotHaveClass('euiDatePicker--inputError');
+      assert.strictEqual(
+        state(typed),
+        focused,
+        'restored: the focus colour again'
+      );
+
+      const invalid = el<HTMLInputElement>('[data-p="invalid"] input');
+      await focus(invalid);
+      await triggerKeyEvent(invalid, 'keydown', 'Escape');
+      assert.strictEqual(
+        state(invalid),
+        focused,
+        "@isInvalid alone keeps EUI's focus border while focused"
       );
     });
   }

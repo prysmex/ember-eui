@@ -25,6 +25,7 @@ import { tabbable } from 'tabbable';
 
 import { randomId } from '../-private/random-id.ts';
 import { getEuiThemeContext } from '../utils/emotion/consume.ts';
+import { euiDatePickerInputErrorStyles } from '../utils/eui/date-pickers.ts';
 import { euiDatePickerStyles } from '../utils/eui/styles.generated.ts';
 import { euiClass, useEuiBorealisStyles } from '../utils/eui/styles.ts';
 import { validIsoDate } from '../utils/date/calendar-date.ts';
@@ -203,7 +204,7 @@ const DatePickerControl: TOC<{
           @disabled={{@picker.args.disabled}}
           @readOnly={{@picker.args.readOnly}}
           @inputRef={{@picker.registerInput}}
-          class="euiDatePicker"
+          class="euiDatePicker {{@picker.inputErrorClass}}"
           autocomplete="off"
           aria-haspopup="dialog"
           aria-expanded={{if @picker.isOpen "true" "false"}}
@@ -437,6 +438,15 @@ export default class EuiDatePicker extends Component<EuiDatePickerSignature> {
       this.hasUnknownZone ||
       (this.inputError !== null && this.shownTyped !== null)
     );
+  }
+
+  /** Typed text was refused and is shown: the invalid border, also while focused. */
+  get inputErrorClass(): string | undefined {
+    if (this.inputError === null || this.shownTyped === null) return undefined;
+    return `euiDatePicker--inputError ${euiClass(
+      this.context,
+      useEuiBorealisStyles(this.context, euiDatePickerInputErrorStyles)
+    )}`;
   }
 
   get interactive(): boolean {
@@ -784,7 +794,18 @@ export default class EuiDatePicker extends Component<EuiDatePickerSignature> {
 
   releasePress = () => {
     this.pressInPanel = false;
+    document.removeEventListener('pointerup', this.releasePress, {
+      capture: true
+    });
   };
+
+  willDestroy() {
+    super.willDestroy();
+    // a press under way when the picker goes
+    document.removeEventListener('pointerup', this.releasePress, {
+      capture: true
+    });
+  }
 
   /** Tab after the calendar's last control, or Shift+Tab before its first, closes and returns to the input (DESIGN 7.2). */
   @action

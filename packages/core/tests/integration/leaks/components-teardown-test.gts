@@ -194,6 +194,7 @@ module('Integration | Leaks | components teardown', function (hooks) {
       await waitUntil(() => document.activeElement?.closest('[data-popover-panel]'));
       await triggerEvent(document.activeElement!, 'pointerdown');
       assert.true(doc.count('focusin', true) > 0, 'the trap listens while active');
+      assert.strictEqual(doc.count('pointerup', true), 1, 'a press in the panel waits for its end');
       mounted.show = false;
       await settled();
       assert.strictEqual(document.querySelector('[data-popover-panel]'), null, 'panel removed');
@@ -201,6 +202,7 @@ module('Integration | Leaks | components teardown', function (hooks) {
       assert.strictEqual(win.count('scroll', true), 0, 'scroll (capture)');
       assert.strictEqual(doc.count('focusin', true), 0, 'no focus trap left');
       assert.strictEqual(doc.count('keydown', true), 0, 'no trap key handler left');
+      assert.strictEqual(doc.count('pointerup', true), 0, 'no press listener left');
     } finally {
       win.restore();
       doc.restore();

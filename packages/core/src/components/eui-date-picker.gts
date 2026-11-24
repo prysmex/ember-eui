@@ -1166,7 +1166,7 @@ export default class EuiDatePicker extends Component<EuiDatePickerSignature> {
   showNativePicker() {
     const input = this.input;
     if (!input || !this.interactive) return;
-    input.focus();
+    input.focus({ preventScroll: true });
     try {
       input.showPicker();
     } catch {
@@ -1300,7 +1300,7 @@ export default class EuiDatePicker extends Component<EuiDatePickerSignature> {
         active.contains(input);
       if (onlyIfTaken && !taken) return;
       this.ownFocus = true;
-      input.focus();
+      input.focus({ preventScroll: true });
       // a focus event that did not come (the input was focused already)
       this.ownFocus = false;
     };
@@ -1728,7 +1728,9 @@ export default class EuiDatePicker extends Component<EuiDatePickerSignature> {
             ? '.react-datepicker__time-list'
             : 'td[data-date] > button[tabindex="0"]'
         )
-        ?.focus();
+        // before the popover is placed the panel can sit at the end of the
+        // page: focusing it there scrolled the page down and back (a jump)
+        ?.focus({ preventScroll: true });
     });
   });
 

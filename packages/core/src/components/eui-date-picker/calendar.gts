@@ -573,7 +573,8 @@ export default class EuiDatePickerCalendar extends Component<EuiDatePickerCalend
       this.handledFocusRequest = request;
       element
         .querySelector<HTMLButtonElement>(`[data-date="${date}"] > button`)
-        ?.focus();
+        // the popover may not be placed yet: never scroll the page to it
+        ?.focus({ preventScroll: true });
     }
   );
 

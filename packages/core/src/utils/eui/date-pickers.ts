@@ -515,6 +515,12 @@ export const euiDatePickerCalendarStyles = function euiDatePickerCalendarStyles(
   return css(
     '&&.euiFormControlLayoutDelimited__input{text-align:inherit;}',
     '&& .react-datepicker__header .euiFormControlLayout__childrenWrapper{display:block;}',
+    // The month and year selects: a 100%-wide select adds nothing to its
+    // container's content size, so the upstream 2:1 split cut "2026" and
+    // long month names in the popover's narrow header. Each select is at
+    // least its widest option (stable while paging months), and still
+    // stretches to its share where the header is wider.
+    '&& .react-datepicker__header__dropdown .euiSelect{inline-size:auto;min-inline-size:100%;}',
     '.react-datepicker__day--range-start:not(.react-datepicker__day--selected):not(.react-datepicker__day--in-selecting-range),',
     '.react-datepicker__day--range-end:not(.react-datepicker__day--selected):not(.react-datepicker__day--in-selecting-range){outline:',
     euiTheme.border.width.thin,

@@ -8,6 +8,7 @@ import {
   dayAt,
   instantOf,
   normalizeTimeZone,
+  offsetMinutes,
   realWall,
   sameWall,
   startOfDayIn,
@@ -251,5 +252,80 @@ module('Unit | utils | date | zone', function () {
       const wall = wallAt(at, 'local');
       assert.strictEqual(iso(instantOf(wall, 'local')), text, text);
     }
+  });
+
+  test('fixed offsets: parsing, normalizing, validity (DESIGN 17)', function (assert) {
+    assert.strictEqual(offsetMinutes('+05:30'), 330);
+    assert.strictEqual(offsetMinutes('-02:00'), -120);
+    assert.strictEqual(offsetMinutes('+0530'), 330, '+HHMM, as Intl');
+    assert.strictEqual(offsetMinutes('-03'), -180, '+HH, as Intl');
+    assert.strictEqual(offsetMinutes('+23:59'), 23 * 60 + 59, 'the largest');
+    assert.strictEqual(offsetMinutes('-00:00'), 0);
+    for (const text of [
+      '+24:00',
+      '+05:60',
+      '+5:30',
+      '05:30',
+      'UTC+05:30',
+      'GMT-2',
+      '+05:30:00',
+      '',
+      null,
+      undefined,
+      NEW_YORK
+    ]) {
+      assert.strictEqual(offsetMinutes(text), null, String(text));
+    }
+    assert.strictEqual(normalizeTimeZone('+0530'), '+05:30');
+    assert.strictEqual(normalizeTimeZone('-02'), '-02:00');
+    assert.strictEqual(normalizeTimeZone('-00:00'), '+00:00');
+    assert.strictEqual(normalizeTimeZone('+05:30'), '+05:30');
+    assert.true(validTimeZone('-03:00'));
+    assert.false(validTimeZone('+24:00'));
+    assert.false(validTimeZone('UTC-03:00'), 'not a form Intl reads');
+  });
+
+  test('a fixed offset has no gap and no overlap', function (assert) {
+    // New York's two change days: every wall clock exists once at -02:00
+    for (const zone of ['-02:00', '+05:30', '+14:00', '-12:00']) {
+      for (const day of ['2026-03-08', '2026-11-01', '2026-03-29']) {
+        for (let minutes = 0; minutes < 24 * 60; minutes += 30) {
+          const wall = wallOf(day, Math.floor(minutes / 60), minutes % 60);
+          assert.true(wallExists(wall, zone), `${zone} ${day} ${minutes}`);
+          const at = instantOf(wall, zone);
+          assert.strictEqual(
+            at,
+            wallMs(wall) - offsetMinutes(zone)! * 60_000,
+            `${zone} ${day} ${minutes}: one instant, at the offset`
+          );
+        }
+      }
+    }
+    // an hour later in UTC is always an hour later on the wall
+    const start = ms('2026-11-01T04:00:00.000Z');
+    for (let h = 0; h < 6; h++) {
+      const wall = wallAt(start + h * 3_600_000, '-02:00');
+      assert.strictEqual(wall.h, 2 + h, `${h}h later`);
+    }
+  });
+
+  test('a fixed offset: today, the start of a day, a day change', function (assert) {
+    const now = ms('2026-11-25T01:30:00.000Z');
+    assert.strictEqual(todayIn('-02:00', now), '2026-11-24');
+    assert.strictEqual(todayIn('+05:30', now), '2026-11-25');
+    assert.strictEqual(todayIn('-0200', now), '2026-11-24', 'normalized');
+    assert.strictEqual(
+      iso(startOfDayIn('2026-11-24', '-03:00')),
+      '2026-11-24T03:00:00.000Z'
+    );
+    assert.strictEqual(
+      iso(withDay(ms('2026-10-31T05:30:45.123Z'), '2026-11-01', '-02:00')),
+      '2026-11-01T05:30:45.123Z',
+      'the same wall time, seconds kept'
+    );
+    assert.strictEqual(
+      dayAt(ms('2026-11-24T23:00:00.000Z'), '+01:00'),
+      '2026-11-25'
+    );
   });
 });

@@ -120,4 +120,52 @@ module('Unit | utils | date | value', function () {
     assert.strictEqual(m.utcOffset(), 0);
     assert.strictEqual(d.getTime(), Date.UTC(2026, 10, 24));
   });
+
+  test('date-and-time mode reads the instant (DESIGN 18)', function (assert) {
+    const ms = Date.UTC(2026, 10, 24, 15, 30, 45, 123);
+    assert.strictEqual(
+      toDateValue(new Date(ms), 'America/New_York', 'dateTime'),
+      '2026-11-24T15:30:45.123Z',
+      'a Date: its instant, whatever the zone'
+    );
+    assert.strictEqual(
+      toDateValue(moment.utc(ms).utcOffset(330), 'utc', 'dateTime'),
+      '2026-11-24T15:30:45.123Z',
+      'a moment with an offset: the same instant, always as Z'
+    );
+    assert.strictEqual(toDateValue(new Date(NaN), 'utc', 'dateTime'), null);
+    assert.strictEqual(toDateValue(moment.invalid(), 'utc', 'dateTime'), null);
+    assert.strictEqual(
+      toDateValue('2026-11-24T15:30:00.000Z', 'utc', 'dateTime'),
+      '2026-11-24T15:30:00.000Z',
+      'strings pass through'
+    );
+  });
+
+  test('time-only mode reads the wall-clock time in the zone (DESIGN 18)', function (assert) {
+    const ms = Date.UTC(2026, 10, 24, 15, 30, 45);
+    assert.strictEqual(toDateValue(new Date(ms), 'utc', 'time'), '15:30');
+    assert.strictEqual(
+      toDateValue(new Date(ms), 'utc', 'time', true),
+      '15:30:45',
+      'with seconds'
+    );
+    assert.strictEqual(
+      toDateValue(moment.utc(ms), 'America/New_York', 'time'),
+      '10:30',
+      'the wall clock in the zone'
+    );
+    assert.strictEqual(
+      toDateValue(moment.utc(ms), '+05:30', 'time'),
+      '21:00',
+      'a fixed offset'
+    );
+    assert.strictEqual(
+      toDateValue(new Date(2026, 10, 24, 9, 5), 'local', 'time'),
+      '09:05',
+      'a local Date'
+    );
+    assert.strictEqual(toDateValue(moment.invalid(), 'utc', 'time'), null);
+    assert.strictEqual(toDateValue('09:30', 'utc', 'time'), '09:30');
+  });
 });

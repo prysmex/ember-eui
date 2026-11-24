@@ -7,7 +7,11 @@
  * A moment is recognised by its shape, so this module (and the picker)
  * never imports the library.
  */
-import { dayAt } from './zone.ts';
+import { instantString, timeValueOf } from './parse.ts';
+import { dayAt, wallAt } from './zone.ts';
+
+/** What the picker's value is (DESIGN 4.2): a day, an instant (`@showTimeSelect`) or a time of day (`@showTimeSelectOnly`). */
+export type PickerMode = 'date' | 'dateTime' | 'time';
 
 /** What the picker reads from a moment: never more. */
 export interface MomentLike {
@@ -61,15 +65,35 @@ export function instantOfObject(value: unknown): number | null {
 }
 
 /**
- * A date argument as the picker reads it in date mode: a `Date` or a
- * moment becomes its calendar day in `zone` (normalized, `'local'` by
- * default), `YYYY-MM-DD`; an invalid one becomes null. Anything else is
- * returned as is, for the string rules to judge.
+ * A value or a date argument as the picker reads it (DESIGN 18): a `Date`
+ * or a moment becomes, by `mode`,
+ *
+ * - `'date'` (the default): its calendar day in `zone`, `YYYY-MM-DD`;
+ * - `'dateTime'`: its instant, as a UTC ISO string (`toISOString`);
+ * - `'time'`: its wall-clock time in `zone`, `HH:mm`, or `HH:mm:ss` with
+ *   `seconds`.
+ *
+ * `zone` is normalized, `'local'` by default. An invalid object becomes
+ * null. Anything else is returned as is, for the string rules to judge.
  */
-export function toDateValue(value: unknown, zone = 'local'): unknown {
+export function toDateValue(
+  value: unknown,
+  zone = 'local',
+  mode: PickerMode = 'date',
+  seconds = false
+): unknown {
   const ms = instantOfObject(value);
   if (ms === null) return value;
-  return Number.isFinite(ms) ? dayAt(ms, zone) : null;
+  if (!Number.isFinite(ms)) return null;
+  if (mode === 'dateTime') return instantString(ms);
+  if (mode === 'time') {
+    const wall = wallAt(ms, zone);
+    return timeValueOf(
+      { hour: wall.h, minute: wall.mi, second: wall.s },
+      seconds
+    );
+  }
+  return dayAt(ms, zone);
 }
 
 /** Whether a value is a `Date` or a moment that names no instant. */

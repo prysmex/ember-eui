@@ -54,10 +54,10 @@ notice and those license texts with it.
 
 EUI's date picker calendar is a fork of react-datepicker 2.0.0, which is
 available under the MIT license (EUI's `NOTICE.txt` says so as well). The
-calendars of this package port that fork's markup, class names, behaviour
-and styles: `src/utils/eui/date-pickers.ts`,
-`src/components/eui-super-date-picker/date-popover/datetime-picker.gts` and
-`src/components/eui-date-picker/` (built into `dist/`). The MIT terms below
+calendar of this package, also shown by `EuiSuperDatePicker`'s Absolute
+tab, ports that fork's markup, class names, behaviour and styles:
+`src/utils/eui/date-pickers.ts` and `src/components/eui-date-picker/`
+(built into `dist/`). The MIT terms below
 cover what comes from react-datepicker; what EUI added stays under Elastic's
 license, as above.
 

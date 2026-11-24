@@ -9,18 +9,49 @@ import dateMath from '@elastic/datemath';
 import moment from 'moment';
 
 import { randomId } from '../../../-private/random-id.ts';
+import { localeDefaults } from '../../../utils/date/format.ts';
 import { getEuiThemeContext } from '../../../utils/emotion/consume.ts';
-import { euiAbsoluteTabDateFormStyles } from '../../../utils/eui/styles.generated.ts';
+import {
+  euiAbsoluteTabDateFormStyles,
+  euiDatePickerStyles
+} from '../../../utils/eui/styles.generated.ts';
 import { euiClass, useEuiBorealisStyles } from '../../../utils/eui/styles.ts';
+import EuiDatePickerCalendar from '../../eui-date-picker/calendar.gts';
 import EuiFieldText from '../../eui-field-text.gts';
+import EuiFormControlLayout from '../../eui-form-control-layout.gts';
 import EuiFormLabel from '../../eui-form-label.gts';
 import EuiFormRow from '../../eui-form-row.gts';
 import EuiI18n from '../../eui-i18n.gts';
-import DatetimePicker from './datetime-picker.gts';
 import EuiTimeZoneDisplay from './eui-time-zone-display.gts';
 
+import type { TimeOfDay } from '../../../utils/date/parse.ts';
+import type { TimeEntry } from '../../../utils/date/times.ts';
 import type { EuiTimeZoneDisplayProps } from './eui-time-zone-display.gts';
 import type { LocaleSpecifier, Moment } from 'moment';
+
+const pad = (n: number, width = 2) => String(n).padStart(width, '0');
+
+/** A moment's calendar day as `YYYY-MM-DD`, read from its fields (never `format`, whose digits follow the moment's locale). */
+function dayOf(m: Moment): string {
+  return `${pad(m.year(), 4)}-${pad(m.month() + 1)}-${pad(m.date())}`;
+}
+
+/** A limit's day in local time, as the calendar's zone; the caller's moment is only read. */
+function limitDay(m: Moment | null | undefined): string | null {
+  if (!moment.isMoment(m) || !m.isValid()) return null;
+  return dayOf(moment(m.valueOf()));
+}
+
+/** A moment locale as a BCP 47 tag for the calendar's names and first day of the week; `'en'` when unset or unknown to `Intl`. */
+function calendarLocale(locale: LocaleSpecifier | null | undefined): string {
+  const tag = Array.isArray(locale) ? locale[0] : locale;
+  if (typeof tag !== 'string' || tag.trim() === '') return 'en';
+  try {
+    return Intl.getCanonicalLocales(tag)[0] ?? 'en';
+  } catch {
+    return 'en';
+  }
+}
 
 interface AbsoluteTabArgs {
   /** moment format of absolute dates. */
@@ -57,7 +88,12 @@ export interface AbsoluteTabSignature {
 export default class AbsoluteTab extends Component<AbsoluteTabSignature> {
   @tracked isTextInvalid: boolean;
   @tracked textInputValue: string;
-  @tracked valueAsMoment: Moment | null;
+  /**
+   * The last valid value: the calendar and the time list show it, also
+   * while the typed text cannot be read. It is the tab's own moment; the
+   * caller's `@minDate` and `@maxDate` are only read.
+   */
+  @tracked valueAsMoment: Moment;
 
   constructor(owner: Owner, args: AbsoluteTabArgs) {
     super(owner, args);
@@ -96,21 +132,96 @@ export default class AbsoluteTab extends Component<AbsoluteTabSignature> {
   get rowClass() {
     const context = getEuiThemeContext(this);
     const styles = useEuiBorealisStyles(context, euiAbsoluteTabDateFormStyles);
-    return euiClass(context, { minInlineSize: 0 }, styles.euiAbsoluteTabDateForm__row);
+    return euiClass(
+      context,
+      { minInlineSize: 0 },
+      styles.euiAbsoluteTabDateForm__row
+    );
+  }
+
+  /** Upstream `EuiDatePicker inline shadow={false}`: a block wrapper whose form control layout loses its frame. */
+  @cached
+  get pickerClass() {
+    const context = getEuiThemeContext(this);
+    const styles = useEuiBorealisStyles(context, euiDatePickerStyles);
+    return euiClass(
+      context,
+      { boxSizing: 'border-box' },
+      styles.euiDatePicker,
+      styles.inline.inline,
+      styles.inline.noShadow
+    );
+  }
+
+  /* The calendar (`EuiDatePickerCalendar`): moments are converted here, at its edge. */
+
+  /** The calendar's names and first day of the week follow `@locale` (`'en'` when unset, as the text). */
+  @cached
+  get calendarLocale() {
+    return localeDefaults(calendarLocale(this.args.locale));
+  }
+
+  get selectedDay(): string {
+    return dayOf(this.valueAsMoment);
+  }
+
+  get selectedTime(): TimeOfDay {
+    const m = this.valueAsMoment;
+    return { hour: m.hours(), minute: m.minutes(), second: m.seconds() };
+  }
+
+  get minDay(): string | null {
+    return limitDay(this.args.minDate);
+  }
+
+  get maxDay(): string | null {
+    return limitDay(this.args.maxDate);
+  }
+
+  /** A day picked in the calendar: the value's time on that day. */
+  @action
+  pickDay(date: string, e: Event) {
+    const [year, month, day] = date.split('-').map(Number) as [
+      number,
+      number,
+      number
+    ];
+    this.handleChange(
+      this.valueAsMoment.clone().set({ year, month: month - 1, date: day }),
+      e
+    );
+  }
+
+  /** A time picked in the list: that time on its day, seconds zero (upstream). */
+  @action
+  pickTime(date: string | null, entry: TimeEntry, e: Event) {
+    const next = this.valueAsMoment.clone();
+    if (date !== null) {
+      const [year, month, day] = date.split('-').map(Number) as [
+        number,
+        number,
+        number
+      ];
+      next.set({ year, month: month - 1, date: day });
+    }
+    next.set({
+      hour: entry.time.hour,
+      minute: entry.time.minute,
+      second: 0,
+      millisecond: 0
+    });
+    this.handleChange(next, e);
   }
 
   @action
-  handleChange(date: any, e: Event) {
-    if (date === null) {
-      return;
-    }
-
+  handleChange(date: Moment, e: Event) {
     this.args.onChange(date.toISOString(), e);
 
-    const valueAsMoment = moment(date);
-
-    this.valueAsMoment = valueAsMoment;
-    this.textInputValue = valueAsMoment.format(this.args.dateFormat);
+    this.valueAsMoment = date;
+    this.textInputValue = date
+      .clone()
+      .locale(this.args.locale || 'en')
+      .format(this.args.dateFormat);
     this.isTextInvalid = false;
   }
 
@@ -125,11 +236,11 @@ export default class AbsoluteTab extends Component<AbsoluteTabSignature> {
 
     if (dateIsValid) {
       this.args.onChange(valueAsMoment.toISOString(), e);
+      this.valueAsMoment = valueAsMoment;
     }
 
     this.textInputValue = (e.target as HTMLInputElement).value;
     this.isTextInvalid = !dateIsValid;
-    this.valueAsMoment = dateIsValid ? valueAsMoment : null;
   }
 
   // `change` event on an input gets called after a `blur`
@@ -144,13 +255,24 @@ export default class AbsoluteTab extends Component<AbsoluteTabSignature> {
 
   <template>
     <div class="euiAbsoluteTab">
-      <DatetimePicker
-        @onChange={{this.handleChange}}
-        @dateFormat={{@dateFormat}}
-        @selected={{this.valueAsMoment}}
-        @minDate={{@minDate}}
-        @maxDate={{@maxDate}}
-      />
+      <div class="euiDatePicker {{this.pickerClass}}">
+        <EuiFormControlLayout>
+          <EuiDatePickerCalendar
+            role="group"
+            aria-label={{@labelPrefix}}
+            @selected={{this.selectedDay}}
+            @onPick={{this.pickDay}}
+            @minDate={{this.minDay}}
+            @maxDate={{this.maxDay}}
+            @locale={{this.calendarLocale.locale}}
+            @firstDayOfWeek={{this.calendarLocale.firstDayOfWeek}}
+            @showTimeSelect={{true}}
+            @selectedTime={{this.selectedTime}}
+            @hour12={{false}}
+            @onPickTime={{this.pickTime}}
+          />
+        </EuiFormControlLayout>
+      </div>
       <EuiI18n
         @token="euiAbsoluteTab.dateFormatError"
         @default="Expected format: {dateFormat}"

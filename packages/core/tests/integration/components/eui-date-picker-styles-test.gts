@@ -1,11 +1,9 @@
 import { module, test } from 'qunit';
 import { setupRenderingTest } from 'ember-qunit';
-import moment from 'moment';
 import { fillIn, focus, render, triggerKeyEvent } from '@ember/test-helpers';
 
 import EuiDatePicker from '#src/components/eui-date-picker.gts';
 import EuiEmotionProvider from '#src/components/eui-emotion-provider.gts';
-import DatetimePicker from '#src/components/eui-super-date-picker/date-popover/datetime-picker.gts';
 import {
   euiButtonColor,
   euiButtonFillColor
@@ -695,14 +693,9 @@ module('Integration | Component | eui-date-picker | styles', function (hooks) {
   });
 
   test('the table lays out as the Absolute tab calendar: same day pitch, headers over their days', async function (assert) {
-    const selected = moment('2026-11-24T10:00:00');
     await render(
       <template>
         <EuiEmotionProvider @colorMode="light">
-          <div data-p="old"><DatetimePicker
-              @selected={{selected}}
-              @onChange={{noop}}
-            /></div>
           <div data-p="new"><EuiDatePicker
               @inline={{true}}
               @value="2026-11-24"
@@ -725,7 +718,13 @@ module('Integration | Component | eui-date-picker | styles', function (hooks) {
         sizes: days.map((d) => size(d))
       };
     };
-    const old = geometry('old');
+    // The old Absolute tab calendar (`datetime-picker.gts`, deleted in
+    // batch 7, when the tab moved onto this calendar), as measured in this
+    // test at 310f23b3.
+    const old = {
+      offsets: [1, 19, 37, 55, 73, 91, 109],
+      sizes: Array.from({ length: 7 }, () => ({ width: 32, height: 32 }))
+    };
     const now = geometry('new');
     assert.deepEqual(now.sizes, old.sizes, 'same day size');
     const pitch = (offsets: number[]) =>

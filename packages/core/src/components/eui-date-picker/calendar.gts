@@ -794,6 +794,7 @@ export default class EuiDatePickerCalendar extends Component<EuiDatePickerCalend
                         role="gridcell"
                         class={{day.className}}
                         aria-selected={{if day.selected "true"}}
+                        aria-disabled={{if day.disabled "true"}}
                         data-date={{day.date}}
                         {{on "click" (fn this.selectDay day)}}
                         {{on "mouseenter" (fn this.hoverDay day.date)}}

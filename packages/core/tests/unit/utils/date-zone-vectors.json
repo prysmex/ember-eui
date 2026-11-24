@@ -1,0 +1,579 @@
+{
+  "_comment": [
+    "Time-zone vectors for EuiDatePicker (packages/core/src/utils/date/zone.ts)",
+    "and the sheet (packages/sheet/src/core/field-types/date-time.ts); both suites run them.",
+    "toInstant: a wall clock in a zone to its instant (a gap resolves forward, an overlap to the first).",
+    "toWall: an instant to the zone's wall clock.",
+    "Expected values computed with Python zoneinfo (tzdata 2026f), not with the code under test.",
+    "Walls are YYYY-MM-DDTHH:mm:ss, instants whole seconds; no \"local\" zone."
+  ],
+  "toInstant": [
+    {
+      "zone": "utc",
+      "wall": "2026-11-24T15:30:00",
+      "instant": "2026-11-24T15:30:00.000Z",
+      "note": "utc"
+    },
+    {
+      "zone": "utc",
+      "wall": "0001-01-01T00:00:00",
+      "instant": "0001-01-01T00:00:00.000Z",
+      "note": "utc, year 0001"
+    },
+    {
+      "zone": "utc",
+      "wall": "9999-12-31T23:59:59",
+      "instant": "9999-12-31T23:59:59.000Z",
+      "note": "utc, year 9999"
+    },
+    {
+      "zone": "utc",
+      "wall": "2028-02-29T12:00:00",
+      "instant": "2028-02-29T12:00:00.000Z",
+      "note": "utc, a leap day"
+    },
+    {
+      "zone": "Etc/GMT+3",
+      "wall": "2026-11-24T12:00:00",
+      "instant": "2026-11-24T15:00:00.000Z",
+      "note": "Etc/GMT+3 is UTC-3 (inverted sign)"
+    },
+    {
+      "zone": "Etc/GMT-14",
+      "wall": "2026-11-24T00:00:00",
+      "instant": "2026-11-23T10:00:00.000Z",
+      "note": "Etc/GMT-14 is UTC+14"
+    },
+    {
+      "zone": "Asia/Kolkata",
+      "wall": "2026-11-24T09:00:00",
+      "instant": "2026-11-24T03:30:00.000Z",
+      "note": "UTC+05:30"
+    },
+    {
+      "zone": "Asia/Kathmandu",
+      "wall": "2026-11-24T09:00:00",
+      "instant": "2026-11-24T03:15:00.000Z",
+      "note": "UTC+05:45"
+    },
+    {
+      "zone": "America/Mexico_City",
+      "wall": "2026-11-19T09:30:00",
+      "instant": "2026-11-19T15:30:00.000Z",
+      "note": "UTC-6, no DST"
+    },
+    {
+      "zone": "America/Mexico_City",
+      "wall": "2026-04-05T02:30:00",
+      "instant": "2026-04-05T08:30:00.000Z",
+      "note": "no DST since 2022: the old spring gap is an ordinary time"
+    },
+    {
+      "zone": "America/New_York",
+      "wall": "2026-03-08T01:59:00",
+      "instant": "2026-03-08T06:59:00.000Z",
+      "note": "New York, just before the spring gap (EST)"
+    },
+    {
+      "zone": "America/New_York",
+      "wall": "2026-03-08T02:00:00",
+      "instant": "2026-03-08T07:00:00.000Z",
+      "note": "New York, the start of the spring gap"
+    },
+    {
+      "zone": "America/New_York",
+      "wall": "2026-03-08T02:30:00",
+      "instant": "2026-03-08T07:30:00.000Z",
+      "note": "New York, in the spring gap: 03:30 EDT"
+    },
+    {
+      "zone": "America/New_York",
+      "wall": "2026-03-08T03:00:00",
+      "instant": "2026-03-08T07:00:00.000Z",
+      "note": "New York, just after the spring gap (EDT)"
+    },
+    {
+      "zone": "America/New_York",
+      "wall": "2026-03-07T23:00:00",
+      "instant": "2026-03-08T04:00:00.000Z",
+      "note": "New York, the evening before the gap"
+    },
+    {
+      "zone": "America/New_York",
+      "wall": "2026-11-01T01:00:00",
+      "instant": "2026-11-01T05:00:00.000Z",
+      "note": "New York, the start of the autumn overlap: the first occurrence"
+    },
+    {
+      "zone": "America/New_York",
+      "wall": "2026-11-01T01:30:00",
+      "instant": "2026-11-01T05:30:00.000Z",
+      "note": "New York, in the autumn overlap: the first occurrence"
+    },
+    {
+      "zone": "America/New_York",
+      "wall": "2026-11-01T02:00:00",
+      "instant": "2026-11-01T07:00:00.000Z",
+      "note": "New York, after the autumn overlap (EST)"
+    },
+    {
+      "zone": "America/New_York",
+      "wall": "2026-11-01T00:59:59",
+      "instant": "2026-11-01T04:59:59.000Z",
+      "note": "New York, just before the overlap"
+    },
+    {
+      "zone": "America/New_York",
+      "wall": "2026-07-04T12:00:00",
+      "instant": "2026-07-04T16:00:00.000Z",
+      "note": "New York, summer"
+    },
+    {
+      "zone": "Europe/London",
+      "wall": "2026-03-29T01:30:00",
+      "instant": "2026-03-29T01:30:00.000Z",
+      "note": "London, in the spring gap"
+    },
+    {
+      "zone": "Europe/London",
+      "wall": "2026-10-25T01:30:00",
+      "instant": "2026-10-25T00:30:00.000Z",
+      "note": "London, in the autumn overlap: the first occurrence"
+    },
+    {
+      "zone": "Europe/London",
+      "wall": "2026-01-15T00:00:00",
+      "instant": "2026-01-15T00:00:00.000Z",
+      "note": "London, winter: UTC"
+    },
+    {
+      "zone": "Australia/Sydney",
+      "wall": "2026-10-04T02:30:00",
+      "instant": "2026-10-03T16:30:00.000Z",
+      "note": "Sydney, in the spring gap (October)"
+    },
+    {
+      "zone": "Australia/Sydney",
+      "wall": "2026-04-05T02:30:00",
+      "instant": "2026-04-04T15:30:00.000Z",
+      "note": "Sydney, in the autumn overlap (April): the first occurrence"
+    },
+    {
+      "zone": "Australia/Sydney",
+      "wall": "2026-12-25T12:00:00",
+      "instant": "2026-12-25T01:00:00.000Z",
+      "note": "Sydney, summer (AEDT)"
+    },
+    {
+      "zone": "Australia/Lord_Howe",
+      "wall": "2026-10-04T02:15:00",
+      "instant": "2026-10-03T15:45:00.000Z",
+      "note": "Lord Howe, in the 30-minute spring gap"
+    },
+    {
+      "zone": "Australia/Lord_Howe",
+      "wall": "2026-10-04T02:30:00",
+      "instant": "2026-10-03T15:30:00.000Z",
+      "note": "Lord Howe, just after the 30-minute gap"
+    },
+    {
+      "zone": "Australia/Lord_Howe",
+      "wall": "2026-04-05T01:45:00",
+      "instant": "2026-04-04T14:45:00.000Z",
+      "note": "Lord Howe, in the 30-minute overlap: the first occurrence"
+    },
+    {
+      "zone": "Pacific/Chatham",
+      "wall": "2026-09-27T03:00:00",
+      "instant": "2026-09-26T14:15:00.000Z",
+      "note": "Chatham (UTC+12:45), in the spring gap"
+    },
+    {
+      "zone": "Pacific/Chatham",
+      "wall": "2026-11-24T09:00:00",
+      "instant": "2026-11-23T19:15:00.000Z",
+      "note": "Chatham, UTC+13:45"
+    },
+    {
+      "zone": "Asia/Beirut",
+      "wall": "2026-03-29T00:00:00",
+      "instant": "2026-03-28T22:00:00.000Z",
+      "note": "Beirut, midnight does not exist on the spring day"
+    },
+    {
+      "zone": "Asia/Beirut",
+      "wall": "2026-03-29T00:30:00",
+      "instant": "2026-03-28T22:30:00.000Z",
+      "note": "Beirut, in the gap at midnight"
+    },
+    {
+      "zone": "Asia/Beirut",
+      "wall": "2026-03-29T01:00:00",
+      "instant": "2026-03-28T22:00:00.000Z",
+      "note": "Beirut, the first wall time of the spring day"
+    },
+    {
+      "zone": "Asia/Beirut",
+      "wall": "2026-03-28T23:59:59",
+      "instant": "2026-03-28T21:59:59.000Z",
+      "note": "Beirut, the last second before the gap"
+    },
+    {
+      "zone": "Asia/Beirut",
+      "wall": "2026-10-24T23:30:00",
+      "instant": "2026-10-24T20:30:00.000Z",
+      "note": "Beirut, in the autumn overlap before midnight: the first occurrence"
+    },
+    {
+      "zone": "Antarctica/Troll",
+      "wall": "2026-03-29T02:00:00",
+      "instant": "2026-03-29T02:00:00.000Z",
+      "note": "Troll, in the two-hour spring gap"
+    },
+    {
+      "zone": "Antarctica/Troll",
+      "wall": "2026-10-25T01:30:00",
+      "instant": "2026-10-24T23:30:00.000Z",
+      "note": "Troll, in the two-hour overlap: the first occurrence"
+    },
+    {
+      "zone": "Pacific/Apia",
+      "wall": "2011-12-29T12:00:00",
+      "instant": "2011-12-29T22:00:00.000Z",
+      "note": "Apia, the day before the skipped day (UTC-10)"
+    },
+    {
+      "zone": "Pacific/Apia",
+      "wall": "2011-12-30T12:00:00",
+      "instant": "2011-12-30T22:00:00.000Z",
+      "note": "Apia, the skipped day: forward by 24 hours"
+    },
+    {
+      "zone": "Pacific/Apia",
+      "wall": "2011-12-31T12:00:00",
+      "instant": "2011-12-30T22:00:00.000Z",
+      "note": "Apia, the day after (UTC+14)"
+    }
+  ],
+  "toWall": [
+    {
+      "zone": "utc",
+      "instant": "2026-11-24T15:30:00.000Z",
+      "wall": "2026-11-24T15:30:00",
+      "note": "utc"
+    },
+    {
+      "zone": "utc",
+      "instant": "0001-01-01T00:00:00.000Z",
+      "wall": "0001-01-01T00:00:00",
+      "note": "utc, year 0001"
+    },
+    {
+      "zone": "utc",
+      "instant": "9999-12-31T23:59:59.000Z",
+      "wall": "9999-12-31T23:59:59",
+      "note": "utc, year 9999"
+    },
+    {
+      "zone": "utc",
+      "instant": "2028-02-29T12:00:00.000Z",
+      "wall": "2028-02-29T12:00:00",
+      "note": "utc, a leap day"
+    },
+    {
+      "zone": "Etc/GMT+3",
+      "instant": "2026-11-24T15:00:00.000Z",
+      "wall": "2026-11-24T12:00:00",
+      "note": "Etc/GMT+3 is UTC-3 (inverted sign)"
+    },
+    {
+      "zone": "Etc/GMT-14",
+      "instant": "2026-11-23T10:00:00.000Z",
+      "wall": "2026-11-24T00:00:00",
+      "note": "Etc/GMT-14 is UTC+14"
+    },
+    {
+      "zone": "Asia/Kolkata",
+      "instant": "2026-11-24T03:30:00.000Z",
+      "wall": "2026-11-24T09:00:00",
+      "note": "UTC+05:30"
+    },
+    {
+      "zone": "Asia/Kathmandu",
+      "instant": "2026-11-24T03:15:00.000Z",
+      "wall": "2026-11-24T09:00:00",
+      "note": "UTC+05:45"
+    },
+    {
+      "zone": "America/Mexico_City",
+      "instant": "2026-11-19T15:30:00.000Z",
+      "wall": "2026-11-19T09:30:00",
+      "note": "UTC-6, no DST"
+    },
+    {
+      "zone": "America/Mexico_City",
+      "instant": "2026-04-05T08:30:00.000Z",
+      "wall": "2026-04-05T02:30:00",
+      "note": "no DST since 2022: the old spring gap is an ordinary time"
+    },
+    {
+      "zone": "America/New_York",
+      "instant": "2026-03-08T06:59:00.000Z",
+      "wall": "2026-03-08T01:59:00",
+      "note": "New York, just before the spring gap (EST)"
+    },
+    {
+      "zone": "America/New_York",
+      "instant": "2026-03-08T07:00:00.000Z",
+      "wall": "2026-03-08T03:00:00",
+      "note": "New York, the start of the spring gap: the instant shows the forward wall clock"
+    },
+    {
+      "zone": "America/New_York",
+      "instant": "2026-03-08T07:30:00.000Z",
+      "wall": "2026-03-08T03:30:00",
+      "note": "New York, in the spring gap: 03:30 EDT: the instant shows the forward wall clock"
+    },
+    {
+      "zone": "America/New_York",
+      "instant": "2026-03-08T07:00:00.000Z",
+      "wall": "2026-03-08T03:00:00",
+      "note": "New York, just after the spring gap (EDT)"
+    },
+    {
+      "zone": "America/New_York",
+      "instant": "2026-03-08T04:00:00.000Z",
+      "wall": "2026-03-07T23:00:00",
+      "note": "New York, the evening before the gap"
+    },
+    {
+      "zone": "America/New_York",
+      "instant": "2026-11-01T05:00:00.000Z",
+      "wall": "2026-11-01T01:00:00",
+      "note": "New York, the start of the autumn overlap: the first occurrence"
+    },
+    {
+      "zone": "America/New_York",
+      "instant": "2026-11-01T06:00:00.000Z",
+      "wall": "2026-11-01T01:00:00",
+      "note": "New York, the start of the autumn overlap: the second occurrence, the same wall clock"
+    },
+    {
+      "zone": "America/New_York",
+      "instant": "2026-11-01T05:30:00.000Z",
+      "wall": "2026-11-01T01:30:00",
+      "note": "New York, in the autumn overlap: the first occurrence"
+    },
+    {
+      "zone": "America/New_York",
+      "instant": "2026-11-01T06:30:00.000Z",
+      "wall": "2026-11-01T01:30:00",
+      "note": "New York, in the autumn overlap: the second occurrence, the same wall clock"
+    },
+    {
+      "zone": "America/New_York",
+      "instant": "2026-11-01T07:00:00.000Z",
+      "wall": "2026-11-01T02:00:00",
+      "note": "New York, after the autumn overlap (EST)"
+    },
+    {
+      "zone": "America/New_York",
+      "instant": "2026-11-01T04:59:59.000Z",
+      "wall": "2026-11-01T00:59:59",
+      "note": "New York, just before the overlap"
+    },
+    {
+      "zone": "America/New_York",
+      "instant": "2026-07-04T16:00:00.000Z",
+      "wall": "2026-07-04T12:00:00",
+      "note": "New York, summer"
+    },
+    {
+      "zone": "Europe/London",
+      "instant": "2026-03-29T01:30:00.000Z",
+      "wall": "2026-03-29T02:30:00",
+      "note": "London, in the spring gap: the instant shows the forward wall clock"
+    },
+    {
+      "zone": "Europe/London",
+      "instant": "2026-10-25T00:30:00.000Z",
+      "wall": "2026-10-25T01:30:00",
+      "note": "London, in the autumn overlap: the first occurrence"
+    },
+    {
+      "zone": "Europe/London",
+      "instant": "2026-10-25T01:30:00.000Z",
+      "wall": "2026-10-25T01:30:00",
+      "note": "London, in the autumn overlap: the second occurrence, the same wall clock"
+    },
+    {
+      "zone": "Europe/London",
+      "instant": "2026-01-15T00:00:00.000Z",
+      "wall": "2026-01-15T00:00:00",
+      "note": "London, winter: UTC"
+    },
+    {
+      "zone": "Australia/Sydney",
+      "instant": "2026-10-03T16:30:00.000Z",
+      "wall": "2026-10-04T03:30:00",
+      "note": "Sydney, in the spring gap (October): the instant shows the forward wall clock"
+    },
+    {
+      "zone": "Australia/Sydney",
+      "instant": "2026-04-04T15:30:00.000Z",
+      "wall": "2026-04-05T02:30:00",
+      "note": "Sydney, in the autumn overlap (April): the first occurrence"
+    },
+    {
+      "zone": "Australia/Sydney",
+      "instant": "2026-04-04T16:30:00.000Z",
+      "wall": "2026-04-05T02:30:00",
+      "note": "Sydney, in the autumn overlap (April): the second occurrence, the same wall clock"
+    },
+    {
+      "zone": "Australia/Sydney",
+      "instant": "2026-12-25T01:00:00.000Z",
+      "wall": "2026-12-25T12:00:00",
+      "note": "Sydney, summer (AEDT)"
+    },
+    {
+      "zone": "Australia/Lord_Howe",
+      "instant": "2026-10-03T15:45:00.000Z",
+      "wall": "2026-10-04T02:45:00",
+      "note": "Lord Howe, in the 30-minute spring gap: the instant shows the forward wall clock"
+    },
+    {
+      "zone": "Australia/Lord_Howe",
+      "instant": "2026-10-03T15:30:00.000Z",
+      "wall": "2026-10-04T02:30:00",
+      "note": "Lord Howe, just after the 30-minute gap"
+    },
+    {
+      "zone": "Australia/Lord_Howe",
+      "instant": "2026-04-04T14:45:00.000Z",
+      "wall": "2026-04-05T01:45:00",
+      "note": "Lord Howe, in the 30-minute overlap: the first occurrence"
+    },
+    {
+      "zone": "Australia/Lord_Howe",
+      "instant": "2026-04-04T15:15:00.000Z",
+      "wall": "2026-04-05T01:45:00",
+      "note": "Lord Howe, in the 30-minute overlap: the second occurrence, the same wall clock"
+    },
+    {
+      "zone": "Pacific/Chatham",
+      "instant": "2026-09-26T14:15:00.000Z",
+      "wall": "2026-09-27T04:00:00",
+      "note": "Chatham (UTC+12:45), in the spring gap: the instant shows the forward wall clock"
+    },
+    {
+      "zone": "Pacific/Chatham",
+      "instant": "2026-11-23T19:15:00.000Z",
+      "wall": "2026-11-24T09:00:00",
+      "note": "Chatham, UTC+13:45"
+    },
+    {
+      "zone": "Asia/Beirut",
+      "instant": "2026-03-28T22:00:00.000Z",
+      "wall": "2026-03-29T01:00:00",
+      "note": "Beirut, midnight does not exist on the spring day: the instant shows the forward wall clock"
+    },
+    {
+      "zone": "Asia/Beirut",
+      "instant": "2026-03-28T22:30:00.000Z",
+      "wall": "2026-03-29T01:30:00",
+      "note": "Beirut, in the gap at midnight: the instant shows the forward wall clock"
+    },
+    {
+      "zone": "Asia/Beirut",
+      "instant": "2026-03-28T22:00:00.000Z",
+      "wall": "2026-03-29T01:00:00",
+      "note": "Beirut, the first wall time of the spring day"
+    },
+    {
+      "zone": "Asia/Beirut",
+      "instant": "2026-03-28T21:59:59.000Z",
+      "wall": "2026-03-28T23:59:59",
+      "note": "Beirut, the last second before the gap"
+    },
+    {
+      "zone": "Asia/Beirut",
+      "instant": "2026-10-24T20:30:00.000Z",
+      "wall": "2026-10-24T23:30:00",
+      "note": "Beirut, in the autumn overlap before midnight: the first occurrence"
+    },
+    {
+      "zone": "Asia/Beirut",
+      "instant": "2026-10-24T21:30:00.000Z",
+      "wall": "2026-10-24T23:30:00",
+      "note": "Beirut, in the autumn overlap before midnight: the second occurrence, the same wall clock"
+    },
+    {
+      "zone": "Antarctica/Troll",
+      "instant": "2026-03-29T02:00:00.000Z",
+      "wall": "2026-03-29T04:00:00",
+      "note": "Troll, in the two-hour spring gap: the instant shows the forward wall clock"
+    },
+    {
+      "zone": "Antarctica/Troll",
+      "instant": "2026-10-24T23:30:00.000Z",
+      "wall": "2026-10-25T01:30:00",
+      "note": "Troll, in the two-hour overlap: the first occurrence"
+    },
+    {
+      "zone": "Antarctica/Troll",
+      "instant": "2026-10-25T01:30:00.000Z",
+      "wall": "2026-10-25T01:30:00",
+      "note": "Troll, in the two-hour overlap: the second occurrence, the same wall clock"
+    },
+    {
+      "zone": "Pacific/Apia",
+      "instant": "2011-12-29T22:00:00.000Z",
+      "wall": "2011-12-29T12:00:00",
+      "note": "Apia, the day before the skipped day (UTC-10)"
+    },
+    {
+      "zone": "Pacific/Apia",
+      "instant": "2011-12-30T22:00:00.000Z",
+      "wall": "2011-12-31T12:00:00",
+      "note": "Apia, the skipped day: forward by 24 hours: the instant shows the forward wall clock"
+    },
+    {
+      "zone": "Pacific/Apia",
+      "instant": "2011-12-30T22:00:00.000Z",
+      "wall": "2011-12-31T12:00:00",
+      "note": "Apia, the day after (UTC+14)"
+    }
+  ],
+  "zones": [
+    {
+      "zone": "utc",
+      "valid": true
+    },
+    {
+      "zone": "UTC",
+      "valid": true
+    },
+    {
+      "zone": "America/New_York",
+      "valid": true
+    },
+    {
+      "zone": "Etc/GMT+3",
+      "valid": true
+    },
+    {
+      "zone": "Mars/Olympus",
+      "valid": false
+    },
+    {
+      "zone": "Not a zone",
+      "valid": false
+    }
+  ],
+  "unknownZoneReadsAsUtc": {
+    "zone": "Mars/Olympus",
+    "wall": "2026-11-24T15:30:00",
+    "instant": "2026-11-24T15:30:00.000Z"
+  }
+}

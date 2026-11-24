@@ -135,6 +135,44 @@ module(
       );
     });
 
+    test("the header selects' chevrons sit centred in an inline calendar and in the Absolute tab", async function (assert) {
+      const noop = () => {};
+      await render(
+        <template>
+          <EuiDatePicker @value="2026-11-24" @inline={{true}} />
+          <EuiSuperDatePicker
+            @start="2026-11-24T14:00:00.000Z"
+            @end="now"
+            @onTimeChange={{noop}}
+          />
+        </template>
+      );
+      await click('.euiDatePopoverButton--start');
+      await waitUntil(() => document.querySelector('.euiAbsoluteTab'));
+      const selects = [
+        ...document.querySelectorAll<HTMLSelectElement>(
+          '.react-datepicker__header__dropdown select'
+        )
+      ];
+      assert.strictEqual(
+        selects.length,
+        4,
+        'inline month and year, Absolute tab month and year'
+      );
+      for (const select of selects) {
+        const icon = select
+          .closest('.euiFormControlLayout')!
+          .querySelector('.euiFormControlLayoutIcons svg')!;
+        const a = select.getBoundingClientRect();
+        const b = icon.getBoundingClientRect();
+        const offset = b.top + b.height / 2 - (a.top + a.height / 2);
+        assert.true(
+          Math.abs(offset) <= 0.5,
+          `${select.getAttribute('aria-label')}: the chevron is ${offset.toFixed(1)}px off centre`
+        );
+      }
+    });
+
     test('opening from a trigger, moving with a key and closing never scroll the page', async function (assert) {
       await render(
         <template>

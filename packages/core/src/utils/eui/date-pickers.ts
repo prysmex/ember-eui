@@ -526,6 +526,11 @@ export const euiDatePickerCalendarStyles = function euiDatePickerCalendarStyles(
     // minimum): month and year sit side by side 2:1, as upstream draws them,
     // also in the super date picker's wider header
     '&& .react-datepicker__header__dropdown :is(.euiFormControlLayout,.euiFormControlLayout__childrenWrapper){inline-size:100%;}',
+    // upstream's `.euiDatePicker-inline .euiFormControlLayoutIcons` padding
+    // (for the inline picker's own icon) also reached these selects'
+    // chevrons in an inline calendar (the super date picker's Absolute
+    // tab, `@inline`) and lifted them 4px off centre
+    '&& .react-datepicker__header__dropdown .euiFormControlLayoutIcons{padding-block-end:0;}',
     '.react-datepicker__day--range-start:not(.react-datepicker__day--selected):not(.react-datepicker__day--in-selecting-range),',
     '.react-datepicker__day--range-end:not(.react-datepicker__day--selected):not(.react-datepicker__day--in-selecting-range){outline:',
     euiTheme.border.width.thin,

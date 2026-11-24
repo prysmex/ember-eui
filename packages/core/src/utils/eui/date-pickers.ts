@@ -29,6 +29,7 @@ import {
   euiButtonEmptyColor as _euiButtonEmptyColor,
   euiButtonFillColor as _euiButtonFillColor,
   euiCanAnimate as _euiCanAnimate,
+  euiFocusRing as _euiFocusRing,
   euiFontSize as _euiFontSize,
   euiFormControlDefaultShadow as _euiFormControlDefaultShadow,
   euiFormControlStyles as _euiFormControlStyles,
@@ -57,6 +58,7 @@ const {
   euiButtonEmptyColor,
   euiButtonFillColor,
   euiCanAnimate,
+  euiFocusRing,
   euiFontSize,
   euiFormControlDefaultShadow,
   euiFormControlStyles,
@@ -72,6 +74,7 @@ const {
   euiButtonEmptyColor: _euiButtonEmptyColor,
   euiButtonFillColor: _euiButtonFillColor,
   euiCanAnimate: _euiCanAnimate,
+  euiFocusRing: _euiFocusRing,
   euiFontSize: _euiFontSize,
   euiFormControlDefaultShadow: _euiFormControlDefaultShadow,
   euiFormControlStyles: _euiFormControlStyles,
@@ -456,6 +459,53 @@ const _timeSelectStyles = function _timeSelectStyles(
     ' font-size:',
     euiFontSize(euiThemeContext, 's').fontSize,
     ';text-align:start;}}'
+  );
+};
+
+/**
+ * Not a port: what the `EuiDatePicker` calendar adds to the styles above
+ * (DESIGN 7.1, 7.4). Only `components/eui-date-picker/calendar.gts` applies
+ * it, after `euiReactDatePickerStyles`; the Absolute tab's calendar does not
+ * change, and the port above stays byte for byte upstream's.
+ *
+ * - The month is a `table` (the ARIA grid) laid out as upstream's flex
+ *   rows: the classes carry the layout, the table parts only lose theirs.
+ * - Each day cell holds a `button` that fills it and inherits its look.
+ * - The focused day gets EUI's focus ring, outset so it shows on the
+ *   selected (filled) day too; upstream has no rule for it.
+ * - Today also gets a dot under the number, so it does not rely on colour
+ *   alone and stays visible when selected or disabled.
+ * - A disabled calendar dims its days (upstream keeps their colour; only the
+ *   frame changes); the selected day keeps its fill.
+ */
+export const euiDatePickerCalendarStyles = function euiDatePickerCalendarStyles(
+  euiThemeContext: Ctx
+) {
+  const euiTheme: Vars = euiThemeContext.euiTheme;
+  return css(
+    '.react-datepicker__month{display:block;margin:0;border-collapse:collapse;border-spacing:0;}',
+    '.react-datepicker__month>thead,.react-datepicker__month>tbody{display:block;}',
+    '.react-datepicker__day-name,.react-datepicker__day{padding:0;text-align:center;}',
+    '.react-datepicker__day--empty{visibility:hidden;}',
+    '.react-datepicker__day-button{display:flex;justify-content:center;align-items:center;',
+    'inline-size:100%;block-size:100%;margin:0;padding:0;border:0;background:none;',
+    'color:inherit;font:inherit;text-decoration:inherit;border-radius:inherit;cursor:inherit;',
+    '&:focus{',
+    euiFocusRing(euiThemeContext, 'outset'),
+    '}}',
+    '.react-datepicker__day--today{position:relative;&::after{content:"";position:absolute;',
+    logicalCSS('bottom', '3px'),
+    ' ',
+    logicalCSS('left', '50%'),
+    ' ',
+    logicalSizeCSS('4px'),
+    ' ',
+    logicalCSS('margin-left', '-2px'),
+    ' border-radius:50%;background-color:currentColor;pointer-events:none;}}',
+    '&.euiDatePickerCalendar--disabled .react-datepicker__day:not(.react-datepicker__day--selected){color:',
+    euiTheme.colors.textDisabled,
+    ';}',
+    ';label:euiDatePickerCalendar;'
   );
 };
 

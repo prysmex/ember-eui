@@ -38,7 +38,17 @@ start of today, `now-1w/w`…) or ISO dates. Resolve them to real dates with
 `dateMath.parse(end, { roundUp: true })`.
 
 Pass `@onRefreshChange` (with `@isPaused` and `@refreshInterval`) to add
-auto refresh, and `@onRefresh` to be called on each tick.
+auto refresh, and `@onRefresh` to be called on each tick. For the auto
+refresh controls on their own (`EuiAutoRefresh`, `EuiAutoRefreshButton`,
+`EuiRefreshInterval`) and their API, see
+[Auto refresh](/docs/core/docs/forms/auto-refresh).
+
+`@utcOffset` (minutes) and `@timeFormat` reach the Absolute tab, as
+upstream: the calendar marks today's date at that offset, and the time
+list is 12-hour when the format has `h` or `a` (`'hh:mm A'`) and shows
+seconds when it has `s`. As upstream, dates are still shown and picked in
+the browser's zone; for a picker that shows and picks at an offset, see
+`EuiDatePicker`'s `@timeZone`.
 
 </EuiText>
 
@@ -80,8 +90,8 @@ Generated from the components' TypeScript signatures by
 | `@end` | `ShortDate` | `'now'` | End of the range, like `@start`. |
 | `@minDate` | `Moment` |  | Earliest selectable date (a moment): earlier days are disabled in the calendar and a start before it makes the range invalid. |
 | `@maxDate` | `Moment` |  | Latest selectable date (a moment): later days are disabled in the calendar and an end after it makes the range invalid. |
-| `@timeFormat` | `string` | `'HH:mm'` | moment format for times in the date picker. |
-| `@utcOffset` | `number` |  | UTC offset in minutes for absolute dates, e.g. `-300`. |
+| `@timeFormat` | `string` | `'HH:mm'` | moment format for times in the date picker. The Absolute tab's time list is 12-hour when it has `h` or `a` (`'hh:mm A'`), and shows seconds when it has `s`. |
+| `@utcOffset` | `number` |  | UTC offset in minutes, e.g. `-300` (as moment's `utcOffset`). As upstream, the Absolute tab's calendar marks today's date at this offset; dates are still shown and picked in the browser's zone. |
 | `@showUpdateButton` | `boolean \| 'iconOnly'` | `true` | Set showUpdateButton to false to immediately invoke onTimeChange for all start and end changes; `'iconOnly'` shows a compact button. |
 | `@isQuickSelectOnly` | `boolean` |  | Hides the actual input reducing to just the quick select button. |
 | `@updateButtonProps` | `EuiSuperUpdateButtonProps` |  | Arguments for the update button: `{ fill, color, size, iconType, iconOnly, className, children, minWidth, showTooltip, toolTipProps, responsive, 'data-test-subj' }` (`children` is a custom label; `responsive` lists the screen sizes where it collapses to its icon, `['xs', 's']` by default, or `false`). They win over the picker's own, e.g. `{ fill: false }`. |
@@ -96,77 +106,6 @@ Generated from the components' TypeScript signatures by
 | `<:customQuickSelectRender>` | Replaces the quick select popover's content (upstream `customQuickSelectRender`). Yields the default panels as components (`quickSelect`, `commonlyUsedRanges`, `recentlyUsedRanges`, `refreshInterval`, `customQuickSelectPanels`) to re-order, omit or mix with your own content. |
 
 HTML attributes and modifiers (`class`, `data-test-*`, `{{on …}}`) are applied to its `<div>`.
-
-### EuiRefreshInterval
-
-"[switch] Refresh every [5] [minutes]": sets how often data refreshes.
-The switch turns refreshing on and off; the interval fields are
-disabled while it is off (upstream EUI). `EuiSuperDatePicker` shows it in its quick select popover
-when given `@onRefreshChange`; it also works on its own.
-
-| Argument | Type | Default | Description |
-| --- | --- | --- | --- |
-| `@isPaused` | `boolean` | `true` | Whether refreshing is stopped. |
-| `@refreshInterval` | `number` | `1000` | The interval in milliseconds. |
-| `@minInterval` | `number` | `0` | The smallest interval in milliseconds; edits are raised to it and the number field's `min` follows it. |
-| `@intervalUnits` | `Units` |  | Shows the interval in this unit (`'s'`, `'m'` or `'h'`) instead of the largest unit that fits (90 seconds becomes 2 minutes). |
-| `@applyRefreshInterval` |  |  | Called with `{ refreshInterval, isPaused }` after a change. |
-| `@onRefreshChange` |  |  | Upstream's callback: called like `@applyRefreshInterval`, with the chosen `intervalUnits` as well. |
-
-HTML attributes and modifiers (`class`, `data-test-*`, `{{on …}}`) are applied to its `<fieldset>`.
-
-### EuiAutoRefresh
-
-A read-only text input showing the auto refresh state ("Off", "5 minutes")
-with an "Auto refresh" prepend button; both open a popover with
-`EuiRefreshInterval`. Upstream's `EuiAutoRefresh`; for a compact button use
-`EuiAutoRefreshButton`. Attributes land on the input.
-
-| Argument | Type | Default | Description |
-| --- | --- | --- | --- |
-| `@isPaused` | `boolean` | `true` | Whether refreshing is paused. |
-| `@refreshInterval` | `number` | `1000` | The interval in milliseconds. |
-| `@minInterval` | `number` | `0` | The smallest allowed interval in milliseconds. |
-| `@intervalUnits` | `'s' \| 'm' \| 'h'` |  | By default the unit is rounded up to the next largest one (90 seconds becomes 2 minutes). Pass `'s'`, `'m'` or `'h'` to fix it. |
-| `@onRefreshChange` (required) | `OnRefreshChange` |  | Called with `{ isPaused, refreshInterval, intervalUnits }` when the user changes the refresh settings. |
-| `@isDisabled` | `boolean` |  | Disables the input and its button. |
-| `@readOnly` | `boolean` | `true` | The input is read-only by default because its value is edited in the popover. |
-| `@fullWidth` | `boolean` |  | Stretches the input to its container's width. |
-| `@compressed` | `boolean` |  | Compressed input, for dense forms. |
-| `@isInvalid` | `boolean` |  | Invalid state: danger border, warning icon and `aria-invalid`. |
-| `@isLoading` | `boolean` |  | Shows a spinner in the input. |
-
-| Block | Description |
-| --- | --- |
-| `<:append>` | Content after the input (upstream `append`), e.g. an `EuiFormAppend`; yields the class to put on it and the input id. |
-
-HTML attributes and modifiers (`class`, `data-test-*`, `{{on …}}`) are applied to its `<input>`.
-
-### EuiAutoRefreshButton
-
-A button showing the auto refresh state ("Auto refresh is off", "5 minutes")
-that opens a popover with `EuiRefreshInterval` to change it. Upstream's
-`EuiAutoRefreshButton`; for a text input look-alike use `EuiAutoRefresh`.
-
-| Argument | Type | Default | Description |
-| --- | --- | --- | --- |
-| `@isPaused` | `boolean` | `true` | Whether refreshing is paused. |
-| `@refreshInterval` | `number` | `1000` | The interval in milliseconds. |
-| `@minInterval` | `number` | `0` | The smallest allowed interval in milliseconds. |
-| `@intervalUnits` | `'s' \| 'm' \| 'h'` |  | By default the unit is rounded up to the next largest one (90 seconds becomes 2 minutes). Pass `'s'`, `'m'` or `'h'` to fix it. |
-| `@onRefreshChange` (required) | `OnRefreshChange` |  | Called with `{ isPaused, refreshInterval, intervalUnits }` when the user changes the refresh settings. |
-| `@isDisabled` | `boolean` |  | Disables the button. It stays focusable (`aria-disabled`) so that its tooltip still shows, unless `@hasAriaDisabled={{false}}`. |
-| `@hasAriaDisabled` | `boolean` | `@isDisabled` (upstream) | With `@isDisabled`, renders `aria-disabled="true"` instead of the native `disabled` attribute. |
-| `@shortHand` | `boolean` | `false` | Reduces the time unit to a single letter. |
-| `@color` |  | `'text'` | `EuiButtonEmpty` color. |
-| `@size` |  | `'s'` | `EuiButtonEmpty` size. |
-| `@flush` |  |  | `EuiButtonEmpty` flush. |
-| `@isLoading` | `boolean` |  | Shows the loading spinner and disables the button. |
-| `@contentProps` |  |  | `EuiButtonEmpty`'s `@contentProps` (upstream's `contentProps`). |
-| `@textProps` |  |  | `EuiButtonEmpty`'s `@textProps` (upstream's `textProps`). |
-| `@css` | `EuiCss` |  | Extra styles composed last into the button's class. |
-
-HTML attributes and modifiers (`class`, `data-test-*`, `{{on …}}`) are applied to its `<button>` / `<a>`.
 
 </EuiText>
 <!-- api:end -->

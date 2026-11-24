@@ -15,7 +15,8 @@ ember-pikaday), styled as an EUI text field.
 `@ember-eui/core` also has a date picker of its own,
 [`EuiDatePicker`](/docs/core/docs/forms/date-picker): a port of upstream
 EUI's, with a calendar popover, a time list, and the device's own picker
-on phones. It needs no extra package.
+on phones. It needs no extra package. The date picker's page maps this
+package's arguments to it, under "Moving from flatpickr or pikaday".
 
 ```bash
 pnpm add @ember-eui/pikaday moment

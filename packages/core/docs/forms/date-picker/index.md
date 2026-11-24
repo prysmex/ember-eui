@@ -29,6 +29,10 @@ chooses a time of day only.
 For a start and an end date, put two pickers in an
 [`EuiDatePickerRange`](/docs/core/docs/forms/date-picker-range).
 
+Coming from `@ember-eui/flatpickr` or `@ember-eui/pikaday`? "Moving from
+flatpickr or pikaday" below maps their arguments and values; both
+packages keep working.
+
 On phones the picker shows the operating system's own input by default
 (see "Phones and Capacitor" below); the demos of calendar-only features
 pass `@native={{false}}`, so a phone shows their calendar too.
@@ -263,21 +267,131 @@ in the Capacitor app and in the mobile browser:
 | | Upstream | Ember EUI |
 | --- | --- | --- |
 | Value | `selected`, a moment; `onChange(moment)` | `@value`, `YYYY-MM-DD` (a `Date` or a moment is read too); `@onChange(string)` |
+| Dates in other arguments | moments (`minDate`, `maxDate`, `openToDate`, `excludeDates`, `includeDates`, `startDate`, `endDate`); `filterDate` and `dayClassName` get a moment | the same names take `YYYY-MM-DD`, a `Date` or a moment; `@filterDate` and `@dayClassName` get `YYYY-MM-DD` |
 | Format | `dateFormat`, a moment format | `@dateOrder`; the text is always numeric, so it reads back |
-| Typing | `onChange` on each keystroke that parses (not strict) | Committed on Enter, blur or pick; strict; errors are shown, not silently reverted |
+| Typing | `onChange` on each keystroke that parses (not strict) | Committed on Enter, blur or pick; strict; errors are shown, not silently reverted, and reported to `@onInputError` |
 | Locale | moment locales | `@locale`, a BCP 47 tag for `Intl`; `@firstDayOfWeek` |
 | `utcOffset` | a fixed offset in minutes | `@timeZone`: `'local'`, `'utc'`, an IANA name, or a fixed offset such as `'-03:00'` |
-| `timeFormat` | a moment format | `@hour12` and `@seconds`; the text is always numeric |
+| `timeFormat` | a moment format | `@hour12` (`3:30 pm`) and `@seconds`; the text is always numeric |
 | Time values | moments | `@showTimeSelect`: a UTC ISO instant; `@showTimeSelectOnly`: `HH:mm`; `@minTime`, `@maxTime`, `@excludeTimes`, `@injectTimes`: `HH:mm` |
 | DST | moment's rules | a missing time moves forward, a repeated time is its first; a stored second occurrence is kept |
 | Home, End | previous, next year | start, end of the week (WAI-ARIA); Shift+PageUp and Shift+PageDown move a year |
 | Month and year | custom dropdowns | two native selects |
+| Range | `selectsStart`, `selectsEnd`, `startDate`, `endDate`; the preview paints the days it adds in the danger colour | the same arguments; the range's other end is outlined and the preview fills every day it covers. `EuiDatePickerRange`'s `startDateControl` and `endDateControl` are its `<:start>` and `<:end>` blocks |
+| Phones | the calendar everywhere | the operating system's own input on phones and in Capacitor apps (`@native`, see "Phones and Capacitor") |
 | Calendar markup | a listbox of options | a WAI-ARIA grid; each day is named by its full date |
 | Classes | `className`, `calendarClassName`, `popperClassName` | `class` (on the input), `@calendarClass`, `@popoverClass` (on the popover panel) |
 | `append`, `prepend` | props | `<:append>` and `<:prepend>` blocks |
 | `data-test-subj` | on the wrapper; `-input`, `-clear`, `-popover` on the parts | on the input, like every attribute |
 | `adjustDateOnChange` | `true` by default | `false` by default: the value changes when the user picks, not while they look |
-| Not yet | `customInput` | a later version |
+| `customInput` | any element, given the input's props | a `<:trigger>` block, yielding `open`, `isOpen` and `text`; it always shows the calendar, phones included |
+| In `EuiSuperDatePicker` | the Absolute tab renders `EuiDatePicker` with `utcOffset`, `timeFormat`, `locale`, `minDate` and `maxDate` | the tab renders this calendar and time list. As upstream, `@utcOffset` only decides which day is today, and `@timeFormat` the time list's clock (12-hour with `h` or `a`, seconds with `s`), shown as here (`2:30 pm`); the list is every 30 minutes. Names follow `@locale`, else moment's global locale |
+
+## Moving from flatpickr or pikaday
+
+`@ember-eui/flatpickr` and `@ember-eui/pikaday` keep working as before,
+and nothing in them changes. **`@ember-eui/flatpickr` stays fully
+supported**: keep it where you need what `EuiDatePicker` does not do, a
+range in one calendar (`@mode="range"`), several dates
+(`@mode="multiple"`) or week numbers. `@ember-eui/pikaday` keeps working
+too. Moving a field is optional, and it is done one field at a time,
+because the value's type changes: decide for each field whether it holds
+a calendar day (`YYYY-MM-DD`) or a moment in time (an instant).
+
+### From `EuiFlatpickr`
+
+| `EuiFlatpickr` | `EuiDatePicker` |
+| --- | --- |
+| `@date` (a `Date`, a string in `@dateFormat`, or an array) | `@value`: `YYYY-MM-DD`, an instant or `HH:mm`; a `Date` or a moment is read too |
+| `@onChange(selectedDates, dateStr, instance)` | `@onChange(value)`, a string or `null` |
+| `@enableTime={{true}}` | `@showTimeSelect={{true}}`: the value becomes an instant |
+| `@enableTime={{true}}` with `@noCalendar={{true}}` | `@showTimeSelectOnly={{true}}`: the value is `HH:mm` |
+| `@time_24hr` | `@hour12` (inverted); by default from `@locale` |
+| `@enableSeconds` | `@seconds` |
+| `@minuteIncrement` | `@timeIntervals`: the minutes between the time list's entries. Any minute can still be typed |
+| `@dateFormat`, `@altInput`, `@altFormat` | `@dateOrder` (`'dmy'`, `'mdy'`, `'ymd'`): the value is always ISO, the text always numeric |
+| `@minDate`, `@maxDate` | the same names: `YYYY-MM-DD`, a `Date` or a moment (an instant with `@showTimeSelect`) |
+| `@minTime`, `@maxTime` | the same names, `HH:mm` |
+| `@disable` (dates, or functions returning `true` to disable) | `@excludeDates` (days), `@filterDate` (returns `false` to disable) |
+| `@enable` | `@includeDates`, or `@filterDate` |
+| `@defaultDate` | the first `@value`; `@openToDate` opens the calendar on a month without choosing a day |
+| `@inline` | `@inline` |
+| `@locale` (a flatpickr locale object or key) | `@locale`, a BCP 47 tag (`'es'`, `'fr-CA'`): names come from the browser's `Intl`; `@firstDayOfWeek` |
+| `@position` | `@popoverPlacement` |
+| `@clear` | `@onClear`: the clear button empties the value there |
+| `@disabled`, `@ariaLabel` | `@disabled`, `aria-label` |
+| `@disableMobile={{true}}` | `@native={{false}}` (see "On phones" below) |
+| `@onOpen`, `@onClose`, `@onReady` | none |
+| `@mode="range"` | two pickers in an [`EuiDatePickerRange`](/docs/core/docs/forms/date-picker-range); for one calendar holding both ends, stay on flatpickr |
+| `@mode="multiple"`, `@weekNumbers` | none: stay on flatpickr |
+| `EuiFieldText` arguments (`@icon`, `@fullWidth`, `@compressed`, `@isInvalid`, `@isLoading`, `@readOnly`, `@controlOnly`, `@inputRef`, `@id`) | the same, with `@iconType` for `@icon` |
+
+### From `EuiPikaday`
+
+| `EuiPikaday` | `EuiDatePicker` |
+| --- | --- |
+| `@value` (a `Date`) | `@value`: the same `Date` is read as its day in the browser's zone; or pass `YYYY-MM-DD` |
+| `@onSelection(date)` (a `Date` or `null`) | `@onChange(value)`, `YYYY-MM-DD` or `null` |
+| `@format` (a moment format) | `@dateOrder` |
+| `@minDate`, `@maxDate` (`Date`s) | the same names; a `Date` is read as its day |
+| `@firstDay` (`'0'` to `'6'`) | `@firstDayOfWeek` (`0` to `6`); by default from `@locale` |
+| `@i18n` (month and weekday names) | `@locale`: names come from the browser's `Intl` |
+| `@yearRange` | the year select runs from `@minDate`'s year to `@maxDate`'s (without them, 100 years back and 20 ahead) |
+| `@defaultDate` | `@openToDate` |
+| `@bound={{false}}` with `@container` | `@inline={{true}}` |
+| `@theme` | `@calendarClass` |
+| `@onOpen`, `@onClose`, `@onDraw`, `@register`, `@moment` | none |
+| `EuiFieldText` arguments, `<:prepend>` and `<:append>` | the same |
+
+### Converting values
+
+`@value` takes what the old pickers held, a `Date` or a moment, so a
+field can move without changing its data first; text in a custom
+`@dateFormat` (`'24.11.2026'`) is not read: a string is `YYYY-MM-DD`,
+an ISO instant with `@showTimeSelect`, or `HH:mm` (see "Values" above). `@onChange` always gives a string; convert it back where the
+app keeps something else:
+
+```js
+// a day, YYYY-MM-DD: to a Date at local midnight
+// (not new Date(value), which is midnight in UTC)
+const [year, month, day] = value.split('-').map(Number);
+const date = new Date(year, month - 1, day);
+
+// a day: to a moment
+const m = moment(value, 'YYYY-MM-DD');
+
+// an instant (@showTimeSelect): Date and moment read it as is
+const at = new Date(value); // or moment(value)
+
+// a Date to a day yourself: its local day, not toISOString().slice(0, 10)
+const pad = (n) => String(n).padStart(2, '0');
+const text = `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}`;
+```
+
+flatpickr's `dateStr` and pikaday's formatted text followed `@dateFormat`
+or `@format`; the new value is always ISO. A server that stored that
+text now gets `YYYY-MM-DD` or an instant ending in `Z`.
+
+### Time zones
+
+flatpickr and pikaday work in the browser's zone: a day is a `Date` at
+local midnight, and a date and time is a local wall clock. With
+`EuiDatePicker` a day has no zone at all, so it cannot shift by a day
+between a browser and a server. A date and time is still shown and chosen
+in the browser's zone by default, as before, and stored as the instant;
+`@timeZone` picks another zone (`'utc'`, `'America/New_York'`, `'-03:00'`).
+See "Time zones and DST" above.
+
+### On phones
+
+flatpickr renders the phone's own input on mobile devices unless
+`@disableMobile={{true}}` (or an option it cannot show natively);
+pikaday always shows its calendar. `EuiDatePicker` renders the OS input
+on phones and in Capacitor apps by default, with the same value strings;
+`@native={{false}}`, or `componentDefaults.EuiDatePicker.native` in
+`euiConfig` for the whole app, keeps the calendar. See "Phones and
+Capacitor" above, and check the native path on real devices before
+relying on it.
 
 </EuiText>
 

@@ -15,7 +15,9 @@ supports single dates, ranges, multiple dates and times.
 `@ember-eui/core` also has a date picker of its own,
 [`EuiDatePicker`](/docs/core/docs/forms/date-picker): a port of upstream
 EUI's, with a calendar popover, a time list, and the device's own picker
-on phones. It needs no extra package.
+on phones. It needs no extra package. This package stays fully supported;
+the date picker's page maps its arguments, under "Moving from flatpickr or
+pikaday".
 
 ```bash
 pnpm add @ember-eui/flatpickr flatpickr

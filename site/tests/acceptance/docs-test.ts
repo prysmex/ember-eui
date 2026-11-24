@@ -18,7 +18,7 @@ module('Acceptance | docs', function (hooks) {
     assert.dom('.euiSideNav').exists();
     assert
       .dom('.euiSideNavItem')
-      .exists({ count: 127 }, 'every docs section is listed');
+      .exists({ count: 128 }, 'every docs section is listed');
   });
 
   // Every page loads its own bundle: the whole catalog took 290-310s in the

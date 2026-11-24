@@ -895,6 +895,13 @@ export default class EuiDatePicker extends Component<EuiDatePickerSignature> {
       }
       return;
     }
+    if (text === this.displayText()) {
+      // the value's own text, typed again: hidden seconds and milliseconds
+      // (no @seconds) must not be dropped by reading it back
+      this.typed = null;
+      this.inputError = null;
+      return;
+    }
     const read = this.read(text);
     if (read.problem !== null) {
       this.inputError = read.problem;

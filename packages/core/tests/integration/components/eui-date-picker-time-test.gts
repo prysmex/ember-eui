@@ -954,4 +954,49 @@ module('Integration | Component | eui-date-picker | time', function (hooks) {
     assert.dom(day('2025-12-24')).isFocused();
     assert.deepEqual(state.changes, [], 'nothing chosen');
   });
+
+  test("retyping the value's own text keeps hidden seconds (9 #27)", async function (assert) {
+    const state = new State();
+    state.value = '2026-11-24T15:30:45.123Z';
+    await render(
+      <template>
+        <EuiDatePicker
+          @value={{state.value}}
+          @onChange={{state.onChange}}
+          @showTimeSelect={{true}}
+          @timeZone="utc"
+          @dateOrder="dmy"
+          @hour12={{false}}
+        />
+      </template>
+    );
+    await fillIn(input(), '24/11/2026 15:3');
+    await fillIn(input(), '24/11/2026 15:30');
+    await blur(input());
+    assert.deepEqual(state.changes, [], 'the same text: nothing emitted');
+    await fillIn(input(), '24/11/2026 15:31');
+    await press(input(), 'Enter');
+    assert.deepEqual(
+      state.changes,
+      ['2026-11-24T15:31:00.000Z'],
+      'another time: seconds zero'
+    );
+
+    const timeState = new State();
+    timeState.value = '09:30:15';
+    await render(
+      <template>
+        <EuiDatePicker
+          @value={{timeState.value}}
+          @onChange={{timeState.onChange}}
+          @showTimeSelectOnly={{true}}
+          @hour12={{false}}
+        />
+      </template>
+    );
+    await fillIn(input(), '09:3');
+    await fillIn(input(), '09:30');
+    await press(input(), 'Enter');
+    assert.deepEqual(timeState.changes, [], 'time only: nothing emitted');
+  });
 });

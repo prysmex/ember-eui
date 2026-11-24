@@ -74,6 +74,18 @@ const textInput = () =>
 const last = <T,>(items: T[]): T => items[items.length - 1]!;
 /** A local wall time as the ISO string `@onTimeChange` reports. */
 const iso = (local: string) => moment(local).toISOString();
+/** Today's date at a UTC offset in minutes. */
+const dayAtOffset = (minutes: number) =>
+  new Date(Date.now() + minutes * 60_000).toISOString().slice(0, 10);
+const todayDates = () =>
+  [
+    ...document.querySelectorAll<HTMLElement>(
+      '.euiAbsoluteTab td.react-datepicker__day--today'
+    )
+  ].map((td) => td.dataset['date']!);
+const timeItem = (time: string) =>
+  el(`.euiAbsoluteTab .react-datepicker__time-list-item[data-time="${time}"]`);
+const timeLabel = (time: string) => timeItem(time).textContent!.trim();
 
 async function openStart() {
   await click('.euiDatePopoverButton--start');
@@ -578,6 +590,222 @@ module(
         moment.locale('en');
         moment.defineLocale('es', null);
       }
+    });
+
+    /*
+     * Batch 8 (DESIGN 20): `@utcOffset` and `@timeFormat` reach the
+     * Absolute tab, as upstream's `EuiDatePopoverContent` passes them. In
+     * upstream 123.1.0 the offset only moves "now" (`now(utcOffset)`: the
+     * day marked as today); the value stays a moment in the browser's
+     * zone, so days and times are shown and picked there. The time format
+     * decides the time list's clock.
+     */
+    test('@utcOffset marks today at the offset; @timeFormat with h, a and s gives a 12-hour list with seconds', async function (assert) {
+      // UTC+14 and UTC-12 are 26 hours apart: never the same day
+      const ahead = dayAtOffset(14 * 60);
+      const state = new State(`${ahead}T12:00:00.000`);
+      await render(
+        <template>
+          <EuiSuperDatePicker
+            @start={{state.start}}
+            @end={{state.end}}
+            @onTimeChange={{state.onTimeChange}}
+            @showUpdateButton={{false}}
+            @utcOffset={{840}}
+            @timeFormat="hh:mm:ss A"
+          />
+        </template>
+      );
+      await openStart();
+      assert.deepEqual(selectedDates(), [ahead], 'the value is shown');
+      assert.deepEqual(todayDates(), [ahead], "today is UTC+14's day");
+      assert.strictEqual(dayButton(ahead).getAttribute('aria-current'), 'date');
+      assert
+        .dom(
+          '.euiAbsoluteTab .react-datepicker__time-list-item--selected',
+          document.body
+        )
+        .hasText('12:00:00 pm', '12-hour, with seconds');
+      assert.strictEqual(timeLabel('14:30'), '2:30:00 pm');
+      assert.strictEqual(timeLabel('00:00'), '12:00:00 am');
+
+      // a picked time is that wall clock in the browser's zone (upstream)
+      await click(timeItem('14:30'));
+      assert.strictEqual(
+        last(state.changes).start,
+        iso(`${ahead}T14:30:00.000`)
+      );
+      assert
+        .dom(
+          '.euiAbsoluteTab .react-datepicker__time-list-item--selected',
+          document.body
+        )
+        .hasText('2:30:00 pm');
+    });
+
+    test('@utcOffset: a negative offset, hours as moment reads them, and zero; without it today is local', async function (assert) {
+      class OffsetState extends State {
+        @tracked utcOffset: number | undefined = -720;
+      }
+      const behind = dayAtOffset(-12 * 60);
+      const state = new OffsetState(`${behind}T09:00:00.000`);
+      await render(
+        <template>
+          <EuiSuperDatePicker
+            @start={{state.start}}
+            @end={{state.end}}
+            @onTimeChange={{state.onTimeChange}}
+            @showUpdateButton={{false}}
+            @utcOffset={{state.utcOffset}}
+          />
+        </template>
+      );
+      const reopen = async () => {
+        await click('.euiDatePopoverButton--start');
+        await waitUntil(() => !document.querySelector('.euiAbsoluteTab'));
+        await openStart();
+      };
+      await openStart();
+      assert.deepEqual(todayDates(), [behind], "today is UTC-12's day");
+      assert
+        .dom(
+          '.euiAbsoluteTab .react-datepicker__time-list-item--selected',
+          document.body
+        )
+        .hasText('09:00', "the default @timeFormat ('HH:mm'): 24-hour");
+      assert.strictEqual(timeLabel('14:30'), '14:30');
+
+      // under 16 either way is hours (moment's utcOffset): -12 is UTC-12
+      state.utcOffset = -12;
+      await reopen();
+      assert.deepEqual(todayDates(), [behind]);
+
+      // zero is an offset: UTC
+      const utcToday = dayAtOffset(0);
+      state.start = `${utcToday}T09:00:00.000`;
+      state.utcOffset = 0;
+      await reopen();
+      assert.deepEqual(todayDates(), [utcToday], "today is UTC's day");
+
+      // without it, as before: the browser's today
+      const localToday = moment().format('YYYY-MM-DD');
+      state.start = `${localToday}T09:00:00.000`;
+      state.utcOffset = undefined;
+      await reopen();
+      assert.deepEqual(todayDates(), [localToday], "the browser's today");
+    });
+
+    test('@timeFormat: bracketed text is literal, H is 24-hour, S is not seconds', async function (assert) {
+      class FormatState extends State {
+        @tracked timeFormat = 'HH[h]mm';
+      }
+      const state = new FormatState('2026-11-24T10:30:00.000');
+      await render(
+        <template>
+          <EuiSuperDatePicker
+            @start={{state.start}}
+            @end={{state.end}}
+            @onTimeChange={{state.onTimeChange}}
+            @showUpdateButton={{false}}
+            @timeFormat={{state.timeFormat}}
+          />
+        </template>
+      );
+      const reopen = async () => {
+        await click('.euiDatePopoverButton--start');
+        await waitUntil(() => !document.querySelector('.euiAbsoluteTab'));
+        await openStart();
+      };
+      await openStart();
+      assert.strictEqual(timeLabel('14:30'), '14:30', "'HH[h]mm': 24-hour");
+
+      state.timeFormat = 'HH:mm:ss.SSS';
+      await reopen();
+      assert.strictEqual(timeLabel('14:30'), '14:30:00', 'seconds');
+
+      state.timeFormat = 'HH:mm.SSS';
+      await reopen();
+      assert.strictEqual(timeLabel('14:30'), '14:30', 'S is not seconds');
+
+      state.timeFormat = 'h:mm a';
+      await reopen();
+      assert.strictEqual(timeLabel('14:30'), '2:30 pm', 'h and a: 12-hour');
+      assert.strictEqual(
+        document.querySelectorAll(
+          '.euiAbsoluteTab .react-datepicker__time-list-item'
+        ).length,
+        48,
+        'still every 30 minutes'
+      );
+    });
+
+    test('EuiDatePopoverButton passes @utcOffset and @timeFormat to the Absolute tab', async function (assert) {
+      class ButtonState {
+        @tracked value: string;
+        changes: PopoverValue[] = [];
+        constructor(value: string) {
+          this.value = value;
+        }
+        update = (value: PopoverValue) => {
+          this.changes.push(value);
+          this.value = value;
+        };
+      }
+      const behind = dayAtOffset(-12 * 60);
+      const state = new ButtonState(iso(`${behind}T10:30:00.000`));
+      await render(
+        <template>
+          <EuiDatePopoverButton
+            @position="start"
+            @value={{state.value}}
+            @dateFormat="MMM D, YYYY @ HH:mm:ss.SSS"
+            @timeFormat="h:mm a"
+            @utcOffset={{-720}}
+            @onChange={{state.update}}
+          />
+        </template>
+      );
+      await openStart();
+      assert.deepEqual(selectedDates(), [behind]);
+      assert.deepEqual(todayDates(), [behind], "today is UTC-12's day");
+      assert
+        .dom(
+          '.euiAbsoluteTab .react-datepicker__time-list-item--selected',
+          document.body
+        )
+        .hasText('10:30 am', '12-hour, no seconds');
+
+      await click(timeItem('15:00'));
+      assert.deepEqual(state.changes, [iso(`${behind}T15:00:00.000`)]);
+      assert.strictEqual(typeof state.changes[0], 'string');
+      assert
+        .dom(
+          '.euiAbsoluteTab .react-datepicker__time-list-item--selected',
+          document.body
+        )
+        .hasText('3:00 pm');
+    });
+
+    test('EuiDatePopoverButton without @utcOffset and @timeFormat: 24-hour, the browser’s today', async function (assert) {
+      const localToday = moment().format('YYYY-MM-DD');
+      const value = iso(`${localToday}T16:00:00.000`);
+      await render(
+        <template>
+          <EuiDatePopoverButton
+            @position="start"
+            @value={{value}}
+            @onChange={{noop}}
+          />
+        </template>
+      );
+      await openStart();
+      assert.deepEqual(todayDates(), [localToday]);
+      assert
+        .dom(
+          '.euiAbsoluteTab .react-datepicker__time-list-item--selected',
+          document.body
+        )
+        .hasText('16:00');
     });
   }
 );

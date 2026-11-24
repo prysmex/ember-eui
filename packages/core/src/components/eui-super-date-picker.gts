@@ -198,9 +198,15 @@ export interface EuiSuperDatePickerArgs {
   maxDate?: Moment;
   /**
    * moment format for times in the date picker. Defaults to `'HH:mm'`.
+   * The Absolute tab's time list is 12-hour when it has `h` or `a`
+   * (`'hh:mm A'`), and shows seconds when it has `s`.
    */
   timeFormat?: string;
-  /** UTC offset in minutes for absolute dates, e.g. `-300`. */
+  /**
+   * UTC offset in minutes, e.g. `-300` (as moment's `utcOffset`). As
+   * upstream, the Absolute tab's calendar marks today's date at this
+   * offset; dates are still shown and picked in the browser's zone.
+   */
   utcOffset?: number;
   /**
    * Set showUpdateButton to false to immediately invoke onTimeChange for

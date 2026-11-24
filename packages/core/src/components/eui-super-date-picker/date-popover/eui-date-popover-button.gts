@@ -60,11 +60,15 @@ interface EuiDatePopoverButtonArgs {
   position?: 'start' | 'end';
   /** Rounds relative dates up (for the end of a range). */
   roundUp?: boolean;
-  /** moment format of times. */
+  /**
+   * moment format of times: the Absolute tab's time list is 12-hour when
+   * it has `h` or `a`, and shows seconds when it has `s`. Without it,
+   * 24-hour.
+   */
   timeFormat?: string;
   /** The date (date math or ISO date). */
   value: string;
-  /** UTC offset in minutes. */
+  /** UTC offset in minutes: the Absolute tab's calendar marks today at this offset (upstream). */
   utcOffset?: number;
   /** Compressed styling. */
   compressed?: boolean;

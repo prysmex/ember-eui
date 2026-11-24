@@ -36,13 +36,13 @@ interface EuiDatePopoverContentArgs {
   roundUp?: boolean;
   /** moment format of absolute dates. */
   dateFormat: string;
-  /** moment format of times. */
+  /** moment format of times: the Absolute tab's time list clock (12-hour with `h` or `a`, seconds with `s`). */
   timeFormat?: string;
   /** moment locale; `'en'` when unset or `null`. */
   locale?: LocaleSpecifier | null;
   /** `'start'` or `'end'` of the range. */
   position: 'start' | 'end';
-  /** UTC offset in minutes. */
+  /** UTC offset in minutes: the Absolute tab's "today". */
   utcOffset?: number;
   /** Time units and tenses for the quick select. */
   timeOptions: TimeOptions;
@@ -177,7 +177,9 @@ export default class EuiDatePopoverContent extends Component<EuiDatePopoverConte
             @value={{@value}}
             @roundUp={{this.roundUp}}
             @dateFormat={{@dateFormat}}
+            @timeFormat={{@timeFormat}}
             @locale={{@locale}}
+            @utcOffset={{@utcOffset}}
             @position={{@position}}
             @onChange={{@onChange}}
             @labelPrefix={{this.labelPrefix}}

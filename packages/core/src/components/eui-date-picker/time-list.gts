@@ -49,6 +49,8 @@ export interface EuiDatePickerTimeListSignature {
     reference?: TimeOfDay | null;
     /** `h:mm am` instead of `HH:mm`. */
     hour12?: boolean;
+    /** `:ss` in the labels (the super date picker's Absolute tab, from its `@timeFormat`). */
+    seconds?: boolean;
     /** Called with an entry that can be chosen, on a click, Enter or Space. */
     onPick?: (entry: TimeEntry, event: Event) => void;
     /** Nothing can be chosen, and the list is not focusable. */
@@ -119,6 +121,7 @@ export default class EuiDatePickerTimeList extends Component<EuiDatePickerTimeLi
     const selected = this.selectedMinutes;
     const active = this.activeValue;
     const hour12 = this.args.hour12;
+    const seconds = this.args.seconds;
     return this.args.entries.map((entry, i) => {
       const isSelected =
         selected !== null && minutesOf(entry.time) === selected;
@@ -135,7 +138,7 @@ export default class EuiDatePickerTimeList extends Component<EuiDatePickerTimeLi
       return {
         entry,
         id: `${this.idPrefix}-${i}`,
-        label: formatTime(entry.time, { hour12 }),
+        label: formatTime(entry.time, { hour12, seconds }),
         className: classes.join(' '),
         selected: isSelected,
         disabled,

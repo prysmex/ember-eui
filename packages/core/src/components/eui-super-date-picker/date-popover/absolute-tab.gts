@@ -10,6 +10,7 @@ import moment from 'moment';
 
 import { randomId } from '../../../-private/random-id.ts';
 import { localeDefaults } from '../../../utils/date/format.ts';
+import { normalizeTimeZone } from '../../../utils/date/zone.ts';
 import { getEuiThemeContext } from '../../../utils/emotion/consume.ts';
 import {
   euiAbsoluteTabDateFormStyles,
@@ -59,10 +60,49 @@ function calendarLocale(locale: LocaleSpecifier | null | undefined): string {
   }
 }
 
+/**
+ * Upstream's `utcOffset` as the calendar's fixed-offset zone (`±HH:MM`),
+ * or undefined (the local zone). Minutes, read as moment's `utcOffset`
+ * reads them: a number under 16 either way is hours. Upstream's calendar
+ * uses it for "now": which day is marked as today.
+ */
+function offsetZone(utcOffset: number | null | undefined): string | undefined {
+  if (typeof utcOffset !== 'number' || !Number.isFinite(utcOffset)) {
+    return undefined;
+  }
+  const minutes = moment().utcOffset(utcOffset).utcOffset();
+  if (!Number.isFinite(minutes) || Math.abs(minutes) >= 24 * 60) {
+    return undefined;
+  }
+  const abs = Math.abs(minutes);
+  const sign = minutes < 0 ? '-' : '+';
+  return normalizeTimeZone(
+    `${sign}${pad(Math.floor(abs / 60))}:${pad(abs % 60)}`
+  );
+}
+
+/**
+ * The time list's clock from a moment format (upstream formats the list's
+ * entries with it): 12-hour with `h` or `hh` (`H` is 24-hour) or with
+ * `a` / `A`; seconds with `s` (`S` is fractions of a second). Text in
+ * `[brackets]` is literal. Without a format: 24-hour, no seconds.
+ */
+function clockOf(timeFormat: string | null | undefined): {
+  hour12: boolean;
+  seconds: boolean;
+} {
+  if (typeof timeFormat !== 'string') return { hour12: false, seconds: false };
+  const tokens = timeFormat.replace(/\[[^\]]*\]/g, '');
+  return { hour12: /[haA]/.test(tokens), seconds: /s/.test(tokens) };
+}
+
 interface AbsoluteTabArgs {
   /** moment format of absolute dates. */
   dateFormat?: string;
-  /** moment format of times. */
+  /**
+   * moment format of times: the time list is 12-hour when it has `h` or
+   * `a`, and shows seconds when it has `s`. Without it, `HH:mm`.
+   */
   timeFormat?: string;
   /** moment locale; `'en'` when unset or `null`. */
   locale?: LocaleSpecifier | null;
@@ -76,7 +116,11 @@ interface AbsoluteTabArgs {
   position: 'start' | 'end';
   /** Prefix of the input labels, e.g. "Start date". */
   labelPrefix: string;
-  /** UTC offset in minutes. */
+  /**
+   * UTC offset in minutes (as moment's `utcOffset`): the calendar's "today"
+   * is the day at this offset, as upstream. The value's day and time are
+   * shown and picked as before, in the browser's zone (upstream's tab too).
+   */
   utcOffset?: number;
   /** Earliest selectable day of the calendar. */
   minDate?: Moment;
@@ -165,6 +209,16 @@ export default class AbsoluteTab extends Component<AbsoluteTabSignature> {
   @cached
   get calendarLocale() {
     return localeDefaults(calendarLocale(this.args.locale));
+  }
+
+  /** `@utcOffset` as the calendar's zone: for "today". */
+  get timeZone(): string | undefined {
+    return offsetZone(this.args.utcOffset);
+  }
+
+  @cached
+  get clock() {
+    return clockOf(this.args.timeFormat);
   }
 
   get selectedDay(): string {
@@ -273,9 +327,11 @@ export default class AbsoluteTab extends Component<AbsoluteTabSignature> {
             @maxDate={{this.maxDay}}
             @locale={{this.calendarLocale.locale}}
             @firstDayOfWeek={{this.calendarLocale.firstDayOfWeek}}
+            @timeZone={{this.timeZone}}
             @showTimeSelect={{true}}
             @selectedTime={{this.selectedTime}}
-            @hour12={{false}}
+            @hour12={{this.clock.hour12}}
+            @timeSeconds={{this.clock.seconds}}
             @onPickTime={{this.pickTime}}
           />
         </EuiFormControlLayout>

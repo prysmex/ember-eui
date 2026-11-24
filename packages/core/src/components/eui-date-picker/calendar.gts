@@ -153,6 +153,8 @@ export interface EuiDatePickerCalendarSignature {
     selectedTime?: TimeOfDay | null;
     /** `h:mm am` in the time list. */
     hour12?: boolean;
+    /** `:ss` in the time list's labels (the super date picker's Absolute tab, from its `@timeFormat`). */
+    timeSeconds?: boolean;
     /**
      * Called with an entry of the time list that can be chosen, and the day
      * it belongs to: the preview, else the selected day, else the focused
@@ -823,6 +825,7 @@ export default class EuiDatePickerCalendar extends Component<EuiDatePickerCalend
           @selected={{@selectedTime}}
           @reference={{this.timeReference}}
           @hour12={{@hour12}}
+          @seconds={{@timeSeconds}}
           @disabled={{not this.interactive}}
           @onPick={{this.pickTime}}
         />

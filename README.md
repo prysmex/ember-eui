@@ -24,6 +24,7 @@ Once you've installed it, you can now install the addon itself:
 - [@ember-eui/pikaday](./packages/pikaday/README.md)
 - [@ember-eui/flatpickr](./packages/flatpickr/README.md)
 - [@ember-eui/validated-form](./packages/validated-form/README.md)
+- [@ember-eui/sheet](./packages/sheet/README.md)
 
 ## License and attribution
 

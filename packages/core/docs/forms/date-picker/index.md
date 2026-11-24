@@ -271,7 +271,7 @@ in the Capacitor app and in the mobile browser:
 | Format | `dateFormat`, a moment format | `@dateOrder`; the text is always numeric, so it reads back |
 | Typing | `onChange` on each keystroke that parses (not strict) | Committed on Enter, blur or pick; strict; errors are shown, not silently reverted, and reported to `@onInputError` |
 | Locale | moment locales | `@locale`, a BCP 47 tag for `Intl`; `@firstDayOfWeek` |
-| `utcOffset` | a fixed offset in minutes | `@timeZone`: `'local'`, `'utc'`, an IANA name, or a fixed offset such as `'-03:00'` |
+| `utcOffset` | a fixed offset in minutes | `@timeZone`: `'local'`, `'utc'`, an IANA name, or a fixed offset such as `'-03:00'`; the value is shown and chosen in it (upstream's demo converts `selected` itself). In `EuiSuperDatePicker`, `@utcOffset` stays upstream's number (see the last row) |
 | `timeFormat` | a moment format | `@hour12` (`3:30 pm`) and `@seconds`; the text is always numeric |
 | Time values | moments | `@showTimeSelect`: a UTC ISO instant; `@showTimeSelectOnly`: `HH:mm`; `@minTime`, `@maxTime`, `@excludeTimes`, `@injectTimes`: `HH:mm` |
 | DST | moment's rules | a missing time moves forward, a repeated time is its first; a stored second occurrence is kept |
@@ -384,9 +384,10 @@ See "Time zones and DST" above.
 
 ### On phones
 
-flatpickr renders the phone's own input on mobile devices unless
-`@disableMobile={{true}}` (or an option it cannot show natively);
-pikaday always shows its calendar. `EuiDatePicker` renders the OS input
+flatpickr renders the phone's own input on a mobile browser (found by
+its user agent) for a single date, unless `@disableMobile={{true}}`,
+`@inline`, `@disable`, `@enable` or `@weekNumbers` is given; pikaday
+always shows its calendar. `EuiDatePicker` renders the OS input
 on phones and in Capacitor apps by default, with the same value strings;
 `@native={{false}}`, or `componentDefaults.EuiDatePicker.native` in
 `euiConfig` for the whole app, keeps the calendar. See "Phones and

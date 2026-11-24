@@ -577,12 +577,8 @@ module('Integration | Component | eui-date-picker | inline', function (hooks) {
         />
       </template>
     );
-    assert.true(
-      warnings.some((w) =>
-        w.includes('must be a YYYY-MM-DD string, not a Date or a moment')
-      ),
-      warnings.join(' | ')
-    );
+    // decision 19: a valid Date or moment is read silently
+    assert.deepEqual(warnings, [], 'no notice for a valid Date');
   });
 
   test('an unknown @timeZone is invalid with a warning, and still renders (9 #24)', async function (assert) {

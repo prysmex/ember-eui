@@ -21,6 +21,15 @@ export interface EuiComponentDefaults {
     itemsPerPageOptions?: number[];
     showPerPageOptions?: boolean;
   };
+  /** Defaults of every `EuiDatePicker`; its own arguments win. */
+  EuiDatePicker?: {
+    /**
+     * BCP 47 tag for month and weekday names, the date order, the first day
+     * of the week and the 12- or 24-hour clock. Without it, the document's
+     * `lang`, then the browser's language.
+     */
+    locale?: string;
+  };
 }
 
 export interface EuiConfig {

@@ -73,6 +73,32 @@ export function datePlaceholder(
   return order === 'dmy' ? `${dd}/${mm}/${yyyy}` : `${mm}/${dd}/${yyyy}`;
 }
 
+/** Letters for the time placeholder, from i18n tokens; English by default. */
+export interface TimePlaceholderLetters {
+  hour: string;
+  minute: string;
+  second: string;
+  meridiem: string;
+}
+
+/** The time display format spelled out: `HH:mm`, `HH:mm:ss`, or `hh:mm am` with a 12-hour clock. */
+export function timePlaceholder(
+  options: TimeDisplayOptions = {},
+  letters: TimePlaceholderLetters = {
+    hour: 'H',
+    minute: 'm',
+    second: 's',
+    meridiem: 'am'
+  }
+): string {
+  const hour = options.hour12
+    ? letters.hour.toLowerCase().repeat(2)
+    : letters.hour.repeat(2);
+  const seconds = options.seconds ? `:${letters.second.repeat(2)}` : '';
+  const time = `${hour}:${letters.minute.repeat(2)}${seconds}`;
+  return options.hour12 ? `${time} ${letters.meridiem}` : time;
+}
+
 /* Locale */
 
 function canonical(tag: unknown): string | undefined {

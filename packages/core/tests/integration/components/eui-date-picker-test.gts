@@ -859,10 +859,8 @@ module('Integration | Component | eui-date-picker', function (hooks) {
       'the moment is not mutated'
     );
     assert.strictEqual(value.utcOffset(), 0);
-    assert.true(
-      warnings.some((w) => w.includes('read as "2026-11-24"')),
-      'a development notice says how it was read: ' + warnings.join(' | ')
-    );
+    // decision 19: a valid Date or moment is read silently
+    assert.deepEqual(warnings, [], 'no notice: ' + warnings.join(' | '));
 
     const tokyo = moment.utc('2026-11-24T20:00:00Z');
     await render(

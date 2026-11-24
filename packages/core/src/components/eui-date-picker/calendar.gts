@@ -55,13 +55,17 @@ import {
   monthYearLabel,
   weekdayNames
 } from '../../utils/date/format.ts';
-import { todayIn } from '../../utils/date/zone.ts';
+import { timeList } from '../../utils/date/times.ts';
+import { todayIn, wallAt } from '../../utils/date/zone.ts';
 import EuiButtonIcon from '../eui-button-icon.gts';
 import { euiScreenReaderOnlyClass } from '../eui-screen-reader-only.gts';
 import EuiSelect from '../eui-select.gts';
+import EuiDatePickerTimeList from './time-list.gts';
 
 import type { Weekday } from '../../utils/date/calendar-date.ts';
 import type { DayLimits } from '../../utils/date/calendar-nav.ts';
+import type { TimeOfDay } from '../../utils/date/parse.ts';
+import type { TimeEntry, TimeListOptions } from '../../utils/date/times.ts';
 import type EuiI18n from '../../services/eui-i18n.ts';
 
 /** react-datepicker's `react-datepicker__day--{code}` classes, by `getUTCDay`. */
@@ -92,6 +96,17 @@ interface View {
   forOpenTo: string | null;
   forPreview: string | null;
 }
+
+/** The time list's rules (upstream `timeIntervals`, `injectTimes`, `excludeTimes`, `minTime`, `maxTime`). */
+export type CalendarTimeOptions = Pick<
+  TimeListOptions,
+  | 'interval'
+  | 'injectTimes'
+  | 'excludeTimes'
+  | 'minTime'
+  | 'maxTime'
+  | 'seconds'
+>;
 
 export interface EuiDatePickerCalendarSignature {
   Element: HTMLDivElement;
@@ -128,6 +143,24 @@ export interface EuiDatePickerCalendarSignature {
     disabled?: boolean;
     /** Nothing can be chosen or focused. */
     readOnly?: boolean;
+    /** The time list beside the month (upstream `showTimeSelect`). */
+    showTimeSelect?: boolean;
+    /** Only the time list (upstream `showTimeSelectOnly`): no month, no navigation. */
+    showTimeSelectOnly?: boolean;
+    /** The time list's rules. With a month, `@minDate` and `@maxDate` (instants or days) also disable times. */
+    timeOptions?: CalendarTimeOptions;
+    /** The value's time of day: its entry is selected. */
+    selectedTime?: TimeOfDay | null;
+    /** `h:mm am` in the time list. */
+    hour12?: boolean;
+    /**
+     * Called with an entry of the time list that can be chosen, and the day
+     * it belongs to: the preview, else the selected day, else the focused
+     * one; null with `@showTimeSelectOnly`.
+     */
+    onPickTime?: (day: string | null, entry: TimeEntry, event: Event) => void;
+    /** Called with the focused day after a key, a month or year change or a navigation button moved it (upstream `adjustDateOnChange`). */
+    onMove?: (date: string) => void;
     /** @private The clock, for tests. Read when the calendar is made and when the month changes. */
     now?: () => number;
   };
@@ -453,13 +486,19 @@ export default class EuiDatePickerCalendar extends Component<EuiDatePickerCalend
 
   private showMonthOffset(n: number) {
     const { year, month } = addMonthsTo(this.shown.year, this.shown.month, n);
-    this.moveTo(focusInMonth(this.focused, year, month, this.limits));
+    this.moveBy(focusInMonth(this.focused, year, month, this.limits));
+  }
+
+  /** A move by the user (keys, selects, navigation): `@onMove` hears of it. */
+  private moveBy(date: string) {
+    this.moveTo(date);
+    this.args.onMove?.(date);
   }
 
   @action
   changeMonth(event: Event) {
     const month = Number((event.target as HTMLSelectElement).value) + 1;
-    this.moveTo(
+    this.moveBy(
       focusInMonth(this.focused, this.shown.year, month, this.limits)
     );
   }
@@ -467,7 +506,7 @@ export default class EuiDatePickerCalendar extends Component<EuiDatePickerCalend
   @action
   changeYear(event: Event) {
     const year = Number((event.target as HTMLSelectElement).value);
-    this.moveTo(
+    this.moveBy(
       focusInMonth(this.focused, year, this.shown.month, this.limits)
     );
   }
@@ -501,8 +540,49 @@ export default class EuiDatePickerCalendar extends Component<EuiDatePickerCalend
     });
     if (next === null) return;
     event.preventDefault();
-    this.moveTo(next);
+    this.moveBy(next);
     this.focusRequest++;
+  }
+
+  /* Time */
+
+  get timeOnly(): boolean {
+    return Boolean(this.args.showTimeSelectOnly);
+  }
+
+  get hasTime(): boolean {
+    return Boolean(this.args.showTimeSelect || this.args.showTimeSelectOnly);
+  }
+
+  /** The day the time list is for (DESIGN 5.2): the preview, else the selected day, else the focused one; none for time only. */
+  get timeDay(): string | null {
+    if (this.timeOnly) return null;
+    return this.preview ?? this.selected ?? this.focused;
+  }
+
+  @cached
+  get timeEntries(): TimeEntry[] {
+    if (!this.hasTime) return [];
+    const day = this.timeDay;
+    return timeList({
+      ...this.args.timeOptions,
+      day,
+      zone: this.zone,
+      minDate: day ? this.args.minDate : null,
+      maxDate: day ? this.args.maxDate : null
+    });
+  }
+
+  /** Without a selected time, the list opens near the time now in the zone (upstream). */
+  get timeReference(): TimeOfDay {
+    const wall = wallAt(this.now, this.zone);
+    return { hour: wall.h, minute: wall.mi, second: 0 };
+  }
+
+  @action
+  pickTime(entry: TimeEntry, event: Event) {
+    if (!this.interactive) return;
+    this.args.onPickTime?.(this.timeDay, entry, event);
   }
 
   <template>
@@ -510,118 +590,131 @@ export default class EuiDatePickerCalendar extends Component<EuiDatePickerCalend
       class="react-datepicker
         {{this.calendarClass}}
         {{@calendarClass}}
+        {{if this.timeOnly 'react-datepicker--time-only'}}
         {{unless this.interactive 'react-datepicker--non-interactive'}}
         {{if @disabled 'euiDatePickerCalendar--disabled'}}"
       ...attributes
     >
-      <EuiButtonIcon
-        class="react-datepicker__navigation react-datepicker__navigation--previous"
-        aria-label={{this.previousMonthLabel}}
-        title={{this.previousMonthLabel}}
-        @iconType="sortLeft"
-        @size="s"
-        @color="text"
-        @isDisabled={{not this.navigation.previous}}
-        {{on "click" this.previousMonth}}
-      />
-      <EuiButtonIcon
-        class="react-datepicker__navigation react-datepicker__navigation--next"
-        aria-label={{this.nextMonthLabel}}
-        title={{this.nextMonthLabel}}
-        @iconType="sortRight"
-        @size="s"
-        @color="text"
-        @isDisabled={{not this.navigation.next}}
-        {{on "click" this.nextMonth}}
-      />
-      <div class="react-datepicker__month-container">
-        <div class="react-datepicker__header">
-          <div
-            class="react-datepicker__header__dropdown react-datepicker__header__dropdown--scroll"
-          >
+      {{#unless this.timeOnly}}
+        <EuiButtonIcon
+          class="react-datepicker__navigation react-datepicker__navigation--previous"
+          aria-label={{this.previousMonthLabel}}
+          title={{this.previousMonthLabel}}
+          @iconType="sortLeft"
+          @size="s"
+          @color="text"
+          @isDisabled={{not this.navigation.previous}}
+          {{on "click" this.previousMonth}}
+        />
+        <EuiButtonIcon
+          class="react-datepicker__navigation react-datepicker__navigation--next"
+          aria-label={{this.nextMonthLabel}}
+          title={{this.nextMonthLabel}}
+          @iconType="sortRight"
+          @size="s"
+          @color="text"
+          @isDisabled={{not this.navigation.next}}
+          {{on "click" this.nextMonth}}
+        />
+        <div class="react-datepicker__month-container">
+          <div class="react-datepicker__header">
             <div
-              class="react-datepicker__month-dropdown-container react-datepicker__month-dropdown-container--scroll"
+              class="react-datepicker__header__dropdown react-datepicker__header__dropdown--scroll"
             >
-              <EuiSelect
-                @compressed={{true}}
-                @fullWidth={{true}}
-                aria-label={{this.monthLabel}}
-                @value={{this.monthIndex}}
-                @options={{this.monthOptions}}
-                @disabled={{or @disabled @readOnly}}
-                {{on "change" this.changeMonth}}
-              />
-            </div>
-            <div
-              class="react-datepicker__year-dropdown-container react-datepicker__year-dropdown-container--scroll"
-            >
-              <EuiSelect
-                @compressed={{true}}
-                @fullWidth={{true}}
-                aria-label={{this.yearLabel}}
-                @value={{this.shown.year}}
-                @options={{this.yearOptions}}
-                @disabled={{or @disabled @readOnly}}
-                {{on "change" this.changeYear}}
-              />
+              <div
+                class="react-datepicker__month-dropdown-container react-datepicker__month-dropdown-container--scroll"
+              >
+                <EuiSelect
+                  @compressed={{true}}
+                  @fullWidth={{true}}
+                  aria-label={{this.monthLabel}}
+                  @value={{this.monthIndex}}
+                  @options={{this.monthOptions}}
+                  @disabled={{or @disabled @readOnly}}
+                  {{on "change" this.changeMonth}}
+                />
+              </div>
+              <div
+                class="react-datepicker__year-dropdown-container react-datepicker__year-dropdown-container--scroll"
+              >
+                <EuiSelect
+                  @compressed={{true}}
+                  @fullWidth={{true}}
+                  aria-label={{this.yearLabel}}
+                  @value={{this.shown.year}}
+                  @options={{this.yearOptions}}
+                  @disabled={{or @disabled @readOnly}}
+                  {{on "change" this.changeYear}}
+                />
+              </div>
             </div>
           </div>
-        </div>
-        <h2
-          id={{this.headingId}}
-          class={{this.headingClass}}
-          aria-live="polite"
-        >{{this.monthYear}}</h2>
-        <table
-          role="grid"
-          class="react-datepicker__month react-datepicker__month--accessible"
-          aria-labelledby={{this.headingId}}
-          {{on "keydown" this.onGridKeyDown}}
-          {{this.focusDay this.focused this.focusRequest}}
-        >
-          <thead role="rowgroup">
-            <tr role="row" class="react-datepicker__day-names">
-              {{#each this.weekdays as |weekday|}}
-                <th
-                  role="columnheader"
-                  scope="col"
-                  abbr={{weekday.long}}
-                  class="react-datepicker__day-name"
-                ><span aria-hidden="true">{{weekday.short}}</span><span
-                    class={{this.headingClass}}
-                  >{{weekday.long}}</span></th>
-              {{/each}}
-            </tr>
-          </thead>
-          <tbody role="rowgroup">
-            {{#each this.weeks key="@index" as |week|}}
-              <tr role="row" class="react-datepicker__week">
-                {{#each week key="key" as |day|}}
-                  {{#if day.date}}
-                    <td
-                      role="gridcell"
-                      class={{day.className}}
-                      aria-selected={{if day.selected "true"}}
-                      data-date={{day.date}}
-                      {{on "click" (fn this.selectDay day)}}
-                    ><button
-                        type="button"
-                        class="react-datepicker__day-button"
-                        tabindex={{day.tabIndex}}
-                        aria-label={{day.label}}
-                        aria-current={{if day.today "date"}}
-                        aria-disabled={{if day.disabled "true"}}
-                        disabled={{not this.interactive}}
-                      >{{day.number}}</button></td>
-                  {{else}}
-                    <td role="gridcell" class={{day.className}}></td>
-                  {{/if}}
+          <h2
+            id={{this.headingId}}
+            class={{this.headingClass}}
+            aria-live="polite"
+          >{{this.monthYear}}</h2>
+          <table
+            role="grid"
+            class="react-datepicker__month react-datepicker__month--accessible"
+            aria-labelledby={{this.headingId}}
+            {{on "keydown" this.onGridKeyDown}}
+            {{this.focusDay this.focused this.focusRequest}}
+          >
+            <thead role="rowgroup">
+              <tr role="row" class="react-datepicker__day-names">
+                {{#each this.weekdays as |weekday|}}
+                  <th
+                    role="columnheader"
+                    scope="col"
+                    abbr={{weekday.long}}
+                    class="react-datepicker__day-name"
+                  ><span aria-hidden="true">{{weekday.short}}</span><span
+                      class={{this.headingClass}}
+                    >{{weekday.long}}</span></th>
                 {{/each}}
               </tr>
-            {{/each}}
-          </tbody>
-        </table>
-      </div>
+            </thead>
+            <tbody role="rowgroup">
+              {{#each this.weeks key="@index" as |week|}}
+                <tr role="row" class="react-datepicker__week">
+                  {{#each week key="key" as |day|}}
+                    {{#if day.date}}
+                      <td
+                        role="gridcell"
+                        class={{day.className}}
+                        aria-selected={{if day.selected "true"}}
+                        data-date={{day.date}}
+                        {{on "click" (fn this.selectDay day)}}
+                      ><button
+                          type="button"
+                          class="react-datepicker__day-button"
+                          tabindex={{day.tabIndex}}
+                          aria-label={{day.label}}
+                          aria-current={{if day.today "date"}}
+                          aria-disabled={{if day.disabled "true"}}
+                          disabled={{not this.interactive}}
+                        >{{day.number}}</button></td>
+                    {{else}}
+                      <td role="gridcell" class={{day.className}}></td>
+                    {{/if}}
+                  {{/each}}
+                </tr>
+              {{/each}}
+            </tbody>
+          </table>
+        </div>
+      {{/unless}}
+      {{#if this.hasTime}}
+        <EuiDatePickerTimeList
+          @entries={{this.timeEntries}}
+          @selected={{@selectedTime}}
+          @reference={{this.timeReference}}
+          @hour12={{@hour12}}
+          @disabled={{not this.interactive}}
+          @onPick={{this.pickTime}}
+        />
+      {{/if}}
     </div>
   </template>
 }

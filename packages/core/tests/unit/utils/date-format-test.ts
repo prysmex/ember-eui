@@ -19,6 +19,7 @@ import {
   monthNames,
   monthYearLabel,
   resolveLocale,
+  timePlaceholder,
   weekdayNames
 } from '#src/utils/date/format.ts';
 import {
@@ -162,6 +163,20 @@ module('Unit | utils | date | format', function () {
     assert.strictEqual(
       datePlaceholder('dmy', { day: 'J', month: 'M', year: 'A' }),
       'JJ/MM/AAAA',
+      'letters from i18n tokens'
+    );
+  });
+
+  test('the time placeholder spells the time format', function (assert) {
+    assert.strictEqual(timePlaceholder(), 'HH:mm');
+    assert.strictEqual(timePlaceholder({ seconds: true }), 'HH:mm:ss');
+    assert.strictEqual(timePlaceholder({ hour12: true }), 'hh:mm am');
+    assert.strictEqual(
+      timePlaceholder(
+        { hour12: true, seconds: true },
+        { hour: 'H', minute: 'm', second: 's', meridiem: 'a.m.' }
+      ),
+      'hh:mm:ss a.m.',
       'letters from i18n tokens'
     );
   });

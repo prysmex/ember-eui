@@ -10,13 +10,16 @@
  *
  * The values are strings (DESIGN 4, 5), the logic is new: typed text is
  * committed on Enter, blur and pick, never per keystroke (DESIGN 5.3).
+ * Times follow DESIGN 5.2: an instant is shown and chosen as a wall clock
+ * in `@timeZone`, and only a different wall clock changes the value.
  */
 import Component from '@glimmer/component';
 import { cached, tracked } from '@glimmer/tracking';
 import { warn } from '@ember/debug';
 import { on } from '@ember/modifier';
 import { action } from '@ember/object';
-import { later, schedule } from '@ember/runloop';
+import { getOwner } from '@ember/owner';
+import { later, next as next_, schedule } from '@ember/runloop';
 import { service } from '@ember/service';
 
 import { modifier } from 'ember-modifier';
@@ -38,18 +41,38 @@ import {
 import {
   datePlaceholder,
   formatDate,
-  localeDefaults
+  formatDateTime,
+  formatTime,
+  localeDefaults,
+  timePlaceholder
 } from '../utils/date/format.ts';
-import { parseDateText } from '../utils/date/parse.ts';
 import {
-  isDateObject,
-  isInvalidDateObject,
-  toDateValue
-} from '../utils/date/value.ts';
+  instantString,
+  parseDateText,
+  parseDateTimeText,
+  parseInstant,
+  parseTimeText,
+  parseTimeValue,
+  timeValueOf
+} from '../utils/date/parse.ts';
 import {
+  changesValue,
+  instantAt,
+  instantProblem,
+  timeInterval,
+  timeList,
+  timeProblem
+} from '../utils/date/times.ts';
+import { isInvalidDateObject, toDateValue } from '../utils/date/value.ts';
+import {
+  dayAt,
   normalizeTimeZone,
+  startOfDayIn,
   todayIn,
-  validTimeZone
+  validTimeZone,
+  wallAt,
+  wallOf,
+  withDay
 } from '../utils/date/zone.ts';
 import EuiDatePickerCalendar from './eui-date-picker/calendar.gts';
 import EuiFieldText from './eui-field-text.gts';
@@ -58,8 +81,11 @@ import EuiPopover from './eui-popover.gts';
 
 import type { Weekday } from '../utils/date/calendar-date.ts';
 import type { DayLimits, LimitProblem } from '../utils/date/calendar-nav.ts';
-import type { DateOrder } from '../utils/date/parse.ts';
-import type { DateInput } from '../utils/date/value.ts';
+import type { DateOrder, TimeOfDay } from '../utils/date/parse.ts';
+import type { InstantRules, TimeEntry } from '../utils/date/times.ts';
+import type { DateInput, PickerMode } from '../utils/date/value.ts';
+import type { CalendarTimeOptions } from './eui-date-picker/calendar.gts';
+import type EuiConfigService from '../services/eui-config.ts';
 import type EuiI18n from '../services/eui-i18n.ts';
 import type {
   EuiPopoverPanelProps,
@@ -73,51 +99,80 @@ export type EuiDatePickerInputErrorReason = 'unreadable' | LimitProblem;
 export interface EuiDatePickerInputError {
   /** The text as typed. */
   text: string;
-  /** `'unreadable'`: not a date in the field's order; `'min'`, `'max'`: outside the limits; `'disabled'`: excluded, not included or filtered out. */
+  /** `'unreadable'`: not a date (or a date and time, or a time) in the field's order; `'min'`, `'max'`: outside the limits (`@minDate`, `@maxDate`, `@minTime`, `@maxTime`); `'disabled'`: excluded, not included or filtered out. */
   reason: EuiDatePickerInputErrorReason;
 }
 
 /**
  * A date picker (upstream `EuiDatePicker`): a text input that opens a
- * calendar in a popover, or the calendar alone with `@inline`. Values are
- * `YYYY-MM-DD` strings; a `Date` or a moment is read too. Typed text is
- * committed on Enter, on blur and on a pick. Attributes go to the input, or
- * to the calendar with `@inline`.
+ * calendar in a popover, or the calendar alone with `@inline`; with
+ * `@showTimeSelect` a time list too, with `@showTimeSelectOnly` the time
+ * list alone. Values are strings: `YYYY-MM-DD`, a UTC ISO instant, or
+ * `HH:mm`; a `Date` or a moment is read too. Typed text is committed on
+ * Enter, on blur and on a pick. Attributes go to the input, or to the
+ * calendar with `@inline`.
  */
 export interface EuiDatePickerSignature {
   /** `...attributes` go to the text input; with `@inline`, to the calendar's root (`div.react-datepicker`, `role="group"`). */
   Element: HTMLInputElement | HTMLDivElement;
   Args: {
-    /** The value, `YYYY-MM-DD`. Also a `Date` or a moment: its day in `@timeZone` is read. `null` or `undefined` for none. */
+    /**
+     * The value: `YYYY-MM-DD`; with `@showTimeSelect` an instant, a UTC ISO
+     * string (`2026-11-24T15:30:00.000Z`, or with an offset); with
+     * `@showTimeSelectOnly` a time, `HH:mm` (or `HH:mm:ss`). Also a `Date`
+     * or a moment: its day, its instant or its time in `@timeZone` is read.
+     * `null` or `undefined` for none.
+     */
     value?: DateInput | null;
-    /** Called with the new value, `YYYY-MM-DD`, or `null` when the text is emptied. Never with a disabled day, never per keystroke. */
+    /** Called with the new value (`YYYY-MM-DD`, a UTC ISO instant ending in `Z`, or `HH:mm`), or `null` when the text is emptied. Never with a day or time that cannot be chosen, never per keystroke. */
     onChange?: (value: string | null) => void;
     /** Shows the clear button while there is a value; empty the value there. */
     onClear?: () => void;
-    /** Called when committed text cannot be read, or names a day that cannot be chosen. `@onChange` is not called then. */
+    /** Called when committed text cannot be read, or names a day or time that cannot be chosen. `@onChange` is not called then. */
     onInputError?: (error: EuiDatePickerInputError) => void;
+
+    /** A time list beside the calendar: the value becomes an instant, shown in `@timeZone`. */
+    showTimeSelect?: boolean;
+    /** Only a time list, no calendar: the value becomes a time of day, `HH:mm`. Wins over `@showTimeSelect`. */
+    showTimeSelectOnly?: boolean;
+    /** Minutes between the entries of the time list, from midnight. Defaults to `30`. */
+    timeIntervals?: number;
+    /** Keep and show seconds: typed seconds are kept, and a time value is `HH:mm:ss`. Defaults to `false`. */
+    seconds?: boolean;
+    /** A 12-hour clock (`3:30 pm`) in the input and the time list. Defaults to `@locale`'s. */
+    hour12?: boolean;
+    /** Times before it are disabled, `HH:mm`. */
+    minTime?: string | null;
+    /** Times after it are disabled, `HH:mm`. */
+    maxTime?: string | null;
+    /** These times are disabled, `HH:mm`. */
+    excludeTimes?: readonly string[] | null;
+    /** Extra entries in the time list, `HH:mm`, marked as injected. */
+    injectTimes?: readonly string[] | null;
 
     /** Shows the calendar in the page instead of the text input and the popover. */
     inline?: boolean;
     /** With `@inline`: the raised frame. Defaults to `true`. */
     shadow?: boolean;
-    /** Closes the popover after a day is picked. Defaults to `true`. */
+    /** Closes the popover after a day is picked (with `@showTimeSelect`, after a time is). Defaults to `true`. */
     shouldCloseOnSelect?: boolean;
+    /** Arrow keys and the month and year selects change the value at once, not only show another day (upstream's default is `true`). Defaults to `false`. */
+    adjustDateOnChange?: boolean;
     /** Where the popover opens, any `EuiPopover` `@anchorPosition`. Defaults to `'downLeft'`. */
     popoverPlacement?: PopoverAnchorPosition;
 
-    /** `'local'`, `'utc'` or an IANA name: the zone of "today", and the day of a `Date` or a moment. Defaults to `'local'`. */
+    /** `'local'`, `'utc'`, an IANA name (`'America/New_York'`) or a fixed offset (`'-03:00'`, upstream's `utcOffset`): the zone instants are shown and chosen in, the zone of "today", and of a `Date` or a moment. Defaults to `'local'`. */
     timeZone?: 'local' | 'utc' | (string & {});
-    /** BCP 47 tag for names and defaults. Defaults to the document's language, then the browser's. */
+    /** BCP 47 tag for names and defaults. Defaults to `componentDefaults.EuiDatePicker.locale` in `euiConfig`, then the document's language, then the browser's. */
     locale?: string;
     /** The order typed and shown: `'dmy'` (`24/11/2026`), `'mdy'` (`11/24/2026`) or `'ymd'` (`2026-11-24`). Defaults to the order of `@locale`. */
     dateOrder?: DateOrder;
     /** The first day of the week, 0 (Sunday) to 6. Defaults to `@locale`'s. */
     firstDayOfWeek?: Weekday;
 
-    /** Days before are disabled (`YYYY-MM-DD`, a `Date` or a moment). */
+    /** Days before are disabled (`YYYY-MM-DD`, a `Date` or a moment). With `@showTimeSelect` also an instant (a `Date` or a moment counts as one): earlier times are disabled. */
     minDate?: DateInput | null;
-    /** Days after are disabled (`YYYY-MM-DD`, a `Date` or a moment). */
+    /** Days after are disabled (`YYYY-MM-DD`, a `Date` or a moment). With `@showTimeSelect` also an instant (a `Date` or a moment counts as one): later times are disabled. */
     maxDate?: DateInput | null;
     /** These days are disabled. */
     excludeDates?: readonly DateInput[] | null;
@@ -153,7 +208,7 @@ export interface EuiDatePickerSignature {
     readOnly?: boolean;
     /** The icon in the input. Defaults to `true`. */
     showIcon?: boolean;
-    /** The icon's type, anything `EuiIcon`'s `@type` accepts. Defaults to `'calendar'`. */
+    /** The icon's type, anything `EuiIcon`'s `@type` accepts. Defaults to `'calendar'`, or `'clock'` with `@showTimeSelectOnly`. */
     iconType?: string;
     /** Renders the input and its popover without the form control layout (no icon, clear button, prepend or append), e.g. inside `EuiDatePickerRange`. */
     controlOnly?: boolean;
@@ -229,7 +284,7 @@ const DatePickerControl: TOC<{
         {{on "keydown" @picker.onPanelKeyDown}}
       >
         <EuiDatePickerCalendar
-          @selected={{@picker.value}}
+          @selected={{@picker.selectedDay}}
           @preview={{@picker.preview}}
           @onPick={{@picker.onPick}}
           @openToDate={{@picker.openToDate}}
@@ -243,6 +298,13 @@ const DatePickerControl: TOC<{
           @firstDayOfWeek={{@picker.firstDayOfWeek}}
           @dayClassName={{@picker.args.dayClassName}}
           @calendarClass={{@picker.args.calendarClass}}
+          @showTimeSelect={{@picker.showTimeSelect}}
+          @showTimeSelectOnly={{@picker.timeOnly}}
+          @timeOptions={{@picker.timeOptions}}
+          @selectedTime={{@picker.selectedTime}}
+          @hour12={{@picker.hour12}}
+          @onPickTime={{@picker.onPickTime}}
+          @onMove={{@picker.onMove}}
         />
       </div>
     </:content>
@@ -277,8 +339,6 @@ export default class EuiDatePicker extends Component<EuiDatePickerSignature> {
   private ownFocus = false;
   /** A press in the panel is under way: the input's blur is not a commit (Safari does not focus buttons on click). */
   private pressInPanel = false;
-  /** The `@value` objects already reported (one notice per value). */
-  private reportedObjects = new WeakSet<object>();
   fallbackId = randomId();
 
   get context() {
@@ -286,6 +346,25 @@ export default class EuiDatePicker extends Component<EuiDatePickerSignature> {
   }
 
   /* Values (DESIGN 4.2, 18) */
+
+  /** What the value is: a day, an instant (`@showTimeSelect`) or a time (`@showTimeSelectOnly`, which wins, 9 #42). */
+  get mode(): PickerMode {
+    if (this.args.showTimeSelectOnly) return 'time';
+    return this.args.showTimeSelect ? 'dateTime' : 'date';
+  }
+
+  get timeOnly(): boolean {
+    return this.mode === 'time';
+  }
+
+  /** The time list beside the calendar. */
+  get showTimeSelect(): boolean {
+    return this.mode === 'dateTime';
+  }
+
+  get seconds(): boolean {
+    return Boolean(this.args.seconds);
+  }
 
   get zone(): string {
     return normalizeTimeZone(this.args.timeZone);
@@ -295,34 +374,80 @@ export default class EuiDatePicker extends Component<EuiDatePickerSignature> {
     return !validTimeZone(this.args.timeZone);
   }
 
-  /** `@value` as the picker reads it: a `Date` or a moment as its day in the zone. */
+  /** `@value` as the picker reads it: a `Date` or a moment as its day, instant or time in the zone. */
   get rawValue(): unknown {
-    return toDateValue(this.args.value, this.zone);
+    return toDateValue(this.args.value, this.zone, this.mode, this.seconds);
   }
 
-  /** The value when it is a real `YYYY-MM-DD` date, else null. */
+  /** Date and time: the value's instant in ms, else null. */
+  get valueMs(): number | null {
+    return this.mode === 'dateTime' ? parseInstant(this.rawValue) : null;
+  }
+
+  /** Time only: the value's time of day, else null. */
+  get valueTime(): TimeOfDay | null {
+    return this.mode === 'time' ? parseTimeValue(this.rawValue) : null;
+  }
+
+  /** The value when it can be read, normalized (`YYYY-MM-DD`, `…Z`, `HH:mm`), else null. */
   get value(): string | null {
-    return validIsoDate(this.rawValue);
+    switch (this.mode) {
+      case 'dateTime': {
+        const ms = this.valueMs;
+        return ms === null ? null : instantString(ms);
+      }
+      case 'time': {
+        const time = this.valueTime;
+        return time === null
+          ? null
+          : timeValueOf(time, this.seconds || time.second !== 0);
+      }
+      default:
+        return validIsoDate(this.rawValue);
+    }
   }
 
-  /** A value is present but not a date (9 #1), or an invalid `Date` or moment (18). */
+  /** The calendar's selected day: the value, or the day of its instant in the zone. */
+  get selectedDay(): string | null {
+    const ms = this.valueMs;
+    if (ms !== null) return dayAt(ms, this.zone);
+    return this.mode === 'date' ? this.value : null;
+  }
+
+  /** The time list's selected time: the value's, or its instant's wall clock in the zone. */
+  get selectedTime(): TimeOfDay | null {
+    const ms = this.valueMs;
+    if (ms !== null) {
+      const wall = wallAt(ms, this.zone);
+      return { hour: wall.h, minute: wall.mi, second: wall.s };
+    }
+    return this.valueTime;
+  }
+
+  /** A value is present but cannot be read (9 #1), or an invalid `Date` or moment (18). */
   get hasUnreadableValue(): boolean {
     const raw = this.rawValue;
     if (isInvalidDateObject(this.args.value)) return true;
     return raw != null && raw !== '' && this.value === null;
   }
 
-  private dateArg(value: unknown): string | null {
-    const read = toDateValue(value, this.zone);
+  /** A date argument: a day, or (`@minDate`, `@maxDate` with `@showTimeSelect`) a day or an instant. */
+  private dateArg(value: unknown, mode: PickerMode = 'date'): string | null {
+    const read = toDateValue(value, this.zone, mode);
     return typeof read === 'string' ? read : null;
   }
 
+  /** The mode limits are read in: an instant with `@showTimeSelect`, else a day. */
+  private get limitMode(): PickerMode {
+    return this.mode === 'dateTime' ? 'dateTime' : 'date';
+  }
+
   get minDate(): string | null {
-    return this.dateArg(this.args.minDate);
+    return this.dateArg(this.args.minDate, this.limitMode);
   }
 
   get maxDate(): string | null {
-    return this.dateArg(this.args.maxDate);
+    return this.dateArg(this.args.maxDate, this.limitMode);
   }
 
   get openToDate(): string | null {
@@ -361,7 +486,45 @@ export default class EuiDatePicker extends Component<EuiDatePickerSignature> {
     );
   }
 
+  /** The time list's rules, for the calendar. */
+  @cached
+  get timeOptions(): CalendarTimeOptions {
+    const { timeIntervals, injectTimes, excludeTimes, minTime, maxTime } =
+      this.args;
+    return {
+      interval: timeInterval(timeIntervals).interval,
+      injectTimes,
+      excludeTimes,
+      minTime,
+      maxTime,
+      seconds: this.seconds
+    };
+  }
+
+  /** Every rule a typed instant is checked against (DESIGN 5.2, limits). */
+  @cached
+  get instantRules(): InstantRules {
+    return {
+      minDate: this.minDate,
+      maxDate: this.maxDate,
+      excludeDates: this.excludeDates,
+      includeDates: this.includeDates,
+      filterDate: this.args.filterDate,
+      minTime: this.args.minTime,
+      maxTime: this.args.maxTime,
+      excludeTimes: this.args.excludeTimes,
+      zone: this.zone
+    };
+  }
+
   /* Locale */
+
+  /** `componentDefaults.EuiDatePicker` in `euiConfig` (DESIGN decision 11). */
+  get configDefaults() {
+    const config = getOwner(this)?.lookup('service:eui-config') as
+      EuiConfigService | undefined;
+    return config?.getConfig('componentDefaults')?.EuiDatePicker;
+  }
 
   @cached
   get localeDefaults(): {
@@ -370,7 +533,12 @@ export default class EuiDatePicker extends Component<EuiDatePickerSignature> {
     hour12: boolean;
     firstDayOfWeek: Weekday;
   } {
-    return localeDefaults(this.args.locale);
+    return localeDefaults(this.args.locale ?? this.configDefaults?.locale);
+  }
+
+  get hour12(): boolean {
+    const hour12 = this.args.hour12;
+    return typeof hour12 === 'boolean' ? hour12 : this.localeDefaults.hour12;
   }
 
   get firstDayOfWeek(): Weekday {
@@ -394,11 +562,23 @@ export default class EuiDatePicker extends Component<EuiDatePickerSignature> {
     if (this.args.placeholder !== undefined) return this.args.placeholder;
     const t = (token: string, fallback: string) =>
       this.euiI18n.lookupToken(`euiDatePicker.placeholder${token}`, fallback);
-    return datePlaceholder(this.dateOrder, {
+    const time = () =>
+      timePlaceholder(
+        { hour12: this.hour12, seconds: this.seconds },
+        {
+          hour: t('Hour', 'H'),
+          minute: t('Minute', 'm'),
+          second: t('Second', 's'),
+          meridiem: t('Meridiem', 'am')
+        }
+      );
+    if (this.mode === 'time') return time();
+    const date = datePlaceholder(this.dateOrder, {
       day: t('Day', 'D'),
       month: t('Month', 'M'),
       year: t('Year', 'Y')
     });
+    return this.mode === 'dateTime' ? `${date} ${time()}` : date;
   }
 
   /* Text (DESIGN 5.3) */
@@ -414,21 +594,57 @@ export default class EuiDatePicker extends Component<EuiDatePickerSignature> {
   get text(): string {
     const typed = this.shownTyped;
     if (typed !== null) return typed;
-    const value = this.value;
-    if (value !== null) return formatDate(value, this.dateOrder);
+    const shown = this.displayText();
+    if (shown !== null) return shown;
     const raw = this.rawValue;
     return typeof raw === 'string' ? raw : '';
   }
 
-  /** The typed text read as a date, for the calendar to show its month (DESIGN 5.3, partial input). */
+  /** The value in the display format, or null when there is none. */
+  private displayText(): string | null {
+    const ms = this.valueMs;
+    if (ms !== null) {
+      return formatDateTime(ms, {
+        order: this.dateOrder,
+        zone: this.zone,
+        hour12: this.hour12,
+        seconds: this.seconds
+      });
+    }
+    const time = this.valueTime;
+    if (time !== null) {
+      return formatTime(time, { hour12: this.hour12, seconds: this.seconds });
+    }
+    const value = this.mode === 'date' ? this.value : null;
+    return value === null ? null : formatDate(value, this.dateOrder);
+  }
+
+  /** The typed text read as a day, for the calendar to show its month (DESIGN 5.3, partial input). */
   get preview(): string | null {
     const typed = this.shownTyped;
-    return typed === null ? null : this.parse(typed);
+    if (typed === null) return null;
+    if (this.mode === 'dateTime') {
+      const ms = this.parseInstantText(typed);
+      return ms === null ? null : dayAt(ms, this.zone);
+    }
+    return this.mode === 'date' ? this.parse(typed) : null;
+  }
+
+  private get thisYear(): number {
+    return Number(todayIn(this.zone, Date.now()).slice(0, 4));
   }
 
   private parse(text: string): string | null {
-    const year = Number(todayIn(this.zone, Date.now()).slice(0, 4));
-    return parseDateText(text, { order: this.dateOrder, year });
+    return parseDateText(text, { order: this.dateOrder, year: this.thisYear });
+  }
+
+  private parseInstantText(text: string): number | null {
+    return parseDateTimeText(text, {
+      order: this.dateOrder,
+      year: this.thisYear,
+      zone: this.zone,
+      seconds: this.seconds
+    });
   }
 
   get isInvalid(): boolean {
@@ -453,28 +669,33 @@ export default class EuiDatePicker extends Component<EuiDatePickerSignature> {
     return !this.args.disabled && !this.args.readOnly;
   }
 
-  /** Development warnings for what the picker cannot read (9 #1, #2, #18, #24; DESIGN 18). */
+  /** What a readable value looks like, for the warnings. */
+  private get expected(): string {
+    switch (this.mode) {
+      case 'dateTime':
+        return 'an ISO instant with Z or an offset (2026-11-24T15:30:00.000Z)';
+      case 'time':
+        return 'an HH:mm time';
+      default:
+        return 'a YYYY-MM-DD date';
+    }
+  }
+
+  /**
+   * Development warnings for what the picker cannot read (9 #1, #2, #18,
+   * #24, #52; DESIGN 18). A valid `Date` or moment is read silently
+   * (decision 19); an invalid one warns.
+   */
   @cached
   get warnings(): null {
-    const { value, timeZone, minDate, maxDate } = this.args;
-    if (isDateObject(value) && !isInvalidDateObject(value)) {
-      if (!this.reportedObjects.has(value)) {
-        this.reportedObjects.add(value);
-        warn(
-          `EuiDatePicker: @value is a Date or a moment; it is read as ${JSON.stringify(this.value)}, its day in the ${this.zone} zone. @onChange emits strings: for a value that round-trips unchanged, @value must be a YYYY-MM-DD string, not a Date or a moment.`,
-          false,
-          { id: 'ember-eui.eui-date-picker.object-value' }
-        );
-      }
-    } else {
-      warn(
-        isInvalidDateObject(value)
-          ? 'EuiDatePicker: @value is an invalid Date or moment; it is treated as no value.'
-          : `EuiDatePicker: @value ${JSON.stringify(value)} is not a YYYY-MM-DD date.`,
-        !this.hasUnreadableValue,
-        { id: 'ember-eui.eui-date-picker.unreadable-value' }
-      );
-    }
+    const { value, timeZone, minDate, maxDate, minTime, maxTime } = this.args;
+    warn(
+      isInvalidDateObject(value)
+        ? 'EuiDatePicker: @value is an invalid Date or moment; it is treated as no value.'
+        : `EuiDatePicker: @value ${JSON.stringify(value)} is not ${this.expected}.`,
+      !this.hasUnreadableValue,
+      { id: 'ember-eui.eui-date-picker.unreadable-value' }
+    );
     warn(
       `EuiDatePicker: @timeZone ${JSON.stringify(timeZone)} is not a time zone this browser knows; it is shown as UTC.`,
       !this.hasUnknownZone,
@@ -487,13 +708,28 @@ export default class EuiDatePicker extends Component<EuiDatePickerSignature> {
       warn(
         isInvalidDateObject(limit)
           ? `EuiDatePicker: ${name} is an invalid Date or moment; it is ignored.`
-          : `EuiDatePicker: ${name} ${JSON.stringify(limit)} is not a YYYY-MM-DD date; it is ignored.`,
+          : `EuiDatePicker: ${name} ${JSON.stringify(limit)} is not a YYYY-MM-DD date${this.mode === 'dateTime' ? ' or an instant' : ''}; it is ignored.`,
         isInvalidDateObject(limit)
           ? false
-          : !isUnreadableLimit(toDateValue(limit, this.zone)),
+          : !isUnreadableLimit(toDateValue(limit, this.zone, this.limitMode)),
         { id: 'ember-eui.eui-date-picker.unreadable-limit' }
       );
     }
+    for (const [name, limit] of [
+      ['@minTime', minTime],
+      ['@maxTime', maxTime]
+    ] as const) {
+      warn(
+        `EuiDatePicker: ${name} ${JSON.stringify(limit)} is not an HH:mm time; it is ignored.`,
+        limit == null || limit === '' || parseTimeValue(limit) !== null,
+        { id: 'ember-eui.eui-date-picker.unreadable-limit' }
+      );
+    }
+    warn(
+      `EuiDatePicker: @timeIntervals ${JSON.stringify(this.args.timeIntervals)} is not a positive whole number of minutes; 30 is used.`,
+      timeInterval(this.args.timeIntervals).valid,
+      { id: 'ember-eui.eui-date-picker.time-intervals' }
+    );
     warn(
       'EuiDatePicker: @minDate is after @maxDate; every day is disabled.',
       !limitsConflict(this.limits),
@@ -534,7 +770,7 @@ export default class EuiDatePicker extends Component<EuiDatePickerSignature> {
 
   get icon(): string | undefined {
     if (this.args.showIcon === false) return undefined;
-    return this.args.iconType ?? 'calendar';
+    return this.args.iconType ?? (this.timeOnly ? 'clock' : 'calendar');
   }
 
   get inputId(): string {
@@ -547,10 +783,9 @@ export default class EuiDatePicker extends Component<EuiDatePickerSignature> {
 
   /** The inline calendar's name, and the popover dialog's (DESIGN 7.3); `aria-label` or `aria-labelledby` on the picker win inline. */
   get calendarLabel() {
-    return this.euiI18n.lookupToken(
-      'euiDatePicker.calendarLabel',
-      'Choose date'
-    );
+    return this.timeOnly
+      ? this.euiI18n.lookupToken('euiDatePicker.timeLabel', 'Choose time')
+      : this.euiI18n.lookupToken('euiDatePicker.calendarLabel', 'Choose date');
   }
 
   /** The dialog's name: "Choose date" and the field's label, when it has one. */
@@ -660,17 +895,58 @@ export default class EuiDatePicker extends Component<EuiDatePickerSignature> {
       }
       return;
     }
-    const date = this.parse(text);
-    const problem: EuiDatePickerInputErrorReason | null =
-      date === null ? 'unreadable' : dayProblem(date, this.limits);
-    if (date === null || problem !== null) {
-      this.inputError = problem;
-      this.args.onInputError?.({ text: typed, reason: problem! });
+    const read = this.read(text);
+    if (read.problem !== null) {
+      this.inputError = read.problem;
+      this.args.onInputError?.({ text: typed, reason: read.problem });
       return;
     }
     this.typed = null;
     this.inputError = null;
-    if (date !== this.value) this.args.onChange?.(date);
+    if (read.changes) this.args.onChange?.(read.value);
+  }
+
+  /**
+   * Typed text as a value: the value, whether it changes the current one,
+   * or why it cannot be chosen. A typed date and time is a wall clock in
+   * the zone, and changes the value only when the wall clock differs
+   * (DESIGN 5.2), unless it is an ISO instant with `Z` or an offset.
+   */
+  private read(
+    text: string
+  ):
+    | { problem: null; value: string; changes: boolean }
+    | { problem: EuiDatePickerInputErrorReason } {
+    switch (this.mode) {
+      case 'dateTime': {
+        const ms = this.parseInstantText(text);
+        if (ms === null) return { problem: 'unreadable' };
+        const problem = instantProblem(ms, this.instantRules);
+        if (problem) return { problem };
+        const current = this.valueMs;
+        const changes =
+          parseInstant(text) !== null
+            ? ms !== current
+            : changesValue(current, wallAt(ms, this.zone), this.zone);
+        return { problem: null, value: instantString(ms), changes };
+      }
+      case 'time': {
+        const typed = parseTimeText(text);
+        if (typed === null) return { problem: 'unreadable' };
+        const time = this.seconds ? typed : { ...typed, second: 0 };
+        const problem = timeProblem(time, this.args);
+        if (problem) return { problem };
+        const value = timeValueOf(time, this.seconds);
+        return { problem: null, value, changes: value !== this.value };
+      }
+      default: {
+        const date = this.parse(text);
+        if (date === null) return { problem: 'unreadable' };
+        const problem = dayProblem(date, this.limits);
+        if (problem) return { problem };
+        return { problem: null, value: date, changes: date !== this.value };
+      }
+    }
   }
 
   /** Back to the value's text, without an error (Escape when closed, 9 #9). */
@@ -764,9 +1040,18 @@ export default class EuiDatePicker extends Component<EuiDatePickerSignature> {
       this.isOpen &&
       this.panel?.contains(event.target as Node)
     ) {
-      // focus was lost from the calendar (a press outside on nothing
-      // focusable): back to the input, nothing committed (DESIGN 7.3)
-      this.close(true);
+      // focus was lost from the calendar: a press outside on nothing
+      // focusable, or the focused day re-rendered away (a key moved to
+      // another month; Chrome fires focusout on a removed element, during
+      // the render). Decided after the render: if the calendar or the input
+      // has focus again, nothing happened; else back to the input, nothing
+      // committed (DESIGN 7.3).
+      next_(() => {
+        if (this.isDestroying || this.isDestroyed || !this.isOpen) return;
+        const active = document.activeElement;
+        if (active === this.input || this.panel?.contains(active)) return;
+        this.close(true);
+      });
       return;
     }
     this.hasFocus = false;
@@ -841,19 +1126,105 @@ export default class EuiDatePicker extends Component<EuiDatePickerSignature> {
     });
   }
 
-  /** Every pick of an enabled day: emits when it differs, drops the typed text, closes (`@shouldCloseOnSelect`). */
+  /**
+   * Every pick of an enabled day: emits when it differs, drops the typed
+   * text, closes (`@shouldCloseOnSelect`). With `@showTimeSelect` the
+   * popover stays open for the time, as upstream.
+   */
   @action
   onPick(date: string) {
     this.typed = null;
     this.inputError = null;
-    if (date !== this.value) this.args.onChange?.(date);
-    if (this.args.shouldCloseOnSelect !== false) this.close(true);
+    this.chooseDay(date);
+    if (this.args.shouldCloseOnSelect !== false && !this.showTimeSelect) {
+      this.close(true);
+    }
   }
 
-  /** Inline: the calendar emits the chosen day. */
+  /** Inline: the calendar's chosen day. */
   @action
   onSelect(date: string) {
-    this.args.onChange?.(date);
+    this.chooseDay(date);
+  }
+
+  /**
+   * Emit a chosen day. With `@showTimeSelect`: the value's wall time on
+   * that day, seconds kept (DESIGN 5.2; a gap resolves forward); without a
+   * value, midnight. When that instant is outside the limits, the day's
+   * first time that can be chosen; none, nothing.
+   */
+  private chooseDay(date: string) {
+    if (this.mode !== 'dateTime') {
+      if (date !== this.value) this.args.onChange?.(date);
+      return;
+    }
+    const current = this.valueMs;
+    let ms =
+      current === null
+        ? startOfDayIn(date, this.zone)
+        : withDay(current, date, this.zone);
+    if (instantProblem(ms, this.instantRules) !== null) {
+      const first = this.firstTimeOf(date);
+      if (first === null) return;
+      ms = first;
+    }
+    if (changesValue(current, wallAt(ms, this.zone), this.zone)) {
+      this.args.onChange?.(instantString(ms));
+    }
+  }
+
+  /** The first instant of a day's time list that can be chosen, or null. */
+  private firstTimeOf(date: string): number | null {
+    const entry = timeList({
+      ...this.timeOptions,
+      day: date,
+      zone: this.zone,
+      minDate: this.minDate,
+      maxDate: this.maxDate
+    }).find(
+      (candidate) =>
+        candidate.problem === null &&
+        candidate.instant !== null &&
+        instantProblem(candidate.instant, this.instantRules) === null
+    );
+    return entry?.instant ?? null;
+  }
+
+  /**
+   * A time picked in the list: time only emits `HH:mm`; with a day, its
+   * instant on that day in the zone, seconds zero (DESIGN 5.2), and only
+   * when the wall clock differs from the value's (a stored second
+   * occurrence survives, 9 #21). Closes (`@shouldCloseOnSelect`).
+   */
+  @action
+  onPickTime(day: string | null, entry: TimeEntry) {
+    this.typed = null;
+    this.inputError = null;
+    if (day === null) {
+      const value = timeValueOf(entry.time, this.seconds);
+      if (value !== this.value) this.args.onChange?.(value);
+    } else {
+      const { hour, minute } = entry.time;
+      const wall = wallOf(day, hour, minute);
+      if (changesValue(this.valueMs, wall, this.zone)) {
+        this.args.onChange?.(
+          instantString(instantAt(day, entry.time, this.zone))
+        );
+      }
+    }
+    if (this.args.shouldCloseOnSelect !== false && !this.args.inline) {
+      this.close(true);
+    }
+  }
+
+  /** `@adjustDateOnChange`: a day moved to with the keys or the selects is chosen at once, if it can be. */
+  @action
+  onMove(date: string) {
+    if (!this.args.adjustDateOnChange || !this.interactive) return;
+    if (dayProblem(date, this.limits) !== null) return;
+    this.typed = null;
+    this.inputError = null;
+    this.chooseDay(date);
   }
 
   @action
@@ -870,8 +1241,10 @@ export default class EuiDatePicker extends Component<EuiDatePickerSignature> {
     // after the panel is registered, so the input's blur sees it
     schedule('afterRender', () => {
       content
-        .querySelector<HTMLButtonElement>(
-          'td[data-date] > button[tabindex="0"]'
+        .querySelector<HTMLElement>(
+          this.timeOnly
+            ? '.react-datepicker__time-list'
+            : 'td[data-date] > button[tabindex="0"]'
         )
         ?.focus();
     });
@@ -893,7 +1266,7 @@ export default class EuiDatePicker extends Component<EuiDatePickerSignature> {
           <EuiDatePickerCalendar
             role="group"
             aria-label={{this.calendarLabel}}
-            @selected={{this.value}}
+            @selected={{this.selectedDay}}
             @onSelect={{this.onSelect}}
             @openToDate={{this.openToDate}}
             @minDate={{this.minDate}}
@@ -908,6 +1281,13 @@ export default class EuiDatePicker extends Component<EuiDatePickerSignature> {
             @calendarClass={{@calendarClass}}
             @disabled={{@disabled}}
             @readOnly={{@readOnly}}
+            @showTimeSelect={{this.showTimeSelect}}
+            @showTimeSelectOnly={{this.timeOnly}}
+            @timeOptions={{this.timeOptions}}
+            @selectedTime={{this.selectedTime}}
+            @hour12={{this.hour12}}
+            @onPickTime={{this.onPickTime}}
+            @onMove={{this.onMove}}
             ...attributes
           />
         </EuiFormControlLayout>
